@@ -45,6 +45,8 @@ if args.docx or not args.tex:
    for run in para.runs:mod.set_font(run,name=mod.HEADING_FONT,size=14,bold=True)
  target=ROOT.parent/'安德鲁牙科连锁系统设计文档.docx';doc.save(target);print(json.dumps({'docx':str(target),'blocks':len(blocks)},ensure_ascii=False))
 if args.tex or not args.docx:
+ from PIL import Image
+ import math
  project=ROOT/'latex';project.mkdir(exist_ok=True);(project/'media').mkdir(exist_ok=True);(project/'figures').mkdir(exist_ok=True)
  academic_assets=ROOT/'template/csu-academic-report/assets'
  if not academic_assets.exists():academic_assets=Path('D:/codex/skills/csu-academic-report/assets')
@@ -58,24 +60,40 @@ if args.tex or not args.docx:
  pre=re.sub(r'\\newcommand\{\\ReportHeadingSpace\}\[1\]\{\\par.*?\}',lambda _:r'\newcommand{\ReportHeadingSpace}[1]{\par\Needspace{#1\baselineskip}}',pre,flags=re.S)
  pre=pre.replace(r'\sloppy',r'\sloppy'+'\n'+r'\setlength{\emergencystretch}{2em}\clubpenalty=10000\widowpenalty=10000\displaywidowpenalty=10000'+'\n'+r'\newcommand{\Cell}[1]{\begin{minipage}[t]{\linewidth}\raggedright\strut #1\strut\end{minipage}}')
  body=[r'\begin{center}{\sffamily\bfseries\fontsize{18pt}{26pt}\selectfont '+esc(meta['title'])+r'\par}\end{center}']
- appendix=False
+ appendix=False;abstract_first=False
  for bi,b in enumerate(blocks):
   typ=b['type']
   if typ=='heading':
    if b.get('appendix') and not appendix:body.append(r'\appendix');appendix=True
    cmd=['section','subsection','subsubsection'][b['level']-1]
-   if bi+1<len(blocks) and blocks[bi+1]['type']=='heading':body.append(r'\Needspace{9\baselineskip}')
+   following=bi+1
+   while following<len(blocks) and blocks[following]['type']=='heading':following+=1
+   if following<len(blocks) and blocks[following]['type']=='figure':
+    # Keep consecutive headings with the following fixed-position figure.
+    with Image.open(blocks[following]['path']) as picture:
+     required=442.2*picture.height/picture.width+45*(following-bi)+50
+    body.append(r'\Needspace{'+str(math.ceil(min(660,required)))+'pt}')
+   elif bi+2<len(blocks) and blocks[bi+1]['type']=='paragraph' and blocks[bi+2]['type']=='table':
+    # Dictionary entries include a short explanation before the field table.
+    body.append(r'\Needspace{12\baselineskip}')
+   elif bi+1<len(blocks) and blocks[bi+1]['type']=='heading':body.append(r'\Needspace{9\baselineskip}')
    elif bi+1<len(blocks) and blocks[bi+1]['type']=='table':body.append(r'\Needspace{7\baselineskip}')
    if b.get('numbered',True):body.append('\\'+cmd+'{'+esc(b['text'])+'}')
    else:body.append('\\'+cmd+'*{'+esc(b['text'])+'}\n'+r'\phantomsection\addcontentsline{toc}{'+cmd+'}{'+esc(b['text'])+'}')
   elif typ in ['paragraph','reference']:
    value=b['text']
-   if value=='摘要':body.append(r'\begin{center}{\sffamily\bfseries\large 摘\quad 要}\end{center}');continue
+   if value=='摘要':
+    body.append(r'\begin{center}{\sffamily\bfseries\large 摘\quad 要}\end{center}')
+    # The center environment suppresses indentation on its following paragraph.
+    # Restore the required two-character first-line indent explicitly.
+    abstract_first=True;continue
    if typ=='reference':
     pieces=[];at=0
     for m in re.finditer(r'https?://[^\s，；]+',value):pieces+=[esc(value[at:m.start()]),r'\url{'+m[0]+'}'];at=m.end()
     pieces.append(esc(value[at:]));body.append(r'\noindent '+''.join(pieces)+r'\par');continue
-   for line in value.split('\n'):body.append(textext(line)+r'\par')
+   for line in value.split('\n'):
+    prefix=r'\noindent\hspace*{2em}' if abstract_first else ''
+    body.append(prefix+textext(line)+r'\par');abstract_first=False
   elif typ=='figure':
    src=Path(b['pdf']);shutil.copyfile(src,project/'figures'/src.name)
    body.append(r'\begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/'+src.name+'}\n'+r'\caption{'+esc(b['caption'])+'}'+r'\label{'+b['bookmark']+'}'+r'\end{figure}')

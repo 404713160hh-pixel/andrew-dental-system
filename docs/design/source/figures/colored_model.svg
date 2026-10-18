@@ -2,7 +2,7 @@
 <rect x="30" y="30" width="235" height="115" fill="white" stroke="black"/>
 <text x="147.5" y="74.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">&lt;&lt;角色&gt;&gt;</text>
 <text x="147.5" y="92.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">顾客 / 医生 / 前台</text>
-<text x="147.5" y="110.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">承担一次业务中的责任</text>
+<text x="147.5" y="110.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">店长 / 总部</text>
 <rect x="335" y="30" width="235" height="115" fill="white" stroke="black"/>
 <text x="452.5" y="74.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">&lt;&lt;事物&gt;&gt;</text>
 <text x="452.5" y="92.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">患者 / 牙医 / 门诊</text>

@@ -1,13 +1,14 @@
 # 安德鲁牙科就诊与运营系统
 
-当前版本 **3.0.0**。四个独立岗位门户，共享关系型 SQLite 数据库及 Node.js 后端；店长管理全部门诊。
+当前版本 **3.1.0**。五个独立岗位门户，共享关系型 SQLite 数据库及 Node.js 后端；总部统筹连锁，店长管理机构分配的授权门诊。
 
-完整课程设计文档位于 [docs/design](docs/design/README.md)：[可编辑Word](docs/design/安德鲁牙科连锁系统设计文档.docx)、[PDF](docs/design/安德鲁牙科连锁系统设计文档.pdf) 及 [TeX和SVG图源](docs/design/source/README.md)。使用 `csu-word-report` 与 `csu-academic-report` 两个技能，包含24份用例规约、28张图、38表296字段的数据字典；文稿源码核对截至2026-10-18，排版与发布收尾于2026-10-19。文稿中的10月15日本地测试和当时未执行的外部部署属于历史验收状态，后续远端检查以仓库Actions为准。
+完整课程设计文档位于 [docs/design](docs/design/README.md)：[可编辑Word](docs/design/安德鲁牙科连锁系统设计文档.docx)、[PDF](docs/design/安德鲁牙科连锁系统设计文档.pdf) 及 [TeX和SVG图源](docs/design/source/README.md)。使用 `csu-word-report` 与 `csu-academic-report` 两个技能，包含完整用例规约、业务与UML图、数据库ER图和38表296字段的数据字典；文稿于2026-10-19同步总部与店长职责及排版修订。文稿中的10月15日本地测试和当时未执行的外部部署属于历史验收状态，后续远端检查以仓库Actions为准。
 
 - 顾客：`/customer/login`
 - 前台：`/frontdesk/login`
 - 医生：`/doctor/login`
-- 店长：`/manager/login`
+- 店长：`/manager/login`（授权门诊）
+- 总部：`/hq/login`（全部门诊）
 
 ## 本地启动
 
@@ -20,9 +21,9 @@ npm run build
 npm start
 ```
 
-访问 `http://127.0.0.1:3210/customer/login`。默认本机演示首次创建合成患者与四个演示账号 `chen`、`front`、`doctor`、`manager`，密码均为 `Dental2026!`。员工入口没有公开注册。已有数据库不会重置；旧版结构自动迁移前会保存完整快照，运行中的旧服务会阻止升级。
+访问 `http://127.0.0.1:3210/customer/login`。默认本机演示首次创建合成患者与五个演示账号 `chen`、`front`、`doctor`、`manager`、`hq`，密码均为 `Dental2026!`。员工入口没有公开注册。已有数据库不会重置；旧版结构自动迁移前会保存完整快照，运行中的旧服务会阻止升级。
 
-正式新库设 `DENTAL_SEED_DEMO=0`，关闭演示数据与演示入口。该开关不会删除已有演示账号，正式数据必须使用独立数据库。首个店长通过 `tools/accounts.mjs create-staff` 初始化。
+正式新库设 `DENTAL_SEED_DEMO=0`，关闭演示数据与演示入口。该开关不会删除已有演示账号，正式数据必须使用独立数据库。首个总部账号通过 `tools/accounts.mjs create-staff owner hq` 初始化；总部登录后创建门诊，再为店长分配明确的门诊范围。
 
 ## 已实现的业务
 
@@ -31,7 +32,7 @@ npm start
 - 治疗明细与价格快照、就诊完成冻结、带作者/时间/原因的不可覆盖附记。
 - 费用开单、人工核对收款、欠款余额、原款限额退款、保留原单的冲销、按北京时间核对营业日资金与差额、来源变化失效提示。
 - 成本录入审核、季度报告及基金测算；收入明确采用有效开单口径，另有收款账簿，不将两者混用。
-- 员工创建、归属调整、启停与离职；撤销旧会话、保留有效店长、本人改密、机构核验后的限时单次恢复凭证。
+- 员工创建、归属调整、启停与离职；撤销旧会话、保留有效总部账号、本人改密、机构核验后的限时单次恢复凭证。
 
 现金/银行/POS 均为工作人员核验凭证后的人工记账，代码不执行银行转账或线上支付；恢复凭证由机构核验后交付，未接入短信。尚未提供完整牙位病历、影像、处方、知情同意、医保及正式票据，也未经真实临床或公网容量验收。
 
@@ -46,7 +47,7 @@ public/css/                   九个可维护样式源文件
 public/styles.css             构建生成的CSS，修改源文件后重新构建
 server/index.js               HTTP入口与路由
 server/http/                  会话、限流、请求幂等、部署配置校验
-server/policies/              四岗位权限
+server/policies/              五岗位权限
 server/services/              独立业务服务与按页查询
 server/repositories/          明确字段映射、批量关联、条件查询
 server/migrations/            带版本及checksum的事务迁移
@@ -89,4 +90,4 @@ node tools/database.mjs restore <快照路径> --offline
 
 `npm run build:docs` 生成仓库内 `docs/site/index.html`，通过 `/docs/index.html` 访问，不依赖课程根目录的旧项目或PDF文件。Docker、Compose、反向代理示例及GitHub Actions均位于本目录。可以将本目录作为独立仓库根目录，不包含工作区旧Clearbrook项目。
 
-`RELEASE-MANIFEST.json` 是当前源码发布哈希清单；较早 `SHA256.json` 仅保留在本地，`ACCEPTANCE` 和设计自查文件按原日期保留为历史证据，不代表3.0版本。数据库、快照、环境秘密、依赖目录和测试产物均排除发布。
+`RELEASE-MANIFEST.json` 是当前源码发布哈希清单；较早 `SHA256.json` 仅保留在本地，`ACCEPTANCE` 和设计自查文件按原日期保留为历史证据，不代表当前版本。数据库、快照、环境秘密、依赖目录和测试产物均排除发布。

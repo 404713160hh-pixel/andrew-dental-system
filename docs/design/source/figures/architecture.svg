@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="600" height="710" viewBox="0 0 600 710"><rect width="600" height="710" fill="white"/>
 <rect x="25" y="30" width="550" height="85" fill="white" stroke="black"/>
-<text x="300.0" y="68.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">顾客端 / 员工端四门户</text>
+<text x="300.0" y="68.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">顾客 / 前台 / 医生 / 店长 / 总部五门户</text>
 <text x="300.0" y="86.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">页面、组件、状态、API客户端</text>
 <rect x="25" y="165" width="550" height="85" fill="white" stroke="black"/>
 <text x="300.0" y="203.16666666666666" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">Node.js HTTP</text>

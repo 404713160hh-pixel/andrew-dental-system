@@ -1,13 +1,14 @@
-<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>安德鲁牙科 · 使用与部署文档</title><style>body{font:16px/1.8 system-ui,"Microsoft YaHei",sans-serif;background:#f7f8fb;color:#273345;margin:0}header,main{max-width:1060px;margin:auto;padding:28px}a{color:#4b51b8}nav{display:flex;gap:16px;flex-wrap:wrap}section{margin:24px 0;padding:24px;background:white;border:1px solid #e4e7ee;border-radius:12px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.85 ui-monospace,monospace}h1{font-size:27px}small{color:#677487}</style><header><h1>安德鲁牙科 · 使用与部署文档</h1><p>当前发布包随附的源码说明、接口和运维步骤。</p><nav><a href="/customer/login">顾客入口</a><a href="/frontdesk/login">前台入口</a><a href="/doctor/login">医生入口</a><a href="/manager/login">店长入口</a></nav><small>数据范围与外部联调状态以验收记录为准。</small></header><main><section id="README.md"><h2>README.md</h2><pre># 安德鲁牙科就诊与运营系统
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>安德鲁牙科 · 使用与部署文档</title><style>body{font:16px/1.8 system-ui,"Microsoft YaHei",sans-serif;background:#f7f8fb;color:#273345;margin:0}header,main{max-width:1060px;margin:auto;padding:28px}a{color:#4b51b8}nav{display:flex;gap:16px;flex-wrap:wrap}section{margin:24px 0;padding:24px;background:white;border:1px solid #e4e7ee;border-radius:12px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.85 ui-monospace,monospace}h1{font-size:27px}small{color:#677487}</style><header><h1>安德鲁牙科 · 使用与部署文档</h1><p>当前发布包随附的源码说明、接口和运维步骤。</p><nav><a href="/customer/login">顾客入口</a><a href="/frontdesk/login">前台入口</a><a href="/doctor/login">医生入口</a><a href="/manager/login">店长入口</a><a href="/hq/login">总部入口</a><a href="/hq/login">总部入口</a></nav><small>数据范围与外部联调状态以验收记录为准。</small></header><main><section id="README.md"><h2>README.md</h2><pre># 安德鲁牙科就诊与运营系统
 
-当前版本 **3.0.0**。四个独立岗位门户，共享关系型 SQLite 数据库及 Node.js 后端；店长管理全部门诊。
+当前版本 **3.1.0**。五个独立岗位门户，共享关系型 SQLite 数据库及 Node.js 后端；总部统筹连锁，店长管理机构分配的授权门诊。
 
-完整课程设计文档位于 [docs/design](docs/design/README.md)：[可编辑Word](docs/design/安德鲁牙科连锁系统设计文档.docx)、[PDF](docs/design/安德鲁牙科连锁系统设计文档.pdf) 及 [TeX和SVG图源](docs/design/source/README.md)。使用 `csu-word-report` 与 `csu-academic-report` 两个技能，包含24份用例规约、28张图、38表296字段的数据字典；文稿源码核对截至2026-10-18，排版与发布收尾于2026-10-19。文稿中的10月15日本地测试和当时未执行的外部部署属于历史验收状态，后续远端检查以仓库Actions为准。
+完整课程设计文档位于 [docs/design](docs/design/README.md)：[可编辑Word](docs/design/安德鲁牙科连锁系统设计文档.docx)、[PDF](docs/design/安德鲁牙科连锁系统设计文档.pdf) 及 [TeX和SVG图源](docs/design/source/README.md)。使用 `csu-word-report` 与 `csu-academic-report` 两个技能，包含完整用例规约、业务与UML图、数据库ER图和38表296字段的数据字典；文稿于2026-10-19同步总部与店长职责及排版修订。文稿中的10月15日本地测试和当时未执行的外部部署属于历史验收状态，后续远端检查以仓库Actions为准。
 
 - 顾客：`/customer/login`
 - 前台：`/frontdesk/login`
 - 医生：`/doctor/login`
-- 店长：`/manager/login`
+- 店长：`/manager/login`（授权门诊）
+- 总部：`/hq/login`（全部门诊）
 
 ## 本地启动
 
@@ -20,9 +21,9 @@ npm run build
 npm start
 ```
 
-访问 `http://127.0.0.1:3210/customer/login`。默认本机演示首次创建合成患者与四个演示账号 `chen`、`front`、`doctor`、`manager`，密码均为 `Dental2026!`。员工入口没有公开注册。已有数据库不会重置；旧版结构自动迁移前会保存完整快照，运行中的旧服务会阻止升级。
+访问 `http://127.0.0.1:3210/customer/login`。默认本机演示首次创建合成患者与五个演示账号 `chen`、`front`、`doctor`、`manager`、`hq`，密码均为 `Dental2026!`。员工入口没有公开注册。已有数据库不会重置；旧版结构自动迁移前会保存完整快照，运行中的旧服务会阻止升级。
 
-正式新库设 `DENTAL_SEED_DEMO=0`，关闭演示数据与演示入口。该开关不会删除已有演示账号，正式数据必须使用独立数据库。首个店长通过 `tools/accounts.mjs create-staff` 初始化。
+正式新库设 `DENTAL_SEED_DEMO=0`，关闭演示数据与演示入口。该开关不会删除已有演示账号，正式数据必须使用独立数据库。首个总部账号通过 `tools/accounts.mjs create-staff owner hq` 初始化；总部登录后创建门诊，再为店长分配明确的门诊范围。
 
 ## 已实现的业务
 
@@ -31,7 +32,7 @@ npm start
 - 治疗明细与价格快照、就诊完成冻结、带作者/时间/原因的不可覆盖附记。
 - 费用开单、人工核对收款、欠款余额、原款限额退款、保留原单的冲销、按北京时间核对营业日资金与差额、来源变化失效提示。
 - 成本录入审核、季度报告及基金测算；收入明确采用有效开单口径，另有收款账簿，不将两者混用。
-- 员工创建、归属调整、启停与离职；撤销旧会话、保留有效店长、本人改密、机构核验后的限时单次恢复凭证。
+- 员工创建、归属调整、启停与离职；撤销旧会话、保留有效总部账号、本人改密、机构核验后的限时单次恢复凭证。
 
 现金/银行/POS 均为工作人员核验凭证后的人工记账，代码不执行银行转账或线上支付；恢复凭证由机构核验后交付，未接入短信。尚未提供完整牙位病历、影像、处方、知情同意、医保及正式票据，也未经真实临床或公网容量验收。
 
@@ -46,7 +47,7 @@ public/css/                   九个可维护样式源文件
 public/styles.css             构建生成的CSS，修改源文件后重新构建
 server/index.js               HTTP入口与路由
 server/http/                  会话、限流、请求幂等、部署配置校验
-server/policies/              四岗位权限
+server/policies/              五岗位权限
 server/services/              独立业务服务与按页查询
 server/repositories/          明确字段映射、批量关联、条件查询
 server/migrations/            带版本及checksum的事务迁移
@@ -89,16 +90,16 @@ node tools/database.mjs restore &lt;快照路径&gt; --offline
 
 `npm run build:docs` 生成仓库内 `docs/site/index.html`，通过 `/docs/index.html` 访问，不依赖课程根目录的旧项目或PDF文件。Docker、Compose、反向代理示例及GitHub Actions均位于本目录。可以将本目录作为独立仓库根目录，不包含工作区旧Clearbrook项目。
 
-`RELEASE-MANIFEST.json` 是当前源码发布哈希清单；较早 `SHA256.json` 仅保留在本地，`ACCEPTANCE` 和设计自查文件按原日期保留为历史证据，不代表3.0版本。数据库、快照、环境秘密、依赖目录和测试产物均排除发布。
-</pre></section><section id="ARCHITECTURE.md"><h2>ARCHITECTURE.md</h2><pre># 3.0架构与业务边界
+`RELEASE-MANIFEST.json` 是当前源码发布哈希清单；较早 `SHA256.json` 仅保留在本地，`ACCEPTANCE` 和设计自查文件按原日期保留为历史证据，不代表当前版本。数据库、快照、环境秘密、依赖目录和测试产物均排除发布。
+</pre></section><section id="ARCHITECTURE.md"><h2>ARCHITECTURE.md</h2><pre># 3.1架构与业务边界
 
-更新日期：2026-10-15。当前实现保持原生浏览器模块、Node.js内置HTTP及SQLite，按职责组织代码。
+更新日期：2026-10-19。当前实现保持原生浏览器模块、Node.js内置HTTP及SQLite，按职责组织代码。
 
 ## 请求与数据流
 
 ```mermaid
 flowchart LR
-    Portal[四岗位独立门户] --&gt; UI[页面模块与公共组件]
+    Portal[五岗位独立门户] --&gt; UI[页面模块与公共组件]
     UI --&gt; API[API客户端与页面状态]
     API --&gt; HTTP[会话和安全校验]
     HTTP --&gt; Query[分页查询服务]
@@ -117,7 +118,7 @@ flowchart LR
 | 模块 | 职责 |
 |---|---|
 | HTTP | JSON请求、Origin/Host、会话、CSRF、限流、幂等、静态资源 |
-| policies | 顾客/前台/医生/店长权限矩阵 |
+| policies | 顾客/前台/医生/店长/总部权限矩阵 |
 | patients / patient-merge | 档案、身份核验、可追溯归并 |
 | resources / appointments | 门诊资源、排班、预约和状态转换 |
 | clinical / clinical-addenda | 治疗快照、完成冻结、追加附记 |
@@ -127,7 +128,19 @@ flowchart LR
 | repositories | 白名单字段、SQL参数绑定、批量子表读写 |
 | migrations | 版本、checksum、升级快照、事务和外键检查 |
 
-医生可读其授权患者的跨门诊历史，预约列表及临床写入仍按本人责任控制。前台按授权门诊操作；店长覆盖全部门诊。权限和数据范围在后端执行。
+医生可读其授权患者的跨门诊历史，预约列表及临床写入仍按本人责任控制。前台和店长按明确的clinicIds操作授权门诊；总部覆盖全部门诊。权限和数据范围在后端执行。
+
+## 连锁职责与数据范围
+
+| 岗位 | 数据范围 | 主要职责 |
+|---|---|---|
+| 顾客 | 本人档案与业务 | 注册、预约、自助改期取消、就诊及费用查看 |
+| 前台 | 授权门诊 | 核对患者、预约与出席、排班、开单收款、营业日核对 |
+| 医生 | 本人接诊及相关患者历史 | 记录治疗、完成诊疗、追加更正附记 |
+| 店长 | 明确分配的门诊 | 门店患者与接诊、排班、诊疗与附记、收退款及冲销、日结、成本登记审核和履约统计 |
+| 总部 | 全部门诊 | 统一资源、全部员工授权、患者主档归并与账号绑定、全链季度核算批准、全局规则、审计和业务导出；可处理跨店业务 |
+
+店长看不到总部账号管理、全链审计与系统设置页面，不可核算或批准全链报告；其成本、账务、患者关联与预约统计均由服务端限制门诊范围。隐藏按钮只是界面表现，直接调用接口仍须通过同样校验。
 
 ## 存储与一致性
 
@@ -139,16 +152,16 @@ Repository提供get/find/query/count及批量关联映射。所有修改使用�
 
 ## 升级与运行
 
-旧JSON数据库在停止旧服务后先生成VACUUM快照，再在事务中重建类型列和关系行。升级检查外键，失败回滚。已应用迁移校验checksum，后续结构变化必须新增版本，不能修改旧脚本。运行中的库受PID锁约束。
+旧JSON数据库在停止旧服务后先生成VACUUM快照，再在事务中重建类型列和关系行。升级检查外键，失败回滚。已应用迁移校验checksum，后续结构变化必须新增版本，不能修改旧脚本。运行中的库受PID锁约束。第三版迁移将旧版全门诊店长保留原ID、用户名及密码哈希转换为总部，并撤销受影响会话和未使用恢复码；新建店长必须分配门诊，不能以空范围获得全链权限。
 
 服务仍为单实例SQLite设计，没有据此声称多主机写入或200并发。线上能力需目标部署和真实负载验收。Docker及备份侧车采用持久化卷，反向代理负责HTTPS；本轮已验证内容见验收记录。
 
 ## 范围说明
 
 实现了可操作的门诊预约与运营业务。收款为人工核验后登记，恢复为机构核验后交付单次凭证；未声称银行或短信联调成功。完整临床记录、正式票据、医保等依赖另行确定业务边界和供应商接口。
-</pre></section><section id="API-CONTRACT.md"><h2>API-CONTRACT.md</h2><pre># 3.0接口约定
+</pre></section><section id="API-CONTRACT.md"><h2>API-CONTRACT.md</h2><pre># 3.1接口约定
 
-同源JSON API；时间存ISO时间，页面按Asia/Shanghai显示；金额均为整数分。角色只有customer、front、clinical、manager。
+同源JSON API；时间存ISO时间，页面按Asia/Shanghai显示；金额均为整数分。角色为customer、front、clinical、manager、hq；入口分别为/customer、/frontdesk、/doctor、/manager、/hq。
 
 ## HTTP接口
 
@@ -163,9 +176,9 @@ Repository提供get/find/query/count及批量关联映射。所有修改使用�
 | GET /api/state | 兼容验证快照，日常前端不用此接口刷新 |
 | POST /api/command | type/payload；会话、CSRF、岗位与对象范围校验后事务执行 |
 | POST /api/logout | 撤销当前会话 |
-| POST /api/password-recovery/request | username/portal；portal为customer、front、clinical或manager，无论是否存在账号均给统一结果，机构随后核验 |
+| POST /api/password-recovery/request | username/portal；portal为customer、front、clinical、manager或hq，无论是否存在账号均给统一结果，机构随后核验 |
 | POST /api/password-recovery/consume | token/newPassword；10分钟单次凭证，成功撤销全部旧会话，不自动登录 |
-| GET /api/backup | 店长业务JSON导出，包含账簿/附记/别名，不包含账号口令/会话/恢复凭证；不能用于完整恢复 |
+| GET /api/backup | 总部业务JSON导出，包含账簿/附记/别名，不包含账号口令/会话/恢复凭证；不能用于完整恢复 |
 
 POST写入要求application/json。已登录修改要求X-CSRF-Token。错误为error/code，服务器错误附requestId；不回传SQL、文件路径或堆栈。
 
@@ -188,20 +201,24 @@ POST写入要求application/json。已登录修改要求X-CSRF-Token。错误为
 | type | payload与规则 |
 |---|---|
 | payment.record | settlementId,amount,method(cash/bank/pos),reference,reason,idempotencyKey；人工核对后登记，不超过欠款 |
-| payment.refund | paymentId,amount,reference,reason,idempotencyKey；仅店长，不超过原款剩余可退金额 |
-| settlement.void | id,version,reason；仅店长，先完整退款，追加冲销而保留原单 |
+| payment.refund | paymentId,amount,reference,reason,idempotencyKey；总部或授权门诊店长，不超过原款剩余可退金额 |
+| settlement.void | id,version,reason；总部或授权门诊店长，先完整退款，追加冲销而保留原单 |
 | reconciliation.preview | clinicId,businessDate；读取北京时间当日渠道净额 |
 | reconciliation.record | clinicId,businessDate,observedCash/Bank/Pos,reference,reason；有差额需原因，修订追加，来源变更标记stale |
-| visit.addendum | id,version,reason,content；完成后的本人接诊或店长，追加作者/时间/原版本，不覆盖原记录 |
-| patient.merge | sourceId,targetId,sourceVersion,targetVersion,reason,identityEvidence；店长核验，保留别名并迁移引用，有身份或账号冲突拒绝 |
+| visit.addendum | id,version,reason,content；完成后的本人接诊、授权门诊店长或总部，追加作者/时间/原版本，不覆盖原记录 |
+| patient.merge | sourceId,targetId,sourceVersion,targetVersion,reason,identityEvidence；总部核验，保留别名并迁移引用，有身份或账号冲突拒绝 |
 | account.bindCustomer | patientId,version,username,password,identityEvidence,reason；机构核验已有患者后绑定，不允许公开认领 |
-| account.create | username,name,role,clinicIds(front)或dentistId(clinical),password；店长分配员工 |
+| account.create | username,name,role,clinicIds(front/manager)或dentistId(clinical),password；总部创建员工，role可为front/clinical/manager/hq；前台和店长至少授权一家有效门诊 |
 | account.assign | id,version,clinicIds或dentistId,reason；调整归属，撤销会话 |
-| account.status | id,version,status(active/disabled/departed),reason；自停与最后店长保护，离职账号不重新启用 |
+| account.status | id,version,status(active/disabled/departed),reason；自停与最后有效总部保护，离职账号不重新启用 |
 | password.change | currentPassword,newPassword；验证原密码，撤销全部会话，重新登录 |
-| account.issueRecovery | id,version,identityEvidence,reason；店长核验后签发，只显示一次token，由机构交付 |
+| account.issueRecovery | id,version,identityEvidence,reason；总部核验后签发，只显示一次token，由机构交付 |
 
 财务流水、附记、归并及核对记录不可覆盖或删除。季度收入保留有效开单口径，冲销使报告来源失效；实际收退款在独立账簿核算。
+
+## 总部与店长边界
+
+hq可读取全部门诊并执行全局资源、员工、患者归并、季度报告、规则、审计及导出业务。manager的clinicIds必须非空；患者关联、预约、诊疗、财务、排班和成本查询与写入均按该范围检查。店长不可读取accounts/audit/settings，不能调用全链quarter.compute/quarter.approve、全局资源维护、员工授权、患者归并/绑定或业务导出。店长performance仅返回授权门诊成本及履约统计，quarterReports为空，不泄露全链基金或其他门店金额。
 
 ## 幂等与安全
 
@@ -231,15 +248,15 @@ POST写入要求application/json。已登录修改要求X-CSRF-Token。错误为
 
 源码不会自动读取.env。可由进程管理器注入；或显式node --env-file=.env.local server/index.js。Compose从部署者的环境读取PUBLIC_ORIGIN；.env.example不含密钥。正式环境配置不完整会在打开数据库之前拒绝启动。
 
-## 初始店长
+## 初始总部与门店授权
 
 先设置DENTAL_SEED_DEMO=0及DENTAL_DB_PATH。通过临时DENTAL_ACCOUNT_PASSWORD环境变量输入机构选择的强密码，再运行：
 
 ```text
-node tools/accounts.mjs create-staff owner manager
+node tools/accounts.mjs create-staff owner hq
 ```
 
-完成后删除该密码环境变量。CLI不生成示例数据。店长登录后录入诊所、资格、医生、治疗和排班，再分配员工。顾客已有档案时走机构核验绑定；不能以知道电话为由直接认领。
+完成后删除该密码环境变量。CLI不生成示例数据。总部从/hq/login登录后录入诊所、资格、医生、治疗和排班，再创建员工并为店长、前台分配门诊。店长从/manager/login登录，只能处理明确授权门诊的业务；员工账户没有公开注册入口。顾客已有档案时走机构核验绑定；不能以知道电话为由直接认领。
 
 ## Docker与HTTPS
 
@@ -253,7 +270,8 @@ Dockerfile固定Node 24.15.0，非root用户运行。compose.yaml提供app与bac
 2. 停止旧Node服务。PID锁会拒绝运行中升级；容器操作应明确停止app，而不是依赖不同容器间的PID检查。
 3. 启动新代码。旧JSON库自动生成pre-migration快照，在同一事务内转换表与子表并检查外键。
 4. 失败会回滚；不要编辑已应用迁移来跳过checksum。后续结构变化应追加新版本。
-5. 完成登录、权限、业务流程和重启持久化检查，再开放入口。
+5. 第三版迁移将原来拥有全部门诊权限的店长转为总部，原ID、用户名、密码哈希和业务归属保留，旧会话及未使用恢复码失效。原manager用户名因此可能需要到/hq/login登录；请由总部另建带门诊范围的店长账号，不要根据用户名猜测角色。
+6. 完成五门户登录、总部与店长错入口拒绝、店长跨店读写拒绝、业务流程和重启持久化检查，再开放入口。
 
 ## 备份与恢复
 
@@ -268,8 +286,18 @@ backup侧车默认每6小时使用VACUUM INTO生成一致快照，只在成功�
 
 ## 验收边界
 
-本轮本地验证见REFACTOR-ACCEPTANCE.md。本机没有Docker引擎，因此没有实际执行镜像构建、Compose启动、Nginx或证书联调；也未执行GitHub推送和远端Actions。人工收退款记账不代表外部支付接口，机构恢复凭证不代表短信送达。正式上线需目标平台和实际使用人员验收。
-</pre></section><section id="REFACTOR-ACCEPTANCE.md"><h2>REFACTOR-ACCEPTANCE.md</h2><pre># 3.0规范化实现与本地验收
+本轮本地验证见REFACTOR-ACCEPTANCE.md。本机没有Docker引擎，因此没有实际执行镜像构建、Compose启动、Nginx或证书联调；仓库已推送私人GitHub，既有CI记录可在Actions查看；每次更新仍须核对相应提交的运行结果。人工收退款记账不代表外部支付接口，机构恢复凭证不代表短信送达。正式上线需目标平台和实际使用人员验收。
+</pre></section><section id="REFACTOR-ACCEPTANCE.md"><h2>REFACTOR-ACCEPTANCE.md</h2><pre># 3.1连锁角色修订与验收记录
+
+修订日期：2026-10-19。当前角色为顾客、前台、医生、店长、总部，均有独立登录入口。总部管理全部门诊；店长必须由机构分配明确门诊范围，处理门店运营与成本，不能执行全链授权、资源、核算、规则、审计或导出。
+
+第三版迁移保留旧全门诊店长的ID、用户名和密码哈希，并转换为总部，撤销其旧会话和未使用恢复码；新增店长不再隐式拥有全链权限。迁移脚本为追加版本，已应用的前两版SQL及checksum保持不变。
+
+本次浏览器验证覆盖五门户、总部与店长错误入口、门店读写范围、隐藏未授权管理入口与总部员工门诊分配；全部13项Edge真实浏览器测试通过（16.6秒，隔离临时数据库）。也保留导航与按页查询、390px顾客登录、同一账单收款→退款→冲销、医生附记新增及读取的回归。测试发现并修复短用户名被登录表单误拦截的问题：登录允许已有短用户名，注册和员工创建仍要求3–30位。
+
+构建与源码语法/导入检查通过。单元、维护、迁移及远端CI的本次结果在统一交付检查中记录；下方2026-10-15结果仅为3.0历史证据。
+
+## 3.0历史验收（2026-10-15）
 
 验收日期：2026-10-15。应用目录为andrew-system，版本3.0.0。本记录区分已实现、本地验证和需要目标环境验证的内容，不以历史课程目录或旧发布清单代替本轮证据。
 

@@ -19,7 +19,7 @@ export const localInput = value => value ? `${isoDay(value)}T${time(value)}` : '
 
 export const quarterNow = () => {const d=isoDay(state?.now||new Date().toISOString());return `${d.slice(0,4)}-Q${Math.ceil(Number(d.slice(5,7))/3)}`;};
 
-export const roleName = role => ({customer:'顾客',front:'前台',clinical:'医生',manager:'店长'}[role]||role);
+export const roleName = role => ({customer:'顾客',front:'前台',clinical:'医生',manager:'店长',hq:'总部'}[role]||role);
 
 export const statusName = s => ({booked:'已预约',cancelled:'已取消',attended:'已到诊',no_show:'未出席',open:'诊疗中',completed:'已完成',draft:'待审核',reviewed:'已审核',approved:'已批准'}[s]||s);
 

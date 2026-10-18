@@ -1,8 +1,9 @@
 import { publicUser } from '../policies/permissions.js';
 import { audit, fail, scoped, scopeFor, quarterInterval } from './shared.js';
 const entities=['patients','clinics','dentists','qualifications','schedules','appointments','visits','treatments','settlements','costs','quarterReports'];
-const pagesByRole={customer:['home','profile','booking','appointments','history','settlements'],front:['home','patients','booking','appointments','visits','settlements','resources','finance'],clinical:['home','visits','appointments','history'],manager:['home','profile','booking','appointments','history','patients','visits','settlements','resources','performance','audit','settings','accounts','finance']};
-const safeDentist=(d,user)=>user.role==='manager'?d:{id:d.id,name:d.name,employeeNo:d.employeeNo,qualificationIds:d.qualificationIds,active:d.active,version:d.version};
+const pagesByRole={customer:['home','profile','booking','appointments','history','settlements'],front:['home','patients','booking','appointments','visits','settlements','resources','finance'],clinical:['home','visits','appointments','history'],manager:['home','booking','appointments','history','patients','visits','settlements','resources','performance','finance'],hq:['home','booking','appointments','history','patients','visits','settlements','resources','performance','audit','settings','accounts','finance']};
+const safeDentist=(d,user)=>user.role==='hq'?d:{id:d.id,name:d.name,employeeNo:d.employeeNo,qualificationIds:d.qualificationIds,active:d.active,version:d.version};
+const clinicWhere=(user,active=false)=>({...(['front','manager'].includes(user.role)?{id:{$in:user.clinicIds||[]}}:{}),...(active||user.role==='customer'?{active:true}:{})});
 export function baseState(db,user){return {user:publicUser(user),now:new Date().toISOString(),...Object.fromEntries(entities.map(e=>[e,[]])),settings:db.get('settings','global'),audit:[],metrics:{}};}
 export function metrics(db,user,quarter){
  const q=scopeFor(user,'appointments'),at=new Date().toISOString();
@@ -25,11 +26,12 @@ function decorate(db,state,user,quarter){
 function recordRead(db,user,state){audit(db,user,'sensitive.read',state.page||'state',{purpose:'按当前账号授权范围读取工作台',patientCount:state.patients.length,visitCount:state.visits.length,patientIds:state.patients.map(p=>p.id),visitIds:state.visits.map(v=>v.id),settlementIds:state.settlements.map(s=>s.id)});}
 export function getState(db,user){
  const state=baseState(db,user);state.patients=scoped(db,user,'patients','merged_into_id IS NULL AND COALESCE(active,1)=1');
- state.clinics=db.find('clinics',{where:user.role==='customer'?{active:true}:{}});state.dentists=db.find('dentists',{where:user.role==='customer'?{active:true}:{}});state.qualifications=db.find('qualifications');
+ state.clinics=db.find('clinics',{where:clinicWhere(user)});state.dentists=db.find('dentists',{where:user.role==='customer'?{active:true}:{}});state.qualifications=db.find('qualifications');
  state.schedules=user.role==='customer'?db.query('schedules',"active=1 AND end_at>? AND EXISTS(SELECT 1 FROM clinics c WHERE c.id=schedules.clinic_id AND c.active=1) AND EXISTS(SELECT 1 FROM dentists d WHERE d.id=schedules.dentist_id AND d.active=1 AND EXISTS(SELECT 1 FROM dentist_qualifications dq JOIN qualifications q ON q.id=dq.qualification_id WHERE dq.dentist_id=d.id AND q.active=1))",[state.now]):scoped(db,user,'schedules');
  for(const table of ['appointments','visits','settlements'])state[table]=scoped(db,user,table);
  state.treatments=db.find('treatments');
- if(user.role==='manager'){state.costs=db.find('costs');state.quarterReports=db.find('quarterReports');state.audit=auditRows(db,500,0);}
+ if(['manager','hq'].includes(user.role))state.costs=scoped(db,user,'costs');
+ if(user.role==='hq'){state.quarterReports=db.find('quarterReports');state.audit=auditRows(db,500,0);}
  decorate(db,state,user);recordRead(db,user,state);return state;
 }
 function auditRows(db,limit,offset){return db.sql.prepare('SELECT * FROM audit ORDER BY at DESC,rowid DESC LIMIT ? OFFSET ?').all(limit,offset).map(r=>{const d=JSON.parse(r.detail);return {id:r.id,at:r.at,userId:r.user_id,userName:d.userName,type:r.type,targetId:r.target_id,detail:d};});}
@@ -38,7 +40,7 @@ function joinLookups(db,state,user){
  const specs={patients:['patientId'],clinics:['clinicId','createdClinicId'],dentists:['dentistId']};
  for(const [table,keys] of Object.entries(specs)){
   const ids=[...new Set(sources.flatMap(s=>keys.map(k=>s[k])).filter(Boolean))].filter(id=>!state[table].some(v=>v.id===id));
-  if(ids.length){let rows=db.find(table,{where:{id:{$in:ids}}});if(table==='patients'){const allowed=scopeFor(user,'patients');rows=db.query('patients','id IN ('+ids.map(()=>'?')+') AND ('+allowed.condition+')',[...ids,...allowed.params]);}state[table].push(...rows);}
+  if(ids.length){let rows=db.find(table,{where:{id:{$in:ids}}});if(table==='patients'){const allowed=scopeFor(user,'patients');rows=db.query('patients','id IN ('+ids.map(()=>'?')+') AND ('+allowed.condition+')',[...ids,...allowed.params]);}if(table==='clinics'&&['front','manager'].includes(user.role))rows=rows.filter(row=>user.clinicIds?.includes(row.id));state[table].push(...rows);}
  }
  const qids=[...new Set(state.dentists.flatMap(d=>d.qualificationIds||[]))];if(qids.length)state.qualifications=db.find('qualifications',{where:{id:{$in:qids}}});
  if(state.page==='visits')state.treatments=db.find('treatments',{where:{active:true},limit:100});
@@ -87,27 +89,27 @@ export function getWorkspace(db,user,options={}){
  else if(page==='appointments'){const [c,p]=filters('appointments');load('appointments',c,p,['start','desc']);}
  else if(page==='booking'){
   const [c,p]=filters('schedules');load('schedules',"active=1 AND start_at>? AND "+c,[state.now,...p],['start','asc'],user.role!=='customer');
-  state.clinics=db.find('clinics',{where:{active:true},limit:100});state.dentists=db.find('dentists',{where:{active:true},limit:100});
+  state.clinics=db.find('clinics',{where:clinicWhere(user,true),limit:100});state.dentists=db.find('dentists',{where:{active:true},limit:100});
   state.patients=user.role==='customer'?db.find('patients',{where:{id:user.patientId}}):scoped(db,user,'patients','merged_into_id IS NULL AND COALESCE(active,1)=1'+(options.patientId?' AND id=?':''),options.patientId?[String(options.patientId)]:[],{limit:100});
   if(options.patientId&&user.role!=='customer'&&!state.patients.length)fail('无权访问该患者资料',403,'FORBIDDEN');
  }else if(page==='visits'||page==='history'){const cond=options.status?'status=?':'1';load('visits',cond,options.status?[String(options.status)]:[],['id','desc']);const ids=state.visits.map(v=>v.id);if(ids.length)state.settlements=scoped(db,user,'settlements','visit_id IN ('+ids.map(()=>'?')+')',ids);}
  else if(page==='settlements'||page==='finance'){
   const[c,p]=filters('settlements');load('settlements',c,p,['date','desc']);
-  if(page==='settlements'&&['front','manager'].includes(user.role)){
+  if(page==='settlements'&&['front','manager','hq'].includes(user.role)){
    const condition="status='completed' AND NOT EXISTS(SELECT 1 FROM settlements s WHERE s.visit_id=visits.id)",scope=scopeFor(user,'visits');
    state.visits=scoped(db,user,'visits',condition,[],{limit:25,offset:pendingOffset,orderBy:['id','desc']});
    state.pendingPagination={entity:'pendingVisits',total:db.countQuery('visits','('+scope.condition+') AND ('+condition+')',scope.params),limit:25,offset:pendingOffset};
   }
  }
- else if(page==='performance'){load('costs',options.quarter?'quarter=?':'1',options.quarter?[String(options.quarter)]:[],['quarter','desc'],false);state.quarterReports=db.find('quarterReports',{limit:25,orderBy:['createdAt','desc']});state.clinics=db.find('clinics',{limit:100});state.dentists=db.find('dentists',{limit:100});}
+ else if(page==='performance'){load('costs',options.quarter?'quarter=?':'1',options.quarter?[String(options.quarter)]:[],['quarter','desc']);if(user.role==='hq')state.quarterReports=db.find('quarterReports',{limit:25,orderBy:['createdAt','desc']});state.clinics=db.find('clinics',{where:clinicWhere(user),limit:100});state.dentists=db.find('dentists',{limit:100});}
  else if(page==='resources'){
   const table=options.resource||'schedules';if(!['clinics','dentists','qualifications','treatments','schedules'].includes(table)||user.role==='front'&&table!=='schedules')fail('无权读取该资源',403,'FORBIDDEN');
-  if(table==='schedules'){const[c,p]=filters(table);load(table,c,p,['start','desc']);state.clinics=db.find('clinics',{where:user.role==='front'?{id:{$in:user.clinicIds||[]}}:{},limit:100});state.dentists=db.find('dentists',{where:{active:true},limit:100});}
-  else{load(table,'1',[],['name','asc'],false);if(table==='dentists')state.qualifications=db.find('qualifications',{limit:100});}
+  if(table==='schedules'){const[c,p]=filters(table);load(table,c,p,['start','desc']);state.clinics=db.find('clinics',{where:clinicWhere(user),limit:100});state.dentists=db.find('dentists',{where:{active:true},limit:100});}
+  else{const ids=user.clinicIds||[],condition=table==='clinics'&&user.role==='manager'?'id IN ('+(ids.map(()=>'?').join(',')||'NULL')+')':'1';load(table,condition,condition==='1'?[]:ids,['name','asc'],false);if(table==='dentists')state.qualifications=db.find('qualifications',{limit:100});}
  }else if(page==='audit'){state.audit=auditRows(db,limit,offset);state.pagination={entity:'audit',total:db.sql.prepare('SELECT COUNT(*) AS n FROM audit').get().n,limit,offset};}
  // Account rows are populated by the account service after workspace scoping.
  if(['appointments','settlements','finance','visits','history'].includes(page)){
-  state.clinics=db.find('clinics',{where:user.role==='front'?{id:{$in:user.clinicIds||[]}}:user.role==='customer'?{active:true}:{},limit:100});
+  state.clinics=db.find('clinics',{where:clinicWhere(user),limit:100});
   state.dentists=db.find('dentists',{where:user.role==='clinical'?{id:user.dentistId}:{active:true},limit:100});
  }
  joinLookups(db,state,user);decorate(db,state,user,page==='performance'?options.quarter:undefined);recordRead(db,user,state);return state;

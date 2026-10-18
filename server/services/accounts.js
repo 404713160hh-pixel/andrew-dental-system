@@ -22,10 +22,10 @@ function insert(db,p,role,extra={}) {
 }
 export const accountCommands={
   'account.create':(db,user,p)=>{
-    if(!['front','clinical','manager'].includes(p.role))fail('员工岗位应为前台、医生或店长');
+    if(!['front','clinical','manager','hq'].includes(p.role))fail('员工岗位应为前台、医生、店长或总部');
     let clinicIds=[],dentistId;
-    if(p.role==='front') {
-      if(!Array.isArray(p.clinicIds)||p.clinicIds.length<1||p.clinicIds.length>100||new Set(p.clinicIds).size!==p.clinicIds.length)fail('前台应分配至少一个门诊，且不能重复');
+    if(['front','manager'].includes(p.role)) {
+      if(!Array.isArray(p.clinicIds)||p.clinicIds.length<1||p.clinicIds.length>100||new Set(p.clinicIds).size!==p.clinicIds.length)fail('前台或店长应分配至少一个门诊，且不能重复');
       clinicIds=p.clinicIds.map(key=>{const clinic=requireObject(db,'clinics',key);if(!clinic.active)fail('不能分配停用门诊');return clinic.id;});
     }
     if(p.role==='clinical') {
@@ -44,10 +44,10 @@ export const accountCommands={
   },
   'account.assign':(db,user,p)=>{
     const {user:old}=account(db,p.id);version(old,p);
-    if(!['front','clinical'].includes(old.role))fail('只有前台和医生账号需要门诊或医师归属');
+    if(!['front','clinical','manager'].includes(old.role))fail('只有前台、店长和医生账号需要门诊或医师归属');
     const reason=text(p.reason,'调岗或归属调整原因',1000);let changes;
-    if(old.role==='front') {
-      if(!Array.isArray(p.clinicIds)||!p.clinicIds.length||p.clinicIds.length>100||new Set(p.clinicIds).size!==p.clinicIds.length)fail('前台必须分配至少一个有效门诊');
+    if(['front','manager'].includes(old.role)) {
+      if(!Array.isArray(p.clinicIds)||!p.clinicIds.length||p.clinicIds.length>100||new Set(p.clinicIds).size!==p.clinicIds.length)fail('前台或店长必须分配至少一个有效门诊');
       const clinicIds=p.clinicIds.map(key=>{const clinic=requireObject(db,'clinics',key);if(!clinic.active)fail('不能分配停用门诊');return clinic.id;});changes={clinicIds};
     }else{
       const dentist=requireObject(db,'dentists',p.dentistId);if(!dentist.active)fail('不能绑定停用医生');
@@ -61,9 +61,9 @@ export const accountCommands={
     if(!['active','disabled','departed'].includes(p.status))fail('账号状态不正确');
     if(old.status==='departed'&&p.status==='active')fail('离职账号不能重新启用，请建立新账号',409,'ACCOUNT_DEPARTED');
     if(old.id===user.id&&p.status!=='active')fail('不能停用当前登录账号',409,'SELF_DISABLE');
-    if(old.role==='manager'&&p.status!=='active') {
-      const active=db.sql.prepare("SELECT data FROM users WHERE role='manager' AND active=1").all().map(r=>JSON.parse(r.data)).filter(isAccountActive);
-      if(active.length<=1)fail('必须保留至少一个有效店长账号',409,'LAST_MANAGER');
+    if(old.role==='hq'&&isAccountActive(old)&&p.status!=='active') {
+      const active=db.sql.prepare("SELECT data FROM users WHERE role='hq' AND active=1").all().map(r=>JSON.parse(r.data)).filter(isAccountActive);
+      if(active.length<=1)fail('必须保留至少一个有效总部账号',409,'LAST_HQ');
     }
     if(p.status==='active'&&old.role==='customer'&&patientAccounts(db,old.patientId).some(x=>x.id!==old.id&&isAccountActive(x)))fail('患者已有其他有效顾客账号',409,'PATIENT_ACCOUNT_EXISTS');
     if(p.status==='active'&&old.role==='clinical') {
@@ -87,16 +87,16 @@ export const accountCommands={
     db.sql.prepare('UPDATE password_reset_tokens SET consumed_at=? WHERE user_id=? AND consumed_at IS NULL').run(createdAt,old.id);
     db.sql.prepare('INSERT INTO password_reset_tokens(id,user_id,token_hash,created_at,expires_at,issued_by,identity_evidence,reason) VALUES(?,?,?,?,?,?,?,?)').run(tokenId,old.id,hash(token),createdAt,expiresAt,user.id,identityEvidence,reason);
     db.sql.prepare("UPDATE account_recovery_requests SET status='issued',resolved_at=? WHERE user_id=? AND status='pending'").run(new Date().toISOString(),old.id);
-    return{id:tokenId,userId:old.id,username:old.username,token,expiresAt,delivery:'机构核验后由店长当面交付；本系统未发送短信或邮件'};
+    return{id:tokenId,userId:old.id,username:old.username,token,expiresAt,delivery:'机构核验后由总部管理员当面交付；本系统未发送短信或邮件'};
   }
 };
 export function requestPasswordRecovery(db,p) {
   // The response deliberately does not reveal whether the supplied account exists.
   const name=typeof p.username==='string'?p.username.trim().toLowerCase():'',portal=p.portal;
-  if(name.length>30||!['customer','front','clinical','manager'].includes(portal))fail('恢复入口或账号格式不正确');
+  if(name.length>30||!['customer','front','clinical','manager','hq'].includes(portal))fail('恢复入口或账号格式不正确');
   const row=db.sql.prepare('SELECT data FROM users WHERE username=? COLLATE NOCASE').get(name),user=row&&JSON.parse(row.data);
   if(user&&user.role===portal&&isAccountActive(user))db.sql.prepare("INSERT OR IGNORE INTO account_recovery_requests(id,user_id,requested_at,status) VALUES(?,?,?,'pending')").run(id('RECOVERY'),user.id,new Date().toISOString());
-  return{ok:true,message:'如账号有效，恢复申请已登记。请携带身份凭证联系门诊，由店长核验并签发一次性恢复码。'};
+  return{ok:true,message:'如账号有效，恢复申请已登记。请携带身份凭证联系机构，由总部管理员核验并签发一次性恢复码。'};
 }
 export function consumePasswordRecovery(db,p) {
   const token=typeof p.token==='string'?p.token:'';passwordPolicy(p.newPassword);

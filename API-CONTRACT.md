@@ -1,6 +1,6 @@
-# 3.0接口约定
+# 3.1接口约定
 
-同源JSON API；时间存ISO时间，页面按Asia/Shanghai显示；金额均为整数分。角色只有customer、front、clinical、manager。
+同源JSON API；时间存ISO时间，页面按Asia/Shanghai显示；金额均为整数分。角色为customer、front、clinical、manager、hq；入口分别为/customer、/frontdesk、/doctor、/manager、/hq。
 
 ## HTTP接口
 
@@ -15,9 +15,9 @@
 | GET /api/state | 兼容验证快照，日常前端不用此接口刷新 |
 | POST /api/command | type/payload；会话、CSRF、岗位与对象范围校验后事务执行 |
 | POST /api/logout | 撤销当前会话 |
-| POST /api/password-recovery/request | username/portal；portal为customer、front、clinical或manager，无论是否存在账号均给统一结果，机构随后核验 |
+| POST /api/password-recovery/request | username/portal；portal为customer、front、clinical、manager或hq，无论是否存在账号均给统一结果，机构随后核验 |
 | POST /api/password-recovery/consume | token/newPassword；10分钟单次凭证，成功撤销全部旧会话，不自动登录 |
-| GET /api/backup | 店长业务JSON导出，包含账簿/附记/别名，不包含账号口令/会话/恢复凭证；不能用于完整恢复 |
+| GET /api/backup | 总部业务JSON导出，包含账簿/附记/别名，不包含账号口令/会话/恢复凭证；不能用于完整恢复 |
 
 POST写入要求application/json。已登录修改要求X-CSRF-Token。错误为error/code，服务器错误附requestId；不回传SQL、文件路径或堆栈。
 
@@ -40,20 +40,24 @@ POST写入要求application/json。已登录修改要求X-CSRF-Token。错误为
 | type | payload与规则 |
 |---|---|
 | payment.record | settlementId,amount,method(cash/bank/pos),reference,reason,idempotencyKey；人工核对后登记，不超过欠款 |
-| payment.refund | paymentId,amount,reference,reason,idempotencyKey；仅店长，不超过原款剩余可退金额 |
-| settlement.void | id,version,reason；仅店长，先完整退款，追加冲销而保留原单 |
+| payment.refund | paymentId,amount,reference,reason,idempotencyKey；总部或授权门诊店长，不超过原款剩余可退金额 |
+| settlement.void | id,version,reason；总部或授权门诊店长，先完整退款，追加冲销而保留原单 |
 | reconciliation.preview | clinicId,businessDate；读取北京时间当日渠道净额 |
 | reconciliation.record | clinicId,businessDate,observedCash/Bank/Pos,reference,reason；有差额需原因，修订追加，来源变更标记stale |
-| visit.addendum | id,version,reason,content；完成后的本人接诊或店长，追加作者/时间/原版本，不覆盖原记录 |
-| patient.merge | sourceId,targetId,sourceVersion,targetVersion,reason,identityEvidence；店长核验，保留别名并迁移引用，有身份或账号冲突拒绝 |
+| visit.addendum | id,version,reason,content；完成后的本人接诊、授权门诊店长或总部，追加作者/时间/原版本，不覆盖原记录 |
+| patient.merge | sourceId,targetId,sourceVersion,targetVersion,reason,identityEvidence；总部核验，保留别名并迁移引用，有身份或账号冲突拒绝 |
 | account.bindCustomer | patientId,version,username,password,identityEvidence,reason；机构核验已有患者后绑定，不允许公开认领 |
-| account.create | username,name,role,clinicIds(front)或dentistId(clinical),password；店长分配员工 |
+| account.create | username,name,role,clinicIds(front/manager)或dentistId(clinical),password；总部创建员工，role可为front/clinical/manager/hq；前台和店长至少授权一家有效门诊 |
 | account.assign | id,version,clinicIds或dentistId,reason；调整归属，撤销会话 |
-| account.status | id,version,status(active/disabled/departed),reason；自停与最后店长保护，离职账号不重新启用 |
+| account.status | id,version,status(active/disabled/departed),reason；自停与最后有效总部保护，离职账号不重新启用 |
 | password.change | currentPassword,newPassword；验证原密码，撤销全部会话，重新登录 |
-| account.issueRecovery | id,version,identityEvidence,reason；店长核验后签发，只显示一次token，由机构交付 |
+| account.issueRecovery | id,version,identityEvidence,reason；总部核验后签发，只显示一次token，由机构交付 |
 
 财务流水、附记、归并及核对记录不可覆盖或删除。季度收入保留有效开单口径，冲销使报告来源失效；实际收退款在独立账簿核算。
+
+## 总部与店长边界
+
+hq可读取全部门诊并执行全局资源、员工、患者归并、季度报告、规则、审计及导出业务。manager的clinicIds必须非空；患者关联、预约、诊疗、财务、排班和成本查询与写入均按该范围检查。店长不可读取accounts/audit/settings，不能调用全链quarter.compute/quarter.approve、全局资源维护、员工授权、患者归并/绑定或业务导出。店长performance仅返回授权门诊成本及履约统计，quarterReports为空，不泄露全链基金或其他门店金额。
 
 ## 幂等与安全
 

@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { ApiError } from '../domain.js';
+import { authorizationScope } from '../services/shared.js';
 
 // Keep the business mutation and its replay record in the same transaction.
 export function runIdempotent(db, user, key, input, operation) {
@@ -7,7 +8,9 @@ export function runIdempotent(db, user, key, input, operation) {
   if (typeof key !== 'string' || !/^[A-Za-z0-9_-]{16,128}$/.test(key)) {
     throw new ApiError(400, '操作标识格式不正确，请重新打开表单', 'IDEMPOTENCY_INVALID');
   }
-  const hash = createHash('sha256').update(JSON.stringify(input)).digest('hex');
+  // A scope reassignment must not replay a response authorized under an old
+  // clinic assignment, even after the employee signs in with a fresh cookie.
+  const hash = createHash('sha256').update(JSON.stringify({input,scope:authorizationScope(user)})).digest('hex');
   return db.transaction(() => {
     const existing = db.sql.prepare('SELECT request_hash,response FROM idempotency_requests WHERE user_id=? AND key=?').get(user.id, key);
     if (existing) {

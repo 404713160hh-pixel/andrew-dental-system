@@ -4,7 +4,7 @@ import { fail, text, optionalText, money, version, requireObject, itemObject, da
 export function command(db,user,type,p) {
   if(type==='clinic.save') {
     const old=p.id?requireObject(db,'clinics',p.id):null;
-    if(old){ensureClinic(user,old.id);version(old,p);}else if(user.role!=='manager')fail('只有店长可新增门诊',403,'FORBIDDEN');
+    if(old){ensureClinic(user,old.id);version(old,p);}else if(user.role!=='hq')fail('只有总部可新增门诊',403,'FORBIDDEN');
     if(typeof p.active!=='boolean'||!Number.isFinite(p.area)||p.area<=0||p.area>100000)fail('门诊状态及面积不正确');
     if(!p.active&&old&&db.count('appointments',{where:{clinicId:old.id,status:'booked',end:{$gt:new Date().toISOString()}}})>0)fail('门诊有未来有效预约，不能停用',409,'ACTIVE_BOOKINGS');
     return save(db,'clinics',old,{id:old?.id,name:text(p.name,'门诊名称',100),address:text(p.address,'地址',300),supervisor:text(p.supervisor,'主管',60),phone:phone(p.phone,'门诊电话'),email:email(p.email),area:p.area,active:p.active});

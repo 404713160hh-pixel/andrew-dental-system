@@ -18,11 +18,12 @@ const quarter=(value)=>{if(typeof value!=='string'||!/^\d{4}-Q[1-4]$/.test(value
 const phone=(value,label)=>{const s=text(value,label,30);if(!/^[+\d][\d\s-]{5,28}$/.test(s))fail(`${label}格式不正确`);return s;};
 const email=value=>{const s=optionalText(value,'邮箱',120);if(s&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s))fail('邮箱格式不正确');return s;};
 const dob=value=>{if(value==='')return '';if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value)||!Number.isFinite(Date.parse(value))||new Date(value).toISOString().slice(0,10)!==value||new Date(value)>new Date())fail('出生日期不正确');return value;};
-function clinicAllowed(user,clinicId) { return user.role==='manager'||user.clinicIds?.includes(clinicId); }
+function clinicAllowed(user,clinicId) { return user.role==='hq'||user.clinicIds?.includes(clinicId); }
 function ensureClinic(user,clinicId) { if(!clinicAllowed(user,clinicId))fail('无权操作该门诊',403,'FORBIDDEN'); }
+export function authorizationScope(user) {return {role:user.role,clinicIds:[...new Set(user.clinicIds||[])].sort(),dentistId:user.dentistId||null,patientId:user.patientId||null};}
 export function scopeFor(user,table,alias=table) {
  const col=name=>alias+'.'+name;
- if(user.role==='manager')return {condition:'1',params:[]};
+ if(user.role==='hq')return {condition:'1',params:[]};
  if(table==='patients') {
   if(user.role==='customer')return {condition:col('id')+'=?',params:[user.patientId]};
   if(user.role==='clinical')return {condition:'EXISTS(SELECT 1 FROM appointments scope_a WHERE scope_a.patient_id='+col('id')+' AND scope_a.dentist_id=?)',params:[user.dentistId]};

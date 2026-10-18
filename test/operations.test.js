@@ -28,16 +28,16 @@ test('production configuration rejects insecure or accidental demo deployment be
 
 test('workspace date and secondary pagers are validated and identity search remains scoped',()=>{
  const db=createDatabase(':memory:');try{
-  const manager=JSON.parse(db.sql.prepare('SELECT data FROM users WHERE username=?').get('manager').data);
+  const hq=JSON.parse(db.sql.prepare('SELECT data FROM users WHERE username=?').get('hq').data);
   const front=JSON.parse(db.sql.prepare('SELECT data FROM users WHERE username=?').get('front').data);
-  assert.equal(getWorkspace(db,manager,{page:'patients',q:'P001'}).patients[0].id,'P001');
-  assert.equal(getWorkspace(db,manager,{page:'accounts',q:'doctor'}).accounts.length,1);
-  assert.equal(getWorkspace(db,manager,{page:'accounts',accountRef:'U002'}).accounts[0].username,'front');
+  assert.equal(getWorkspace(db,hq,{page:'patients',q:'P001'}).patients[0].id,'P001');
+  assert.equal(getWorkspace(db,hq,{page:'accounts',q:'doctor'}).accounts.length,1);
+  assert.equal(getWorkspace(db,hq,{page:'accounts',accountRef:'U002'}).accounts[0].username,'front');
   const state=getWorkspace(db,front,{page:'settlements',pendingOffset:25});assert.equal(state.pendingPagination.offset,25);assert.equal(state.pendingPagination.limit,25);
-  assert.throws(()=>getWorkspace(db,manager,{page:'finance',reconciliationOffset:-1}),/分页/);
-  assert.throws(()=>getWorkspace(db,manager,{page:'appointments',date:'2026-02-30'}),/日期/);
-  const stats=getWorkspace(db,manager,{page:'home'}).stats;assert.equal(stats.last7Days.length,7);assert.ok(Number.isInteger(stats.todayBooked));
-  const quarter=getWorkspace(db,manager,{page:'performance',quarter:'2026-Q1'});assert.equal(quarter.metrics.window,'2026-Q1已到期记录');
+  assert.throws(()=>getWorkspace(db,hq,{page:'finance',reconciliationOffset:-1}),/分页/);
+  assert.throws(()=>getWorkspace(db,hq,{page:'appointments',date:'2026-02-30'}),/日期/);
+  const stats=getWorkspace(db,hq,{page:'home'}).stats;assert.equal(stats.last7Days.length,7);assert.ok(Number.isInteger(stats.todayBooked));
+  const quarter=getWorkspace(db,hq,{page:'performance',quarter:'2026-Q1'});assert.equal(quarter.metrics.window,'2026-Q1已到期记录');
  }finally{db.close();}
 });
 

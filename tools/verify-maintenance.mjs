@@ -70,15 +70,19 @@ try {
   assert.equal(JSON.parse(final.sql.prepare('SELECT data FROM users WHERE username=?').get('testfront').data).role, 'front');
   assert.equal(final.sql.prepare('SELECT count(*) AS count FROM sessions').get().count, 0);
   final.close();
-  result = run('tools/accounts.mjs', ['create-staff', 'testmanager', 'manager'], { DENTAL_ACCOUNT_PASSWORD: 'Maintenance2026!' });
+  result = run('tools/accounts.mjs', ['create-staff', 'invalidmanager', 'manager'], { DENTAL_ACCOUNT_PASSWORD: 'Maintenance2026!' });
+  assert.equal(result.status, 1, 'A clinic manager must have an explicit clinic scope');
+  result = run('tools/accounts.mjs', ['create-staff', 'testmanager', 'manager', 'C001'], { DENTAL_ACCOUNT_PASSWORD: 'Maintenance2026!' });
   assert.equal(result.status, 0, result.stderr);
   const managerCheck = new DatabaseSync(dbPath, { readOnly: true });
   try {
     const manager = JSON.parse(managerCheck.prepare('SELECT data FROM users WHERE username=?').get('testmanager').data);
-    assert.equal(manager.role, 'manager');assert.deepEqual(manager.clinicIds, []);
+    assert.equal(manager.role, 'manager');assert.deepEqual(manager.clinicIds, ['C001']);
   } finally { managerCheck.close(); }
-  result = run('tools/accounts.mjs', ['create-staff', 'invalidhq', 'hq'], { DENTAL_ACCOUNT_PASSWORD: 'Maintenance2026!' });
-  assert.equal(result.status, 1, 'Legacy HQ role must not be newly created');
+  result = run('tools/accounts.mjs', ['create-staff', 'testhq', 'hq'], { DENTAL_ACCOUNT_PASSWORD: 'Maintenance2026!' });
+  assert.equal(result.status, 0, result.stderr);
+  const hqCheck = new DatabaseSync(dbPath, { readOnly: true });
+  try { const hq=JSON.parse(hqCheck.prepare('SELECT data FROM users WHERE username=?').get('testhq').data);assert.equal(hq.role,'hq');assert.deepEqual(hq.clinicIds,[]); } finally { hqCheck.close(); }
   const emptyPath = join(temp, 'no-demo.sqlite');
   result = run('tools/accounts.mjs', ['list'], { DENTAL_DB_PATH: emptyPath, DENTAL_SEED_DEMO: '0' });
   assert.equal(result.status, 0, result.stderr);assert.deepEqual(JSON.parse(result.stdout), []);
@@ -87,7 +91,7 @@ try {
     assert.equal(emptyCheck.prepare('SELECT count(*) AS count FROM patients').get().count, 0);
     assert.equal(emptyCheck.prepare('SELECT cancellation_hours FROM settings WHERE id=?').get('global').cancellation_hours, 24);
   } finally { emptyCheck.close(); }
-  console.log(JSON.stringify({ ok: true, requiredTablesChecked: requiredTables.length, checks: ['online snapshot integrity', 'restore blocked while server running', ...rejectedIncompleteTables.map(table => `restore rejects missing ${table}; current database unchanged`), 'offline restore contents match', 'restored sessions revoked', 'account password hash updated', 'front staff scope initialization', 'old sessions revoked', 'all-clinic manager initialization', 'legacy HQ creation rejected', 'environment disables demo seed'] }));
+  console.log(JSON.stringify({ ok: true, requiredTablesChecked: requiredTables.length, checks: ['online snapshot integrity', 'restore blocked while server running', ...rejectedIncompleteTables.map(table => `restore rejects missing ${table}; current database unchanged`), 'offline restore contents match', 'restored sessions revoked', 'account password hash updated', 'front staff scope initialization', 'old sessions revoked', 'unscoped manager rejected', 'clinic manager scope initialization', 'HQ account initialization', 'environment disables demo seed'] }));
 } finally {
   if (app) await app.close();
   const safeTemp = resolve(temp), tempRoot = resolve(tmpdir()) + sep;

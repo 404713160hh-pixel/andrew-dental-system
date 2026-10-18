@@ -64,10 +64,17 @@
   },
   {
     "id": "manager_usecases",
-    "title": "店长端经营管理",
+    "title": "店长端门诊运营",
     "path": "figures/manager_usecases.png",
     "pdf": "figures/manager_usecases.pdf",
     "svg": "figures/manager_usecases.svg"
+  },
+  {
+    "id": "hq_usecases",
+    "title": "总部端连锁治理",
+    "path": "figures/hq_usecases.png",
+    "pdf": "figures/hq_usecases.pdf",
+    "svg": "figures/hq_usecases.svg"
   },
   {
     "id": "analysis_classes",

@@ -67,11 +67,13 @@ try {
 }
 finally {
     if ($null -ne $reportDoc) {
-        $reportDoc.Close(0)
+        $saveOption = 0
+        $reportDoc.Close([ref]$saveOption)
         $null = [System.Runtime.InteropServices.Marshal]::FinalReleaseComObject($reportDoc)
     }
     if ($null -ne $wordApp) {
-        $wordApp.Quit(0)
+        $saveOption = 0
+        $wordApp.Quit([ref]$saveOption)
         $null = [System.Runtime.InteropServices.Marshal]::FinalReleaseComObject($wordApp)
     }
     [GC]::Collect()

@@ -15,7 +15,7 @@ db.transaction(()=>{
 const app=await start({db,port:0});
 try {
  const base=`http://127.0.0.1:${app.address.port}`;
- const login=await fetch(base+'/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'manager',password:'Dental2026!',portal:'manager'})});assert.equal(login.status,200);
+ const login=await fetch(base+'/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'hq',password:'Dental2026!',portal:'hq'})});assert.equal(login.status,200);
  const cookie=login.headers.get('set-cookie').split(';')[0],times=[];let cursor=0;
  const started=performance.now();
  await Promise.all(Array.from({length:concurrency},async()=>{while(cursor<requests){const index=cursor++;const at=performance.now();const response=await fetch(`${base}/api/workspace?page=patients&limit=25&offset=${(index%20)*25}`,{headers:{Cookie:cookie}});assert.equal(response.status,200);const body=await response.json();assert.equal(body.patients.length,25);assert.ok(body.pagination.total>=count);times.push(performance.now()-at);}}));

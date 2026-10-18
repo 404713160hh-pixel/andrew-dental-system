@@ -58,7 +58,8 @@ export function seedDatabase(db) {
     {id:'U001',username:'chen',name:'陈晨',role:'customer',patientId:'P001',clinicIds:[]},
     {id:'U002',username:'front',name:'前台·李敏',role:'front',clinicIds:['C001']},
     {id:'U003',username:'doctor',name:'王晓医生',role:'clinical',dentistId:'D001',clinicIds:[]},
-    {id:'U004',username:'manager',name:'连锁店长',role:'manager',clinicIds:[]}
+    {id:'U004',username:'manager',name:'湘江门诊店长',role:'manager',clinicIds:['C001']},
+    {id:'U005',username:'hq',name:'连锁总部管理员',role:'hq',clinicIds:[]}
   ];
   for(const user of users) db.sql.prepare('INSERT INTO users(id,username,password_hash,data) VALUES(?,?,?,?)').run(user.id,user.username,hashPassword('Dental2026!'),JSON.stringify(user));
   db.sql.prepare('INSERT INTO metadata(key,value) VALUES(?,?)').run('seedVersion','2');

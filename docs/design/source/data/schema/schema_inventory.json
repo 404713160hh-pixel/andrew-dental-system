@@ -5325,7 +5325,7 @@
         {
           "position": 4,
           "name": "role",
-          "label": "岗位代码（customer/front/clinical/manager，服务层约束）",
+          "label": "岗位代码（customer/front/clinical/manager/hq，服务层约束）",
           "type": "TEXT",
           "declared_not_null": false,
           "nullable_by_ddl": true,
@@ -8959,7 +8959,7 @@
       ],
       "cardinality": "账号0..N ↔ 门诊0..N",
       "source": "server/services/accounts.js",
-      "note": "前台允许门诊范围仍存于兼容身份JSON；店长固定全门诊权限"
+      "note": "前台和店长的门诊范围存于兼容身份JSON中的clinicIds，须明确分配；总部具有全门诊权限"
     },
     {
       "from_table": "patients",

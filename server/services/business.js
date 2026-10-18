@@ -8,7 +8,8 @@ export const permissions={
   customer:['password.change'],
   front:['payment.record','reconciliation.preview','reconciliation.record','password.change'],
   clinical:['visit.addendum','password.change'],
-  manager:Object.keys(commands)
+  manager:['payment.record','payment.refund','settlement.void','reconciliation.preview','reconciliation.record','visit.addendum','password.change'],
+  hq:Object.keys(commands)
 };
 function rowsFor(db,table,column,ids) {
   if(!ids.length)return[];
@@ -22,16 +23,16 @@ export function extendState(db,user,state={}) {
   state.invoiceAdjustments=rowsFor(db,'invoice_adjustments','settlement_id',settlementIds);
   state.visitAddenda=rowsFor(db,'visit_addenda','visit_id',visitIds);
   state.reconciliations=[];state.accounts=[];state.recoveryRequests=[];state.patientAliases=[];
-  if(['front','manager'].includes(user.role)&&(!state.page||state.page==='finance')) {
-    if(state.page==='finance')state.clinics=db.find('clinics',{where:user.role==='front'?{id:{$in:user.clinicIds||[]}}:{},limit:100});
-    const clinicIds=(state.clinics||[]).filter(c=>user.role==='manager'||user.clinicIds?.includes(c.id)).map(c=>c.id);
+  if(['front','manager','hq'].includes(user.role)&&(!state.page||state.page==='finance')) {
+    if(state.page==='finance')state.clinics=db.find('clinics',{where:user.role==='hq'?{}:{id:{$in:user.clinicIds||[]}},limit:100});
+    const clinicIds=(state.clinics||[]).filter(c=>user.role==='hq'||user.clinicIds?.includes(c.id)).map(c=>c.id);
     if(clinicIds.length) {
       const marks=clinicIds.map(()=>'?').join(','),limit=25,offset=state.query?.reconciliationOffset||0;
       state.reconciliations=db.sql.prepare(`SELECT * FROM reconciliations WHERE clinic_id IN (${marks}) ORDER BY business_date DESC,revision DESC LIMIT ? OFFSET ?`).all(...clinicIds,limit,offset).map(row=>reconciliationState(db,row));
       state.reconciliationsPagination={total:db.sql.prepare(`SELECT count(*) count FROM reconciliations WHERE clinic_id IN (${marks})`).get(...clinicIds).count,limit,offset};
     }
   }
-  if(user.role==='manager') {
+  if(user.role==='hq') {
     const limit=Math.min(100,Math.max(1,Number(state.pagination?.limit)||25)),offset=Math.max(0,Number(state.pagination?.offset)||0);
     if(!state.page||['accounts','staff','dashboard'].includes(state.page)) {
       const query=String(state.query?.q||'').slice(0,100),accountRef=String(state.query?.accountRef||'').slice(0,100);

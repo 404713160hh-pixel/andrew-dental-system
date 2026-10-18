@@ -21,12 +21,12 @@ try {
       });
       console.log('密码已更新，原会话已失效。');
     } else if (mode === 'create-staff') {
-      if (!['front', 'clinical', 'manager'].includes(role)) throw new Error('岗位应为 front、clinical 或 manager。');
+      if (!['front', 'clinical', 'manager', 'hq'].includes(role)) throw new Error('岗位应为 front、clinical、manager 或 hq。');
       const user = { id: id('USER'), username: username.toLowerCase(), name: process.env.DENTAL_ACCOUNT_NAME || username, role, clinicIds: [] };
       if (role === 'clinical') {
         if (!db.get('dentists', scope)) throw new Error('请提供有效牙医编号。');
         user.dentistId = scope;
-      } else if (role !== 'manager') {
+      } else if (role !== 'hq') {
         const clinics = (scope || '').split(',').filter(Boolean);
         if (!clinics.length || clinics.some(clinicId => !db.get('clinics', clinicId))) throw new Error('请提供有效诊所编号，多个编号用逗号分隔。');
         user.clinicIds = [...new Set(clinics)];

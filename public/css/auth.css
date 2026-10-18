@@ -415,6 +415,10 @@ body:has(.auth) #toast,body:has(.customer-shell) #toast {
   --portal-soft: #e9f4f0
 }
 .portal-auth-manager {
+  --portal-accent: #976b3b;
+  --portal-soft: #f8f1e8
+}
+.portal-auth-hq {
   --portal-accent: #6258b8;
   --portal-soft: #f0edfa
 }
@@ -623,19 +627,22 @@ body:has(.auth) #toast,body:has(.customer-shell) #toast {
   border-color: #528a7120
 }
 .portal-auth-manager .auth-intro {
+  background: linear-gradient(145deg,#4c392a,#775b43)
+}
+.portal-auth-hq .auth-intro {
   background: linear-gradient(145deg,#29233f,#453e6c)
 }
-.portal-auth-manager .staff-auth-features article {
+.portal-auth-hq .staff-auth-features article {
   background: #ffffff07;
   border-color: #cec4f42b
 }
-.portal-auth-manager .staff-auth-features article>.icon {
+.portal-auth-hq .staff-auth-features article>.icon {
   color: #d8cff7
 }
-.portal-auth-manager .auth-story>.eyebrow {
+.portal-auth-hq .auth-story>.eyebrow {
   color: #cec3ee
 }
-.portal-auth-manager .auth-story>p:not(.eyebrow),.portal-auth-manager .staff-auth-features p,.portal-auth-manager .staff-auth-scope {
+.portal-auth-hq .auth-story>p:not(.eyebrow),.portal-auth-hq .staff-auth-features p,.portal-auth-hq .staff-auth-scope {
   color: #d0c8e0
 }
 .portal-notice {

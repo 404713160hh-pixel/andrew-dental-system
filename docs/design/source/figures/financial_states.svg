@@ -43,7 +43,7 @@
 <text x="171" y="298.5" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="12.5" font-weight="400" text-anchor="middle" fill="black">[净收为零]</text>
 <text x="300" y="470" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">图示常规正应收账单：0净收为unpaid，0&lt;净收&lt;应收为partial</text>
 <text x="300" y="487" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">净收=应收为paid；存在冲销记录时优先派生为void</text>
-<text x="300" y="542" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">退款均先回到相应金额状态；冲销由店长独立确认</text>
+<text x="300" y="542" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">退款回到相应金额状态；冲销由有权店长或总部独立确认</text>
 <text x="300" y="559" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">净收=收款−退款；有效应收=原单金额−冲销金额</text>
 <text x="300" y="614" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">原单、收退款与冲销流水保留；金额整数分、事务校验</text>
 <text x="300" y="631" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">零应收账单按金额公式派生paid，不套用“未收款”标签</text>

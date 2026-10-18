@@ -1,7 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="600" height="650" viewBox="0 0 600 650"><rect width="600" height="650" fill="white"/>
 <rect x="150" y="20" width="300" height="75" fill="white" stroke="black"/>
-<text x="300.0" y="53.166666666666664" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">浏览器</text>
-<text x="300.0" y="71.16666666666666" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">顾客 / 前台 / 医生 / 店长</text>
+<text x="300.0" y="44.166666666666664" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">浏览器</text>
+<text x="300.0" y="62.166666666666664" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">顾客 / 前台 / 医生</text>
+<text x="300.0" y="80.16666666666666" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">店长 / 总部</text>
 <rect x="150" y="160" width="300" height="80" fill="white" stroke="black"/>
 <text x="300.0" y="195.66666666666666" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">Nginx HTTPS反向代理</text>
 <text x="300.0" y="213.66666666666666" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">域名与TLS证书</text>

@@ -11,9 +11,9 @@ export const can = action => user?.permissions?.includes(action) || false;
 
 export const customer = () => user?.role === 'customer';
 
-export const scopedClinic = id => user.role==='manager'||user.clinicIds?.includes(id);
+export const scopedClinic = id => user.role==='hq'||user.clinicIds?.includes(id);
 
-export const editableVisit = v => can('visit.save')&&(user.role==='manager'||v.dentistId===user.dentistId);
+export const editableVisit = v => can('visit.save')&&(user.role==='hq'||(user.role==='manager'&&scopedClinic(v.clinicId))||v.dentistId===user.dentistId);
 
 export const options = (list, filter=()=>true) => (state[list]||[]).filter(filter).map(x=>({value:x.id,label:x.name}));
 

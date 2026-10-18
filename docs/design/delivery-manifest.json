@@ -1,8 +1,16 @@
 {
   "preparedAt": "2026-10-18",
+  "revisedAt": "2026-10-19",
   "finalizedAt": "2026-10-19",
-  "applicationVersion": "3.0.0",
-  "figures": 28,
+  "applicationVersion": "3.1.0",
+  "roles": [
+    "customer",
+    "front",
+    "clinical",
+    "manager",
+    "hq"
+  ],
+  "figures": 29,
   "useCases": 24,
   "tables": 38,
   "columns": 296,
@@ -16,8 +24,8 @@
     "csu-academic-report": "9c20da1eedda097b128626b40e71973b0fbd6d0756f633df3e59fd1e4aabb87d"
   },
   "files": {
-    "安德鲁牙科连锁系统设计文档.docx": "9ad6813119030f57507a93cd9759e0f10bf0728b2a5b7e5c1f24c7c4e41f4785",
-    "安德鲁牙科连锁系统设计文档.pdf": "83d90f5d12c7bb0a7f4fc12cfb09c375decf14aa814640f6ca87862639becc6f",
-    "设计文档_TeX与可编辑图源.zip": "be103665e27cced65414f83af9324346431061e70eb8f264cb5f1dc3f7d2d80b"
+    "安德鲁牙科连锁系统设计文档.docx": "bdaf14355650b8310da493dc81099b2deae80cd1f403de3034ca9fedd4cc1fef",
+    "安德鲁牙科连锁系统设计文档.pdf": "c0f6004c928facfc8dfc679ad807a66eb636fe1386fdbecf1155f53af98ede11",
+    "设计文档_TeX与可编辑图源.zip": "0dcb51a410f6ba39770d0c367453773d5da1d6a01b30fc32146ee65823498265"
   }
 }

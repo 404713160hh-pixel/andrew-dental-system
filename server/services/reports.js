@@ -12,7 +12,7 @@ export function command(db,user,type,p) {
     invalidateReports(db,q,'成本新增或修订，原审核和基金测算失效');return result;
   }
   if(type==='cost.review') {
-    const old=requireObject(db,'costs',p.id);version(old,p);if(old.status!=='draft')fail('成本已审核',409,'STATUS_CONFLICT');
+    const old=requireObject(db,'costs',p.id);ensureClinic(user,old.clinicId);version(old,p);if(old.status!=='draft')fail('成本已审核',409,'STATUS_CONFLICT');
     const result=save(db,'costs',old,{...old,status:'reviewed',reviewedBy:user.id,reviewedAt:new Date().toISOString(),reviewHistory:[...(old.reviewHistory||[]),{at:new Date().toISOString(),userId:user.id,action:'审核通过',version:old.version+1}]});
     invalidateReports(db,old.quarter,'成本审核版本变更，需重新核算');return result;
   }
@@ -36,7 +36,7 @@ export function command(db,user,type,p) {
     if(old.scope!=='chain')fail('旧门诊预览不能替代全连锁审批',409,'REPORT_SCOPE');
     if(old.status==='approved')fail('报告已确认',409,'STATUS_CONFLICT');
     if(old.sourceSignature!==sourceSignature(db,old.quarter,null))fail('来源已发生变更，请重新核算',409,'STALE_REPORT');
-    return save(db,'quarterReports',old,{...old,status:'approved',approvedBy:user.id,approvedAt:new Date().toISOString(),history:[...(old.history||[]),{at:new Date().toISOString(),action:'店长确认',userId:user.id,version:old.version+1}]});
+    return save(db,'quarterReports',old,{...old,status:'approved',approvedBy:user.id,approvedAt:new Date().toISOString(),history:[...(old.history||[]),{at:new Date().toISOString(),action:'总部确认',userId:user.id,version:old.version+1}]});
   }
   if(type==='settings.save') {
     if(!Number.isInteger(p.cancellationHours)||p.cancellationHours<0||p.cancellationHours>168)fail('取消截止时间应为 0 至 168 小时');

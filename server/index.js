@@ -14,8 +14,8 @@ import { validateDeployment } from './http/configuration.js';
 import { camel } from './services/finance.js';
 
 const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp','.avif':'image/avif','.pdf':'application/pdf','.json':'application/json; charset=utf-8','.ico':'image/x-icon'};
-const portalRoles=new Set(['customer','front','clinical','manager']);
-const portalEntryPaths=new Set(['/customer','/customer/login','/frontdesk','/frontdesk/login','/doctor','/doctor/login','/manager','/manager/login']);
+const portalRoles=new Set(['customer','front','clinical','manager','hq']);
+const portalEntryPaths=new Set(['/customer','/customer/login','/frontdesk','/frontdesk/login','/doctor','/doctor/login','/manager','/manager/login','/hq','/hq/login']);
 function json(res,status,data,headers={}) {
   res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store',...headers});res.end(JSON.stringify(data));
 }
@@ -77,7 +77,7 @@ export function createApp(options={}) {
       }
       if(url.pathname==='/api/health'&&req.method==='GET') {
         db.sql.prepare('SELECT 1').get();
-        return json(res,200,{ok:true,service:'andrew-dental',version:'3.0.0',storage:'SQLite',now:new Date().toISOString()});
+        return json(res,200,{ok:true,service:'andrew-dental',version:'3.1.0',storage:'SQLite',now:new Date().toISOString()});
       }
       if(url.pathname==='/api/portal-config'&&req.method==='GET')return json(res,200,{demoEnabled});
       if(url.pathname==='/api/login'&&req.method==='POST') {
@@ -139,7 +139,7 @@ export function createApp(options={}) {
           return json(res,200,{ok:true,result});
         }
         if(url.pathname==='/api/backup'&&req.method==='GET') {
-          if(auth.user.role!=='manager')throw new ApiError(403,'仅店长可导出备份','FORBIDDEN');
+          if(auth.user.role!=='hq')throw new ApiError(403,'仅总部可导出备份','FORBIDDEN');
           const data={format:'andrew-domain-export-v3',exportedAt:new Date().toISOString(),note:'业务留存导出，不含账号口令、恢复凭证和会话；完整恢复使用 SQLite 快照。',data:{}};
           for(const table of tables)data.data[table]=db.all(table);
           for(const table of ['payments','refunds','invoice_adjustments','reconciliations','visit_addenda','patient_aliases'])data.data[table]=db.sql.prepare(`SELECT * FROM ${table} ORDER BY recorded_at,id`).all().map(camel);

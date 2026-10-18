@@ -3,7 +3,9 @@ import { fail, text, optionalText, money, version, requireObject, itemObject, da
 
 export function command(db,user,type,p) {
   if(type==='visit.save'||type==='visit.complete') {
-    const old=requireObject(db,'visits',p.id);if(user.role!=='manager'&&old.dentistId!==user.dentistId)fail('只能维护本人接诊记录',403,'FORBIDDEN');version(old,p);
+    const old=requireObject(db,'visits',p.id);
+    if(user.role==='manager')ensureClinic(user,old.clinicId);
+    else if(user.role!=='hq'&&old.dentistId!==user.dentistId)fail('只能维护本人接诊记录',403,'FORBIDDEN');version(old,p);
     if(old.status==='completed'||db.count('settlements',{where:{visitId:old.id}})>0)fail('已完成或已结算就诊不可改写',409,'LOCKED');
     if(type==='visit.complete') {if(!old.lines.length)fail('至少录入一项治疗后才能完成');return save(db,'visits',old,{...old,status:'completed',completedAt:new Date().toISOString()});}
     if(!Array.isArray(p.lines)||p.lines.length>50)fail('治疗记录应为最多 50 行');

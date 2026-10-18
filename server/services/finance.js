@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { id, quarterOf } from '../db.js';
-import { fail, text, optionalText, money, version, requireObject, ensureClinic, invalidateReports } from './shared.js';
+import { fail, text, optionalText, money, version, requireObject, ensureClinic, invalidateReports, authorizationScope } from './shared.js';
 
 const now=()=>new Date().toISOString();
 export const camel=row=>row&&Object.fromEntries(Object.entries(row).map(([key,value])=>[key.replace(/_([a-z])/g,(_,letter)=>letter.toUpperCase()),value]));
@@ -23,7 +23,7 @@ export function financeSummaries(db,settlements) {
   return settlements.map(s=>{const values=sums.get(s.id),netPaid=values.paid-values.refunded,receivable=s.total-values.voided;return{settlementId:s.id,total:s.total,...values,receivable,netPaid,balance:receivable-netPaid,status:values.voided?'void':netPaid===receivable?'paid':netPaid?'partial':'unpaid'};});
 }
 function idempotent(db,user,type,p,work) {
-  const key=`finance:${text(p.idempotencyKey,'操作唯一标识',100)}`, requestHash=digest({type,payload:{...p,idempotencyKey:undefined}});
+  const key=`finance:${text(p.idempotencyKey,'操作唯一标识',100)}`, requestHash=digest({type,payload:{...p,idempotencyKey:undefined},scope:authorizationScope(user)});
   const old=db.sql.prepare('SELECT request_hash,response FROM idempotency_requests WHERE user_id=? AND key=?').get(user.id,key);
   if(old){if(old.request_hash!==requestHash)fail('相同操作标识不能用于不同金额或业务',409,'IDEMPOTENCY_CONFLICT');return JSON.parse(old.response);}
   const result=work();

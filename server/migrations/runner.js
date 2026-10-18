@@ -13,15 +13,14 @@ export function ensureMigrationOffline(path) {
   if(alive)throw new Error('旧数据库服务正在运行，请停止服务后升级数据库');
 }
 export function migrate(sql,path,directory) {
-  const versions=[{version:1,name:'normalized-domain',source:readFileSync(resolve(directory,'schema.sql'),'utf8')},{version:2,name:'business-ledgers',source:readFileSync(resolve(directory,'migrations/extensions.sql'),'utf8')}];
+  const versions=[{version:1,name:'normalized-domain',source:readFileSync(resolve(directory,'schema.sql'),'utf8')},{version:2,name:'business-ledgers',source:readFileSync(resolve(directory,'migrations/extensions.sql'),'utf8')},{version:3,name:'headquarters-and-clinic-managers',source:readFileSync(resolve(directory,'migrations/headquarters.sql'),'utf8')}];
   for(const step of versions)step.checksum=createHash('sha256').update(step.source).digest('hex');
   const exists=name=>Boolean(sql.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?").get(name));
   const legacy=exists('patients')&&sql.prepare('PRAGMA table_info(patients)').all().some(c=>c.name==='data');
   const applied=exists('schema_migrations')?sql.prepare('SELECT * FROM schema_migrations ORDER BY version').all():[];
   for(const row of applied){const step=versions.find(s=>s.version===row.version);if(!step||step.checksum!==row.checksum)throw new Error(`数据库迁移 ${row.version} 校验失败，禁止修改已发布的迁移`);}
   const pending=versions.filter(s=>!applied.some(a=>a.version===s.version));
-  const needsRoles=exists('metadata')&&sql.prepare("SELECT value FROM metadata WHERE key='roleModelVersion'").get()?.value!=='4-portal-v1';
-  if(!pending.length&&!needsRoles)return {version:versions.at(-1).version,backup:null};
+  if(!pending.length)return {version:versions.at(-1).version,backup:null};
   ensureMigrationOffline(path);
   let backup=null;
   if(path!==':memory:'&&(exists('patients')||exists('users'))){backup=`${path}.pre-migration-${Date.now()}.sqlite`;sql.prepare('VACUUM INTO ?').run(backup);}
@@ -43,14 +42,6 @@ export function migrate(sql,path,directory) {
       sql.prepare('INSERT INTO schema_migrations(version,name,checksum,applied_at) VALUES(?,?,?,?)').run(step.version,step.name,step.checksum,new Date().toISOString());
     }
     sql.exec('UPDATE users SET data=data');
-    for(const row of sql.prepare('SELECT id,data FROM users').all()){
-      const user=JSON.parse(row.data);
-      if(user.role==='hq'||user.role==='manager'){
-        sql.prepare('UPDATE users SET data=? WHERE id=?').run(JSON.stringify({...user,role:'manager',clinicIds:[]}),row.id);
-        sql.prepare('DELETE FROM sessions WHERE user_id=?').run(row.id);
-      }
-    }
-    sql.prepare("INSERT INTO metadata(key,value) VALUES('roleModelVersion','4-portal-v1') ON CONFLICT(key) DO UPDATE SET value=excluded.value").run();
     if(sql.prepare('PRAGMA foreign_key_check').all().length)throw new Error('数据库升级关联检查失败，原库保持不变');
     sql.exec('COMMIT');
   }catch(error){sql.exec('ROLLBACK');throw error;}

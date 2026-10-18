@@ -21,15 +21,15 @@
 
 源码不会自动读取.env。可由进程管理器注入；或显式node --env-file=.env.local server/index.js。Compose从部署者的环境读取PUBLIC_ORIGIN；.env.example不含密钥。正式环境配置不完整会在打开数据库之前拒绝启动。
 
-## 初始店长
+## 初始总部与门店授权
 
 先设置DENTAL_SEED_DEMO=0及DENTAL_DB_PATH。通过临时DENTAL_ACCOUNT_PASSWORD环境变量输入机构选择的强密码，再运行：
 
 ```text
-node tools/accounts.mjs create-staff owner manager
+node tools/accounts.mjs create-staff owner hq
 ```
 
-完成后删除该密码环境变量。CLI不生成示例数据。店长登录后录入诊所、资格、医生、治疗和排班，再分配员工。顾客已有档案时走机构核验绑定；不能以知道电话为由直接认领。
+完成后删除该密码环境变量。CLI不生成示例数据。总部从/hq/login登录后录入诊所、资格、医生、治疗和排班，再创建员工并为店长、前台分配门诊。店长从/manager/login登录，只能处理明确授权门诊的业务；员工账户没有公开注册入口。顾客已有档案时走机构核验绑定；不能以知道电话为由直接认领。
 
 ## Docker与HTTPS
 
@@ -43,7 +43,8 @@ Dockerfile固定Node 24.15.0，非root用户运行。compose.yaml提供app与bac
 2. 停止旧Node服务。PID锁会拒绝运行中升级；容器操作应明确停止app，而不是依赖不同容器间的PID检查。
 3. 启动新代码。旧JSON库自动生成pre-migration快照，在同一事务内转换表与子表并检查外键。
 4. 失败会回滚；不要编辑已应用迁移来跳过checksum。后续结构变化应追加新版本。
-5. 完成登录、权限、业务流程和重启持久化检查，再开放入口。
+5. 第三版迁移将原来拥有全部门诊权限的店长转为总部，原ID、用户名、密码哈希和业务归属保留，旧会话及未使用恢复码失效。原manager用户名因此可能需要到/hq/login登录；请由总部另建带门诊范围的店长账号，不要根据用户名猜测角色。
+6. 完成五门户登录、总部与店长错入口拒绝、店长跨店读写拒绝、业务流程和重启持久化检查，再开放入口。
 
 ## 备份与恢复
 
@@ -58,4 +59,4 @@ backup侧车默认每6小时使用VACUUM INTO生成一致快照，只在成功�
 
 ## 验收边界
 
-本轮本地验证见REFACTOR-ACCEPTANCE.md。本机没有Docker引擎，因此没有实际执行镜像构建、Compose启动、Nginx或证书联调；也未执行GitHub推送和远端Actions。人工收退款记账不代表外部支付接口，机构恢复凭证不代表短信送达。正式上线需目标平台和实际使用人员验收。
+本轮本地验证见REFACTOR-ACCEPTANCE.md。本机没有Docker引擎，因此没有实际执行镜像构建、Compose启动、Nginx或证书联调；仓库已推送私人GitHub，既有CI记录可在Actions查看；每次更新仍须核对相应提交的运行结果。人工收退款记账不代表外部支付接口，机构恢复凭证不代表短信送达。正式上线需目标平台和实际使用人员验收。

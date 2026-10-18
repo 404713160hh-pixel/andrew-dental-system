@@ -34,14 +34,14 @@ export function renderAuth(){
       ${isCustomer?'<div class="auth-photo"><img src="/assets/dental-editorial.png" alt="温暖诊疗空间中的微笑人物示意" fetchpriority="high"></div>':'<div class="staff-auth-orbit" aria-hidden="true"><span></span><span></span><span></span></div>'}
       <div class="auth-topline">${authBrand()}<span>${esc(portal.name)}专属入口</span></div>
       <div class="auth-story"><p class="eyebrow">${esc(portal.eyebrow)}</p><h1>${portal.title}</h1><p>${portal.description}</p>${isCustomer?'<div class="auth-caption"><span>01 / ANDREW DENTAL CARE</span><span>预约 · 诊疗 · 关怀</span></div>':`<div class="staff-auth-features">${portal.features.map(([name,title,description])=>`<article>${icon(name)}<div><h2>${esc(title)}</h2><p>${esc(description)}</p></div></article>`).join('')}</div>`}</div>
-      ${isCustomer?'':`<p class="staff-auth-scope">${icon('shield')}${portal.role==='manager'?'管理范围：全部门诊':'仅开放当前岗位与门诊授权范围内的业务'}</p>`}
+      ${isCustomer?'':`<p class="staff-auth-scope">${icon('shield')}${portal.role==='hq'?'总部管理范围：全部门诊':portal.role==='manager'?'店长管理范围：机构分配的授权门诊':'仅开放当前岗位与门诊授权范围内的业务'}</p>`}
     </section>
     <section class="auth-main"><div class="auth-card">
       <p class="eyebrow">${isCustomer?"WELCOME TO ANDREW'S":esc(portal.eyebrow)}</p><h2 class="auth-title">${authMode==='login'?esc(portal.loginTitle):'开启你的照护档案'}</h2>
       <p class="muted">${authMode==='login'?esc(portal.loginDescription):'建立个人账户，轻松预约与查看就诊记录。'}</p>
       ${isCustomer?`<div class="auth-tabs" role="group" aria-label="顾客账户操作">${btn('账号登录','auth-tab','login',authMode==='login'?'active':'',`aria-pressed="${authMode==='login'}"`)}${btn('顾客注册','auth-tab','register',authMode==='register'?'active':'',`aria-pressed="${authMode==='register'}"`)}</div>`:`<div class="staff-account-notice">${icon('shield')}<span>${esc(portal.name)}账号由机构分配，无公开注册入口。</span></div>`}
       <form id="auth-form" class="auth-form" data-testid="login-form">
-        ${field(isCustomer?'用户名':portal.name+'账号','username',username,'text','required autocomplete="username" minlength="3" maxlength="30" placeholder="输入你的账号"')}
+        ${field(isCustomer?'用户名':portal.name+'账号','username',username,'text',`required autocomplete="username" minlength="${authMode==='register'?3:1}" maxlength="30" placeholder="输入你的账号"`)}
         ${authMode==='register'?field('本人姓名','name','','text','required maxlength="80" autocomplete="name" placeholder="填写本人姓名"')+field('联系电话','phone','','tel','required maxlength="30" autocomplete="tel" placeholder="方便诊所联系你"'):''}
         ${field('密码','password','','password',`required minlength="${authMode==='register'?10:1}" maxlength="128" autocomplete="${authMode==='register'?'new-password':'current-password'}" placeholder="输入账户密码"`)}
         ${authMode==='register'?'<p class="hint">密码至少 10 位，请包含字母和数字。</p>':''}
