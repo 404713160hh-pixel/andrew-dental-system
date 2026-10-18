@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600pt" height="570pt" viewBox="0 0 600 570">
+<rect width="600" height="570" fill="white"/>
+<text x="300.0" y="22" font-family="DengXian,等线,sans-serif" font-weight="bold" font-size="15" text-anchor="middle" fill="black">就诊、治疗明细与结算物理关系</text>
+<polyline points="218,82 188,82" fill="none" stroke="black" stroke-width="0.95"/>
+<polyline points="270,212 270,152" fill="none" stroke="black" stroke-width="0.95"/>
+<polyline points="218,246 198,246 198,240 188,240" fill="none" stroke="black" stroke-width="0.95"/>
+<polyline points="412,88 392,88 392,82 382,82" fill="none" stroke="black" stroke-width="0.95"/>
+<polyline points="412,252 402,252 402,118 382,118" fill="none" stroke="black" stroke-width="0.95"/>
+<polyline points="382,416 392,416 392,294 412,294" fill="none" stroke="black" stroke-width="0.95"/>
+<polyline points="218,416 208,416 208,272 188,272" fill="none" stroke="black" stroke-width="0.95"/>
+<rect x="24" y="48" width="164" height="104" fill="white" stroke="black" stroke-width="1"/>
+<text x="106.0" y="66" font-family="DengXian,等线,sans-serif" font-weight="bold" font-size="13.6" text-anchor="middle" fill="black">预约（参照）</text>
+<text x="106.0" y="83" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.6" text-anchor="middle" fill="black">appointments</text>
+<polyline points="24,90 188,90" fill="none" stroke="black" stroke-width="0.65"/>
+<text x="32" y="107" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">PK id</text>
+<text x="32" y="124" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">FK patient_id</text>
+<text x="32" y="141" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">status</text>
+<rect x="218" y="48" width="164" height="104" fill="white" stroke="black" stroke-width="1"/>
+<text x="300.0" y="66" font-family="DengXian,等线,sans-serif" font-weight="bold" font-size="13.6" text-anchor="middle" fill="black">就诊记录</text>
+<text x="300.0" y="83" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.6" text-anchor="middle" fill="black">visits</text>
+<polyline points="218,90 382,90" fill="none" stroke="black" stroke-width="0.65"/>
+<text x="226" y="107" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">PK id</text>
+<text x="226" y="124" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">UQ/FK appointment_id</text>
+<text x="226" y="141" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">status / completed_at</text>
+<rect x="412" y="48" width="164" height="122" fill="white" stroke="black" stroke-width="1"/>
+<text x="494.0" y="66" font-family="DengXian,等线,sans-serif" font-weight="bold" font-size="13.6" text-anchor="middle" fill="black">诊疗附记</text>
+<text x="494.0" y="83" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.6" text-anchor="middle" fill="black">visit_addenda</text>
+<polyline points="412,90 576,90" fill="none" stroke="black" stroke-width="0.65"/>
+<text x="420" y="107" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">PK id</text>
+<text x="420" y="124" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">FK visit_id</text>
+<text x="420" y="141" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">original_version</text>
+<text x="420" y="158" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">content / author_name</text>
+<rect x="24" y="212" width="164" height="88" fill="white" stroke="black" stroke-width="1"/>
+<text x="106.0" y="230" font-family="DengXian,等线,sans-serif" font-weight="bold" font-size="13.6" text-anchor="middle" fill="black">治疗项目（参照）</text>
+<text x="106.0" y="247" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.6" text-anchor="middle" fill="black">treatments</text>
+<polyline points="24,254 188,254" fill="none" stroke="black" stroke-width="0.65"/>
+<text x="32" y="271" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">PK id</text>
+<text x="32" y="288" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">name / unit_price</text>
+<rect x="218" y="212" width="164" height="104" fill="white" stroke="black" stroke-width="1"/>
+<text x="300.0" y="230" font-family="DengXian,等线,sans-serif" font-weight="bold" font-size="13.6" text-anchor="middle" fill="black">就诊治疗明细</text>
+<text x="300.0" y="247" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.6" text-anchor="middle" fill="black">visit_lines</text>
+<polyline points="218,254 382,254" fill="none" stroke="black" stroke-width="0.65"/>
+<text x="226" y="271" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">PK/FK visit_id</text>
+<text x="226" y="288" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">PK id / FK treatment_id</text>
+<text x="226" y="305" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">quantity / unit_price</text>
+<rect x="412" y="212" width="164" height="122" fill="white" stroke="black" stroke-width="1"/>
+<text x="494.0" y="230" font-family="DengXian,等线,sans-serif" font-weight="bold" font-size="13.6" text-anchor="middle" fill="black">结算单</text>
+<text x="494.0" y="247" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.6" text-anchor="middle" fill="black">settlements</text>
+<polyline points="412,254 576,254" fill="none" stroke="black" stroke-width="0.65"/>
+<text x="420" y="271" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">PK id / UQ number</text>
+<text x="420" y="288" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">UQ/FK visit_id</text>
+<text x="420" y="305" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">FK patient_id</text>
+<text x="420" y="322" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">total / date</text>
+<rect x="218" y="376" width="164" height="122" fill="white" stroke="black" stroke-width="1"/>
+<text x="300.0" y="394" font-family="DengXian,等线,sans-serif" font-weight="bold" font-size="13.6" text-anchor="middle" fill="black">结算单明细</text>
+<text x="300.0" y="411" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.6" text-anchor="middle" fill="black">settlement_lines</text>
+<polyline points="218,418 382,418" fill="none" stroke="black" stroke-width="0.65"/>
+<text x="226" y="435" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">PK/FK settlement_id</text>
+<text x="226" y="452" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">PK position</text>
+<text x="226" y="469" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">FK treatment_id</text>
+<text x="226" y="486" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">quantity / subtotal</text>
+<rect x="197.04921875" y="67.3" width="19.950781250000006" height="13.700000000000003" fill="white" stroke="none" stroke-width="0"/>
+<text x="197.04921875" y="78" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">0..1</text>
+<rect x="189" y="86.3" width="7.691064453124994" height="13.700000000000003" fill="white" stroke="none" stroke-width="0"/>
+<text x="189" y="97" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">1</text>
+<rect x="273" y="194.3" width="20.248437500000023" height="13.699999999999989" fill="white" stroke="none" stroke-width="0"/>
+<text x="273" y="205" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">0..n</text>
+<rect x="273" y="158.3" width="7.691064453125023" height="13.699999999999989" fill="white" stroke="none" stroke-width="0"/>
+<text x="273" y="169" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">1</text>
+<rect x="196.7515625" y="231.3" width="20.248437499999994" height="13.699999999999989" fill="white" stroke="none" stroke-width="0"/>
+<text x="196.7515625" y="242" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">0..n</text>
+<rect x="189" y="255.3" width="7.691064453124994" height="13.699999999999989" fill="white" stroke="none" stroke-width="0"/>
+<text x="189" y="266" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">1</text>
+<rect x="390.7515625" y="73.3" width="20.248437500000023" height="13.700000000000003" fill="white" stroke="none" stroke-width="0"/>
+<text x="390.7515625" y="84" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">0..n</text>
+<rect x="383" y="97.3" width="7.691064453125023" height="13.700000000000003" fill="white" stroke="none" stroke-width="0"/>
+<text x="383" y="108" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">1</text>
+<rect x="391.04921875" y="237.3" width="19.950781249999977" height="13.699999999999989" fill="white" stroke="none" stroke-width="0"/>
+<text x="391.04921875" y="248" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">0..1</text>
+<rect x="383" y="122.3" width="7.691064453125023" height="13.700000000000003" fill="white" stroke="none" stroke-width="0"/>
+<text x="383" y="133" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">1</text>
+<rect x="383" y="401.3" width="20.248437500000023" height="13.699999999999989" fill="white" stroke="none" stroke-width="0"/>
+<text x="383" y="412" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">0..n</text>
+<rect x="403.308935546875" y="279.3" width="7.691064453125023" height="13.699999999999989" fill="white" stroke="none" stroke-width="0"/>
+<text x="403.308935546875" y="290" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">1</text>
+<rect x="196.7515625" y="401.3" width="20.248437499999994" height="13.699999999999989" fill="white" stroke="none" stroke-width="0"/>
+<text x="196.7515625" y="412" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">0..n</text>
+<rect x="189" y="276.3" width="19.950781250000006" height="13.699999999999989" fill="white" stroke="none" stroke-width="0"/>
+<text x="189" y="287" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">0..1</text>
+<polyline points="18,534 50,534" fill="none" stroke="black" stroke-width="1"/>
+<text x="56" y="538" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">DDL外键</text>
+<polyline points="153,534 185,534" fill="none" stroke="black" stroke-width="1" stroke-dasharray="5,4"/>
+<text x="191" y="538" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">逻辑引用</text>
+<text x="300" y="538" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="12.7" text-anchor="start" fill="black">PK主键  FK外键  UQ唯一；基数按业务必填解释</text>
+<text x="18" y="561" font-family="DengXian,等线,sans-serif" font-weight="normal" font-size="11.8" text-anchor="start" fill="black">仅画本组主要关系；其他跨图FK、物理可空声明与完整字段见数据字典。</text>
+</svg>

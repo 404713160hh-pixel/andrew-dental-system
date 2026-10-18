@@ -1,0 +1,28 @@
+{
+  "name": "andrew-dental-system",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Persistent dental customer and administrator workflow",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "build": "node tools/build.mjs",
+    "build:styles": "node tools/build-styles.mjs",
+    "build:docs": "node tools/build-docs.mjs",
+    "check": "node tools/check-source.mjs",
+    "test": "node --test test/*.test.js",
+    "test:maintenance": "node tools/verify-maintenance.mjs",
+    "test:browser": "node tools/run-e2e.mjs",
+    "test:load": "node tools/load-test.mjs",
+    "release:manifest": "node tools/release-manifest.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "cssnano": "^9.8.0",
+    "postcss": "^8.5.30"
+  }
+}

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="750" viewBox="0 0 600 750"><rect width="600" height="750" fill="white"/>
+<rect x="25" y="40" width="140" height="65" fill="white" stroke="black"/>
+<text x="95.0" y="77.83333333333333" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="16" font-weight="400" text-anchor="middle" fill="black">患者</text>
+<rect x="230" y="40" width="140" height="65" fill="white" stroke="black"/>
+<text x="300.0" y="77.83333333333333" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="16" font-weight="400" text-anchor="middle" fill="black">牙医</text>
+<rect x="435" y="40" width="140" height="65" fill="white" stroke="black"/>
+<text x="505.0" y="77.83333333333333" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="16" font-weight="400" text-anchor="middle" fill="black">门诊</text>
+<rect x="25" y="220" width="140" height="65" fill="white" stroke="black"/>
+<text x="95.0" y="257.8333333333333" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="16" font-weight="400" text-anchor="middle" fill="black">预约</text>
+<rect x="230" y="220" width="140" height="65" fill="white" stroke="black"/>
+<text x="300.0" y="257.8333333333333" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="16" font-weight="400" text-anchor="middle" fill="black">排班</text>
+<rect x="25" y="400" width="140" height="65" fill="white" stroke="black"/>
+<text x="95.0" y="437.8333333333333" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="16" font-weight="400" text-anchor="middle" fill="black">就诊</text>
+<rect x="435" y="400" width="140" height="65" fill="white" stroke="black"/>
+<text x="505.0" y="437.8333333333333" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="16" font-weight="400" text-anchor="middle" fill="black">治疗项目</text>
+<rect x="25" y="580" width="140" height="65" fill="white" stroke="black"/>
+<text x="95.0" y="617.8333333333334" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="16" font-weight="400" text-anchor="middle" fill="black">结算单</text>
+<rect x="230" y="580" width="140" height="65" fill="white" stroke="black"/>
+<text x="300.0" y="617.8333333333334" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="16" font-weight="400" text-anchor="middle" fill="black">治疗明细</text>
+<line x1="95" y1="105" x2="95" y2="220" stroke="black" stroke-width="1"/>
+<text x="107" y="126" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="start" fill="black">1</text>
+<text x="107" y="210" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="start" fill="black">0..n</text>
+<text x="80" y="162.5" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="black">发起</text>
+<line x1="300" y1="105" x2="300" y2="220" stroke="black" stroke-width="1"/>
+<text x="312" y="126" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="start" fill="black">1</text>
+<text x="312" y="210" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="start" fill="black">0..n</text>
+<text x="285" y="162.5" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="black">执业</text>
+<line x1="95" y1="285" x2="95" y2="400" stroke="black" stroke-width="1"/>
+<text x="107" y="306" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="start" fill="black">1</text>
+<text x="107" y="390" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="start" fill="black">0..1</text>
+<text x="80" y="342.5" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="black">形成</text>
+<line x1="95" y1="465" x2="95" y2="580" stroke="black" stroke-width="1"/>
+<text x="107" y="486" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="start" fill="black">1</text>
+<text x="107" y="570" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="start" fill="black">0..1</text>
+<text x="80" y="522.5" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="black">开单</text>
+<line x1="165" y1="252" x2="230" y2="252" stroke="black" stroke-width="1"/>
+<text x="174" y="239" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="start" fill="black">0..n</text>
+<text x="222" y="239" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="end" fill="black">1</text>
+<text x="198" y="279" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">指派</text>
+<line x1="505" y1="105" x2="505" y2="175" stroke="black" stroke-width="1"/>
+<line x1="505" y1="175" x2="402" y2="175" stroke="black" stroke-width="1"/>
+<line x1="402" y1="175" x2="402" y2="252" stroke="black" stroke-width="1"/>
+<line x1="402" y1="252" x2="370" y2="252" stroke="black" stroke-width="1"/>
+<text x="517" y="126" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="start" fill="black">1</text>
+<text x="386" y="242" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="start" fill="black">0..n</text>
+<text x="451" y="165" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">发布</text>
+<line x1="165" y1="432" x2="195" y2="432" stroke="black" stroke-width="1"/>
+<line x1="195" y1="432" x2="195" y2="612" stroke="black" stroke-width="1"/>
+<line x1="195" y1="612" x2="230" y2="612" stroke="black" stroke-width="1"/>
+<text x="177" y="420" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">1</text>
+<text x="212" y="599" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">0..n</text>
+<text x="207" y="526" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="start" fill="black">包含</text>
+<line x1="505" y1="465" x2="505" y2="612" stroke="black" stroke-width="1"/>
+<line x1="505" y1="612" x2="370" y2="612" stroke="black" stroke-width="1"/>
+<text x="517" y="487" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="start" fill="black">1</text>
+<text x="384" y="599" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="start" fill="black">0..n</text>
+<text x="455" y="599" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">引用</text>
+<text x="300" y="687" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">概念联系与基数；预约唯一关联至多一次就诊，每次就诊属于一家门诊</text>
+<text x="300" y="704" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">患者及牙医可跨门诊；物理外键、快照字段与其余实体另见分域ER</text>
+</svg>

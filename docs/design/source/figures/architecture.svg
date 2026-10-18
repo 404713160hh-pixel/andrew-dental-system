@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="710" viewBox="0 0 600 710"><rect width="600" height="710" fill="white"/>
+<rect x="25" y="30" width="550" height="85" fill="white" stroke="black"/>
+<text x="300.0" y="68.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">顾客端 / 员工端四门户</text>
+<text x="300.0" y="86.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">页面、组件、状态、API客户端</text>
+<rect x="25" y="165" width="550" height="85" fill="white" stroke="black"/>
+<text x="300.0" y="203.16666666666666" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">Node.js HTTP</text>
+<text x="300.0" y="221.16666666666666" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">会话 / Origin / CSRF / 限流 / 幂等</text>
+<rect x="25" y="300" width="550" height="85" fill="white" stroke="black"/>
+<text x="300.0" y="338.1666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">查询与业务服务</text>
+<text x="300.0" y="356.1666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">workspace / patients / appointments / clinical / finance / accounts / reports</text>
+<rect x="25" y="445" width="550" height="85" fill="white" stroke="black"/>
+<text x="300.0" y="483.1666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">Repository与事务</text>
+<text x="300.0" y="501.1666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">字段白名单 / 参数SQL / 批量关联 / savepoint</text>
+<rect x="25" y="580" width="550" height="85" fill="white" stroke="black"/>
+<text x="300.0" y="618.1666666666666" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">SQLite及版本迁移</text>
+<text x="300.0" y="636.1666666666666" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">38表 / 类型列 / 关系子表 / 追加账簿 / 升级快照</text>
+<line x1="300" y1="115" x2="300" y2="165" stroke="black" stroke-width="1"/>
+<line x1="300" y1="165" x2="296.6957862109708" y2="158.828924628852" stroke="black" stroke-width="1"/>
+<line x1="300" y1="165" x2="303.3042137890292" y2="158.828924628852" stroke="black" stroke-width="1"/>
+<line x1="300" y1="250" x2="300" y2="300" stroke="black" stroke-width="1"/>
+<line x1="300" y1="300" x2="296.6957862109708" y2="293.828924628852" stroke="black" stroke-width="1"/>
+<line x1="300" y1="300" x2="303.3042137890292" y2="293.828924628852" stroke="black" stroke-width="1"/>
+<line x1="300" y1="385" x2="300" y2="445" stroke="black" stroke-width="1"/>
+<line x1="300" y1="445" x2="296.6957862109708" y2="438.828924628852" stroke="black" stroke-width="1"/>
+<line x1="300" y1="445" x2="303.3042137890292" y2="438.828924628852" stroke="black" stroke-width="1"/>
+<line x1="300" y1="530" x2="300" y2="580" stroke="black" stroke-width="1"/>
+<line x1="300" y1="580" x2="296.6957862109708" y2="573.828924628852" stroke="black" stroke-width="1"/>
+<line x1="300" y1="580" x2="303.3042137890292" y2="573.828924628852" stroke="black" stroke-width="1"/>
+<text x="300" y="698" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">所有岗位共享后端；授权与范围过滤在服务端执行</text>
+</svg>

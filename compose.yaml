@@ -1,0 +1,45 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    init: true
+    environment:
+      NODE_ENV: production
+      DENTAL_SEED_DEMO: "0"
+      DENTAL_DB_PATH: /var/lib/dental/dental.sqlite
+      HOST: 0.0.0.0
+      PORT: "3210"
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:?Set PUBLIC_ORIGIN to your HTTPS origin}
+      COOKIE_SECURE: "1"
+    ports:
+      - "127.0.0.1:3210:3210"
+    volumes:
+      - dental-data:/var/lib/dental
+      - dental-backups:/var/backups/dental
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+  backup:
+    build: .
+    restart: unless-stopped
+    init: true
+    command: ["node", "tools/backup-daemon.mjs"]
+    environment:
+      DENTAL_DB_PATH: /var/lib/dental/dental.sqlite
+      DENTAL_BACKUP_DIR: /var/backups/dental
+      DENTAL_BACKUP_INTERVAL_HOURS: "6"
+      DENTAL_BACKUP_KEEP: "28"
+    volumes:
+      - dental-data:/var/lib/dental
+      - dental-backups:/var/backups/dental
+    healthcheck:
+      disable: true
+    depends_on:
+      app:
+        condition: service_healthy
+volumes:
+  dental-data:
+  dental-backups:

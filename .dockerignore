@@ -1,0 +1,13 @@
+.git
+node_modules
+server/data
+backups
+screenshots
+logs
+test-results
+playwright-report
+.env
+.env.*
+*.sqlite*
+*.log
+server/domain.original.txt

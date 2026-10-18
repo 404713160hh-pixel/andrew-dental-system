@@ -1,0 +1,134 @@
+{
+  "version": "2.0",
+  "date": "2026-10-09",
+  "environment": "Windows, Node.js 24.15.0",
+  "systemTests": {
+    "passed": 13,
+    "parentTests": 1,
+    "businessSubtests": 12,
+    "failed": 0,
+    "database": "isolated synthetic test database"
+  },
+  "maintenance": {
+    "passed": 13,
+    "requiredTablesChecked": 16,
+    "missingTableBackupsRejected": 6,
+    "databaseUnchangedAfterRejectedRestore": true,
+    "restoredSessionsRevoked": true
+  },
+  "artifacts": {
+    "pageCount": 50,
+    "declaredPageCount": 50,
+    "allPagesPortraitA4": true,
+    "all12UseCases": true,
+    "allSpecificationContent": true,
+    "specificationFragments": 262,
+    "all28Rules": true,
+    "all10Research": true,
+    "all13VectorFigures": true,
+    "bookmarks": 82,
+    "urlAnnotations": 121,
+    "chineseExtractable": true,
+    "bodyStartsAtPhysicalPage": 5,
+    "tocLevels": [
+      0,
+      1
+    ],
+    "figureListCount": 13,
+    "fileBytes": 1158599,
+    "all13SvgParsed": true,
+    "allRuleReferencesResolve": true,
+    "visionFields": 7,
+    "systemActors": [
+      "客户",
+      "管理员"
+    ],
+    "logoBytesMatchOriginal": true,
+    "pdfServedBytesMatch": true,
+    "allPagesRendered": true,
+    "pdfSha256": "44bb05dd751660f57e9f9b8adc53e01efaa27747e23e3455448645786179637a"
+  },
+  "documentRevision": {
+    "file": "安德鲁牙科_系统设计文档.pdf",
+    "pages": 50,
+    "allPagesPortraitA4": true,
+    "allTextGrayOrBlack": true,
+    "coverTitleCentered": [
+      {
+        "text": "安德鲁牙科连锁",
+        "center": 297.64
+      },
+      {
+        "text": "就诊管理系统设计",
+        "center": 297.64
+      }
+    ],
+    "teacher": "毕文杰",
+    "decorativeVersionRemoved": true,
+    "forbiddenPhrasesAbsent": true,
+    "figures": 13,
+    "hierarchicalContents": true,
+    "figureList": true,
+    "romanFrontMatter": true,
+    "bodyStartsFromOne": true,
+    "contentsLinksChecked": 100,
+    "outlineTargetsChecked": 82,
+    "bodyTextWithinMargins": true,
+    "tableIdentifiersUnbroken": true,
+    "format": {
+      "marginsCm": {
+        "top": 2.5,
+        "bottom": 2.5,
+        "left": 2.7,
+        "right": 2.7
+      },
+      "bodyFontPt": 12,
+      "bodyLeadingPt": 20,
+      "firstLineIndentEm": 2,
+      "sectionFontPt": 15,
+      "subsectionFontPt": 14,
+      "subsubsectionFontPt": 12
+    },
+    "coverReference": "supplied report.tex",
+    "websiteSynchronized": true
+  },
+  "browser": {
+    "bookingReschedulingCancellation": "passed",
+    "frontAttendanceDentistCompletionUniqueSettlementCustomerReadback": "passed",
+    "settlementYuan": 280,
+    "quarterApproval": "passed",
+    "quarterSampleYuan": {
+      "quarter": "2026-Q4",
+      "revenue": 1160,
+      "supplies": 150,
+      "operations": 190,
+      "netProfit": 820,
+      "fund": 82
+    },
+    "responsive": [
+      "1440x960 desktop",
+      "375x812 mobile, document width 360"
+    ],
+    "designSiteSearchAndDiagramModal": "passed"
+  },
+  "implementationBoundary": [
+    "all initial data are synthetic",
+    "single-machine single-process local service",
+    "no real hospital/payment/insurance/invoice integration",
+    "no capacity or real patient trial acceptance",
+    "refund, correction, structured recall, automatic notifications and individual fund distribution are future scope"
+  ],
+  "extractedPackageSmoke": {
+    "ok": true,
+    "checks": [
+      "fresh extracted service starts and health responds",
+      "frontend, logo and design website load from extracted paths",
+      "current PDF is served from the extracted package",
+      "all five seeded accounts log in with appropriate workspaces",
+      "restart preserves extracted first-run database"
+    ],
+    "node": "v24.15.0",
+    "packageDatabase": "fresh synthetic database",
+    "noThirdPartyInstall": true
+  }
+}

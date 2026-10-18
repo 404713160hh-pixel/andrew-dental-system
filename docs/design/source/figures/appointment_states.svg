@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="710" viewBox="0 0 600 710"><rect width="600" height="710" fill="white"/>
+<rect x="45" y="70" width="205" height="75" fill="white" stroke="black"/>
+<text x="147.5" y="112.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">booked 已预约</text>
+<rect x="350" y="70" width="205" height="75" fill="white" stroke="black"/>
+<text x="452.5" y="112.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">attended 已到诊</text>
+<rect x="45" y="320" width="205" height="75" fill="white" stroke="black"/>
+<text x="147.5" y="362.1666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">no_show 爽约</text>
+<rect x="350" y="320" width="205" height="75" fill="white" stroke="black"/>
+<text x="452.5" y="362.1666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">cancelled 已取消</text>
+<ellipse cx="142.5" cy="25.5" rx="7.5" ry="7.5" fill="black" stroke="black"/>
+<text x="142.5" y="30.166666666666668" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black"></text>
+<line x1="142" y1="33" x2="142" y2="70" stroke="black" stroke-width="1"/>
+<line x1="142" y1="70" x2="138.69578621097082" y2="63.828924628852" stroke="black" stroke-width="1"/>
+<line x1="142" y1="70" x2="145.30421378902918" y2="63.828924628852" stroke="black" stroke-width="1"/>
+<text x="207" y="47" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">建立预约</text>
+<line x1="250" y1="107" x2="350" y2="107" stroke="black" stroke-width="1"/>
+<line x1="350" y1="107" x2="343.828924628852" y2="110.30421378902918" stroke="black" stroke-width="1"/>
+<line x1="350" y1="107" x2="343.828924628852" y2="103.69578621097082" stroke="black" stroke-width="1"/>
+<text x="300" y="64.0" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="12.5" font-weight="400" text-anchor="middle" fill="black">登记到诊</text>
+<text x="300" y="80.5" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="12.5" font-weight="400" text-anchor="middle" fill="black">[已到开始时刻]</text>
+<line x1="125" y1="145" x2="125" y2="320" stroke="black" stroke-width="1"/>
+<line x1="125" y1="320" x2="121.69578621097082" y2="313.828924628852" stroke="black" stroke-width="1"/>
+<line x1="125" y1="320" x2="128.30421378902918" y2="313.828924628852" stroke="black" stroke-width="1"/>
+<text x="204" y="218.0" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="12.5" font-weight="400" text-anchor="middle" fill="black">登记爽约</text>
+<text x="204" y="234.5" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="12.5" font-weight="400" text-anchor="middle" fill="black">[已到结束时刻]</text>
+<line x1="70" y1="320" x2="70" y2="178" stroke="black" stroke-width="1"/>
+<line x1="70" y1="178" x2="45" y2="178" stroke="black" stroke-width="1"/>
+<line x1="45" y1="178" x2="45" y2="107" stroke="black" stroke-width="1"/>
+<line x1="45" y1="107" x2="48.30421378902918" y2="113.171075371148" stroke="black" stroke-width="1"/>
+<line x1="45" y1="107" x2="41.69578621097082" y2="113.171075371148" stroke="black" stroke-width="1"/>
+<text x="53" y="268.0" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="12.5" font-weight="400" text-anchor="middle" fill="black">更正爽约</text>
+<text x="53" y="284.5" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="12.5" font-weight="400" text-anchor="middle" fill="black">[原因且未满]</text>
+<line x1="250" y1="130" x2="295" y2="130" stroke="black" stroke-width="1"/>
+<line x1="295" y1="130" x2="295" y2="357" stroke="black" stroke-width="1"/>
+<line x1="295" y1="357" x2="350" y2="357" stroke="black" stroke-width="1"/>
+<line x1="350" y1="357" x2="343.828924628852" y2="360.3042137890292" stroke="black" stroke-width="1"/>
+<line x1="350" y1="357" x2="343.828924628852" y2="353.6957862109708" stroke="black" stroke-width="1"/>
+<text x="389" y="237.0" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="12.5" font-weight="400" text-anchor="middle" fill="black">取消 / 改期</text>
+<text x="389" y="253.5" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="12.5" font-weight="400" text-anchor="middle" fill="black">[角色与截止允许]</text>
+<text x="300" y="492" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">到诊动作创建唯一open就诊；爽约更正先恢复booked</text>
+<text x="300" y="509" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">改期取消原预约并新建booked，以previous_id关联原预约</text>
+<text x="300" y="566" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">所有修改需权限与version校验；取消及更正均记录原因</text>
+<text x="300" y="583" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">顾客自助取消/改期受截止小时限制，员工仍需授权门诊范围</text>
+<text x="300" y="663" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">状态与守卫对应appointments.js；非法迁移不落库</text>
+</svg>

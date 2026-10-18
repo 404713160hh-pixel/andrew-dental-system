@@ -1,0 +1,15 @@
+# 牙科界面原创配图
+
+生成方式：内置 imagegen。日期：2026-10-13。图片为虚构人物和诊疗空间，均不代表真实患者、医生或门店；不包含第三方品牌素材。生成后的原始 PNG 已复制到本目录供网站本地加载。
+
+## dental-editorial.png — 登录页
+
+Use case: photorealistic-natural. Asset type: full-height editorial photograph for a premium Chinese dental clinic login page. Create an original sophisticated lifestyle dental-care photograph: an adult East Asian woman in her early thirties wearing an elegant soft ivory blouse, with a naturally warm relaxed smile, seated in a beautiful contemporary dental consultation room. Three-quarter portrait, subject on the right half of the frame; left half is calm soft shadow and out-of-focus warm stone wall for white website text overlay. No dental tools in mouth, no treatment underway. Refined hospitality-style photography, authentic skin texture and naturally believable teeth, no exaggerated beauty retouching. Warm soft daylight, muted beige, charcoal and cream tones, subtle film grain. Vertical 4:5 composition with good negative space at lower-left. No text, logo, watermark, medical claims or signs. This is a fictional model for an original Andrew Dental course-demo website, not a portrait of a real patient.
+
+## smile-editorial.png — 客户首页
+
+Use case: photorealistic-natural. Asset type: widescreen hero photograph for a premium dental clinic patient portal. Create an original luxury editorial portrait of an adult East Asian woman around 30 with an authentic open relaxed smile and naturally proportioned healthy teeth, elegant simple cream outfit, dark shoulder-length hair tucked behind one ear. She is seated beside a window in a contemporary warm minimalist clinic, hand resting gently near cheek; no dental equipment or treatment. Composition ultra-wide landscape about 2:1, the face occupies the right third, generous cinematic negative space on the left with softly blurred warm charcoal and taupe interior so white UI headlines remain legible. Natural skin texture, subtle imperfections, professional fashion/editorial photography, soft diffused daylight, understated warm beige, ivory and charcoal palette. No text, lettering, logos, watermark or visible patient identifiers. Original fictional model; quiet confidence, premium dental brand atmosphere. Image will be displayed behind text on the customer homepage.
+
+## clinic-interior.png — 预约页和照护卡片
+
+Use case: photorealistic-natural. Asset type: landscape photograph for a dental appointment portal welcome/service card. A refined modern dental clinic consultation room in China, original fictional interior, no people. Warm oak, cream stone, a clean upholstered dental chair angled toward a tall frosted window, subtle brushed metal details, discreet ceiling examination lamp, olive foliage and a low shelf; calm, uncluttered, premium boutique clinic atmosphere. Architectural editorial photography with realistic materials, morning diffused natural light, warm ivory beige and neutral gray palette. Landscape 4:3 composition, practical clinic rather than spa or fantasy, no logos, no screens showing data, no text, no watermark. Intended for Andrew Dental student demo website.

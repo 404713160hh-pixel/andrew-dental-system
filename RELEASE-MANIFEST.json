@@ -1,0 +1,1298 @@
+{
+  "format": "andrew-source-release-v3",
+  "generatedAt": "2026-10-18T22:59:29.911Z",
+  "version": "3.0.0",
+  "excludes": "databases, backups, secrets, dependency directories and generated test artifacts",
+  "files": [
+    {
+      "path": ".dockerignore",
+      "bytes": 141,
+      "sha256": "644c379e0273c7ba5cf4e54d9226567d556c864562d1aa9501053993007f37f3"
+    },
+    {
+      "path": ".env.example",
+      "bytes": 644,
+      "sha256": "b1ddacd7aa25b98d6839f23f82f7868b424e8627bace1536533ba75856e79f55"
+    },
+    {
+      "path": ".gitattributes",
+      "bytes": 139,
+      "sha256": "ade8fe543ee8aafaba7a2f9562b05f624552e74c323f88dff8a7478dac7f1f5e"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "bytes": 784,
+      "sha256": "d6781e194ceb03a4c44b56b226e41fff2d9cafcacd98c31ddb593fdc8e018461"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 290,
+      "sha256": "36d12365e5467961aed2746890c27787d9bc52c5f2f3306cf8e064e71d782835"
+    },
+    {
+      "path": "ACCEPTANCE.json",
+      "bytes": 3926,
+      "sha256": "4e619b3ac1ecc9d094e357ad29c8083d675aa34b8034dc036ea5feda72e8b1ab"
+    },
+    {
+      "path": "ACCEPTANCE.md",
+      "bytes": 4967,
+      "sha256": "ae92901b70b9ba732c40894b7b8ae795816f3b034536b372e8649865cb5643d5"
+    },
+    {
+      "path": "API-CONTRACT.md",
+      "bytes": 5573,
+      "sha256": "d6714b5c93bdd222c056bb913eeeec096ef286639828944831fcafa17e59ef50"
+    },
+    {
+      "path": "ARCHITECTURE.md",
+      "bytes": 3811,
+      "sha256": "d5a67f52cc270842b07ce2b0fac611e64e36e2b8c52d358c1c8bca5eb89148c6"
+    },
+    {
+      "path": "DEPLOYMENT.md",
+      "bytes": 4102,
+      "sha256": "5e4e0e75a41af83431bdaf106200dfa3f5e118a973500df673ebccf8c41fe6e3"
+    },
+    {
+      "path": "DESIGN-AUDIT.md",
+      "bytes": 17888,
+      "sha256": "67e3d14c64094f5d5256614d7cb2117c1cfe46bb1e514537e08b221a16102cce"
+    },
+    {
+      "path": "Dockerfile",
+      "bytes": 662,
+      "sha256": "4fa0c0905a9a3d212de8fcb7ca6ad9dc30c0190ba190573516eea2dd71d75ae8"
+    },
+    {
+      "path": "README.md",
+      "bytes": 6052,
+      "sha256": "90ea7847563b744feb139b1660aa92db8c431d63ca4b9ac10366869e2cce5431"
+    },
+    {
+      "path": "REFACTOR-ACCEPTANCE.md",
+      "bytes": 4931,
+      "sha256": "1f568d8855e754dcc68bbe1ccb1f88a47e892580d791fca3c93fe4efd3c8f82e"
+    },
+    {
+      "path": "UI-REDESIGN.md",
+      "bytes": 3735,
+      "sha256": "77752e79a5124768cbc0746bd924390c8719ae9895b110e0e2bedcea704c7c61"
+    },
+    {
+      "path": "USABILITY-AUDIT.md",
+      "bytes": 14054,
+      "sha256": "bb5ac8c25cdcdb48cfedb4dab16fd67b6c79ab199ee4dd28290887b98f84bca8"
+    },
+    {
+      "path": "compose.yaml",
+      "bytes": 1130,
+      "sha256": "f01fc9f8aa8de03eef5170e1581cd500ce48514c92c462b15be52a3fd6eae2e8"
+    },
+    {
+      "path": "deploy/nginx.conf",
+      "bytes": 739,
+      "sha256": "dac7c9bfac3e758a908723674bb6e2af257c7efb9d12b37ec0f2c6c61dd25752"
+    },
+    {
+      "path": "docs/design/README.md",
+      "bytes": 2209,
+      "sha256": "9c43e439a3b04d115ea3f5563dc7d3f284c831313541362b3dc16416aaaf9b57"
+    },
+    {
+      "path": "docs/design/VERIFICATION.md",
+      "bytes": 2417,
+      "sha256": "ed31374c27d4fffd65548cf032fa6182dcfb328384bdca3de3a054f6a3827428"
+    },
+    {
+      "path": "docs/design/delivery-manifest.json",
+      "bytes": 867,
+      "sha256": "c9a151c4f066f308ae827fb54929ab5de2acc74ed0b05fe29a3ca827746a38b4"
+    },
+    {
+      "path": "docs/design/source/README.md",
+      "bytes": 2202,
+      "sha256": "881c8257825f2cd167edde00eabf465aca4db10feb08c193cbb9bdafc3ad2a2c"
+    },
+    {
+      "path": "docs/design/source/all-figures.json",
+      "bytes": 9285,
+      "sha256": "9c742f696c109c909c32291a6616e0d3f25d9a70949ddea8b8b76e0e8d820bd0"
+    },
+    {
+      "path": "docs/design/source/body.json",
+      "bytes": 279097,
+      "sha256": "116e3c970330c90b664e69fc0f728be650bfa02175a9c4a94b25a24c1452a053"
+    },
+    {
+      "path": "docs/design/source/build_content.py",
+      "bytes": 49674,
+      "sha256": "56e5a3409f34ed21dd5280bb77bb3abb6eaf7642566e6dc7389d2f05ca15d036"
+    },
+    {
+      "path": "docs/design/source/build_diagrams.py",
+      "bytes": 21859,
+      "sha256": "e1344f3991aace47f02f8411e35a45e599b976b956ef586d607117e741c7922f"
+    },
+    {
+      "path": "docs/design/source/build_report.py",
+      "bytes": 7357,
+      "sha256": "7b146846db4ecfb52dfc49bc97f5cf4efa7df946a4db267b9b42f4b8fbcfbc8f"
+    },
+    {
+      "path": "docs/design/source/data/research.json",
+      "bytes": 9777,
+      "sha256": "73528b5e0eedb637decc3e7acb66ab9c9dbcdafe834391c995d0a053bc833655"
+    },
+    {
+      "path": "docs/design/source/data/schema/build_schema_figures.py",
+      "bytes": 16693,
+      "sha256": "6a6ce196780bc954d2028c9746702fa447e531eb56f1aabd355c8fc92614925b"
+    },
+    {
+      "path": "docs/design/source/data/schema/extensions.sql",
+      "bytes": 5269,
+      "sha256": "a009b2f01d75b039eeeb10be4f31d671eda27f3a8e280c8d9ac0f51487c49291"
+    },
+    {
+      "path": "docs/design/source/data/schema/figures.json",
+      "bytes": 5106,
+      "sha256": "d48a95cd957d9624831ed84405ef8e084c5fb8a52f1c9601763d1717501ae9d0"
+    },
+    {
+      "path": "docs/design/source/data/schema/schema.sql",
+      "bytes": 11682,
+      "sha256": "e5769b392b865823d78dd2a3a7c82267cab39ec96a2f5096c63dc26013ea137c"
+    },
+    {
+      "path": "docs/design/source/data/schema/schema_inventory.json",
+      "bytes": 250905,
+      "sha256": "317b3b981385c7f3179b8cdba2a03a7914e51c0a25041273d438c376fa0bf5dd"
+    },
+    {
+      "path": "docs/design/source/data/traceability.json",
+      "bytes": 26579,
+      "sha256": "fc5d0196bf7bdce4983131537a34bdfcc01d0bd1de3638fccb5ef0816f96109b"
+    },
+    {
+      "path": "docs/design/source/data/usecases.json",
+      "bytes": 102785,
+      "sha256": "7990628703538738d28d42b2026da910883ffe968678f35e996c6c9c320e6c21"
+    },
+    {
+      "path": "docs/design/source/figures.json",
+      "bytes": 4772,
+      "sha256": "886f737864556446fac778d9f7ba5017f953b4dfe8773752811632c1c96bcad5"
+    },
+    {
+      "path": "docs/design/source/figures/analysis_booking.pdf",
+      "bytes": 54837,
+      "sha256": "c4e1d9343bf6e4ec90f2db00319d0ba9bd1af65893ede3f4774a48f52e63ae0f"
+    },
+    {
+      "path": "docs/design/source/figures/analysis_booking.png",
+      "bytes": 210296,
+      "sha256": "52eae500a1e1b53faf4d6cf7b013a29e8259d83933b7af0fce8f2fef97b5e401"
+    },
+    {
+      "path": "docs/design/source/figures/analysis_booking.svg",
+      "bytes": 7915,
+      "sha256": "d4fe64deb9d58ac158379297fd53094d9e9f5448394f160c4de2ebbf75536d61"
+    },
+    {
+      "path": "docs/design/source/figures/analysis_classes.pdf",
+      "bytes": 63343,
+      "sha256": "0e38d981414218b8e3ac8759eb42be1030a3266b8fcfc66de76891e58d449ba1"
+    },
+    {
+      "path": "docs/design/source/figures/analysis_classes.png",
+      "bytes": 245793,
+      "sha256": "5ed4e3d7904d8f2763a5bf78e282e009361bc2271015e64f49a18702f807c49f"
+    },
+    {
+      "path": "docs/design/source/figures/analysis_classes.svg",
+      "bytes": 9545,
+      "sha256": "e64726654d8bab4a4a0d3a2f2c0c6c42c0479f640b20e69a9a11247c986a453f"
+    },
+    {
+      "path": "docs/design/source/figures/analysis_finance.pdf",
+      "bytes": 58998,
+      "sha256": "80b7b5a237ce86ef33314cf67bcd09303a13f2628580f627b03f497db56cdb15"
+    },
+    {
+      "path": "docs/design/source/figures/analysis_finance.png",
+      "bytes": 242256,
+      "sha256": "3f665e24ffd18f7b87b74d7314ede6adae408a2219561a998e10aae19d87182b"
+    },
+    {
+      "path": "docs/design/source/figures/analysis_finance.svg",
+      "bytes": 8551,
+      "sha256": "a14e70258b2d747ade8fd30b685354acb069903ffcfa2fb6d2ca06cb0356ba1e"
+    },
+    {
+      "path": "docs/design/source/figures/appointment_states.pdf",
+      "bytes": 40976,
+      "sha256": "4b823f5ac6bd4428351901b0a80ec0656c4633fe559ed1a45985d5de780a92e7"
+    },
+    {
+      "path": "docs/design/source/figures/appointment_states.png",
+      "bytes": 259180,
+      "sha256": "aab3e7ce399eab7e33c7bc7e56b2b777150c8a312b933bf9ebb2a5ac6b4f4381"
+    },
+    {
+      "path": "docs/design/source/figures/appointment_states.svg",
+      "bytes": 5721,
+      "sha256": "2843de7b0d00f338d8afc7764e77e859830132d138ffffc2bc0fb8ebdd7640dc"
+    },
+    {
+      "path": "docs/design/source/figures/archetype_sequence.pdf",
+      "bytes": 54839,
+      "sha256": "43fc2b4b3a4f6b23d1c0e7b24295678c163d582e315c89f0a0d6147ba4aecce6"
+    },
+    {
+      "path": "docs/design/source/figures/archetype_sequence.png",
+      "bytes": 161031,
+      "sha256": "1dd5052f3af6e7722e5b694842988a77ac137d23aaf0a77396893d2356f03fa9"
+    },
+    {
+      "path": "docs/design/source/figures/archetype_sequence.svg",
+      "bytes": 5049,
+      "sha256": "782869f930b271bfd46f79c354162bf434fcdbe93a5612413c311f17a5fa8d8c"
+    },
+    {
+      "path": "docs/design/source/figures/architecture.pdf",
+      "bytes": 38091,
+      "sha256": "7b3e2a071771abd11863106bd5f82b8073c84d3fadcaabd28c71e0dd8cc9bc7f"
+    },
+    {
+      "path": "docs/design/source/figures/architecture.png",
+      "bytes": 200650,
+      "sha256": "0b7b847926373fa51f29d758fcfc482157ae5951842a327a2616cbcb11317376"
+    },
+    {
+      "path": "docs/design/source/figures/architecture.svg",
+      "bytes": 3890,
+      "sha256": "2e8456b2e5f50e5d281fd4132116a946998dd00ec5dd33aad00b55720dc5c706"
+    },
+    {
+      "path": "docs/design/source/figures/business_usecases.pdf",
+      "bytes": 50188,
+      "sha256": "231ac8515f6cb483db076e5e5cb3765dc96c063b80fef1c2e79f29e2ade104fc"
+    },
+    {
+      "path": "docs/design/source/figures/business_usecases.png",
+      "bytes": 182386,
+      "sha256": "f745fc1b354072fa45ee8685f7052104eb41fb70428469d34d5a0420046b66c6"
+    },
+    {
+      "path": "docs/design/source/figures/business_usecases.svg",
+      "bytes": 2545,
+      "sha256": "1d1bba3fb06419b97fa5007546d2c096af235d5292b15bf46aaf1ec6d4d6bca5"
+    },
+    {
+      "path": "docs/design/source/figures/clinical_states.pdf",
+      "bytes": 32720,
+      "sha256": "b859f842dee1a080cc9e631ef596145c6316ff52360ef1fe9ec711905bdfa4b4"
+    },
+    {
+      "path": "docs/design/source/figures/clinical_states.png",
+      "bytes": 140508,
+      "sha256": "6562476ddb768819b10dc2587f564bb8f8e7a778d922eb097c3593bf1ac5022f"
+    },
+    {
+      "path": "docs/design/source/figures/clinical_states.svg",
+      "bytes": 3209,
+      "sha256": "43d51e89276b2efec9d4851b9191bc84e76cf21cdf983b9b0d72a7235c73f157"
+    },
+    {
+      "path": "docs/design/source/figures/colored_model.pdf",
+      "bytes": 46736,
+      "sha256": "0cc1212bc7632e114f884a255b9276d1464be86f2e6068f74f6200f98fd15805"
+    },
+    {
+      "path": "docs/design/source/figures/colored_model.png",
+      "bytes": 224158,
+      "sha256": "e67fe01a6f7c2718442f87afa50512ce38e7ccfc05ad9e1a2988dca3d63d6aeb"
+    },
+    {
+      "path": "docs/design/source/figures/colored_model.svg",
+      "bytes": 4269,
+      "sha256": "f4fb879342a2b09fbd56900146099885378184390a4043003e43e986c800d5b2"
+    },
+    {
+      "path": "docs/design/source/figures/conceptual_er.pdf",
+      "bytes": 37011,
+      "sha256": "c1032d993d413adde42d9f7e4d2627a9c80280510c3f273e301dd8fd40220101"
+    },
+    {
+      "path": "docs/design/source/figures/conceptual_er.png",
+      "bytes": 162125,
+      "sha256": "a6e14c4304dd5d86c75a474f24a757c590e984cc98e03c2dd50549bca9d777c5"
+    },
+    {
+      "path": "docs/design/source/figures/conceptual_er.svg",
+      "bytes": 7530,
+      "sha256": "c88a8752a0347277367756b4498b4a02f639aa36f90775550edd2311645be5d7"
+    },
+    {
+      "path": "docs/design/source/figures/current_booking.pdf",
+      "bytes": 56667,
+      "sha256": "bb01e125c9f5b59e3e04ae4c1887148d101f0c53021c69aa3df95356b1e5bd58"
+    },
+    {
+      "path": "docs/design/source/figures/current_booking.png",
+      "bytes": 175659,
+      "sha256": "f7ec6f1bb0e2a178ae0564e4f23e9b3799595f5e1b33c0d8988ade62c3d30b8f"
+    },
+    {
+      "path": "docs/design/source/figures/current_booking.svg",
+      "bytes": 7331,
+      "sha256": "5b393b818ca1f863147f0dd0d44d7440f8d7627fb883dbd6ce435c4e67b3d5c6"
+    },
+    {
+      "path": "docs/design/source/figures/current_clinical.pdf",
+      "bytes": 56735,
+      "sha256": "d9994d3a04acbf5a3a162121ba498b9118c04b27c697d55f338125420a33f259"
+    },
+    {
+      "path": "docs/design/source/figures/current_clinical.png",
+      "bytes": 181501,
+      "sha256": "faa58e51ff54aee83e6a5394da6577ed7866bd64b5839275d66a72b8dfaac6c9"
+    },
+    {
+      "path": "docs/design/source/figures/current_clinical.svg",
+      "bytes": 7991,
+      "sha256": "02363fdde7b9dda2adb6282f281dc3f71d3a28afea9c6ad5e6ea6bf584189f21"
+    },
+    {
+      "path": "docs/design/source/figures/current_management.pdf",
+      "bytes": 53138,
+      "sha256": "b39fa4b302a63dd70b7deeda8a17b169ebbee1cb2da865299c5ff025bcd394a2"
+    },
+    {
+      "path": "docs/design/source/figures/current_management.png",
+      "bytes": 148561,
+      "sha256": "7c8d2f03100d11a75dc1533f09aaccaaa4005033606617f8eccb86daacdfff91"
+    },
+    {
+      "path": "docs/design/source/figures/current_management.svg",
+      "bytes": 6076,
+      "sha256": "1cda0f53709bd4fac78098b6a3c923ca3241bf50531f292449711430c5933efa"
+    },
+    {
+      "path": "docs/design/source/figures/customer_usecases.pdf",
+      "bytes": 48717,
+      "sha256": "ae47692dd920c52f2e6bc60346989c2625469f264a742f0ce0bff467951c69c1"
+    },
+    {
+      "path": "docs/design/source/figures/customer_usecases.png",
+      "bytes": 234079,
+      "sha256": "70b5a3d88928eec6cb1d7e2ee03cda0d9cf48515f859412bc1e4c6a85fb035a5"
+    },
+    {
+      "path": "docs/design/source/figures/customer_usecases.svg",
+      "bytes": 3327,
+      "sha256": "a7ae192d4bad09bf06621cc9a5a79f2d1fc51fe04df1658e86d65cc0ed9f9f5e"
+    },
+    {
+      "path": "docs/design/source/figures/dentist_states.pdf",
+      "bytes": 32567,
+      "sha256": "135a5663875641fdc080aaa76e2206f700b8f14348a6b1540d642fcf2dc8ad4f"
+    },
+    {
+      "path": "docs/design/source/figures/dentist_states.png",
+      "bytes": 139471,
+      "sha256": "b18a26f94ecb959b0076b0f903e652da471824c930556b60b8b11b65bef3b071"
+    },
+    {
+      "path": "docs/design/source/figures/dentist_states.svg",
+      "bytes": 2558,
+      "sha256": "7d277d8e7bb11c2e73a7d3b39d997dabbdecfbd8b9d684f7e569f6430a20d731"
+    },
+    {
+      "path": "docs/design/source/figures/deployment.pdf",
+      "bytes": 36027,
+      "sha256": "cbd87fddb5fa2d4e94c21f43c9fa178532dc18ecf8b04da620870b3c3e0feeef"
+    },
+    {
+      "path": "docs/design/source/figures/deployment.png",
+      "bytes": 164719,
+      "sha256": "c999d71e03fdcde74335631d69b0b5a1877c8efdbf9e33a716b22670725f2b10"
+    },
+    {
+      "path": "docs/design/source/figures/deployment.svg",
+      "bytes": 3775,
+      "sha256": "68f40c3f2b8a1ba8e4839d2b3d8111756ab1279a5f9e456e81d5425a18de965b"
+    },
+    {
+      "path": "docs/design/source/figures/er01.pdf",
+      "bytes": 54084,
+      "sha256": "7267914c1184e4480bfc37a1c68b7b1a1449734a12b2053cb18ad689c001d411"
+    },
+    {
+      "path": "docs/design/source/figures/er01.png",
+      "bytes": 209551,
+      "sha256": "d3755b61f76c0c9de56bad2051e0513c6d6f66af70a5478237970aa8a0a64a90"
+    },
+    {
+      "path": "docs/design/source/figures/er01.svg",
+      "bytes": 12209,
+      "sha256": "dda954dbb6d3a245d9ab0266de6eb81dc59e03c2a10be9af4709ae5762d4c17c"
+    },
+    {
+      "path": "docs/design/source/figures/er02.pdf",
+      "bytes": 53181,
+      "sha256": "03dbe4b9a78110688642bcdaaaed0bf14882a38a6465ba0772a5e14947ff3223"
+    },
+    {
+      "path": "docs/design/source/figures/er02.png",
+      "bytes": 218552,
+      "sha256": "38f22d5fc0d346985a292c9249f955b7fc0b3375d48b00e5d9e1779b45a4071f"
+    },
+    {
+      "path": "docs/design/source/figures/er02.svg",
+      "bytes": 13494,
+      "sha256": "e42cb8bd8166dd64a22ebae79ed21a36a22b6cf347559e3758502a3cde1c1347"
+    },
+    {
+      "path": "docs/design/source/figures/er03.pdf",
+      "bytes": 53905,
+      "sha256": "fe020b610eb0431ce5abff19d66e6f2603d44a22719bda495c2b30fed548e299"
+    },
+    {
+      "path": "docs/design/source/figures/er03.png",
+      "bytes": 224998,
+      "sha256": "a40601dd9e283f6fef821629bf15090426284cd3bf18916ed78a38a2f02844b0"
+    },
+    {
+      "path": "docs/design/source/figures/er03.svg",
+      "bytes": 12892,
+      "sha256": "e29bc2245973221d0ec5ead22472632ee041c4db5cacadb2ad216084c95060c0"
+    },
+    {
+      "path": "docs/design/source/figures/er04.pdf",
+      "bytes": 51722,
+      "sha256": "813af7e982ff46a56d5d58c3fa4b712279030f86a44de6d587748c6bee2f8bc1"
+    },
+    {
+      "path": "docs/design/source/figures/er04.png",
+      "bytes": 195367,
+      "sha256": "9db373b582cb5c971d287fef5bc3bf256c873f867661e45ed0f5b6ce2c5a3263"
+    },
+    {
+      "path": "docs/design/source/figures/er04.svg",
+      "bytes": 10549,
+      "sha256": "d5d555aa6dbc5fc25829481569e70c5e4d01938baf64acc53fd6f1011de4395a"
+    },
+    {
+      "path": "docs/design/source/figures/er05.pdf",
+      "bytes": 55414,
+      "sha256": "946f63033eb71be8c56068a5abc53e4c59a84bd6add41c021aa24ca8f13c933b"
+    },
+    {
+      "path": "docs/design/source/figures/er05.png",
+      "bytes": 275483,
+      "sha256": "806de04b24e067747f16987f5ee350e51a1d545009213389c331bdddca87bcfc"
+    },
+    {
+      "path": "docs/design/source/figures/er05.svg",
+      "bytes": 14069,
+      "sha256": "46fb26b276c44a882062ef71831ed99589038d5092617454167d86701a09c681"
+    },
+    {
+      "path": "docs/design/source/figures/er06.pdf",
+      "bytes": 57233,
+      "sha256": "e4213e80ba7f364225e2532bd973fe5b56f7457a5c33aadf7ca23960c4abb77f"
+    },
+    {
+      "path": "docs/design/source/figures/er06.png",
+      "bytes": 270415,
+      "sha256": "8e981a380218c67d6be5bab41c03aeaa8e1830e4bcbedbaca33d2b518e1aabfa"
+    },
+    {
+      "path": "docs/design/source/figures/er06.svg",
+      "bytes": 14061,
+      "sha256": "fe483376612ab7ae7be28016342f8b89b682099617affcddacbc08ca1d21d7d2"
+    },
+    {
+      "path": "docs/design/source/figures/financial_states.pdf",
+      "bytes": 40133,
+      "sha256": "95a8b1832412c19f564a92ee203c1ecbb1174f4e4993ba38b8cfc01c0d85e626"
+    },
+    {
+      "path": "docs/design/source/figures/financial_states.png",
+      "bytes": 285921,
+      "sha256": "e66a08731fe8edbd6c180aadf0bcb9c760fa6666f63d7d4faae63aaf5584f7e5"
+    },
+    {
+      "path": "docs/design/source/figures/financial_states.svg",
+      "bytes": 6392,
+      "sha256": "cd624c7c118c1e72b3ba5f81ac35d0216f78fc70120ce11e5ff3e0d2e38df2b2"
+    },
+    {
+      "path": "docs/design/source/figures/front_doctor_usecases.pdf",
+      "bytes": 52164,
+      "sha256": "cf88e0ac382bbf5d7a21eccf8c89868e7530cb980fa949cd034a69ec208d2812"
+    },
+    {
+      "path": "docs/design/source/figures/front_doctor_usecases.png",
+      "bytes": 296860,
+      "sha256": "7aa2f3b6db1c400486f5d8fb9ac860279bae63cf4e7e50e8be1f4099f94d7d8a"
+    },
+    {
+      "path": "docs/design/source/figures/front_doctor_usecases.svg",
+      "bytes": 4721,
+      "sha256": "536b5790f76638212931180d719aad1f60b86243ee5565cda46117761c771b65"
+    },
+    {
+      "path": "docs/design/source/figures/improved_booking.pdf",
+      "bytes": 55783,
+      "sha256": "62da31bb01d5cf45c8acab2a1518facb5b8118898108b801d48d005e9984f4ef"
+    },
+    {
+      "path": "docs/design/source/figures/improved_booking.png",
+      "bytes": 203418,
+      "sha256": "6bb0129f99a392b519aedec4644e0a59bc64a3277447fd6ff3a4578756292f61"
+    },
+    {
+      "path": "docs/design/source/figures/improved_booking.svg",
+      "bytes": 8280,
+      "sha256": "825aef022c51241877f1395efb82a047428961041eaff602415b8c3668080cab"
+    },
+    {
+      "path": "docs/design/source/figures/improved_clinical.pdf",
+      "bytes": 55105,
+      "sha256": "fe70e4c6bb795e71b3c961e9dec058b4dd2ec12ddffdd895d82802a201933031"
+    },
+    {
+      "path": "docs/design/source/figures/improved_clinical.png",
+      "bytes": 184122,
+      "sha256": "8f5c66efc170a0e4eb275798608e3335096735a6df36b137d87c22a8742a6366"
+    },
+    {
+      "path": "docs/design/source/figures/improved_clinical.svg",
+      "bytes": 8014,
+      "sha256": "2b8bbd8596ad90cb08492d10e513eac49fc6c2a92659050681613e284584b1af"
+    },
+    {
+      "path": "docs/design/source/figures/improved_management.pdf",
+      "bytes": 52789,
+      "sha256": "9d563673cd99072fd77df8971f554b4d4de3281ea8a85e86a8737bd7efb96f83"
+    },
+    {
+      "path": "docs/design/source/figures/improved_management.png",
+      "bytes": 158470,
+      "sha256": "9203d64fc9654a9d2410b1ac9c4ddec66451918ddcafe89a96a3ba23eda0008d"
+    },
+    {
+      "path": "docs/design/source/figures/improved_management.svg",
+      "bytes": 6602,
+      "sha256": "2997c74a39a2dfb364348993eb4307851e294c850cd2b1ccc8c564a4a6d2d13f"
+    },
+    {
+      "path": "docs/design/source/figures/manager_usecases.pdf",
+      "bytes": 51929,
+      "sha256": "ebff11e53a5f2d21f518a6469e1264038e4e9d8b5651d8a0b2201fa8b4b2514c"
+    },
+    {
+      "path": "docs/design/source/figures/manager_usecases.png",
+      "bytes": 300247,
+      "sha256": "dbb5528982f202bc832d089642b10fb6b2ab91b7424bf9ad3b6c85cbca4496fe"
+    },
+    {
+      "path": "docs/design/source/figures/manager_usecases.svg",
+      "bytes": 4020,
+      "sha256": "e666e7d4942865e0168569c98c1ea65350fe60e8cdf4e9d004e37f6a58e4e693"
+    },
+    {
+      "path": "docs/design/source/latex/figures/analysis_booking.pdf",
+      "bytes": 54837,
+      "sha256": "c4e1d9343bf6e4ec90f2db00319d0ba9bd1af65893ede3f4774a48f52e63ae0f"
+    },
+    {
+      "path": "docs/design/source/latex/figures/analysis_classes.pdf",
+      "bytes": 63343,
+      "sha256": "0e38d981414218b8e3ac8759eb42be1030a3266b8fcfc66de76891e58d449ba1"
+    },
+    {
+      "path": "docs/design/source/latex/figures/analysis_finance.pdf",
+      "bytes": 58998,
+      "sha256": "80b7b5a237ce86ef33314cf67bcd09303a13f2628580f627b03f497db56cdb15"
+    },
+    {
+      "path": "docs/design/source/latex/figures/appointment_states.pdf",
+      "bytes": 40976,
+      "sha256": "4b823f5ac6bd4428351901b0a80ec0656c4633fe559ed1a45985d5de780a92e7"
+    },
+    {
+      "path": "docs/design/source/latex/figures/archetype_sequence.pdf",
+      "bytes": 54839,
+      "sha256": "43fc2b4b3a4f6b23d1c0e7b24295678c163d582e315c89f0a0d6147ba4aecce6"
+    },
+    {
+      "path": "docs/design/source/latex/figures/architecture.pdf",
+      "bytes": 38091,
+      "sha256": "7b3e2a071771abd11863106bd5f82b8073c84d3fadcaabd28c71e0dd8cc9bc7f"
+    },
+    {
+      "path": "docs/design/source/latex/figures/business_usecases.pdf",
+      "bytes": 50188,
+      "sha256": "231ac8515f6cb483db076e5e5cb3765dc96c063b80fef1c2e79f29e2ade104fc"
+    },
+    {
+      "path": "docs/design/source/latex/figures/clinical_states.pdf",
+      "bytes": 32720,
+      "sha256": "b859f842dee1a080cc9e631ef596145c6316ff52360ef1fe9ec711905bdfa4b4"
+    },
+    {
+      "path": "docs/design/source/latex/figures/colored_model.pdf",
+      "bytes": 46736,
+      "sha256": "0cc1212bc7632e114f884a255b9276d1464be86f2e6068f74f6200f98fd15805"
+    },
+    {
+      "path": "docs/design/source/latex/figures/conceptual_er.pdf",
+      "bytes": 37011,
+      "sha256": "c1032d993d413adde42d9f7e4d2627a9c80280510c3f273e301dd8fd40220101"
+    },
+    {
+      "path": "docs/design/source/latex/figures/current_booking.pdf",
+      "bytes": 56667,
+      "sha256": "bb01e125c9f5b59e3e04ae4c1887148d101f0c53021c69aa3df95356b1e5bd58"
+    },
+    {
+      "path": "docs/design/source/latex/figures/current_clinical.pdf",
+      "bytes": 56735,
+      "sha256": "d9994d3a04acbf5a3a162121ba498b9118c04b27c697d55f338125420a33f259"
+    },
+    {
+      "path": "docs/design/source/latex/figures/current_management.pdf",
+      "bytes": 53138,
+      "sha256": "b39fa4b302a63dd70b7deeda8a17b169ebbee1cb2da865299c5ff025bcd394a2"
+    },
+    {
+      "path": "docs/design/source/latex/figures/customer_usecases.pdf",
+      "bytes": 48717,
+      "sha256": "ae47692dd920c52f2e6bc60346989c2625469f264a742f0ce0bff467951c69c1"
+    },
+    {
+      "path": "docs/design/source/latex/figures/dentist_states.pdf",
+      "bytes": 32567,
+      "sha256": "135a5663875641fdc080aaa76e2206f700b8f14348a6b1540d642fcf2dc8ad4f"
+    },
+    {
+      "path": "docs/design/source/latex/figures/deployment.pdf",
+      "bytes": 36027,
+      "sha256": "cbd87fddb5fa2d4e94c21f43c9fa178532dc18ecf8b04da620870b3c3e0feeef"
+    },
+    {
+      "path": "docs/design/source/latex/figures/er01.pdf",
+      "bytes": 54084,
+      "sha256": "7267914c1184e4480bfc37a1c68b7b1a1449734a12b2053cb18ad689c001d411"
+    },
+    {
+      "path": "docs/design/source/latex/figures/er02.pdf",
+      "bytes": 53181,
+      "sha256": "03dbe4b9a78110688642bcdaaaed0bf14882a38a6465ba0772a5e14947ff3223"
+    },
+    {
+      "path": "docs/design/source/latex/figures/er03.pdf",
+      "bytes": 53905,
+      "sha256": "fe020b610eb0431ce5abff19d66e6f2603d44a22719bda495c2b30fed548e299"
+    },
+    {
+      "path": "docs/design/source/latex/figures/er04.pdf",
+      "bytes": 51722,
+      "sha256": "813af7e982ff46a56d5d58c3fa4b712279030f86a44de6d587748c6bee2f8bc1"
+    },
+    {
+      "path": "docs/design/source/latex/figures/er05.pdf",
+      "bytes": 55414,
+      "sha256": "946f63033eb71be8c56068a5abc53e4c59a84bd6add41c021aa24ca8f13c933b"
+    },
+    {
+      "path": "docs/design/source/latex/figures/er06.pdf",
+      "bytes": 57233,
+      "sha256": "e4213e80ba7f364225e2532bd973fe5b56f7457a5c33aadf7ca23960c4abb77f"
+    },
+    {
+      "path": "docs/design/source/latex/figures/financial_states.pdf",
+      "bytes": 40133,
+      "sha256": "95a8b1832412c19f564a92ee203c1ecbb1174f4e4993ba38b8cfc01c0d85e626"
+    },
+    {
+      "path": "docs/design/source/latex/figures/front_doctor_usecases.pdf",
+      "bytes": 52164,
+      "sha256": "cf88e0ac382bbf5d7a21eccf8c89868e7530cb980fa949cd034a69ec208d2812"
+    },
+    {
+      "path": "docs/design/source/latex/figures/improved_booking.pdf",
+      "bytes": 55783,
+      "sha256": "62da31bb01d5cf45c8acab2a1518facb5b8118898108b801d48d005e9984f4ef"
+    },
+    {
+      "path": "docs/design/source/latex/figures/improved_clinical.pdf",
+      "bytes": 55105,
+      "sha256": "fe70e4c6bb795e71b3c961e9dec058b4dd2ec12ddffdd895d82802a201933031"
+    },
+    {
+      "path": "docs/design/source/latex/figures/improved_management.pdf",
+      "bytes": 52789,
+      "sha256": "9d563673cd99072fd77df8971f554b4d4de3281ea8a85e86a8737bd7efb96f83"
+    },
+    {
+      "path": "docs/design/source/latex/figures/manager_usecases.pdf",
+      "bytes": 51929,
+      "sha256": "ebff11e53a5f2d21f518a6469e1264038e4e9d8b5651d8a0b2201fa8b4b2514c"
+    },
+    {
+      "path": "docs/design/source/latex/main.tex",
+      "bytes": 283866,
+      "sha256": "2eba12bc1376cb16123f0f0e69af8ae4273c8c5d91631aad4f09a65fa55f8cac"
+    },
+    {
+      "path": "docs/design/source/latex/media/csu_logo_full.png",
+      "bytes": 314453,
+      "sha256": "b5492d41681c8ece24f348c68ecbbb4000d65e0424d26885f1b4328cabed69d2"
+    },
+    {
+      "path": "docs/design/source/latex/media/csu_seal.png",
+      "bytes": 193851,
+      "sha256": "173d07592d806d784d2e4e3abc1dbb83413dc8eb0ce5e9d208dc245c930e79ef"
+    },
+    {
+      "path": "docs/design/source/template/csu-academic-report/SKILL.md",
+      "bytes": 4002,
+      "sha256": "9c20da1eedda097b128626b40e71973b0fbd6d0756f633df3e59fd1e4aabb87d"
+    },
+    {
+      "path": "docs/design/source/template/csu-academic-report/assets/csu_logo_full.png",
+      "bytes": 314453,
+      "sha256": "b5492d41681c8ece24f348c68ecbbb4000d65e0424d26885f1b4328cabed69d2"
+    },
+    {
+      "path": "docs/design/source/template/csu-academic-report/assets/csu_seal.png",
+      "bytes": 193851,
+      "sha256": "173d07592d806d784d2e4e3abc1dbb83413dc8eb0ce5e9d208dc245c930e79ef"
+    },
+    {
+      "path": "docs/design/source/template/csu-academic-report/assets/report-template.tex",
+      "bytes": 8859,
+      "sha256": "3a742acbeb812783523f7489023d2c6986a5e6e75498086f620b353c4d704f67"
+    },
+    {
+      "path": "docs/design/source/template/csu-word-report/SKILL.md",
+      "bytes": 4128,
+      "sha256": "ef3ba510015c0e2d4192294dcaff745efbf2db58928280f654e2404dad028bf6"
+    },
+    {
+      "path": "docs/design/source/template/csu-word-report/assets/csu_logo_full.png",
+      "bytes": 314453,
+      "sha256": "b5492d41681c8ece24f348c68ecbbb4000d65e0424d26885f1b4328cabed69d2"
+    },
+    {
+      "path": "docs/design/source/template/csu-word-report/assets/csu_seal.png",
+      "bytes": 193851,
+      "sha256": "173d07592d806d784d2e4e3abc1dbb83413dc8eb0ce5e9d208dc245c930e79ef"
+    },
+    {
+      "path": "docs/design/source/template/csu-word-report/scripts/check_docx.py",
+      "bytes": 6499,
+      "sha256": "26646a6a9d6757d9d72e0584d9954df2dc6934496ecc35bbf468b496ef731314"
+    },
+    {
+      "path": "docs/design/source/template/csu-word-report/scripts/new_report.py",
+      "bytes": 44280,
+      "sha256": "e84130f5a42cea175e17fc0824e48e1d6b49ee2bd5a4d67eb8e65740660e3f9b"
+    },
+    {
+      "path": "docs/design/source/template/csu-word-report/scripts/update_fields.ps1",
+      "bytes": 3068,
+      "sha256": "076e406629323e993e46d9a8855f444c4727e4435426c4befa8e9c98c20c6252"
+    },
+    {
+      "path": "docs/design/安德鲁牙科连锁系统设计文档.docx",
+      "bytes": 6625184,
+      "sha256": "9ad6813119030f57507a93cd9759e0f10bf0728b2a5b7e5c1f24c7c4e41f4785"
+    },
+    {
+      "path": "docs/design/安德鲁牙科连锁系统设计文档.pdf",
+      "bytes": 2297255,
+      "sha256": "83d90f5d12c7bb0a7f4fc12cfb09c375decf14aa814640f6ca87862639becc6f"
+    },
+    {
+      "path": "docs/domain-model.svg",
+      "bytes": 22615,
+      "sha256": "0ccb09c41ae11d52c6701ab511a61760d2da36707458b917ca3f6c656792cc17"
+    },
+    {
+      "path": "docs/site/index.html",
+      "bytes": 25921,
+      "sha256": "a53695fce264ce7a614e4afe5ca5768dd473ae9e448901dcfbdfafe701e1750e"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 28583,
+      "sha256": "8a59f180133edcf0a18522cbcdb2f6d2d0a7ec3e3e0a1f8f9576e692b4368d55"
+    },
+    {
+      "path": "package.json",
+      "bytes": 859,
+      "sha256": "590126d625a85b1510087c88aea052fb04711cdeecee0ea0eabd62c4b52ee4b1"
+    },
+    {
+      "path": "playwright.config.js",
+      "bytes": 730,
+      "sha256": "5f5ce29820e991d48ceccddfd75207bb9a76349fb480e15a47394b0107e831d1"
+    },
+    {
+      "path": "public/app.js",
+      "bytes": 2189,
+      "sha256": "8bcb65ac3138eff0ff212c8d9570a16f5ca1c7c11344d2c63831ced8f629012a"
+    },
+    {
+      "path": "public/assets/IMAGE-PROMPTS.md",
+      "bytes": 3288,
+      "sha256": "4b8c7a7f88510a46520d735ed8e45d9423546823c32396e5109f717b7f079919"
+    },
+    {
+      "path": "public/assets/clinic-interior.png",
+      "bytes": 2321344,
+      "sha256": "b5872fac930175917db529581203e6c47f171d27c7c356b484c7ea0e864c95b4"
+    },
+    {
+      "path": "public/assets/dental-editorial.png",
+      "bytes": 1838578,
+      "sha256": "4a950a4bd054fdf7f57fedf0c0aa00aeca0d79860973405b375fcd74955504c6"
+    },
+    {
+      "path": "public/assets/smile-editorial.png",
+      "bytes": 1823688,
+      "sha256": "680e76b185133a54d6babbd6d6da356cd75248e76c1729389e054562c6997c3b"
+    },
+    {
+      "path": "public/assets/university-logo.png",
+      "bytes": 316095,
+      "sha256": "f9867287a5bd573aed1c2f21e3516d1dbb479dbc863f0080b07fa2394b0bfa87"
+    },
+    {
+      "path": "public/calendar.css",
+      "bytes": 9225,
+      "sha256": "60f8329b39340574375080ff1eacbef3435aa053a3439b5a2797f4a4996c3f13"
+    },
+    {
+      "path": "public/calendar.js",
+      "bytes": 15726,
+      "sha256": "9e2a8d003258340d7c72b8d7ca51875cfb87ff4607e0b6460e22a509ef54c96b"
+    },
+    {
+      "path": "public/css/accessibility.css",
+      "bytes": 594,
+      "sha256": "7ec5e9c75590f3f8d4002d772710da6ef26c9cda9ee66ea93399132e2acb23f6"
+    },
+    {
+      "path": "public/css/auth.css",
+      "bytes": 13994,
+      "sha256": "85592712abcbdb470f42c681bd468968bfcd9da6871c9adf6a5f8a026dc15880"
+    },
+    {
+      "path": "public/css/base.css",
+      "bytes": 3930,
+      "sha256": "38126708ccc2b0fca666bb1f2f6e13dbb27e9b9059f4df8078c261bea6a63676"
+    },
+    {
+      "path": "public/css/components.css",
+      "bytes": 27125,
+      "sha256": "ac58e0b9ee5ae4ece639bd373454da5078e4831d7c03d09cbf970b625c52c8e1"
+    },
+    {
+      "path": "public/css/customer.css",
+      "bytes": 26307,
+      "sha256": "98ea756804c7ad2a60fd5b95160211a7596de0a35b0e087fa48d778f8853d67c"
+    },
+    {
+      "path": "public/css/layout.css",
+      "bytes": 2566,
+      "sha256": "0afea95cb3862a802cce3476ede18ee50aa62c5962f5d73dff05f246952df89c"
+    },
+    {
+      "path": "public/css/print.css",
+      "bytes": 715,
+      "sha256": "f639fbcd423fa447b94b5254deda925ceac55115d3d44fc30974dfd18cc78946"
+    },
+    {
+      "path": "public/css/responsive.css",
+      "bytes": 18777,
+      "sha256": "c05f36cba3a0f892cf75743828f286c30c457e7c893713a007b03512e3f0ce3a"
+    },
+    {
+      "path": "public/css/staff.css",
+      "bytes": 6069,
+      "sha256": "ed82b30c904e91c14734288fb688155f905d4798f4df74d6450a8bb52ab1a22c"
+    },
+    {
+      "path": "public/index.html",
+      "bytes": 973,
+      "sha256": "6b11c51606cbc92c3dcf7a6a906ce34e3f41e3640da8adfbd6ff4807cea562ed"
+    },
+    {
+      "path": "public/js/components/modal.js",
+      "bytes": 1086,
+      "sha256": "7ed5a8c847e0989bfc6582e9e0edbefae8747d9e898ef964d7b8d5b927a08508"
+    },
+    {
+      "path": "public/js/components/pagination.js",
+      "bytes": 530,
+      "sha256": "ab1947c9aff4be49d2b39d8c0343449da94b5d5f57167a10f0a010038998036b"
+    },
+    {
+      "path": "public/js/components/shell.js",
+      "bytes": 7846,
+      "sha256": "483449de67889d3ae0ec0a68b79ec8312ca690c282b2a11e764ddbdd0140085e"
+    },
+    {
+      "path": "public/js/components/ui.js",
+      "bytes": 4315,
+      "sha256": "8d6cb80a1f748193d37639b4922aa61f830d1b94c31036bc87fa7352e23c7d84"
+    },
+    {
+      "path": "public/js/core/api.js",
+      "bytes": 2282,
+      "sha256": "ad820e083c119574868fdd4e3bcb702728281ba6dad48aef570db21b1649d375"
+    },
+    {
+      "path": "public/js/core/context.js",
+      "bytes": 1813,
+      "sha256": "bd8b5a14aae526888b4339f2cf66a6df2498cf191d54fe45c866d0e0ed2c0294"
+    },
+    {
+      "path": "public/js/core/events.js",
+      "bytes": 11558,
+      "sha256": "aa65dd0ee43e001c97fedadb729ff6759d15a5b7ed03cd7362c41718fd117f2a"
+    },
+    {
+      "path": "public/js/core/format.js",
+      "bytes": 1975,
+      "sha256": "0740d39b11092a7ac9fe2042065c3fae7f3bff161ee4fdbf51a08ef7e6c6c5cf"
+    },
+    {
+      "path": "public/js/core/portals.js",
+      "bytes": 3250,
+      "sha256": "46f05566788102f49c8443490ef0883493786558574014f46955c2ff9e44fea7"
+    },
+    {
+      "path": "public/js/core/selectors.js",
+      "bytes": 1198,
+      "sha256": "f67ce49111df12a198eb43f1ddfcc1b83307c826940b832058d39302d0eb36c0"
+    },
+    {
+      "path": "public/js/core/store.js",
+      "bytes": 5940,
+      "sha256": "8668033858d30897f8b43cd8120eb58e6d7c0000aefa759b902168944ef821ba"
+    },
+    {
+      "path": "public/js/pages/accounts.js",
+      "bytes": 7930,
+      "sha256": "18736918c2066b9321ed096106f7dcde354465a9e4e9dcb68bbc4325e96ea981"
+    },
+    {
+      "path": "public/js/pages/appointments.js",
+      "bytes": 12209,
+      "sha256": "f68a96f28622296eba6b7dfe40eb6945f71ecd4fec436f3bf41a11163ab0733a"
+    },
+    {
+      "path": "public/js/pages/auth.js",
+      "bytes": 10341,
+      "sha256": "2cc99c0ebb3be87c77fb3ec5d31e49ead34f2585e80b488d38c8895caa30a135"
+    },
+    {
+      "path": "public/js/pages/billing.js",
+      "bytes": 3462,
+      "sha256": "3bbadbd1e578b2b8ade7a1abae5aeb2563855ba5ef51a82724d20bea48ab855b"
+    },
+    {
+      "path": "public/js/pages/booking-picker.js",
+      "bytes": 4735,
+      "sha256": "1c33b83a9293523aebd6473e38ed21261aef78e89924724e0b88697439ada8c1"
+    },
+    {
+      "path": "public/js/pages/clinical.js",
+      "bytes": 6270,
+      "sha256": "fffb132e7aa5afb1d8e876c52102941c433fc6dac3d26bab71687f7cfaa45184"
+    },
+    {
+      "path": "public/js/pages/finance.js",
+      "bytes": 8209,
+      "sha256": "1a174c3baa43622abca6a55665a05197fc6e8ccacc7e184a59206b9fa98db0e5"
+    },
+    {
+      "path": "public/js/pages/home.js",
+      "bytes": 11919,
+      "sha256": "43deae725b88de75a0a726a8607bc524ed33d5e95cc752442908cbd863618e10"
+    },
+    {
+      "path": "public/js/pages/identity.js",
+      "bytes": 2561,
+      "sha256": "af1cc60484c875bf85a6767779202dd5b42a3af2d8d2acf5830a2d0a59f40709"
+    },
+    {
+      "path": "public/js/pages/patients.js",
+      "bytes": 7660,
+      "sha256": "a0bfdc93ee8535d4285bc7b1fe173b71f5c3fad496c331c1ab28569f71b6b3ba"
+    },
+    {
+      "path": "public/js/pages/recovery.js",
+      "bytes": 2264,
+      "sha256": "b8e4b7db16181b5dcaa3b0350ab57f0e7405ccb28859334bf481027098e21838"
+    },
+    {
+      "path": "public/js/pages/reports.js",
+      "bytes": 5438,
+      "sha256": "189386b839298c88d5e6679cb9c3cef2325d1901b4edb157af91c840a28741dc"
+    },
+    {
+      "path": "public/js/pages/resources.js",
+      "bytes": 9620,
+      "sha256": "0aa9be4e05cf6f56081c54ef37cb33f1b045e574d58fd3e01b78dfd3d147732e"
+    },
+    {
+      "path": "public/js/pages/settings.js",
+      "bytes": 3490,
+      "sha256": "4947b2157ddf5ed28462e477ad67275444a55d4cd33da4b42ca7678c02b49bb6"
+    },
+    {
+      "path": "public/motion.js",
+      "bytes": 2593,
+      "sha256": "cbe4784edef79489f29d7beaf1dadcdd399fc386a310906bce169c95346ab684"
+    },
+    {
+      "path": "public/styles.css",
+      "bytes": 82694,
+      "sha256": "83a0f31570ce8eea013506a03b03c4bc9448d2a8b2b47f67a584db7e2b493b78"
+    },
+    {
+      "path": "server/db.js",
+      "bytes": 2724,
+      "sha256": "6d0c7eb117e7eb178a4ee858f5829f34155b0510ccee5c62757ba62f8498e2c2"
+    },
+    {
+      "path": "server/domain.js",
+      "bytes": 2932,
+      "sha256": "907f91689dceae533a5bbfe2037a1c77007b019a348e33fb0802b6190614ad98"
+    },
+    {
+      "path": "server/http/configuration.js",
+      "bytes": 735,
+      "sha256": "85f33ee10b4df71ac422b5fb0e982a98d055db45c98f4cbfe916d5d6a9446e3f"
+    },
+    {
+      "path": "server/http/idempotency.js",
+      "bytes": 1398,
+      "sha256": "15d896b5e3a8fad10643f6774225598b23d578d55a863c3cad9037e7a4789d2d"
+    },
+    {
+      "path": "server/http/rate-limit.js",
+      "bytes": 1812,
+      "sha256": "5436fab5596745a34d6e8a9e51631cae1ea468a29667175efb420bbc226519c1"
+    },
+    {
+      "path": "server/http/sessions.js",
+      "bytes": 2050,
+      "sha256": "aa07f459d831ca4fed91cf7a0dcfa5a8b823ab8b869dcf1e30e8ac4e7734a5e7"
+    },
+    {
+      "path": "server/index.js",
+      "bytes": 14979,
+      "sha256": "8c9dfe821a040d101744f85bcc23ab3a8d538fea0e2915fe826bf7c14aa41b42"
+    },
+    {
+      "path": "server/migrations/extensions.sql",
+      "bytes": 5269,
+      "sha256": "a009b2f01d75b039eeeb10be4f31d671eda27f3a8e280c8d9ac0f51487c49291"
+    },
+    {
+      "path": "server/migrations/manifest.js",
+      "bytes": 711,
+      "sha256": "256d48f220ee7c6dccf6c299e9fa0dd8eee4ca025614a239d2ca5c3f1cf75a36"
+    },
+    {
+      "path": "server/migrations/runner.js",
+      "bytes": 4346,
+      "sha256": "a0815221a6fbf1b69008b29434562eb5f30cfd703d2963e5d08683cd9ea919ef"
+    },
+    {
+      "path": "server/policies/permissions.js",
+      "bytes": 1009,
+      "sha256": "480a88397e584f66051ebd903e23cd9a7b7edbcdd0c59f2d2ce27a411c356f21"
+    },
+    {
+      "path": "server/repositories/entities.js",
+      "bytes": 8782,
+      "sha256": "41d6d8b1a4ee81819322d204b810a2953bd54125819f2a41aeea8f285f3da6d3"
+    },
+    {
+      "path": "server/schema.sql",
+      "bytes": 11682,
+      "sha256": "e5769b392b865823d78dd2a3a7c82267cab39ec96a2f5096c63dc26013ea137c"
+    },
+    {
+      "path": "server/seed.js",
+      "bytes": 6457,
+      "sha256": "1c7d8e3b786cddad4dfd39a12702698b154379be44136bcb08691ebce22756b1"
+    },
+    {
+      "path": "server/services/accounts.js",
+      "bytes": 11852,
+      "sha256": "bff6812d846e44576e6b809a7f9ca3293fe5c8e395c48a28c06c52964911fc04"
+    },
+    {
+      "path": "server/services/appointments.js",
+      "bytes": 5081,
+      "sha256": "fe76853a5e65a92703709ce2cb970d862af093fdf6597746e5711ea1d935f8b1"
+    },
+    {
+      "path": "server/services/business.js",
+      "bytes": 4110,
+      "sha256": "c2b1d546e058c9f57e9284f2081ce910fe2c8141bddc14083b20517b8ecfcbc1"
+    },
+    {
+      "path": "server/services/clinical-addenda.js",
+      "bytes": 991,
+      "sha256": "c0b73638e231ecfbcedf26e08b4aca7f9b8fbc8dcfd986bb834ec93dc62587d2"
+    },
+    {
+      "path": "server/services/clinical.js",
+      "bytes": 2914,
+      "sha256": "9ea1cb53eeabd0d380a755c34b010c42520e375c57463f0a4e7cac76521fc2cb"
+    },
+    {
+      "path": "server/services/finance.js",
+      "bytes": 10115,
+      "sha256": "b789d0ec9b7363cbedffbadbff7df18fe0b65b0e1065c347b69d8d4fe7b87d08"
+    },
+    {
+      "path": "server/services/patient-merge.js",
+      "bytes": 4063,
+      "sha256": "3c9364c632d07c6ce1531d3facaa3cbb77764610425aae4a498692e719ddc88b"
+    },
+    {
+      "path": "server/services/patients.js",
+      "bytes": 3557,
+      "sha256": "436d3dd5153e02faf498d7bae7db7ed7e3005c642a468b819f859573aa855d65"
+    },
+    {
+      "path": "server/services/reports.js",
+      "bytes": 5223,
+      "sha256": "be04b0306983eeba3511da34702882ed1091714fc3583931d59fbfcd7c5c09f7"
+    },
+    {
+      "path": "server/services/resources.js",
+      "bytes": 6345,
+      "sha256": "1818a0b845417b7c9b0b53f2201ef5c9da3323145ab121d07776e09e66bf6f4a"
+    },
+    {
+      "path": "server/services/shared.js",
+      "bytes": 7938,
+      "sha256": "5c4ca435e9a5e27f0c6708595f906a91a23d0c4520b0f60cbb3596ca4c1e5132"
+    },
+    {
+      "path": "server/services/workspace.js",
+      "bytes": 15053,
+      "sha256": "f74a32b8f3795eb58021f246589f33c495414617c8752aa7bfcbc48d03cf0142"
+    },
+    {
+      "path": "start.ps1",
+      "bytes": 495,
+      "sha256": "ad6fd93369e4b84776c7f5b318bd3bd90c3e4481b53a8960036171c4a1a6631a"
+    },
+    {
+      "path": "test/browser/workspaces.spec.js",
+      "bytes": 5567,
+      "sha256": "14f802a696e98934fe8e24b19785f2fa50975eb6419a0fc3f675c086bdbee908"
+    },
+    {
+      "path": "test/business.test.js",
+      "bytes": 14672,
+      "sha256": "5abc47caed9a2a432243553d82939407239da115255834d713530481aa9e7c6c"
+    },
+    {
+      "path": "test/calendar.test.js",
+      "bytes": 5998,
+      "sha256": "447a335b137ca51f09df5ee6b755c78ef043f9af5439179b3082cc13dd504ce3"
+    },
+    {
+      "path": "test/http-engineering.test.js",
+      "bytes": 8332,
+      "sha256": "9d2ece2a1c46ddbb24c2064d46ce6c52535b4dc11ed05e1bd183938343c55eb1"
+    },
+    {
+      "path": "test/migrations.test.js",
+      "bytes": 6877,
+      "sha256": "762217a5326424455933d05be050bc6fd7306fcb18994780c6f3d33badfd86de"
+    },
+    {
+      "path": "test/operations.test.js",
+      "bytes": 6464,
+      "sha256": "bf153686da66838f6b84d092ceb5f178c4ebddee5b74d044d644d3e4ec8a440f"
+    },
+    {
+      "path": "test/system.test.js",
+      "bytes": 24858,
+      "sha256": "3bcf304ce895e523504fe9fc69a1644e886078b83a279c1642bed2b23c793692"
+    },
+    {
+      "path": "tools/accounts.mjs",
+      "bytes": 2817,
+      "sha256": "e03f805f0393631c88951f87b55eff391390f99e01ba361929529c4e8e3613da"
+    },
+    {
+      "path": "tools/backup-daemon.mjs",
+      "bytes": 1717,
+      "sha256": "8c062c34c1703b2a26ffecaa1637f3992b11e45d182cd24c1d5419ab63ed6904"
+    },
+    {
+      "path": "tools/build-docs.mjs",
+      "bytes": 2005,
+      "sha256": "ed7a63f5a4e54ace62cfd0932cb83d5b9df9f840ebf9dff68730527a51054a0e"
+    },
+    {
+      "path": "tools/build-styles.mjs",
+      "bytes": 934,
+      "sha256": "f3162c54860b31485d0f5259418354e94fccc4da72181ae1c7774412b5a5e736"
+    },
+    {
+      "path": "tools/build.mjs",
+      "bytes": 248,
+      "sha256": "c197d625b1c5b7f85f02dfbb6a275d4712461a90b2df6dadb8db963a7611eadd"
+    },
+    {
+      "path": "tools/check-source.mjs",
+      "bytes": 1190,
+      "sha256": "9e8800e863d7d26235be75d01b663266aa2d059c60c36459830177ee08bfdf78"
+    },
+    {
+      "path": "tools/database.mjs",
+      "bytes": 5088,
+      "sha256": "fb923a8e9e08762c778ddb8a56e6db372517e1d69592f9ea0737525a176e797d"
+    },
+    {
+      "path": "tools/load-test.mjs",
+      "bytes": 1954,
+      "sha256": "384a25a74ca9c51a2ed742970ca1ccd268f1567ae67aec2f8520c73d7f066266"
+    },
+    {
+      "path": "tools/release-manifest.mjs",
+      "bytes": 1611,
+      "sha256": "31d55f59883a19172392dd3e425d19fdb34514a800953157db081f068318239e"
+    },
+    {
+      "path": "tools/run-e2e.mjs",
+      "bytes": 893,
+      "sha256": "68b3bf444a13099b83a4d3404fcc4fee4dcafe0f4f9510177d8e783374cd032f"
+    },
+    {
+      "path": "tools/verify-maintenance.mjs",
+      "bytes": 7181,
+      "sha256": "cae199893700be5659fa5d7beb8b5369486ce4cc18656b328c461756793879dd"
+    }
+  ]
+}

@@ -1,0 +1,323 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>安德鲁牙科 · 使用与部署文档</title><style>body{font:16px/1.8 system-ui,"Microsoft YaHei",sans-serif;background:#f7f8fb;color:#273345;margin:0}header,main{max-width:1060px;margin:auto;padding:28px}a{color:#4b51b8}nav{display:flex;gap:16px;flex-wrap:wrap}section{margin:24px 0;padding:24px;background:white;border:1px solid #e4e7ee;border-radius:12px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.85 ui-monospace,monospace}h1{font-size:27px}small{color:#677487}</style><header><h1>安德鲁牙科 · 使用与部署文档</h1><p>当前发布包随附的源码说明、接口和运维步骤。</p><nav><a href="/customer/login">顾客入口</a><a href="/frontdesk/login">前台入口</a><a href="/doctor/login">医生入口</a><a href="/manager/login">店长入口</a></nav><small>数据范围与外部联调状态以验收记录为准。</small></header><main><section id="README.md"><h2>README.md</h2><pre># 安德鲁牙科就诊与运营系统
+
+当前版本 **3.0.0**。四个独立岗位门户，共享关系型 SQLite 数据库及 Node.js 后端；店长管理全部门诊。
+
+完整课程设计文档位于 [docs/design](docs/design/README.md)：[可编辑Word](docs/design/安德鲁牙科连锁系统设计文档.docx)、[PDF](docs/design/安德鲁牙科连锁系统设计文档.pdf) 及 [TeX和SVG图源](docs/design/source/README.md)。使用 `csu-word-report` 与 `csu-academic-report` 两个技能，包含24份用例规约、28张图、38表296字段的数据字典；文稿源码核对截至2026-10-18，排版与发布收尾于2026-10-19。文稿中的10月15日本地测试和当时未执行的外部部署属于历史验收状态，后续远端检查以仓库Actions为准。
+
+- 顾客：`/customer/login`
+- 前台：`/frontdesk/login`
+- 医生：`/doctor/login`
+- 店长：`/manager/login`
+
+## 本地启动
+
+需要 Node.js **24.15.0** 或经过完整回归的兼容版本。
+
+```powershell
+cd andrew-system
+npm ci
+npm run build
+npm start
+```
+
+访问 `http://127.0.0.1:3210/customer/login`。默认本机演示首次创建合成患者与四个演示账号 `chen`、`front`、`doctor`、`manager`，密码均为 `Dental2026!`。员工入口没有公开注册。已有数据库不会重置；旧版结构自动迁移前会保存完整快照，运行中的旧服务会阻止升级。
+
+正式新库设 `DENTAL_SEED_DEMO=0`，关闭演示数据与演示入口。该开关不会删除已有演示账号，正式数据必须使用独立数据库。首个店长通过 `tools/accounts.mjs create-staff` 初始化。
+
+## 已实现的业务
+
+- 患者资料、结构化过敏申报与工作人员核实；身份核验后查询、绑定顾客账号、版本受控归并与历史别名。
+- 排班、预约、改期、取消、到诊、爽约更正；跨门诊牙医冲突与患者时间冲突检查；失败改期回滚。
+- 治疗明细与价格快照、就诊完成冻结、带作者/时间/原因的不可覆盖附记。
+- 费用开单、人工核对收款、欠款余额、原款限额退款、保留原单的冲销、按北京时间核对营业日资金与差额、来源变化失效提示。
+- 成本录入审核、季度报告及基金测算；收入明确采用有效开单口径，另有收款账簿，不将两者混用。
+- 员工创建、归属调整、启停与离职；撤销旧会话、保留有效店长、本人改密、机构核验后的限时单次恢复凭证。
+
+现金/银行/POS 均为工作人员核验凭证后的人工记账，代码不执行银行转账或线上支付；恢复凭证由机构核验后交付，未接入短信。尚未提供完整牙位病历、影像、处方、知情同意、医保及正式票据，也未经真实临床或公网容量验收。
+
+## 代码结构
+
+```text
+public/app.js                 浏览器入口
+public/js/core/               API、状态、门户、格式、事件
+public/js/components/         外壳、表单、弹窗、分页
+public/js/pages/              患者、预约、诊疗、结算、财务、账号等页面
+public/css/                   九个可维护样式源文件
+public/styles.css             构建生成的CSS，修改源文件后重新构建
+server/index.js               HTTP入口与路由
+server/http/                  会话、限流、请求幂等、部署配置校验
+server/policies/              四岗位权限
+server/services/              独立业务服务与按页查询
+server/repositories/          明确字段映射、批量关联、条件查询
+server/migrations/            带版本及checksum的事务迁移
+server/schema.sql             初始关系型结构，不可修改已应用迁移
+server/data/                  默认数据库及升级快照，Git忽略
+```
+
+当前38张表。十二类核心业务对象采用明确类型列，过敏、资格、治疗行、结算行、报告行等采用关系子表。`users.data` 保留身份对象兼容格式，同时以同步列和索引提供查询；审计及请求重放结果使用JSON快照。
+
+日常前端使用 `/api/workspace` 按页面、筛选及分页读取，主区更新保留导航外壳。`/api/state` 保留给兼容验证；不用于日常整包刷新。写入检查权限、范围与版本，并支持同一逻辑操作幂等重放。
+
+## 验证与维护
+
+```powershell
+npm run check
+npm test
+npm run test:maintenance
+npm run test:browser
+npm run test:load
+npm run release:manifest
+```
+
+首次使用自动浏览器测试可运行 `npx playwright install chromium`。Windows已有Edge时可设置 `$env:DENTAL_BROWSER_CHANNEL=&#39;msedge&#39;`。浏览器测试使用独立临时数据库和3227端口，结束后清理临时库；容量测试使用内存合成数据。
+
+```powershell
+node tools/database.mjs backup
+node tools/database.mjs restore &lt;快照路径&gt; --offline
+```
+
+恢复必须停服，先检查完整结构与外键，再在临时副本上迁移，成功后替换；保留旧库并撤销会话和恢复凭证。完整恢复使用SQLite快照；网页业务JSON导出包含财务和附记等业务资料，不含账号口令及恢复凭证，不是灾备恢复文件。
+
+员工初始化、改密码时用临时环境变量传入密码，完成后删除环境变量，不提交到Git。CLI不会自动填充演示数据。
+
+## 文档与发布
+
+- [架构说明](ARCHITECTURE.md)
+- [接口约定](API-CONTRACT.md)
+- [部署和恢复](DEPLOYMENT.md)
+- [本轮验收](REFACTOR-ACCEPTANCE.md)
+
+`npm run build:docs` 生成仓库内 `docs/site/index.html`，通过 `/docs/index.html` 访问，不依赖课程根目录的旧项目或PDF文件。Docker、Compose、反向代理示例及GitHub Actions均位于本目录。可以将本目录作为独立仓库根目录，不包含工作区旧Clearbrook项目。
+
+`RELEASE-MANIFEST.json` 是当前源码发布哈希清单；较早 `SHA256.json` 仅保留在本地，`ACCEPTANCE` 和设计自查文件按原日期保留为历史证据，不代表3.0版本。数据库、快照、环境秘密、依赖目录和测试产物均排除发布。
+</pre></section><section id="ARCHITECTURE.md"><h2>ARCHITECTURE.md</h2><pre># 3.0架构与业务边界
+
+更新日期：2026-10-15。当前实现保持原生浏览器模块、Node.js内置HTTP及SQLite，按职责组织代码。
+
+## 请求与数据流
+
+```mermaid
+flowchart LR
+    Portal[四岗位独立门户] --&gt; UI[页面模块与公共组件]
+    UI --&gt; API[API客户端与页面状态]
+    API --&gt; HTTP[会话和安全校验]
+    HTTP --&gt; Query[分页查询服务]
+    HTTP --&gt; Command[岗位权限和事务业务服务]
+    Query --&gt; Repo[关系型Repository]
+    Command --&gt; Repo
+    Repo --&gt; DB[(SQLite与版本迁移)]
+```
+
+`public/app.js` 只安装入口和事件。页面、组件与API分离；路由、筛选、分页触发相应查询，保留导航及用户菜单，只更新业务主区。日/周日历按时间窗口分批读取完整结果，列表使用分页；预约与改期另有独立分页时段选择器。各页所需的关联实体由服务端批量补充。
+
+样式源分为base、components、layout、staff、customer、auth、responsive、accessibility、print，通过明确的CSS layer顺序构建。重复规则由PostCSS/cssnano整理；普通主题不再依赖!important，减少动态及打印保留必要覆盖。
+
+## 服务职责
+
+| 模块 | 职责 |
+|---|---|
+| HTTP | JSON请求、Origin/Host、会话、CSRF、限流、幂等、静态资源 |
+| policies | 顾客/前台/医生/店长权限矩阵 |
+| patients / patient-merge | 档案、身份核验、可追溯归并 |
+| resources / appointments | 门诊资源、排班、预约和状态转换 |
+| clinical / clinical-addenda | 治疗快照、完成冻结、追加附记 |
+| finance / reports | 收退款、余额、冲销、日结与季度核算 |
+| accounts | 创建、归属、在职状态、改密及核验恢复 |
+| workspace | 按页SQL查询、关联补充、范围控制、聚合统计 |
+| repositories | 白名单字段、SQL参数绑定、批量子表读写 |
+| migrations | 版本、checksum、升级快照、事务和外键检查 |
+
+医生可读其授权患者的跨门诊历史，预约列表及临床写入仍按本人责任控制。前台按授权门诊操作；店长覆盖全部门诊。权限和数据范围在后端执行。
+
+## 存储与一致性
+
+38张物理表包含十二类核心对象、关系子表、身份与审计、迁移记录、账簿、恢复及幂等信息。核心业务表不再使用每实体一个data JSON字段。用户身份对象保留兼容data，并以同步列查询；审计、幂等响应及历史签名使用快照形式。
+
+Repository提供get/find/query/count及批量关联映射。所有修改使用同步事务，嵌套调用使用savepoint；金额以整数分处理。版本冲突返回409。账簿、诊疗附记和审计以追加记录留痕，完成治疗和原结算快照不被后续修改覆盖。
+
+同一逻辑写入的Idempotency-Key及财务操作键检查内容hash，在事务内保存结果；重放返回原结果，内容变化拒绝。恢复凭证只显示一次，不进入审计或幂等响应缓存。
+
+## 升级与运行
+
+旧JSON数据库在停止旧服务后先生成VACUUM快照，再在事务中重建类型列和关系行。升级检查外键，失败回滚。已应用迁移校验checksum，后续结构变化必须新增版本，不能修改旧脚本。运行中的库受PID锁约束。
+
+服务仍为单实例SQLite设计，没有据此声称多主机写入或200并发。线上能力需目标部署和真实负载验收。Docker及备份侧车采用持久化卷，反向代理负责HTTPS；本轮已验证内容见验收记录。
+
+## 范围说明
+
+实现了可操作的门诊预约与运营业务。收款为人工核验后登记，恢复为机构核验后交付单次凭证；未声称银行或短信联调成功。完整临床记录、正式票据、医保等依赖另行确定业务边界和供应商接口。
+</pre></section><section id="API-CONTRACT.md"><h2>API-CONTRACT.md</h2><pre># 3.0接口约定
+
+同源JSON API；时间存ISO时间，页面按Asia/Shanghai显示；金额均为整数分。角色只有customer、front、clinical、manager。
+
+## HTTP接口
+
+| 方法/路径 | 内容 |
+|---|---|
+| GET /api/health | 服务存活及数据库连接检查 |
+| GET /api/portal-config | 是否显示合成数据演示入口 |
+| POST /api/login | username/password/portal；身份必须与入口一致，返回user/csrfToken及HttpOnly会话Cookie |
+| POST /api/register | portal=customer、username/password/name/phone；已有电话档案拒绝重复创建，转机构核验绑定 |
+| GET /api/session | 当前身份与CSRF |
+| GET /api/workspace | 按页面、范围、过滤及分页读取 |
+| GET /api/state | 兼容验证快照，日常前端不用此接口刷新 |
+| POST /api/command | type/payload；会话、CSRF、岗位与对象范围校验后事务执行 |
+| POST /api/logout | 撤销当前会话 |
+| POST /api/password-recovery/request | username/portal；portal为customer、front、clinical或manager，无论是否存在账号均给统一结果，机构随后核验 |
+| POST /api/password-recovery/consume | token/newPassword；10分钟单次凭证，成功撤销全部旧会话，不自动登录 |
+| GET /api/backup | 店长业务JSON导出，包含账簿/附记/别名，不包含账号口令/会话/恢复凭证；不能用于完整恢复 |
+
+POST写入要求application/json。已登录修改要求X-CSRF-Token。错误为error/code，服务器错误附requestId；不回传SQL、文件路径或堆栈。
+
+## 按页查询
+
+`page` 为home/profile/booking/appointments/history/patients/visits/settlements/resources/performance/audit/settings/accounts/finance。后端独立限制各岗位可读页面。
+
+通用limit默认25，最大100，offset为非负整数。q为患者/账号搜索；clinicId/dentistId/status/date/from/to为相关页面筛选；date按北京时间自然日，from含、to不含。resource指定clinics/dentists/qualifications/treatments/schedules；quarter为YYYY-Q1到YYYY-Q4。booking.patientId仅取已授权患者。accounts.accountRef用于精确定位核验对象。
+
+返回user/now/settings及当前页面需要的数组、关联lookup、pagination:{entity,total,limit,offset}。home.stats及metrics由SQL聚合，不用当前页样本推算全量统计。settlements.pendingOffset/pendingPagination独立分页未开单就诊；finance.reconciliationOffset/reconciliationsPagination独立分页营业日核对。
+
+## 核心业务指令
+
+患者：patient.lookup、patient.save。资源：clinic.save、dentist.save、qualification.save、schedule.save、treatment.save。预约：appointment.book、appointment.cancel、appointment.reschedule、appointment.status。诊疗：visit.save、visit.complete。开单：settlement.create。季度：cost.save、cost.review、quarter.compute、quarter.approve。规则：settings.save。
+
+对象更新提交id及expected version（字段名version），冲突409。数据对象仍采用与页面一致的camelCase；存储层使用关系型列和子表，不要求客户端知道SQL结构。
+
+## 补齐的业务指令
+
+| type | payload与规则 |
+|---|---|
+| payment.record | settlementId,amount,method(cash/bank/pos),reference,reason,idempotencyKey；人工核对后登记，不超过欠款 |
+| payment.refund | paymentId,amount,reference,reason,idempotencyKey；仅店长，不超过原款剩余可退金额 |
+| settlement.void | id,version,reason；仅店长，先完整退款，追加冲销而保留原单 |
+| reconciliation.preview | clinicId,businessDate；读取北京时间当日渠道净额 |
+| reconciliation.record | clinicId,businessDate,observedCash/Bank/Pos,reference,reason；有差额需原因，修订追加，来源变更标记stale |
+| visit.addendum | id,version,reason,content；完成后的本人接诊或店长，追加作者/时间/原版本，不覆盖原记录 |
+| patient.merge | sourceId,targetId,sourceVersion,targetVersion,reason,identityEvidence；店长核验，保留别名并迁移引用，有身份或账号冲突拒绝 |
+| account.bindCustomer | patientId,version,username,password,identityEvidence,reason；机构核验已有患者后绑定，不允许公开认领 |
+| account.create | username,name,role,clinicIds(front)或dentistId(clinical),password；店长分配员工 |
+| account.assign | id,version,clinicIds或dentistId,reason；调整归属，撤销会话 |
+| account.status | id,version,status(active/disabled/departed),reason；自停与最后店长保护，离职账号不重新启用 |
+| password.change | currentPassword,newPassword；验证原密码，撤销全部会话，重新登录 |
+| account.issueRecovery | id,version,identityEvidence,reason；店长核验后签发，只显示一次token，由机构交付 |
+
+财务流水、附记、归并及核对记录不可覆盖或删除。季度收入保留有效开单口径，冲销使报告来源失效；实际收退款在独立账簿核算。
+
+## 幂等与安全
+
+同一逻辑业务命令携带16至128位Idempotency-Key；同一用户相同key及相同内容重放原结果，不同内容409。财务payload.idempotencyKey另有独立保护命名空间，前端沿用同一逻辑UUID。响应不明时只用原始请求标识重试。
+
+恢复码响应不进入幂等结果缓存，再次请求同一签发key返回409并要求重新核验签发；该409本身不会撤销已签发凭证，新的签发成功后旧凭证才失效。密码、token、csrf、secret不进入业务审计。账号停用、离职、改密、恢复及归属调整撤销相应会话。
+</pre></section><section id="DEPLOYMENT.md"><h2>DEPLOYMENT.md</h2><pre># 独立部署、升级与恢复
+
+本目录是完整应用根目录，与课程根旧Clearbrook项目无依赖。部署实例必须是单个Node服务，数据库采用本机持久化SQLite文件。以下是已提供的部署配置；实际域名、证书及云环境仍需目标环境验收。
+
+## 发布前
+
+执行npm ci、npm run build、npm run check、npm test、npm run test:maintenance、npm run test:browser及npm run release:manifest。只上传本目录中的源码、构建资源、文档及清单；不要上传数据库、升级快照、备份、环境秘密和测试产物。CI文件位于.github/workflows/ci.yml；本地通过不代表远端CI已执行。
+
+## 环境配置
+
+| 变量 | 配置 |
+|---|---|
+| NODE_ENV | 正式环境production |
+| HOST/PORT | 本机反代用127.0.0.1/3210；容器监听0.0.0.0 |
+| PUBLIC_ORIGIN | 准确HTTPS origin，多值逗号分隔，不能带路径 |
+| COOKIE_SECURE | 正式环境1 |
+| DENTAL_DB_PATH | 持久化且可写的数据目录，不放临时层 |
+| DENTAL_SEED_DEMO | 正式新库0，关闭示例与演示按钮 |
+| DENTAL_PUBLIC_DEMO | 仅公开合成数据演示时显式1，不得混入真实资料 |
+| DENTAL_TRUSTED_PROXIES | 需要真实代理IP限流时填写确切可信代理地址，不信任任意来源的转发头 |
+
+源码不会自动读取.env。可由进程管理器注入；或显式node --env-file=.env.local server/index.js。Compose从部署者的环境读取PUBLIC_ORIGIN；.env.example不含密钥。正式环境配置不完整会在打开数据库之前拒绝启动。
+
+## 初始店长
+
+先设置DENTAL_SEED_DEMO=0及DENTAL_DB_PATH。通过临时DENTAL_ACCOUNT_PASSWORD环境变量输入机构选择的强密码，再运行：
+
+```text
+node tools/accounts.mjs create-staff owner manager
+```
+
+完成后删除该密码环境变量。CLI不生成示例数据。店长登录后录入诊所、资格、医生、治疗和排班，再分配员工。顾客已有档案时走机构核验绑定；不能以知道电话为由直接认领。
+
+## Docker与HTTPS
+
+Dockerfile固定Node 24.15.0，非root用户运行。compose.yaml提供app与backup服务、数据与备份卷、健康检查、日志轮转和优雅停止。部署者设置PUBLIC_ORIGIN后执行docker compose up -d --build；容器端口只绑定宿主回环地址。
+
+宿主使用deploy/nginx.conf的模板，替换域名及证书路径后核验nginx配置。代理保留Host并覆盖转发头。证书签发和域名解析属于部署环境步骤，配置文件存在不代表公网已成功。
+
+## 升级
+
+1. 保存代码版本和当前完整SQLite快照。
+2. 停止旧Node服务。PID锁会拒绝运行中升级；容器操作应明确停止app，而不是依赖不同容器间的PID检查。
+3. 启动新代码。旧JSON库自动生成pre-migration快照，在同一事务内转换表与子表并检查外键。
+4. 失败会回滚；不要编辑已应用迁移来跳过checksum。后续结构变化应追加新版本。
+5. 完成登录、权限、业务流程和重启持久化检查，再开放入口。
+
+## 备份与恢复
+
+```text
+node tools/database.mjs backup &lt;新的快照文件&gt;
+node tools/database.mjs restore &lt;快照文件&gt; --offline
+```
+
+恢复先校验必要结构，再在临时副本上迁移并检查外键，成功后保留旧库并替换。旧版16表快照可在副本升级为38表；新版缺表快照拒绝。恢复撤销会话与恢复凭证，避免旧Cookie恢复生效。
+
+backup侧车默认每6小时使用VACUUM INTO生成一致快照，只在成功后按规则保留最新28份，不删除手工命名备份。工具可用--once验证一次。数据库与备份在不同卷，但仍需机构另行配置异地存储及灾难恢复；同机卷不等于异地灾备。
+
+## 验收边界
+
+本轮本地验证见REFACTOR-ACCEPTANCE.md。本机没有Docker引擎，因此没有实际执行镜像构建、Compose启动、Nginx或证书联调；也未执行GitHub推送和远端Actions。人工收退款记账不代表外部支付接口，机构恢复凭证不代表短信送达。正式上线需目标平台和实际使用人员验收。
+</pre></section><section id="REFACTOR-ACCEPTANCE.md"><h2>REFACTOR-ACCEPTANCE.md</h2><pre># 3.0规范化实现与本地验收
+
+验收日期：2026-10-15。应用目录为andrew-system，版本3.0.0。本记录区分已实现、本地验证和需要目标环境验证的内容，不以历史课程目录或旧发布清单代替本轮证据。
+
+## 本轮交付
+
+| 范围 | 当前实现 |
+|---|---|
+| 岗位与入口 | 仅顾客、前台、医生、店长；四个登录入口服务端校验身份；店长管理全部门诊，只有顾客公开注册 |
+| 前端 | 入口、核心模块、公共组件与业务页面拆分；日常使用workspace按页面查询、筛选和分页；主区更新保留导航；预约窗口及待开单、日结独立分页 |
+| 样式 | 九个样式源文件与明确级联层；构建生成styles.css，清理重复覆盖，保留无障碍与打印所需规则 |
+| 服务与存储 | 分离患者、资源、预约、诊疗、财务、账号及报表服务；38张关系表，核心业务明确类型列与关系子表；SQL条件查询及批量关联读取 |
+| 数据库升级 | 两个带校验和的版本迁移；升级前完整快照、事务及外键校验；旧JSON库转换；恢复先升级副本，保留原库，撤销会话及恢复凭证 |
+| 财务 | 人工核对收款、余额、原款限额退款、退款后冲销、营业日日结核对、差额原因、来源变更失效、不可覆盖流水 |
+| 诊疗 | 完成记录冻结；医生本人或店长追加含作者、原因与时间的不可变附记 |
+| 患者 | 重复注册拦截、机构核验绑定、带版本与证据的归并、业务引用转移、历史别名及账号冲突保护 |
+| 账号 | 员工创建与归属调整、停用和离职、有效店长保护、会话撤销、本人改密、机构核验后限时单次恢复码 |
+| HTTP工程 | CSRF、来源校验、SQLite持久限流、请求ID、幂等重放与内容冲突检查、敏感审计脱敏；恢复原始凭证不写入响应重放缓存 |
+| 发布与维护 | 独立文档、源码哈希清单、Docker/Compose/Nginx模板、GitHub Actions配置、定时一致备份及成功后保留策略 |
+
+users.data仍保留身份对象兼容格式，以同步类型列和索引支持查询；审计和幂等结果保留JSON快照。该设计有明确边界，不宣称数据库完全不含JSON。
+
+## 本轮实际验证
+
+| 检查 | 本地结果与范围 |
+|---|---|
+| npm test | 48项计数通过，0失败；包括原业务、日历、财务、患者、账号、HTTP、迁移、升级恢复与维护规则，包含父测试计数 |
+| npm run test:browser | Edge真实浏览器9项通过；四门户、错身份登录、页面查询与导航保留、390px无横向溢出、实际界面收款→退款→冲销、诊疗附记新增与读取 |
+| npm run test:maintenance | 16组检查通过，验证38张表、备份及恢复等维护路径 |
+| npm run test:load | 临时内存数据库1000个合成患者及1000个合成预约，100次分页读取、并发10；本次总耗时188ms，p50为17ms，p95为29ms，仅代表该机器与合成只读场景 |
+| 构建与静态检查 | 样式及仓库内文档构建；JavaScript语法与相对导入检查；发布清单重新生成 |
+
+测试使用隔离数据库；性能结果不代表公网容量、生产并发承诺或实际医疗数据表现。浏览器测试覆盖关键流程，未穷举所有页面及临床情形。
+
+## 日常本地实例升级
+
+升级前确认3210端口无旧服务监听，并生成完整快照：backups/dental-2026-10-15T07-04-31-539Z.sqlite，245760字节。迁移器另自动保留升级前快照。
+
+默认server/data/dental.sqlite已成功升级为38表及两个迁移版本；PRAGMA quick_check为ok，foreign_key_check返回0项。升级前后记录数量一致：患者3、门诊2、医生2、预约8、诊疗4、结算3、成本2、季度报告1、账号5。未删除或重置原业务数据。
+
+本地服务在http://127.0.0.1:3210运行；健康接口返回版本3.0.0。使用既有合成店长账号读取home、finance及accounts三个工作区接口均返回200。该检查没有向日常数据库新增财务或诊疗业务。
+
+## 尚未验收的外部范围
+
+- 本机没有Docker引擎，未实际构建容器、运行Compose或联调Nginx与TLS证书。
+- 尚未推送GitHub或执行远端Actions，未部署公网服务；现有课程根目录仍包含旧项目，应将andrew-system作为独立仓库根目录。
+- 人工现金、银行和POS凭证记账不等于外部支付接入；机构恢复码交付不等于短信送达；未连接医保、正式票据或第三方医院系统。
+- 未提供完整牙位病历、影像、处方及知情同意，也未开展真实临床试点、生产容量或机构上线验收。
+- Compose备份为同机独立卷，仍需目标机构落实异地备份与恢复演练。
+
+当前完成的是可运行且经过本地回归的就诊协作与运营应用；正式生产上线需要完成上述目标环境和真实业务验收。
+</pre></section></main></html>

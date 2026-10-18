@@ -1,0 +1,6 @@
+# Preserve exact bytes for migration checksums and the release hash manifest.
+* -text
+*.docx binary
+*.pdf binary
+*.png binary
+*.zip binary

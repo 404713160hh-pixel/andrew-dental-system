@@ -1,0 +1,891 @@
+{
+  "asOf": "2026-10-18",
+  "basis": "以当前源码和既有测试文件建立追溯；covered描述文件中的断言，不表示本轮重新执行。规则是代码事实或用户决定，不构成新增功能承诺。",
+  "ruleCatalog": [
+    {
+      "id": "BR-01",
+      "text": "系统仅设顾客、前台、医生、店长四角色，店长管理全部门诊。",
+      "basis": "用户明确要求；server/policies/permissions.js"
+    },
+    {
+      "id": "BR-02",
+      "text": "系统依据会话和对象关系授权；顾客限本人、前台限分配门诊、医生限接诊归属写入。",
+      "basis": "server/services/shared.js；server/services/workspace.js"
+    },
+    {
+      "id": "BR-03",
+      "text": "系统更新已有业务对象时验证当前整数版本，拒绝旧版本覆盖。",
+      "basis": "server/services/shared.js：version"
+    },
+    {
+      "id": "BR-04",
+      "text": "系统要求过敏状态与明细一致，患者自述不替代工作人员核验。",
+      "basis": "server/services/patients.js"
+    },
+    {
+      "id": "BR-05",
+      "text": "系统以标准化电话和出生日期唯一匹配后授予跨门诊档案访问。",
+      "basis": "server/services/patients.js：patient.lookup"
+    },
+    {
+      "id": "BR-06",
+      "text": "系统预约前检查有效患者、资料完整和可用未来资源，单牙医时段容量为1。",
+      "basis": "server/services/appointments.js；server/services/resources.js"
+    },
+    {
+      "id": "BR-07",
+      "text": "系统阻止患者、牙医有效预约重叠以及牙医跨门诊排班重叠。",
+      "basis": "server/services/appointments.js；server/services/resources.js"
+    },
+    {
+      "id": "BR-08",
+      "text": "系统按统一截止小时限制顾客自助改约取消，改约失败回滚原取消。",
+      "basis": "server/services/appointments.js；settings"
+    },
+    {
+      "id": "BR-09",
+      "text": "系统只在预约开始后登记到诊、结束后登记爽约，到诊原子创建唯一就诊。",
+      "basis": "server/services/appointments.js"
+    },
+    {
+      "id": "BR-10",
+      "text": "系统要求在岗牙医至少一项有效资格，停用资源先检查未来预约。",
+      "basis": "server/services/resources.js"
+    },
+    {
+      "id": "BR-11",
+      "text": "系统保留治疗名称和单价快照，完成或开单后的原就诊禁止改写。",
+      "basis": "server/services/clinical.js"
+    },
+    {
+      "id": "BR-12",
+      "text": "系统每次就诊最多生成一张结算单，开单与收款分开。",
+      "basis": "server/services/clinical.js；schema.sql"
+    },
+    {
+      "id": "BR-13",
+      "text": "系统以整数分保存金额；收款为正且不超欠款，退款不超原款剩余可退额。",
+      "basis": "server/services/shared.js；server/services/finance.js"
+    },
+    {
+      "id": "BR-14",
+      "text": "系统仅登记经机构核实的现金、银行和POS款项，不执行线上资金转移。",
+      "basis": "server/services/finance.js；public/js/pages/finance.js"
+    },
+    {
+      "id": "BR-15",
+      "text": "系统只在净实收为零时整单冲销，并保留原单及不可覆盖财务流水。",
+      "basis": "server/services/finance.js；migrations/extensions.sql"
+    },
+    {
+      "id": "BR-16",
+      "text": "系统按北京时间营业日计算渠道净额，差额或修订须有原因并保留来源签名。",
+      "basis": "server/services/finance.js"
+    },
+    {
+      "id": "BR-17",
+      "text": "系统仅允许接诊医生或店长为已完成诊疗追加带作者和原版本的附记。",
+      "basis": "server/services/clinical-addenda.js；migrations/extensions.sql"
+    },
+    {
+      "id": "BR-18",
+      "text": "系统归并须匹配姓名、出生日期和标准化电话，拒绝双有效账号及未来预约冲突。",
+      "basis": "server/services/patient-merge.js"
+    },
+    {
+      "id": "BR-19",
+      "text": "系统保留归并源别名，迁移引用并清除过敏核验标记、撤销迁移账号会话。",
+      "basis": "server/services/patient-merge.js"
+    },
+    {
+      "id": "BR-20",
+      "text": "系统仅允许店长机构核验绑定已有档案；已有电话自助注册不能重复建档。",
+      "basis": "server/services/accounts.js；server/index.js"
+    },
+    {
+      "id": "BR-21",
+      "text": "系统由店长配发员工账号，限制归属；不自停、不移除最后店长、不重新启用离职账号。",
+      "basis": "server/services/accounts.js"
+    },
+    {
+      "id": "BR-22",
+      "text": "系统密码为10至128位且含字母数字，使用scrypt哈希；改密、停用或调岗撤销相关会话。",
+      "basis": "server/services/accounts.js；server/db.js"
+    },
+    {
+      "id": "BR-23",
+      "text": "系统恢复申请统一响应；恢复码机构核验签发、十分钟单次使用且仅存哈希。",
+      "basis": "server/services/accounts.js"
+    },
+    {
+      "id": "BR-24",
+      "text": "系统不向审计或重放缓存泄露密码和明文恢复码。",
+      "basis": "server/domain.js：redact；server/http/idempotency.js"
+    },
+    {
+      "id": "BR-25",
+      "text": "系统同季度、门诊、牙医成本唯一，归属不改，修订回草稿且成本必须审核。",
+      "basis": "server/services/reports.js"
+    },
+    {
+      "id": "BR-26",
+      "text": "系统以有效开单减冲销统计收入，完整审核成本后核算全连锁净利润10%基金，负值计零。",
+      "basis": "server/services/reports.js"
+    },
+    {
+      "id": "BR-27",
+      "text": "系统以来源签名验证季度报告，结算、冲销、成本和接诊资源变化使旧报告失效。",
+      "basis": "server/services/shared.js；server/services/reports.js"
+    },
+    {
+      "id": "BR-28",
+      "text": "系统履约指标按所选季度已到期预约次数聚合，含取消改约旧记录，不含未来预约。",
+      "basis": "server/services/workspace.js：metrics"
+    },
+    {
+      "id": "BR-29",
+      "text": "系统按页查询并单独返回总数；一般分页上限100，不放宽对象授权。",
+      "basis": "server/services/workspace.js"
+    },
+    {
+      "id": "BR-30",
+      "text": "系统同用户同唯一标识和同内容重放原结果，变更内容则冲突；财务另有命名空间。",
+      "basis": "server/http/idempotency.js；server/services/finance.js"
+    },
+    {
+      "id": "BR-31",
+      "text": "系统仅店长可导出全门诊业务JSON，排除凭证且不能替代完整SQLite快照。",
+      "basis": "server/index.js：GET /api/backup；tools/database.mjs"
+    }
+  ],
+  "rows": [
+    {
+      "useCaseId": "UC-01",
+      "goal": "顾客在预约前补全本人身份、联系及过敏声明，使接诊人员获得可核对的资料。",
+      "commands": [
+        "patient.save"
+      ],
+      "entities": [
+        "patients",
+        "patient_allergies"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-02",
+        "BR-03",
+        "BR-04"
+      ],
+      "tests": {
+        "covered": [
+          "test/system.test.js：注册、多项过敏与旧版本保护。"
+        ],
+        "gaps": [
+          "本人资料完整浏览器编辑未单独覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-02",
+      "goal": "为本人或已授权患者选择可用牙医时段，形成可追踪且无时间冲突的有效预约。",
+      "commands": [
+        "appointment.book"
+      ],
+      "entities": [
+        "patients",
+        "schedules",
+        "appointments",
+        "dentist_qualifications",
+        "qualifications"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-02",
+        "BR-04",
+        "BR-06",
+        "BR-07",
+        "BR-30"
+      ],
+      "tests": {
+        "covered": [
+          "test/system.test.js：竞争预约原子性、未知过敏声明及跨门诊档案检索。"
+        ],
+        "gaps": [
+          "所有筛选组合和并发压力下预约未单独覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-03",
+      "goal": "按业务规则取消有效预约，或将同一就诊需求改到其他可用时段。",
+      "commands": [
+        "appointment.cancel",
+        "appointment.reschedule"
+      ],
+      "entities": [
+        "appointments",
+        "schedules",
+        "settings",
+        "audit"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-02",
+        "BR-03",
+        "BR-06",
+        "BR-07",
+        "BR-08",
+        "BR-30"
+      ],
+      "tests": {
+        "covered": [
+          "test/system.test.js：竞争预约及失败改期恢复原预约。",
+          "test/calendar.test.js：取消记录不占位。"
+        ],
+        "gaps": [
+          "自助截止小时数各边界的浏览器流程未单独覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-04",
+      "goal": "顾客查询本人历史就诊、治疗明细、结算及收退款状态，核对费用并按需打印结算单。",
+      "commands": [
+        "GET /api/workspace?page=history",
+        "GET /api/workspace?page=settlements"
+      ],
+      "entities": [
+        "visits",
+        "visit_lines",
+        "visit_addenda",
+        "settlements",
+        "settlement_lines",
+        "payments",
+        "refunds",
+        "invoice_adjustments"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-02",
+        "BR-11",
+        "BR-12",
+        "BR-13",
+        "BR-29"
+      ],
+      "tests": {
+        "covered": [
+          "test/system.test.js：本人范围保护、完整诊疗结算链及重启持久化。"
+        ],
+        "gaps": [
+          "结算单浏览器打印及多页历史完整交互未单独覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-05",
+      "goal": "工作人员检索、核对和维护授权患者资料，跨门诊就诊优先复用既有档案。",
+      "commands": [
+        "patient.lookup",
+        "patient.save"
+      ],
+      "entities": [
+        "patients",
+        "patient_allergies",
+        "patient_clinic_access",
+        "appointments"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-02",
+        "BR-03",
+        "BR-04",
+        "BR-05"
+      ],
+      "tests": {
+        "covered": [
+          "test/system.test.js：核验跨门诊检索、范围保护和旧版本保护。"
+        ],
+        "gaps": [
+          "新增患者完整浏览器编辑未单独覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-06",
+      "goal": "维护门诊基本资料和牙医未来接诊时段，使预约资源与实际接诊安排保持一致。",
+      "commands": [
+        "clinic.save",
+        "schedule.save"
+      ],
+      "entities": [
+        "clinics",
+        "schedules",
+        "dentists",
+        "qualifications",
+        "appointments",
+        "quarterReports"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-02",
+        "BR-03",
+        "BR-06",
+        "BR-07",
+        "BR-10",
+        "BR-27"
+      ],
+      "tests": {
+        "covered": [
+          "test/system.test.js：跨门诊排班冲突、资格守卫与输入校验。"
+        ],
+        "gaps": [
+          "诊所完整编辑和停用界面未单独覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-07",
+      "goal": "由店长建立牙医档案、维护有效资格及核验资料，形成可参与排班的人员基础。",
+      "commands": [
+        "dentist.save",
+        "qualification.save"
+      ],
+      "entities": [
+        "dentists",
+        "qualifications",
+        "dentist_qualifications",
+        "dentist_qualification_details"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-03",
+        "BR-10"
+      ],
+      "tests": {
+        "covered": [
+          "test/system.test.js：资格守卫及不合法明细检查。"
+        ],
+        "gaps": [
+          "资格证书核验字段未逐项测试，完整资源维护界面未单独覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-08",
+      "goal": "前台在授权门诊确认到诊或爽约，并在误记时按规则更正出席状态。",
+      "commands": [
+        "appointment.status"
+      ],
+      "entities": [
+        "appointments",
+        "visits",
+        "schedules"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-02",
+        "BR-03",
+        "BR-09"
+      ],
+      "tests": {
+        "covered": [
+          "test/system.test.js：出席时间守卫及前台到诊—医生诊疗—开单完整链。"
+        ],
+        "gaps": [
+          "爽约恢复及重复到诊完整交互未单独覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-09",
+      "goal": "接诊医生记录治疗项目和备注，核对后完成就诊，使后续开单具有稳定依据。",
+      "commands": [
+        "visit.save",
+        "visit.complete"
+      ],
+      "entities": [
+        "visits",
+        "visit_lines",
+        "treatments",
+        "patients",
+        "patient_allergies"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-02",
+        "BR-03",
+        "BR-11"
+      ],
+      "tests": {
+        "covered": [
+          "test/system.test.js：完整接诊链、目录调价不改历史、完成后锁定。",
+          "test/business.test.js：附记边界。"
+        ],
+        "gaps": [
+          "治疗表单各数量边界的浏览器流程未单独覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-10",
+      "goal": "前台将已完成就诊的治疗快照生成唯一结算单，向患者提供可核对的费用明细。",
+      "commands": [
+        "settlement.create"
+      ],
+      "entities": [
+        "settlements",
+        "settlement_lines",
+        "visits",
+        "visit_lines",
+        "quarterReports"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-02",
+        "BR-11",
+        "BR-12",
+        "BR-27"
+      ],
+      "tests": {
+        "covered": [
+          "test/system.test.js：完成诊疗后开单、重复返回原单、价格快照及顾客详情一致。"
+        ],
+        "gaps": [
+          "浏览器打印及异常单据金额边界未逐项单独覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-11",
+      "goal": "店长按指定季度核对预约履约、成本与已有季度报告，识别需要进一步处理的差异。",
+      "commands": [
+        "GET /api/workspace?page=performance&quarter=YYYY-Qn"
+      ],
+      "entities": [
+        "appointments",
+        "costs",
+        "quarterReports",
+        "quarter_report_rows"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-25",
+        "BR-28",
+        "BR-29"
+      ],
+      "tests": {
+        "covered": [
+          "test/operations.test.js：季度指标窗口与分页。",
+          "test/system.test.js：成本和报告一致性。"
+        ],
+        "gaps": [
+          "季度业绩完整浏览器核对未单独覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-12",
+      "goal": "店长在成本完整且已审核的基础上生成全连锁季度报告，并确认净利润与激励基金。",
+      "commands": [
+        "quarter.compute",
+        "quarter.approve"
+      ],
+      "entities": [
+        "costs",
+        "settlements",
+        "invoice_adjustments",
+        "schedules",
+        "quarterReports",
+        "quarter_report_rows",
+        "quarter_report_settlements",
+        "quarter_report_history"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-03",
+        "BR-25",
+        "BR-26",
+        "BR-27"
+      ],
+      "tests": {
+        "covered": [
+          "test/system.test.js：成本完整、基金批准、修订使来源失效。",
+          "test/business.test.js：冲销影响季度收入。"
+        ],
+        "gaps": [
+          "负利润等所有边界组合及完整报告批准界面未逐项覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-13",
+      "goal": "前台在人工确认资金到账后登记结算单收款，更新净实收与欠款。",
+      "commands": [
+        "payment.record"
+      ],
+      "entities": [
+        "settlements",
+        "payments",
+        "refunds",
+        "invoice_adjustments",
+        "idempotency_requests"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-02",
+        "BR-13",
+        "BR-14",
+        "BR-30"
+      ],
+      "tests": {
+        "covered": [
+          "test/business.test.js：金额、授权、幂等和余额。",
+          "test/http-engineering.test.js：HTTP重放。",
+          "test/browser/workspaces.spec.js：账务链。"
+        ],
+        "gaps": [
+          "真实收款渠道到账未接入，测试不证明实际资金到账。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-14",
+      "goal": "店长在线下执行并核对实际退款后，针对原收款追加退款流水。",
+      "commands": [
+        "payment.refund"
+      ],
+      "entities": [
+        "payments",
+        "refunds",
+        "settlements",
+        "idempotency_requests"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-13",
+        "BR-14",
+        "BR-30"
+      ],
+      "tests": {
+        "covered": [
+          "test/business.test.js：退款上限与退款后冲销。",
+          "test/browser/workspaces.spec.js：原款退款界面。"
+        ],
+        "gaps": [
+          "真实退款渠道未接入，测试不证明实际资金退回。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-15",
+      "goal": "店长在款项已完整退回后，通过独立调整记录冲销错误结算单并保留原单。",
+      "commands": [
+        "settlement.void"
+      ],
+      "entities": [
+        "settlements",
+        "invoice_adjustments",
+        "payments",
+        "refunds",
+        "quarterReports"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-03",
+        "BR-15",
+        "BR-27"
+      ],
+      "tests": {
+        "covered": [
+          "test/business.test.js：先完整退款再冲销、原单不变及季度调整。",
+          "test/browser/workspaces.spec.js：账务链。"
+        ],
+        "gaps": [
+          "零金额冲销和重复冲销的独立界面流程未单独覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-16",
+      "goal": "前台或店长按门诊和北京时间营业日核对渠道净额，并保留差额和修订原因。",
+      "commands": [
+        "reconciliation.preview",
+        "reconciliation.record"
+      ],
+      "entities": [
+        "reconciliations",
+        "payments",
+        "refunds",
+        "settlements"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-02",
+        "BR-13",
+        "BR-14",
+        "BR-16"
+      ],
+      "tests": {
+        "covered": [
+          "test/business.test.js：北京时间日结、差额、不可覆盖修订和来源失效。"
+        ],
+        "gaps": [
+          "完整日结界面流程及所有渠道差额组合未单独覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-17",
+      "goal": "接诊医生对已完成记录补充更正说明，保留原文、作者、时间和所依据版本。",
+      "commands": [
+        "visit.addendum"
+      ],
+      "entities": [
+        "visits",
+        "visit_addenda",
+        "users"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-02",
+        "BR-03",
+        "BR-17"
+      ],
+      "tests": {
+        "covered": [
+          "test/business.test.js：接诊医生及店长权限、不可覆盖附记。",
+          "test/browser/workspaces.spec.js：追加并读取附记。"
+        ],
+        "gaps": [
+          "附记最大长度等全部边界未逐项单独覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-18",
+      "goal": "店长完成身份核验后归并两份同一患者档案，保留来源别名并迁移业务关联。",
+      "commands": [
+        "patient.merge"
+      ],
+      "entities": [
+        "patients",
+        "patient_allergies",
+        "patient_clinic_access",
+        "appointments",
+        "visits",
+        "settlements",
+        "patient_aliases",
+        "users",
+        "sessions"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-03",
+        "BR-18",
+        "BR-19"
+      ],
+      "tests": {
+        "covered": [
+          "test/business.test.js：迁移引用、保留别名、撤销会话、身份冲突及双有效账号拒绝。"
+        ],
+        "gaps": [
+          "多来源连续归并及完整归并界面未单独覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-19",
+      "goal": "店长为已有患者档案建立顾客登录账号，避免自助注册重复建档或公开认领。",
+      "commands": [
+        "account.bindCustomer"
+      ],
+      "entities": [
+        "patients",
+        "users",
+        "audit"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-03",
+        "BR-20",
+        "BR-22",
+        "BR-24"
+      ],
+      "tests": {
+        "covered": [
+          "test/business.test.js：机构核验绑定与防重复认领。",
+          "test/http-engineering.test.js：已有电话注册不重复建档。"
+        ],
+        "gaps": [
+          "机构线下身份核验不属于自动测试覆盖；完整绑定界面未单独覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-20",
+      "goal": "店长创建员工账号、调整岗位归属并办理停用或离职，使访问范围随人员状态变化。",
+      "commands": [
+        "account.create",
+        "account.assign",
+        "account.status"
+      ],
+      "entities": [
+        "users",
+        "clinics",
+        "dentists",
+        "sessions",
+        "password_reset_tokens"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-03",
+        "BR-21",
+        "BR-22",
+        "BR-24"
+      ],
+      "tests": {
+        "covered": [
+          "test/business.test.js：范围、版本、撤销及自停保护。",
+          "test/http-engineering.test.js：停用后Cookie和登录立即失效。"
+        ],
+        "gaps": [
+          "离职后的全部状态转换和完整人员管理界面未逐项覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-21",
+      "goal": "已登录用户验证原密码后更换本人密码，并强制以新密码重新登录。",
+      "commands": [
+        "password.change"
+      ],
+      "entities": [
+        "users",
+        "sessions",
+        "password_reset_tokens"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-22",
+        "BR-24"
+      ],
+      "tests": {
+        "covered": [
+          "test/business.test.js：原密码验证、改密撤销和审计脱敏。"
+        ],
+        "gaps": [
+          "改密完整浏览器流程未单独覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-22",
+      "goal": "忘记密码的用户经机构核验获得一次性恢复码，设置新密码后重新登录。",
+      "commands": [
+        "POST /api/password-recovery/request",
+        "account.issueRecovery",
+        "POST /api/password-recovery/consume"
+      ],
+      "entities": [
+        "account_recovery_requests",
+        "password_reset_tokens",
+        "users",
+        "sessions",
+        "audit"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-22",
+        "BR-23",
+        "BR-24"
+      ],
+      "tests": {
+        "covered": [
+          "test/business.test.js：单次恢复和会话撤销。",
+          "test/http-engineering.test.js：统一响应、秘密不缓存及不可重复消费。"
+        ],
+        "gaps": [
+          "机构当面交付与线下身份核验不属于自动测试覆盖。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-23",
+      "goal": "店长按季度、门诊和牙医记录有依据的用品及运营成本，审核后供基金核算引用。",
+      "commands": [
+        "cost.save",
+        "cost.review"
+      ],
+      "entities": [
+        "costs",
+        "cost_review_history",
+        "quarterReports",
+        "quarter_report_history"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-03",
+        "BR-25",
+        "BR-27"
+      ],
+      "tests": {
+        "covered": [
+          "test/system.test.js：成本修订重置审核并使旧报告失效、缺成本拒绝核算。"
+        ],
+        "gaps": [
+          "成本独立浏览器操作和双人复核未覆盖；当前未实现双人复核。"
+        ]
+      }
+    },
+    {
+      "useCaseId": "UC-24",
+      "goal": "店长导出全门诊业务 JSON 留存，用于人工检查和数据交接。",
+      "commands": [
+        "GET /api/backup"
+      ],
+      "entities": [
+        "clinics",
+        "dentists",
+        "qualifications",
+        "dentist_qualifications",
+        "dentist_qualification_details",
+        "treatments",
+        "patients",
+        "patient_allergies",
+        "patient_clinic_access",
+        "schedules",
+        "appointments",
+        "visits",
+        "visit_lines",
+        "settlements",
+        "settlement_lines",
+        "costs",
+        "cost_review_history",
+        "quarterReports",
+        "quarter_report_clinics",
+        "quarter_report_rows",
+        "quarter_report_settlements",
+        "quarter_report_history",
+        "settings",
+        "payments",
+        "refunds",
+        "invoice_adjustments",
+        "reconciliations",
+        "visit_addenda",
+        "patient_aliases",
+        "audit"
+      ],
+      "rules": [
+        "BR-01",
+        "BR-31"
+      ],
+      "tests": {
+        "covered": [
+          "test/system.test.js：前台导出被拒、店长导出成功及凭证排除。"
+        ],
+        "gaps": [
+          "浏览器附件保存与导出后下游交接未单独覆盖。"
+        ]
+      }
+    }
+  ]
+}

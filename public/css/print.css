@@ -1,0 +1,39 @@
+/* print: authored styles; bundled by tools/build-styles.mjs. */
+
+@media print {
+body>* {
+  display: none!important
+}
+#print-area {
+  display: block!important;
+  font-family: Microsoft YaHei,sans-serif;
+  padding: 20px;
+  background: #fff;
+  color: #111
+}
+#print-area table {
+  white-space: normal
+}
+#print-area h2 {
+  font-size: 24px;
+  color: #111
+}
+#print-area .hint {
+  font-size: 12px;
+  color: #666
+}
+#print-area .invoice,#print-area .invoice-total,#print-area .readonly-grid strong,#print-area td,#print-area td strong {
+  color: #111
+}
+#print-area .invoice-meta,#print-area .readonly-grid span {
+  color: #666
+}
+#print-area th {
+  background: #f6f6f6;
+  color: #555
+}
+@page {
+  size: A4;
+  margin: 18mm
+}
+}

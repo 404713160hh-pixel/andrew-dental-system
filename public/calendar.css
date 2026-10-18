@@ -1,0 +1,76 @@
+.dental-calendar{--cal-purple:#6b5bd6;--cal-text:#353a51;--cal-muted:#8a8c9f;--cal-border:#ececf3;--cal-hour-height:56px;color:var(--cal-text)}
+.cal-toolbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:6px 0 22px;flex-wrap:wrap}
+.cal-title-group h2{font-size:20px;letter-spacing:-.025em;margin:0 0 5px;font-weight:650;line-height:1.5}
+.cal-title-group p{font-size:12px;color:var(--cal-muted);margin:0}
+.cal-toolbar-actions,.cal-date-navigation,.cal-arrows{display:flex;align-items:center;gap:12px}
+.cal-arrows{gap:2px}
+.dental-calendar .cal-nav-button{border-color:var(--cal-border);border-radius:8px;font-size:12px;min-height:34px;padding:6px 12px;background:#fff;color:#686a80;box-shadow:none}
+.cal-arrows .cal-nav-button{width:32px;padding:5px;border:0;background:transparent}
+.cal-nav-button svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.dental-calendar .cal-nav-button:hover{background:#f5f3fd;color:var(--cal-purple);border-color:#d4cef3}
+.cal-view-switch{display:flex;align-items:center;padding:3px;background:#f5f5f9;border:1px solid #ededf4;border-radius:9px;gap:2px}
+.dental-calendar .cal-view-switch button{border:0;min-height:29px;padding:5px 13px;border-radius:6px;color:#8a8ba0;background:transparent;font-size:12px;font-weight:500;line-height:1.5;transition:background .16s ease,color .16s ease,box-shadow .16s ease}
+.dental-calendar .cal-view-switch button.is-active{color:#5547b5;background:#fff;font-weight:650;box-shadow:0 1px 5px #26223b13}
+.dental-calendar .cal-view-switch button:hover{color:#5547b5;background:#fff9}
+.dental-calendar button:focus-visible,.cal-scroll:focus-visible{outline:3px solid #b9aff380;outline-offset:2px}
+.cal-scroll{border:1px solid var(--cal-border);border-radius:12px;overflow:auto;background:#fff;isolation:isolate;overscroll-behavior-x:contain}
+.cal-stage{min-width:850px;animation:cal-appear .2s ease both}
+.cal-day-mode .cal-stage{min-width:440px}
+.cal-header-row{display:grid;grid-template-columns:62px repeat(var(--cal-days),minmax(0,1fr));border-bottom:1px solid var(--cal-border);background:#fff;position:relative}
+.cal-time-zone{display:flex;align-items:center;justify-content:center;color:#a1a0b3;font-size:10px;border-right:1px solid var(--cal-border)}
+.dental-calendar .cal-day-heading{border:0;border-right:1px solid var(--cal-border);border-radius:0;background:#fff;padding:13px 4px 12px;min-height:89px;color:#8e8b9f;display:flex;flex-direction:column;gap:2px;font-weight:400;transition:background .15s ease}
+.dental-calendar .cal-day-heading:last-child{border-right:0}
+.cal-day-heading span{font-size:11px}
+.cal-day-heading strong{font-size:20px;font-weight:600;line-height:1.45;color:#49475f;width:31px;height:31px;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.cal-day-heading small{font-size:10px;color:#aca8bb;line-height:1.6}
+.dental-calendar .cal-day-heading:hover{background:#faf9fe}
+.dental-calendar .cal-day-heading.is-today{background:#fcfbff;color:#8170d2}
+.cal-day-heading.is-today strong{background:var(--cal-purple);color:#fff}
+.cal-grid-body{display:grid;grid-template-columns:62px minmax(0,1fr);height:calc(var(--cal-hours) * var(--cal-hour-height));position:relative}
+.cal-time-axis{position:relative;border-right:1px solid var(--cal-border);background:#fff}
+.cal-time-tick{position:absolute;right:11px;transform:translateY(-50%);font-size:10px;color:#a4a0b3;font-variant-numeric:tabular-nums;line-height:1.1;background:#fff;padding:0 2px;z-index:1}
+.cal-time-tick:first-child{transform:translateY(5px)}
+.cal-time-tick:last-child{transform:translateY(calc(-100% - 5px))}
+.cal-columns{display:grid;grid-template-columns:repeat(var(--cal-days),minmax(0,1fr));background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--cal-hour-height)/2 - 1px),#f5f5f9 calc(var(--cal-hour-height)/2 - 1px),#f5f5f9 calc(var(--cal-hour-height)/2),transparent calc(var(--cal-hour-height)/2),transparent calc(var(--cal-hour-height) - 1px),#ecebf2 calc(var(--cal-hour-height) - 1px),#ecebf2 var(--cal-hour-height))}
+.cal-day-column{position:relative;border-right:1px solid var(--cal-border);min-width:0}
+.cal-day-column:last-child{border-right:0}
+.cal-day-column.is-today{background:#7a67d303}
+.dental-calendar .cal-event{position:absolute;z-index:2;min-height:0;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:2px;text-align:left;padding:7px 8px;border:1px solid #d8d1f0;border-left:3px solid #8f7bce;border-radius:6px;background:#efebfa;color:#69549d;font-size:10px;font-weight:400;overflow:hidden;line-height:1.35;transition:filter .16s ease,box-shadow .16s ease,transform .16s ease}
+.dental-calendar .cal-event:hover{background:#e9e2f8;border-color:#b3a4dc;box-shadow:0 4px 12px #5b438c20;filter:brightness(.985);transform:translateY(-1px);z-index:4}
+.dental-calendar .cal-event:focus-visible{z-index:5;overflow:visible;outline-color:#9c8ede}
+.cal-event-title{display:flex;align-items:center;justify-content:space-between;gap:4px;min-width:0}
+.cal-event-title strong{font-weight:650;font-size:11px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;line-height:1.4}
+.cal-event-time{font-variant-numeric:tabular-nums;font-size:10px;font-weight:500;white-space:nowrap}
+.cal-event-dentist,.cal-event-problem,.cal-continuation{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;opacity:.85}
+.cal-event-problem{margin-top:2px;opacity:.68}
+.cal-continuation{font-size:9px;margin-top:auto;opacity:.65}
+.dental-calendar .cal-tone-1{background:#e9f2fe;color:#4b77ab;border-color:#cbdff4;border-left-color:#7b9dd5}
+.dental-calendar .cal-tone-1:hover{background:#e1edfc;border-color:#9dbde5}
+.dental-calendar .cal-tone-2{background:#e9f6f0;color:#4f8772;border-color:#cce9dc;border-left-color:#75b59a}
+.dental-calendar .cal-tone-2:hover{background:#e1f1e9;border-color:#9bceb8}
+.dental-calendar .cal-tone-3{background:#fff2e7;color:#ac794f;border-color:#f2dccc;border-left-color:#d4ab83}
+.dental-calendar .cal-tone-3:hover{background:#fdecdf;border-color:#debc9b}
+.cal-event-short .cal-event-dentist,.cal-event-short .cal-event-problem,.cal-event-short .cal-continuation{display:none}
+.cal-event-overlap{padding-left:5px!important;padding-right:5px!important}
+.cal-event-overlap .cal-event-problem{display:none}
+.cal-status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#8f7bce;flex:none}
+.cal-status-attended{background:#66aa91}
+.cal-status-no_show{background:#d2a364}
+.cal-status-booked{background:#8f7bce}
+.cal-now-line{position:absolute;left:0;right:0;height:1px;background:#e7908c;z-index:3;pointer-events:none}
+.cal-now-line:before{content:"";position:absolute;top:-3px;left:-3px;width:7px;height:7px;border-radius:50%;background:#e7908c}
+.cal-now-line span{position:absolute;top:-14px;right:5px;font-size:9px;font-variant-numeric:tabular-nums;line-height:1.2;background:#fff9f9;color:#cd817b;padding:1px 3px;border-radius:3px}
+.cal-empty-state{position:absolute;top:22%;left:62px;right:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;pointer-events:none;color:#8c87a7;text-align:center;padding:24px;background:#ffffffc7}
+.cal-empty-state svg{width:34px;height:34px;fill:none;stroke:#b2a6d9;stroke-width:1.25;stroke-linecap:round;stroke-linejoin:round;margin-bottom:5px}
+.cal-empty-state strong{font-size:14px;font-weight:550}
+.cal-empty-state span{font-size:12px;color:#aaa5ba}
+.cal-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:14px}
+.cal-legend{display:flex;gap:17px;font-size:11px;color:#8b879e}
+.cal-legend>span{display:flex;align-items:center;gap:6px}
+.cal-footer p{margin:0;font-size:10px;color:#aaa7b8;line-height:1.5}
+.cal-scroll-hint{display:none;color:#a3a0b4;font-size:10px;margin-bottom:8px}
+.cal-list-mode .cal-toolbar{padding-bottom:18px}
+@keyframes cal-appear{from{opacity:.5;transform:translateY(3px)}to{opacity:1;transform:none}}
+@media(min-width:1300px){.cal-stage{min-width:950px}.cal-day-mode .cal-stage{min-width:440px}.cal-event-title strong{font-size:12px}.dental-calendar .cal-event{padding:8px 9px}}
+@media(max-width:720px){.dental-calendar{--cal-hour-height:50px}.cal-toolbar{gap:14px;padding-bottom:17px}.cal-title-group h2{font-size:17px}.cal-toolbar-actions{width:100%;justify-content:space-between;gap:8px}.cal-date-navigation{gap:7px}.cal-stage{min-width:820px}.cal-day-mode .cal-stage{min-width:360px}.cal-header-row{grid-template-columns:48px repeat(var(--cal-days),minmax(0,1fr))}.cal-grid-body{grid-template-columns:48px minmax(0,1fr)}.cal-time-tick{right:5px;font-size:9px}.cal-time-zone{font-size:9px}.cal-empty-state{left:48px}.cal-scroll-hint{display:block}.cal-day-mode .cal-scroll-hint{display:none}.cal-footer{gap:9px}.cal-legend{gap:13px}.cal-footer p{max-width:100%}.cal-list-mode .cal-toolbar-actions{justify-content:flex-end}}
+@media(prefers-reduced-motion:reduce){.cal-stage{animation:none}.dental-calendar .cal-event,.dental-calendar .cal-view-switch button,.dental-calendar .cal-day-heading{transition:none}.dental-calendar .cal-event:hover{transform:none}}

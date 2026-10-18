@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="455" viewBox="0 0 600 455"><rect width="600" height="455" fill="white"/>
+<rect x="4" y="4" width="592" height="447" fill="white" stroke="black"/>
+<text x="15" y="25" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="700" text-anchor="start" fill="black">sd 事物委托描述创建时刻时段</text>
+<rect x="19.0" y="42" width="90" height="66" fill="white" stroke="black"/>
+<text x="64.0" y="70.83333333333333" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">患者</text>
+<text x="64.0" y="87.83333333333333" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">&lt;&lt;事物&gt;&gt;</text>
+<line x1="64.0" y1="133" x2="64.0" y2="383" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<rect x="255.0" y="42" width="90" height="66" fill="white" stroke="black"/>
+<text x="300.0" y="70.83333333333333" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">预约规则</text>
+<text x="300.0" y="87.83333333333333" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">&lt;&lt;描述&gt;&gt;</text>
+<line x1="300.0" y1="133" x2="300.0" y2="383" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<rect x="491.0" y="42" width="90" height="66" fill="white" stroke="black"/>
+<text x="536.0" y="70.83333333333333" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">预约</text>
+<text x="536.0" y="87.83333333333333" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">&lt;&lt;时刻时段&gt;&gt;</text>
+<line x1="536.0" y1="133" x2="536.0" y2="383" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="182.0" y="153" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">1 委托判定预约资格</text>
+<line x1="64.0" y1="163" x2="300.0" y2="163" stroke="black" stroke-width="1"/>
+<line x1="300.0" y1="163" x2="293.828924628852" y2="166.30421378902918" stroke="black" stroke-width="1"/>
+<line x1="300.0" y1="163" x2="293.828924628852" y2="159.69578621097082" stroke="black" stroke-width="1"/>
+<rect x="297.0" y="163" width="6" height="16" fill="white" stroke="black"/>
+<text x="182.0" y="203" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">2 返回档案、时段规则结果</text>
+<line x1="300.0" y1="213" x2="64.0" y2="213" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="64.0" y1="213" x2="70.171075371148" y2="209.69578621097082" stroke="black" stroke-width="1"/>
+<line x1="64.0" y1="213" x2="70.171075371148" y2="216.30421378902918" stroke="black" stroke-width="1"/>
+<text x="300.0" y="253" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">3 [规则满足] 发起并建立预约</text>
+<line x1="64.0" y1="263" x2="536.0" y2="263" stroke="black" stroke-width="1"/>
+<line x1="536.0" y1="263" x2="529.828924628852" y2="266.3042137890292" stroke="black" stroke-width="1"/>
+<line x1="536.0" y1="263" x2="529.828924628852" y2="259.6957862109708" stroke="black" stroke-width="1"/>
+<rect x="533.0" y="263" width="6" height="16" fill="white" stroke="black"/>
+<text x="300.0" y="303" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">4 返回预约关联</text>
+<line x1="536.0" y1="313" x2="64.0" y2="313" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="64.0" y1="313" x2="70.171075371148" y2="309.6957862109708" stroke="black" stroke-width="1"/>
+<line x1="64.0" y1="313" x2="70.171075371148" y2="316.3042137890292" stroke="black" stroke-width="1"/>
+<text x="530.794921875" y="353" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">5 到诊事件改变状态</text>
+<line x1="536.0" y1="363" x2="558.0" y2="363" stroke="black" stroke-width="1"/>
+<line x1="558.0" y1="363" x2="558.0" y2="375" stroke="black" stroke-width="1"/>
+<line x1="558.0" y1="375" x2="536.0" y2="375" stroke="black" stroke-width="1"/>
+<line x1="536.0" y1="375" x2="542.171075371148" y2="371.6957862109708" stroke="black" stroke-width="1"/>
+<line x1="536.0" y1="375" x2="542.171075371148" y2="378.3042137890292" stroke="black" stroke-width="1"/>
+<rect x="533.0" y="363" width="6" height="16" fill="white" stroke="black"/>
+<text x="300" y="413.0" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="12.5" font-weight="400" text-anchor="middle" fill="black">概念职责示例；规则由服务与settings实现，不新增同名class或表</text>
+</svg>

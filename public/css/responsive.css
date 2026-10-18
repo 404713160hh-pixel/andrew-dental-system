@@ -1,0 +1,1116 @@
+/* responsive: authored styles; bundled by tools/build-styles.mjs. */
+
+@media(min-width:1500px) {
+.customer-hero {
+  height: 660px
+}
+.hero-copy {
+  padding-top: 139px
+}
+.hero-title {
+  font-size: 56px
+}
+}
+@media(max-width:1280px) {
+.shell {
+  grid-template-columns: 221px minmax(0,1fr)
+}
+.sidebar {
+  padding-left: 13px;
+  padding-right: 13px
+}
+.content {
+  padding: 28px 27px 40px
+}
+.topbar {
+  padding: 0 27px
+}
+.stats {
+  gap: 13px
+}
+.stat {
+  padding: 18px
+}
+.sidebar .brand-name {
+  font-size: 15px
+}
+.quarter-summary {
+  grid-template-columns: repeat(3,minmax(0,1fr))
+}
+.clinic-carousel,.customer-content #care-section>.stats,.customer-content>.appointment-card,.customer-content>.booking-layout,.customer-content>.card,.customer-content>.filter-bar,.customer-content>.grid-even,.customer-content>.grid2,.customer-content>.notice,.customer-content>.page-header,.customer-content>.stats,.customer-content>.tabs,.customer-footer,.customer-home-grid,.section-heading,.service-grid {
+  margin-left: 42px;
+  margin-right: 42px
+}
+.customer-header {
+  padding: 0 32px;
+  gap: 26px
+}
+.customer-nav {
+  gap: 22px
+}
+.customer-header-actions .user-block>div:last-child {
+  display: none
+}
+.care-strip,.hero-copy {
+  padding-left: 60px
+}
+.hero-bottom {
+  left: 60px;
+  right: 60px
+}
+.care-strip {
+  padding-right: 60px
+}
+}
+@media(max-width:1080px) {
+.auth {
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr)
+}
+.auth-intro {
+  padding: 32px
+}
+.auth-topline>span {
+  display: none
+}
+.auth-main {
+  padding: 35px
+}
+.auth-story h1 {
+  font-size: 38px
+}
+.auth-story h1 span {
+  font-size: 23px
+}
+.grid2 {
+  grid-template-columns: 1fr;
+  gap: 0
+}
+.overview-grid {
+  grid-template-columns: minmax(0,1.2fr) minmax(230px,1fr);
+  gap: 18px
+}
+.customer-header {
+  gap: 22px;
+  padding: 0 24px;
+  min-height: 80px
+}
+.customer-header .brand-name {
+  font-size: 17px
+}
+.customer-header .brand-sub {
+  font-size: 7px
+}
+.customer-nav a {
+  font-size: 10px;
+  padding: 29px 0
+}
+.customer-nav a:after {
+  bottom: 20px
+}
+.customer-header .primary {
+  font-size: 9px;
+  padding: 9px 12px;
+  min-height: 37px
+}
+.customer-header-actions {
+  gap: 9px
+}
+.customer-header-actions .text-button {
+  font-size: 0
+}
+.customer-header-actions .text-button .icon {
+  width: 15px
+}
+.customer-home-grid {
+  gap: 20px
+}
+.care-guide {
+  grid-template-columns: 110px 1fr
+}
+.care-guide>div:not(.care-guide-photo) {
+  padding: 25px 17px
+}
+.service-grid {
+  gap: 18px
+}
+.service-card {
+  padding: 24px
+}
+.hero-title {
+  font-size: 48px
+}
+.customer-hero {
+  min-height: 530px;
+  height: 560px
+}
+.hero-copy {
+  padding-top: 102px
+}
+.booking-layout {
+  grid-template-columns: minmax(0,1fr) 246px;
+  gap: 18px
+}
+.clinic-card {
+  flex-basis: calc(50% - 11px)
+}
+}
+@media(max-width:850px) {
+.auth {
+  grid-template-columns: minmax(0,.83fr) minmax(0,1fr)
+}
+.auth-intro {
+  padding: 28px 24px
+}
+.auth-story h1 {
+  font-size: 31px
+}
+.auth-story h1 span {
+  font-size: 20px
+}
+.auth-story p:not(.eyebrow) {
+  font-size: 11px
+}
+.auth-caption {
+  flex-direction: column;
+  align-items: start;
+  gap: 8px
+}
+.auth-main {
+  padding: 32px 29px
+}
+.auth-title {
+  font-size: 36px
+}
+.auth-footer {
+  margin-top: 30px;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 8px
+}
+.shell {
+  display: block
+}
+.sidebar {
+  position: fixed;
+  z-index: 40;
+  left: -260px;
+  top: 0;
+  width: 242px;
+  transition: left .3s var(--ease);
+  box-shadow: 5px 0 35px #76618317;
+  padding-top: 28px
+}
+.sidebar.open {
+  left: 0
+}
+.sidebar .brand {
+  padding-right: 30px
+}
+.sidebar .brand-name {
+  font-size: 16px
+}
+.sidebar-close {
+  display: flex;
+  position: absolute;
+  right: 13px;
+  top: 29px;
+  padding: 5px;
+  min-height: 27px;
+  width: 27px;
+  border: 0;
+  background: #f7f3fb;
+  color: #b398c2;
+  border-radius: 50%
+}
+.sidebar-close .icon {
+  width: 14px;
+  height: 14px
+}
+.mobile-menu {
+  display: inline-flex;
+  padding: 7px;
+  min-height: 33px;
+  border-radius: 7px
+}
+.topbar {
+  height: 66px;
+  padding: 0 22px
+}
+.breadcrumb,.overview-note>.icon,.user-block small {
+  display: none
+}
+.top-actions {
+  gap: 11px
+}
+.content {
+  padding: 26px 22px 36px
+}
+.page-header {
+  flex-wrap: wrap;
+  margin-bottom: 23px
+}
+.overview-heading h1,h1 {
+  font-size: 24px
+}
+.page-actions {
+  width: 100%;
+  padding-top: 0
+}
+.stats {
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 13px
+}
+.stat strong {
+  font-size: 28px
+}
+.card {
+  padding: 21px;
+  margin-bottom: 19px
+}
+.grid-even {
+  grid-template-columns: 1fr;
+  gap: 0
+}
+.filter-bar .field {
+  min-width: 130px
+}
+.appointment-card {
+  align-items: start;
+  flex-wrap: wrap;
+  padding: 21px
+}
+.appointment-card .table-actions {
+  width: 100%;
+  flex-wrap: wrap;
+  margin-top: 3px
+}
+.quarter-summary,.slot-grid {
+  grid-template-columns: repeat(2,minmax(0,1fr))
+}
+.allergy-item {
+  grid-template-columns: 1fr 1fr auto
+}
+.allergy-item .allergy-note {
+  grid-column: 1/3
+}
+.list-item {
+  align-items: start
+}
+.list-item .table-actions {
+  flex-direction: column
+}
+.readonly-grid {
+  gap: 15px
+}
+.sidebar .side-footer {
+  padding-bottom: 15px
+}
+.dialog-body,.dialog-footer,.dialog-head {
+  padding-left: 21px;
+  padding-right: 21px
+}
+.overview-grid {
+  grid-template-columns: 1.2fr 1fr
+}
+.overview-note {
+  padding: 18px 21px
+}
+.customer-header {
+  min-height: 77px;
+  flex-wrap: wrap;
+  padding: 18px 24px 0;
+  gap: 0 22px
+}
+.customer-header-actions {
+  margin-left: auto;
+  padding-bottom: 17px
+}
+.customer-header .brand {
+  margin-right: auto;
+  padding-bottom: 17px
+}
+.customer-nav {
+  order: 3;
+  flex-basis: calc(100% + 48px);
+  justify-content: start;
+  margin: 0 -24px;
+  gap: 24px;
+  padding: 0 24px;
+  border-top: 1px solid #e4d5bf;
+  overflow-x: auto;
+  scrollbar-width: none
+}
+.customer-nav::-webkit-scrollbar {
+  display: none
+}
+.customer-nav a {
+  padding: 14px 0;
+  font-size: 10px
+}
+.customer-nav a:after {
+  bottom: 9px
+}
+.booking-guide img,.customer-header .user-block small {
+  display: none
+}
+.customer-content {
+  padding: 0 0 35px
+}
+.clinic-carousel,.customer-content #care-section>.stats,.customer-content>.appointment-card,.customer-content>.booking-layout,.customer-content>.card,.customer-content>.filter-bar,.customer-content>.grid-even,.customer-content>.grid2,.customer-content>.notice,.customer-content>.page-header,.customer-content>.stats,.customer-content>.tabs,.customer-footer,.customer-home-grid,.section-heading,.service-grid {
+  margin-left: 26px;
+  margin-right: 26px
+}
+.customer-content>.page-header {
+  padding-top: 31px
+}
+.customer-content>.page-header h1 {
+  font-size: 25px
+}
+.customer-hero {
+  height: 510px;
+  min-height: 510px
+}
+.hero-image img {
+  object-position: 58% center
+}
+.hero-copy {
+  padding: 90px 39px 75px;
+  max-width: 630px
+}
+.hero-title {
+  font-size: 41px
+}
+.hero-copy h2,.hero-title small {
+  font-size: 23px
+}
+.hero-kicker {
+  font-size: 8px
+}
+.hero-note {
+  font-size: 10px;
+  max-width: 295px
+}
+.hero-bottom {
+  left: 39px;
+  right: 39px;
+  bottom: 24px
+}
+.care-strip-item p,.care-strip-item small,.hero-bottom p {
+  font-size: 8px
+}
+.care-strip {
+  padding: 20px 28px;
+  gap: 19px
+}
+.care-strip-item {
+  gap: 9px;
+  padding: 0 10px
+}
+.care-strip-item strong,.service-card p {
+  font-size: 9px
+}
+.care-strip-item .icon {
+  width: 21px;
+  height: 21px
+}
+.section-heading {
+  padding-top: 38px;
+  margin-bottom: 22px
+}
+.section-heading h2 {
+  font-size: 25px
+}
+.customer-home-grid {
+  grid-template-columns: 1fr;
+  gap: 0
+}
+.next-appointment {
+  padding: 25px
+}
+.care-guide {
+  grid-template-columns: minmax(140px,.65fr) minmax(0,1fr);
+  min-height: 265px
+}
+.care-guide-photo img {
+  min-height: 265px;
+  max-height: 350px
+}
+.care-guide>div:not(.care-guide-photo) {
+  padding: 25px 29px
+}
+.service-grid {
+  gap: 13px
+}
+.service-card {
+  padding: 22px 19px;
+  min-height: 220px
+}
+.service-card h3 {
+  font-size: 16px
+}
+.service-number {
+  top: 21px;
+  right: 18px;
+  font-size: 24px
+}
+.booking-layout {
+  grid-template-columns: 1fr;
+  gap: 0
+}
+.booking-aside {
+  position: static
+}
+.booking-guide {
+  margin-bottom: 22px;
+  padding: 22px
+}
+.booking-guide h2 {
+  font-size: 21px
+}
+.customer-footer {
+  padding-top: 23px;
+  flex-wrap: wrap;
+  gap: 17px
+}
+}
+@media(max-width:600px) {
+.auth {
+  display: block
+}
+.auth-intro {
+  min-height: 230px;
+  height: 230px;
+  padding: 23px 25px
+}
+.auth-intro .brand-name {
+  font-size: 17px
+}
+.auth-intro .brand-mark .icon {
+  width: 27px;
+  height: 27px
+}
+.auth-intro .brand-sub {
+  font-size: 7px
+}
+.auth-photo img {
+  object-position: center 37%
+}
+.auth-intro:after {
+  background: linear-gradient(90deg,#26271e8c,#26271e0d),linear-gradient(0deg,#26271e54,transparent)
+}
+.auth-story,.intro-copy {
+  padding: 30px 0 0;
+  margin-top: 0
+}
+.auth-story .eyebrow {
+  margin-bottom: 8px;
+  font-size: 7px
+}
+.auth-story h1 {
+  font-size: 27px;
+  line-height: 1.4;
+  margin-bottom: 0
+}
+.auth-story h1 span {
+  font-size: 15px;
+  letter-spacing: .03em;
+  line-height: 1.5;
+  margin-top: 7px
+}
+.auth-caption,.auth-points,.auth-story p:not(.eyebrow),.workflow-stage:not(:last-child):after {
+  display: none
+}
+.auth-main {
+  padding: 33px 29px 25px
+}
+.auth-card {
+  width: 380px
+}
+.auth-title {
+  font-size: 37px
+}
+.auth-card h2 {
+  font-size: 25px
+}
+.auth-card>.muted {
+  font-size: 11px
+}
+.auth-tabs {
+  margin: 24px 0
+}
+.auth-footer {
+  margin-top: 27px
+}
+.overview-grid {
+  grid-template-columns: 1fr;
+  gap: 0
+}
+.overview-heading {
+  flex-wrap: wrap;
+  gap: 15px
+}
+.overview-heading .page-actions {
+  width: auto
+}
+.overview-note {
+  align-items: start;
+  flex-wrap: wrap;
+  gap: 13px;
+  padding: 18px
+}
+.overview-note h2 {
+  font-size: 12px
+}
+.overview-note p {
+  font-size: 10px
+}
+.overview-note>a.button {
+  margin-left: 0
+}
+.chart-bars {
+  height: 150px
+}
+.workflow-track {
+  grid-template-columns: repeat(2,minmax(0,1fr))
+}
+.customer-header {
+  padding: 17px 19px 0;
+  gap: 0 12px
+}
+.customer-header .brand-name {
+  font-size: 15px
+}
+.customer-header .brand-sub {
+  font-size: 6px;
+  letter-spacing: .12em
+}
+.customer-header .brand {
+  gap: 6px
+}
+.customer-header .brand-mark {
+  width: 28px
+}
+.customer-header .brand-mark .icon {
+  width: 26px;
+  height: 26px
+}
+.customer-header-actions {
+  gap: 7px
+}
+.customer-header .avatar {
+  width: 27px;
+  height: 27px;
+  font-size: 10px
+}
+.customer-header .primary {
+  font-size: 8px;
+  padding: 7px 11px;
+  min-height: 31px
+}
+.customer-nav {
+  margin: 0 -19px;
+  padding: 0 19px;
+  flex-basis: calc(100% + 38px);
+  gap: 25px
+}
+.customer-nav a {
+  font-size: 9px;
+  padding: 12px 0
+}
+.customer-header-actions .top-actions {
+  gap: 5px
+}
+.clinic-carousel,.customer-content #care-section>.stats,.customer-content>.appointment-card,.customer-content>.booking-layout,.customer-content>.card,.customer-content>.filter-bar,.customer-content>.grid-even,.customer-content>.grid2,.customer-content>.notice,.customer-content>.page-header,.customer-content>.stats,.customer-content>.tabs,.customer-footer,.customer-home-grid,.section-heading,.service-grid {
+  margin-left: 19px;
+  margin-right: 19px
+}
+.customer-hero {
+  height: 470px;
+  min-height: 470px
+}
+.hero-image img {
+  object-position: 66% center
+}
+.hero-shade {
+  background: linear-gradient(90deg,#34352bb5,#34352b4a 58%,#34352b00),linear-gradient(0deg,#34352b66,#34352b00 45%)
+}
+.hero-copy {
+  padding: 76px 28px 74px;
+  max-width: 450px
+}
+.hero-title {
+  line-height: 1.5
+}
+.hero-copy h2,.hero-title small {
+  font-size: 19px
+}
+.hero-kicker {
+  font-size: 7px;
+  letter-spacing: .2em;
+  margin-bottom: 19px
+}
+.hero-note {
+  font-size: 10px;
+  line-height: 1.9;
+  max-width: 280px;
+  margin-bottom: 22px
+}
+.hero-copy .quick-actions {
+  gap: 8px
+}
+.hero-copy a.button {
+  font-size: 9px;
+  min-height: 39px;
+  padding: 10px 16px;
+  gap: 10px
+}
+.hero-copy a.button .icon {
+  width: 14px;
+  height: 14px
+}
+.hero-bottom {
+  left: 28px;
+  right: 28px;
+  bottom: 23px
+}
+.hero-scroll {
+  font-size: 7px;
+  gap: 7px
+}
+.hero-bottom p {
+  max-width: 185px;
+  font-size: 7px;
+  letter-spacing: .04em
+}
+.care-strip {
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  padding: 19px;
+  gap: 13px
+}
+.care-strip-item {
+  display: block;
+  padding: 0 12px
+}
+.care-strip-item .icon {
+  width: 19px;
+  height: 19px;
+  margin-bottom: 5px
+}
+.care-strip-item strong {
+  font-size: 8px
+}
+.care-strip-item p,.care-strip-item small {
+  font-size: 7px;
+  line-height: 1.75
+}
+.section-heading {
+  padding-top: 32px;
+  margin-bottom: 18px;
+  align-items: center
+}
+.section-heading h2 {
+  font-size: 23px
+}
+.section-heading>a {
+  font-size: 8px;
+  gap: 8px
+}
+.section-kicker {
+  font-size: 7px;
+  margin-bottom: 7px
+}
+.section-heading p:not(.section-kicker) {
+  font-size: 9px
+}
+.section-heading .context-pill {
+  font-size: 8px;
+  padding: 5px 8px
+}
+.care-strip-item>span {
+  font-size: 8px;
+  line-height: 1.8;
+  display: block
+}
+.next-appointment {
+  padding: 21px
+}
+.care-guide {
+  grid-template-columns: 115px minmax(0,1fr);
+  min-height: 265px
+}
+.care-guide>div:not(.care-guide-photo) {
+  padding: 23px 19px
+}
+.care-guide h2 {
+  font-size: 20px;
+  margin-bottom: 16px
+}
+.care-step {
+  gap: 8px;
+  margin-bottom: 12px
+}
+.care-step>span {
+  width: 20px;
+  font-size: 15px
+}
+.care-step strong {
+  font-size: 9px
+}
+.care-step p {
+  font-size: 8px
+}
+.service-grid {
+  grid-template-columns: 1fr;
+  gap: 13px
+}
+.service-card {
+  padding: 22px 23px;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  column-gap: 18px
+}
+.service-icon {
+  grid-row: 1/4;
+  width: 36px;
+  margin-bottom: 0;
+  align-items: start;
+  padding-top: 4px
+}
+.service-icon .icon {
+  width: 28px;
+  height: 28px
+}
+.service-card h3 {
+  font-size: 19px;
+  padding-right: 25px;
+  margin-bottom: 7px
+}
+.service-card p {
+  font-size: 9px;
+  max-width: 260px;
+  margin-bottom: 13px
+}
+.service-link {
+  font-size: 8px;
+  width: fit-content
+}
+.service-number {
+  font-size: 26px;
+  top: 19px;
+  right: 21px
+}
+.service-card:hover {
+  transform: translateY(-3px)
+}
+.clinic-card {
+  flex-basis: 85%;
+  min-width: 250px
+}
+.clinic-card-image {
+  height: 167px
+}
+.clinic-card-body {
+  padding: 20px 21px
+}
+.clinic-carousel {
+  gap: 15px
+}
+.customer-footer {
+  gap: 16px
+}
+}
+@media(max-width:500px) {
+.form-grid,.slot-grid {
+  grid-template-columns: 1fr
+}
+.full {
+  grid-column: auto
+}
+.customer-header .user-block,.top-actions .user-block .avatar,.top-search>span,.user-menu summary>span:not(.avatar) {
+  display: none
+}
+.stat span,.top-actions .text-button {
+  font-size: 10px
+}
+.top-actions .text-button .icon {
+  width: 14px;
+  height: 14px
+}
+.topbar {
+  padding: 0 18px
+}
+.content {
+  padding-left: 18px;
+  padding-right: 18px
+}
+.customer-content {
+  padding-left: 0;
+  padding-right: 0
+}
+.treatment-row {
+  grid-template-columns: 1.8fr 1fr auto
+}
+.treatment-row input,.treatment-row select {
+  padding: 9px 8px;
+  font-size: 11px
+}
+.table-actions {
+  gap: 5px
+}
+.page-actions button {
+  flex: 1
+}
+.invoice .invoice-meta {
+  flex-direction: column;
+  gap: 7px
+}
+.stat {
+  padding: 17px
+}
+.stat strong {
+  font-size: 27px
+}
+.stat small {
+  font-size: 9px
+}
+.card {
+  padding: 19px
+}
+.customer-content .card {
+  padding: 20px
+}
+.dialog-head {
+  padding-top: 19px;
+  padding-bottom: 19px
+}
+.dialog-head h2 {
+  font-size: 16px
+}
+.dialog-body {
+  padding-top: 21px;
+  padding-bottom: 21px
+}
+.dialog-footer {
+  padding-top: 15px;
+  padding-bottom: 15px
+}
+.filter-bar {
+  gap: 10px
+}
+.customer-header .primary {
+  font-size: 9px
+}
+.top-search {
+  min-width: 0;
+  padding: 8px
+}
+.customer-footer>div:last-child {
+  text-align: left
+}
+.customer-footer>div:first-child>p {
+  padding-left: 0
+}
+.appointment-summary {
+  gap: 16px
+}
+.appointment-time {
+  padding-right: 17px;
+  min-width: 78px
+}
+}
+@media(max-width:1080px) {
+.customer-nav {
+  gap: 17px
+}
+.customer-nav a {
+  font-size: 13px
+}
+.customer-header {
+  gap: 19px
+}
+}
+@media(max-width:850px) {
+.customer-nav a {
+  font-size: 13px
+}
+.hero-copy .hero-link {
+  font-size: 12px
+}
+}
+@media(max-width:600px) {
+.hero-title {
+  font-size: 32px
+}
+.hero-copy {
+  padding-top: 58px
+}
+.hero-note {
+  font-size: 13px;
+  max-width: 300px
+}
+.customer-content .hero-copy a.button {
+  font-size: 12px;
+  padding: 11px 16px
+}
+.hero-copy .hero-link {
+  font-size: 11px;
+  margin-left: 2px
+}
+.care-strip-item>span {
+  font-size: 10px
+}
+.customer-content .context-pill {
+  font-size: 9px;
+  white-space: normal;
+  text-align: right;
+  max-width: 132px
+}
+.customer-header .user-menu summary {
+  font-size: 11px
+}
+.customer-shell .user-menu summary>span>small {
+  font-size: 8px
+}
+.service-card p {
+  max-width: 100%
+}
+.care-guide>div>a,.care-guide>div>p:not(.section-kicker) {
+  font-size: 11px
+}
+}
+@media(max-width:500px) {
+.customer-header {
+  gap: 8px 14px
+}
+.hero-image img {
+  object-position: 88% center
+}
+.hero-copy .quick-actions {
+  flex-wrap: wrap
+}
+.hero-copy a.button {
+  font-size: 13px;
+  min-height: 44px
+}
+.hero-link {
+  font-size: 12px
+}
+.care-strip {
+  gap: 8px
+}
+.care-strip-item {
+  padding: 0 8px
+}
+.care-strip-item>span {
+  font-size: 11px
+}
+.section-heading .context-pill {
+  font-size: 10px
+}
+.section-kicker {
+  font-size: 9px
+}
+.customer-content .stat small {
+  font-size: 11px
+}
+.customer-content .stat span {
+  font-size: 12px
+}
+.customer-content .readonly-grid strong {
+  font-size: 14px
+}
+}
+@media(max-width:1080px) {
+.staff-auth .auth-intro {
+  padding: 30px
+}
+.staff-auth .auth-story h1 {
+  font-size: 33px
+}
+.staff-auth-features article {
+  padding: 12px;
+  gap: 10px
+}
+.staff-auth .auth-main {
+  padding: 36px 30px
+}
+}
+@media(max-width:850px) {
+.portal-auth-customer.auth {
+  display: block
+}
+.portal-auth-customer .auth-intro {
+  min-height: 230px;
+  height: 230px;
+  padding: 23px 25px
+}
+.portal-auth-customer .auth-photo img {
+  object-position: center 37%
+}
+.portal-auth-customer .auth-intro:after {
+  background: linear-gradient(90deg,#26271e8c,#26271e0d),linear-gradient(0deg,#26271e54,transparent)
+}
+.portal-auth-customer .auth-story {
+  padding: 30px 0 0;
+  margin-top: 0
+}
+.portal-auth-customer .auth-story .eyebrow {
+  margin-bottom: 8px;
+  font-size: 8px
+}
+.portal-auth-customer .auth-story h1 {
+  font-size: 27px;
+  line-height: 1.4;
+  margin-bottom: 0
+}
+.portal-auth-customer .auth-caption,.portal-auth-customer .auth-story p:not(.eyebrow) {
+  display: none
+}
+.portal-auth-customer .auth-main {
+  padding: 33px 29px 25px
+}
+}
+@media(max-width:750px) {
+.staff-auth {
+  display: block
+}
+.staff-auth .auth-intro {
+  min-height: auto;
+  height: auto;
+  padding: 27px
+}
+.staff-auth .auth-story {
+  margin: 0;
+  padding: 31px 0 24px
+}
+.staff-auth .auth-story h1 {
+  font-size: 29px;
+  margin-bottom: 14px
+}
+.staff-auth .auth-story>p:not(.eyebrow) {
+  font-size: 13px
+}
+.staff-auth-features {
+  display: none
+}
+.staff-auth .auth-main {
+  padding: 34px 26px
+}
+.staff-auth .auth-card .auth-title {
+  font-size: 25px
+}
+.staff-auth-scope {
+  font-size: 11px
+}
+.portal-notice {
+  padding: 25px 22px;
+  gap: 35px
+}
+.portal-notice-card {
+  padding: 29px 25px
+}
+.portal-notice-card h1 {
+  font-size: 22px
+}
+}

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="610" viewBox="0 0 600 610"><rect width="600" height="610" fill="white"/>
+<rect x="30" y="30" width="235" height="115" fill="white" stroke="black"/>
+<text x="147.5" y="74.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">&lt;&lt;角色&gt;&gt;</text>
+<text x="147.5" y="92.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">顾客 / 医生 / 前台</text>
+<text x="147.5" y="110.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">承担一次业务中的责任</text>
+<rect x="335" y="30" width="235" height="115" fill="white" stroke="black"/>
+<text x="452.5" y="74.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">&lt;&lt;事物&gt;&gt;</text>
+<text x="452.5" y="92.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">患者 / 牙医 / 门诊</text>
+<text x="452.5" y="110.16666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">保持跨事件稳定身份</text>
+<rect x="30" y="245" width="235" height="115" fill="white" stroke="black"/>
+<text x="147.5" y="289.1666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">&lt;&lt;时刻时段&gt;&gt;</text>
+<text x="147.5" y="307.1666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">预约 / 就诊 / 收款</text>
+<text x="147.5" y="325.1666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">记录发生时段及参与方</text>
+<rect x="335" y="245" width="235" height="115" fill="white" stroke="black"/>
+<text x="452.5" y="289.1666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">&lt;&lt;描述&gt;&gt;</text>
+<text x="452.5" y="307.1666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">治疗项目 / 资格类别</text>
+<text x="452.5" y="325.1666666666667" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">提供目录标准与说明</text>
+<line x1="147" y1="145" x2="147" y2="245" stroke="black" stroke-width="1"/>
+<line x1="147" y1="245" x2="143.69578621097082" y2="238.828924628852" stroke="black" stroke-width="1"/>
+<line x1="147" y1="245" x2="150.30421378902918" y2="238.828924628852" stroke="black" stroke-width="1"/>
+<line x1="453" y1="145" x2="453" y2="245" stroke="black" stroke-width="1"/>
+<line x1="453" y1="245" x2="449.6957862109708" y2="238.828924628852" stroke="black" stroke-width="1"/>
+<line x1="453" y1="245" x2="456.3042137890292" y2="238.828924628852" stroke="black" stroke-width="1"/>
+<line x1="265" y1="302" x2="335" y2="302" stroke="black" stroke-width="1"/>
+<line x1="335" y1="302" x2="328.828924628852" y2="305.3042137890292" stroke="black" stroke-width="1"/>
+<line x1="335" y1="302" x2="328.828924628852" y2="298.6957862109708" stroke="black" stroke-width="1"/>
+<text x="300" y="455" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">示例：患者以顾客角色委托预约，预约在所选排班时段建立</text>
+<text x="300" y="473" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black">预约再经过到诊事件创建就诊，状态变化保留事件时间与原因</text>
+<text x="300" y="565" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">为保持灰度打印，本图以架构型文字代替颜色，不改变分析语义</text>
+</svg>

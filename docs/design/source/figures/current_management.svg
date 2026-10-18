@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="455" viewBox="0 0 600 455"><rect width="600" height="455" fill="white"/>
+<rect x="4" y="4" width="592" height="447" fill="white" stroke="black"/>
+<text x="15" y="25" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="700" text-anchor="start" fill="black">sd 现状季度经营核对</text>
+<ellipse cx="64.0" cy="50.0" rx="8.0" ry="8.0" fill="white" stroke="black"/>
+<text x="64.0" y="54.666666666666664" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black"></text>
+<line x1="64.0" y1="58" x2="64.0" y2="82" stroke="black" stroke-width="1"/>
+<line x1="46.0" y1="67" x2="82.0" y2="67" stroke="black" stroke-width="1"/>
+<line x1="64.0" y1="82" x2="48.0" y2="99" stroke="black" stroke-width="1"/>
+<line x1="64.0" y1="82" x2="80.0" y2="99" stroke="black" stroke-width="1"/>
+<line x1="47.0" y1="37" x2="56.0" y2="37" stroke="black" stroke-width="1"/>
+<line x1="47.0" y1="37" x2="47.0" y2="49" stroke="black" stroke-width="1"/>
+<text x="64.0" y="119" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">店长</text>
+<line x1="64.0" y1="133" x2="64.0" y2="383" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<ellipse cx="221.33333333333334" cy="58.0" rx="16.0" ry="16.0" fill="white" stroke="black"/>
+<text x="221.33333333333334" y="62.666666666666664" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black"></text>
+<line x1="198.33333333333334" y1="77" x2="244.33333333333334" y2="77" stroke="black" stroke-width="1"/>
+<text x="221.33333333333334" y="97" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">诊所成本</text>
+<line x1="221.33333333333334" y1="133" x2="221.33333333333334" y2="383" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<ellipse cx="378.6666666666667" cy="58.0" rx="16.0" ry="16.0" fill="white" stroke="black"/>
+<text x="378.6666666666667" y="62.666666666666664" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black"></text>
+<line x1="355.6666666666667" y1="77" x2="401.6666666666667" y2="77" stroke="black" stroke-width="1"/>
+<text x="378.6666666666667" y="97" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">结算单</text>
+<line x1="378.6666666666667" y1="133" x2="378.6666666666667" y2="383" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<ellipse cx="536.0" cy="58.0" rx="16.0" ry="16.0" fill="white" stroke="black"/>
+<text x="536.0" y="62.666666666666664" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black"></text>
+<line x1="513.0" y1="77" x2="559.0" y2="77" stroke="black" stroke-width="1"/>
+<text x="536.0" y="97" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">季度报告</text>
+<line x1="536.0" y1="133" x2="536.0" y2="383" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="142.66666666666669" y="153" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">1 收集用品及运营成本</text>
+<line x1="64.0" y1="163" x2="221.33333333333334" y2="163" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="221.33333333333334" y1="163" x2="215.16225796218535" y2="166.30421378902918" stroke="black" stroke-width="1"/>
+<line x1="221.33333333333334" y1="163" x2="215.16225796218535" y2="159.69578621097082" stroke="black" stroke-width="1"/>
+<text x="221.33333333333334" y="203" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">2 汇总各店开单金额</text>
+<line x1="64.0" y1="213" x2="378.6666666666667" y2="213" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="378.6666666666667" y1="213" x2="372.4955912955187" y2="216.30421378902918" stroke="black" stroke-width="1"/>
+<line x1="378.6666666666667" y1="213" x2="372.4955912955187" y2="209.69578621097082" stroke="black" stroke-width="1"/>
+<text x="300.0" y="253" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">3 人工核对季度业绩</text>
+<line x1="64.0" y1="263" x2="536.0" y2="263" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="536.0" y1="263" x2="529.828924628852" y2="266.3042137890292" stroke="black" stroke-width="1"/>
+<line x1="536.0" y1="263" x2="529.828924628852" y2="259.6957862109708" stroke="black" stroke-width="1"/>
+<text x="300.0" y="303" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">4 计算连锁净利润</text>
+<line x1="64.0" y1="313" x2="536.0" y2="313" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="536.0" y1="313" x2="529.828924628852" y2="316.3042137890292" stroke="black" stroke-width="1"/>
+<line x1="536.0" y1="313" x2="529.828924628852" y2="309.6957862109708" stroke="black" stroke-width="1"/>
+<text x="300.0" y="353" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">5 按净利润提取基金</text>
+<line x1="64.0" y1="363" x2="536.0" y2="363" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="536.0" y1="363" x2="529.828924628852" y2="366.3042137890292" stroke="black" stroke-width="1"/>
+<line x1="536.0" y1="363" x2="529.828924628852" y2="359.6957862109708" stroke="black" stroke-width="1"/>
+<text x="300" y="413.0" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="12.5" font-weight="400" text-anchor="middle" fill="black">店长承接原总部职责；现状未假定已有实时集中数据</text>
+</svg>

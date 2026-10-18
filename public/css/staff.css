@@ -1,0 +1,320 @@
+/* staff: authored styles; bundled by tools/build-styles.mjs. */
+
+.stat {
+  padding: 21px 22px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  position: relative;
+  overflow: hidden;
+  transition: transform .3s var(--ease),box-shadow .3s,border-color .3s;
+  animation: enter-up .5s var(--ease) both
+}
+.stat:nth-child(2) {
+  animation-delay: .04s
+}
+.stat:nth-child(3) {
+  animation-delay: .08s
+}
+.stat:nth-child(4) {
+  animation-delay: .12s
+}
+.stat:hover {
+  transform: translateY(-3px);
+  border-color: #dcd7f2;
+  box-shadow: 0 8px 24px #675de409
+}
+.stat span {
+  font-size: 11px;
+  color: #8c879d
+}
+.stat strong {
+  display: block;
+  font-size: 30px;
+  font-weight: 550;
+  color: #514963;
+  letter-spacing: -.04em;
+  line-height: 1.25;
+  margin: 14px 0 7px
+}
+.stat small {
+  color: #9c94ab;
+  font-size: 10px
+}
+.stat .stat-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px
+}
+.stat .icon {
+  width: 17px;
+  height: 17px;
+  color: #a496cc
+}
+.admin-overview {
+  padding-top: 1px
+}
+.activity-chart {
+  position: relative;
+  padding: 25px 3px 0
+}
+.activity-chart>.hint {
+  margin-top: 17px;
+  font-size: 9px;
+  color: #ac9ab9
+}
+.agenda-row {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 17px 0;
+  border-bottom: 1px solid #f2edf6
+}
+.agenda-row:last-child {
+  border: 0;
+  padding-bottom: 1px
+}
+.agenda-time {
+  width: 45px;
+  flex: none;
+  font-size: 10px;
+  font-weight: 500;
+  color: #a58ab8
+}
+.agenda-patient {
+  flex: 1;
+  min-width: 0;
+  border-left: 2px solid #ded0ec;
+  padding-left: 14px
+}
+.agenda-patient strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 550;
+  color: #8d70a3;
+  margin-bottom: 2px
+}
+.agenda-patient p,.agenda-patient small,.agenda-patient span {
+  font-size: 10px;
+  line-height: 1.7;
+  color: #ad94bb;
+  margin: 0;
+  display: block
+}
+.agenda-row>button {
+  font-size: 10px;
+  min-height: 29px;
+  padding: 5px 8px;
+  color: #a188b2;
+  border-color: #ece3f3
+}
+.workflow-track {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  margin-top: 23px;
+  gap: 13px
+}
+.workflow-stage {
+  border: 1px solid #eee8f4;
+  border-radius: 9px;
+  background: #fcfaff;
+  padding: 15px 16px;
+  position: relative
+}
+.workflow-stage>.icon {
+  width: 15px;
+  height: 15px;
+  color: #bba2cf;
+  margin-bottom: 8px
+}
+.workflow-stage span {
+  display: block;
+  font-size: 10px;
+  color: #ad95be
+}
+.workflow-stage strong {
+  display: block;
+  margin: 7px 0 0;
+  font-size: 22px;
+  color: #9377a9;
+  font-weight: 500;
+  letter-spacing: -.04em
+}
+.workflow-stage:not(:last-child):after {
+  content: "→";
+  position: absolute;
+  right: -12px;
+  top: 43%;
+  color: #d6c6e3;
+  z-index: 1;
+  font-size: 11px
+}
+.workflow-stage .workflow-number {
+  position: absolute;
+  top: 14px;
+  right: 13px;
+  font-family: Georgia,serif;
+  font-size: 17px;
+  color: #d8c9e5
+}
+.workflow-stage .badge {
+  display: inline-flex;
+  width: fit-content;
+  color: inherit
+}
+.workflow-stage .badge.blue {
+  color: #8b72bd
+}
+.workflow-stage .badge.teal {
+  color: #5b8d81
+}
+.workflow-stage .badge.gold {
+  color: #aa9058
+}
+.workflow-stage .badge.green {
+  color: #57876a
+}
+.workflow-stage small {
+  display: block;
+  font-size: 9px;
+  color: #b9a7c5;
+  margin-top: 6px
+}
+.workflow-track+.overview-note {
+  padding: 14px 17px;
+  margin: 18px 0 0;
+  gap: 12px;
+  background: #fbf8ff;
+  border-radius: 8px
+}
+.workflow-track+.overview-note>.icon {
+  width: 17px;
+  height: 17px
+}
+.workflow-track+.overview-note p {
+  flex: 1;
+  font-size: 10px
+}
+button.agenda-row {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  font-weight: 400;
+  gap: 11px
+}
+button.agenda-row:hover {
+  background: #fcf9ff;
+  box-shadow: none;
+  transform: none
+}
+.agenda-time small {
+  display: block;
+  font-size: 8px;
+  font-weight: 400;
+  color: #bca4cc;
+  margin-top: 3px
+}
+.agenda-row .avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 10px
+}
+.agenda-row .agenda-patient {
+  border-left: none;
+  padding-left: 0
+}
+.overview-aside .agenda-row .badge {
+  font-size: 8px;
+  padding: 2px 5px
+}
+.admin-shell .user-menu summary {
+  color: #8e7fa4
+}
+.admin-shell .user-menu summary small {
+  display: block;
+  font-size: 8px;
+  color: #ad9dbc
+}
+.admin-shell .user-menu summary>.icon {
+  width: 12px;
+  height: 12px;
+  color: #b7a9c6
+}
+.admin-shell .user-menu summary:after {
+  display: none
+}
+.admin-shell .user-menu>div {
+  border-color: #e7dcef;
+  background: #fffdff
+}
+.admin-shell .user-menu>div button {
+  color: #a388b4
+}
+.admin-shell .user-menu>div button:hover {
+  background: #f5edfc
+}
+.admin-shell .nav a {
+  font-size: 13px
+}
+.admin-shell table,.admin-shell td {
+  font-size: 14px
+}
+.admin-shell th {
+  font-size: 12px
+}
+.admin-shell .cell-sub {
+  font-size: 11px
+}
+.admin-shell input,.admin-shell select,.admin-shell textarea {
+  font-size: 14px
+}
+.admin-shell .filter-bar label,.admin-shell label {
+  font-size: 12px
+}
+.admin-shell .card>p,.admin-shell .list-item strong,.admin-shell .notice,.admin-shell .readonly-grid strong {
+  font-size: 14px
+}
+.admin-shell .list-item p,.admin-shell .readonly-grid span {
+  font-size: 12px
+}
+.admin-shell .card-head h2 {
+  font-size: 16px
+}
+.admin-shell .agenda-patient strong {
+  font-size: 13px
+}
+.admin-shell .agenda-patient small,.admin-shell .agenda-time {
+  font-size: 11px
+}
+body:has(.admin-shell) dialog input,body:has(.admin-shell) dialog select,body:has(.admin-shell) dialog textarea {
+  font-size: 14px
+}
+body:has(.admin-shell) dialog label {
+  font-size: 12px
+}
+body:has(.admin-shell) .dialog-body {
+  font-size: 14px
+}
+body:has(.admin-shell) .dialog-body h3 {
+  font-size: 14px
+}
+body:has(.admin-shell) .dialog-body .readonly-grid strong {
+  font-size: 14px
+}
+body:has(.admin-shell) .dialog-body .readonly-grid span {
+  font-size: 12px
+}
+body:has(.admin-shell) dialog table,body:has(.admin-shell) dialog td {
+  font-size: 13px
+}
+body:has(.admin-shell) dialog th {
+  font-size: 12px
+}

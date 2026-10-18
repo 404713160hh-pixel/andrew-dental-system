@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1220" viewBox="0 0 900 1220" role="img" aria-label="领域数据关系">
+<title>领域数据关系</title>
+<defs><marker id="open-arrow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M 1 1 L 11 6 L 1 11" fill="none" stroke="#111111" stroke-width="1.7" stroke-linejoin="round"/></marker></defs>
+<rect x="0" y="0" width="900" height="1220" fill="white" stroke="none" stroke-width="1.4"/>
+<rect x="24" y="24" width="852" height="1172" fill="white" stroke="#111111" stroke-width="1.6"/>
+<line x1="24" y1="75" x2="278.32" y2="75" stroke="#111111" stroke-width="1.4"/>
+<line x1="278.32" y1="24" x2="278.32" y2="75" stroke="#111111" stroke-width="1.4"/>
+<text x="39" y="59" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="27" text-anchor="start" fill="#111111" font-weight="400">cd  领域数据关系</text>
+<path d="M 280 187 H 330" fill="none" stroke="#111111" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open-arrow)"/>
+<rect x="282.18" y="142" width="45.64" height="29" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="305" y="165" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" text-anchor="middle" fill="#111111" font-weight="400">1:N</text>
+<path d="M 570 187 H 620" fill="none" stroke="#111111" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open-arrow)"/>
+<rect x="554.36" y="80" width="81.28" height="29" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="595" y="103" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" text-anchor="middle" fill="#111111" font-weight="400">1:0..1</text>
+<path d="M 160 264 V 330" fill="none" stroke="#111111" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open-arrow)"/>
+<rect x="137.18" y="282" width="45.64" height="29" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="160" y="305" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" text-anchor="middle" fill="#111111" font-weight="400">1:N</text>
+<path d="M 450 330 V 264" fill="none" stroke="#111111" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open-arrow)"/>
+<rect x="427.18" y="282" width="45.64" height="29" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="450" y="305" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" text-anchor="middle" fill="#111111" font-weight="400">1:N</text>
+<path d="M 740 264 V 330" fill="none" stroke="#111111" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open-arrow)"/>
+<rect x="717.18" y="282" width="45.64" height="29" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="740" y="305" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" text-anchor="middle" fill="#111111" font-weight="400">1:N</text>
+<path d="M 740 550 V 484" fill="none" stroke="#111111" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open-arrow)"/>
+<rect x="717.18" y="502" width="45.64" height="29" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="740" y="525" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" text-anchor="middle" fill="#111111" font-weight="400">1:N</text>
+<path d="M 450 550 V 484" fill="none" stroke="#111111" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open-arrow)"/>
+<rect x="427.18" y="502" width="45.64" height="29" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="450" y="525" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" text-anchor="middle" fill="#111111" font-weight="400">1:N</text>
+<path d="M 280 627 H 304 V 407 H 330" fill="none" stroke="#111111" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open-arrow)"/>
+<rect x="281.18" y="502" width="45.64" height="29" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="304" y="525" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" text-anchor="middle" fill="#111111" font-weight="400">1:N</text>
+<path d="M 570 627 H 594 V 725 H 740 V 770" fill="none" stroke="#111111" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open-arrow)"/>
+<rect x="617.18" y="696" width="45.64" height="29" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="640" y="719" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" text-anchor="middle" fill="#111111" font-weight="400">1:N</text>
+<path d="M 740 990 V 924" fill="none" stroke="#111111" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open-arrow)"/>
+<rect x="717.18" y="942" width="45.64" height="29" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="740" y="965" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" text-anchor="middle" fill="#111111" font-weight="400">1:N</text>
+<path d="M 330 847 H 280" fill="none" stroke="#111111" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open-arrow)"/>
+<rect x="278" y="802" width="54" height="29" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="305" y="825" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" text-anchor="middle" fill="#111111" font-weight="400">归集</text>
+<path d="M 160 990 V 924" fill="none" stroke="#111111" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open-arrow)"/>
+<rect x="133" y="942" width="54" height="29" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="160" y="965" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" text-anchor="middle" fill="#111111" font-weight="400">归集</text>
+<path d="M 860 187 H 874 V 744 H 450 V 770" fill="none" stroke="#111111" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#open-arrow)"/>
+<rect x="776.36" y="715" width="81.28" height="29" fill="white" stroke="none" stroke-width="1.4"/>
+<text x="817" y="738" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" text-anchor="middle" fill="#111111" font-weight="400">1:0..1</text>
+<rect x="40" y="110" width="240" height="154" fill="white" stroke="#111111" stroke-width="1.7"/>
+<line x1="40" y1="151" x2="280" y2="151" stroke="#111111" stroke-width="1.3"/>
+<text x="54" y="139" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" text-anchor="start" fill="#111111" font-weight="700">患者</text>
+<text x="54" y="179" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">患者编号、身份资料</text>
+<text x="54" y="204" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">联系方式、紧急联系人</text>
+<text x="54" y="229" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">过敏申报状态与版本</text>
+<text x="54" y="252" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="20" text-anchor="start" fill="#111111" font-weight="400">UC-01、UC-05</text>
+<rect x="330" y="110" width="240" height="154" fill="white" stroke="#111111" stroke-width="1.7"/>
+<line x1="330" y1="151" x2="570" y2="151" stroke="#111111" stroke-width="1.3"/>
+<text x="344" y="139" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" text-anchor="start" fill="#111111" font-weight="700">预约</text>
+<text x="344" y="179" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">患者、诊所、牙医</text>
+<text x="344" y="204" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">时段、问题、特殊需求</text>
+<text x="344" y="229" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">状态、出席、改约关联</text>
+<text x="344" y="252" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="20" text-anchor="start" fill="#111111" font-weight="400">UC-02、UC-03、UC-08</text>
+<rect x="620" y="110" width="240" height="154" fill="white" stroke="#111111" stroke-width="1.7"/>
+<line x1="620" y1="151" x2="860" y2="151" stroke="#111111" stroke-width="1.3"/>
+<text x="634" y="139" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" text-anchor="start" fill="#111111" font-weight="700">就诊</text>
+<text x="634" y="179" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">预约、患者、接诊牙医</text>
+<text x="634" y="204" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">就诊问题、治疗备注</text>
+<text x="634" y="229" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">完成状态、数据版本</text>
+<text x="634" y="252" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="20" text-anchor="start" fill="#111111" font-weight="400">UC-09</text>
+<rect x="40" y="330" width="240" height="154" fill="white" stroke="#111111" stroke-width="1.7"/>
+<line x1="40" y1="371" x2="280" y2="371" stroke="#111111" stroke-width="1.3"/>
+<text x="54" y="359" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" text-anchor="start" fill="#111111" font-weight="700">过敏项</text>
+<text x="54" y="399" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">患者、过敏项名称</text>
+<text x="54" y="424" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">过敏反应、补充说明</text>
+<text x="54" y="449" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">一名患者可关联多项</text>
+<text x="54" y="472" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="20" text-anchor="start" fill="#111111" font-weight="400">UC-01、UC-05</text>
+<rect x="330" y="330" width="240" height="154" fill="white" stroke="#111111" stroke-width="1.7"/>
+<line x1="330" y1="371" x2="570" y2="371" stroke="#111111" stroke-width="1.3"/>
+<text x="344" y="359" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" text-anchor="start" fill="#111111" font-weight="700">排班时段</text>
+<text x="344" y="399" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">诊所、牙医、起止时间</text>
+<text x="344" y="424" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">容量、启用状态</text>
+<text x="344" y="449" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">跨店排班互斥</text>
+<text x="344" y="472" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="20" text-anchor="start" fill="#111111" font-weight="400">UC-06</text>
+<rect x="620" y="330" width="240" height="154" fill="white" stroke="#111111" stroke-width="1.7"/>
+<line x1="620" y1="371" x2="860" y2="371" stroke="#111111" stroke-width="1.3"/>
+<text x="634" y="359" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" text-anchor="start" fill="#111111" font-weight="700">就诊治疗明细</text>
+<text x="634" y="399" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">就诊编号、治疗项目</text>
+<text x="634" y="424" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">名称、数量、价格快照</text>
+<text x="634" y="449" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">小计＝数量×单价</text>
+<text x="634" y="472" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="20" text-anchor="start" fill="#111111" font-weight="400">UC-09、UC-10</text>
+<rect x="40" y="550" width="240" height="154" fill="white" stroke="#111111" stroke-width="1.7"/>
+<line x1="40" y1="591" x2="280" y2="591" stroke="#111111" stroke-width="1.3"/>
+<text x="54" y="579" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" text-anchor="start" fill="#111111" font-weight="700">诊所</text>
+<text x="54" y="619" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">诊所编号、地址</text>
+<text x="54" y="644" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">负责人、联系方式</text>
+<text x="54" y="669" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">面积、启用状态</text>
+<text x="54" y="692" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="20" text-anchor="start" fill="#111111" font-weight="400">UC-06</text>
+<rect x="330" y="550" width="240" height="154" fill="white" stroke="#111111" stroke-width="1.7"/>
+<line x1="330" y1="591" x2="570" y2="591" stroke="#111111" stroke-width="1.3"/>
+<text x="344" y="579" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" text-anchor="start" fill="#111111" font-weight="700">牙医</text>
+<text x="344" y="619" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">员工编号、身份资料</text>
+<text x="344" y="644" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">联系方式、任职状态</text>
+<text x="344" y="669" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">跨店排班、资格关联</text>
+<text x="344" y="692" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="20" text-anchor="start" fill="#111111" font-weight="400">UC-07</text>
+<rect x="620" y="550" width="240" height="154" fill="white" stroke="#111111" stroke-width="1.7"/>
+<line x1="620" y1="591" x2="860" y2="591" stroke="#111111" stroke-width="1.3"/>
+<text x="634" y="579" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" text-anchor="start" fill="#111111" font-weight="700">治疗目录</text>
+<text x="634" y="619" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">治疗名称、计量单位</text>
+<text x="634" y="644" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">单位价格、启用状态</text>
+<text x="634" y="669" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">历史价格保留快照</text>
+<text x="634" y="692" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="20" text-anchor="start" fill="#111111" font-weight="400">UC-09、UC-10</text>
+<rect x="40" y="770" width="240" height="154" fill="white" stroke="#111111" stroke-width="1.7"/>
+<line x1="40" y1="811" x2="280" y2="811" stroke="#111111" stroke-width="1.3"/>
+<text x="54" y="799" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" text-anchor="start" fill="#111111" font-weight="700">季度报告</text>
+<text x="54" y="839" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">季度、诊所、牙医</text>
+<text x="54" y="864" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">收入、成本、运营费用</text>
+<text x="54" y="889" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">净利润、基金、审核版</text>
+<text x="54" y="912" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="20" text-anchor="start" fill="#111111" font-weight="400">UC-11、UC-12</text>
+<rect x="330" y="770" width="240" height="154" fill="white" stroke="#111111" stroke-width="1.7"/>
+<line x1="330" y1="811" x2="570" y2="811" stroke="#111111" stroke-width="1.3"/>
+<text x="344" y="799" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" text-anchor="start" fill="#111111" font-weight="700">结算单</text>
+<text x="344" y="839" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">单号、就诊编号</text>
+<text x="344" y="864" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">诊疗明细和价格快照</text>
+<text x="344" y="889" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">总额、开单日期、版本</text>
+<text x="344" y="912" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="20" text-anchor="start" fill="#111111" font-weight="400">UC-04、UC-10</text>
+<rect x="620" y="770" width="240" height="154" fill="white" stroke="#111111" stroke-width="1.7"/>
+<line x1="620" y1="811" x2="860" y2="811" stroke="#111111" stroke-width="1.3"/>
+<text x="634" y="799" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" text-anchor="start" fill="#111111" font-weight="700">牙医资格关联</text>
+<text x="634" y="839" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">牙医编号、资格编号</text>
+<text x="634" y="864" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">证件编号、核验记录</text>
+<text x="634" y="889" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">牙医与资格多对多</text>
+<text x="634" y="912" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="20" text-anchor="start" fill="#111111" font-weight="400">UC-07</text>
+<rect x="40" y="990" width="240" height="154" fill="white" stroke="#111111" stroke-width="1.7"/>
+<line x1="40" y1="1031" x2="280" y2="1031" stroke="#111111" stroke-width="1.3"/>
+<text x="54" y="1019" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" text-anchor="start" fill="#111111" font-weight="700">季度费用</text>
+<text x="54" y="1059" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">季度、诊所、牙医</text>
+<text x="54" y="1084" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">用品成本、运营费用</text>
+<text x="54" y="1109" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">审核状态、归属凭据</text>
+<text x="54" y="1132" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="20" text-anchor="start" fill="#111111" font-weight="400">UC-11</text>
+<rect x="620" y="990" width="240" height="154" fill="white" stroke="#111111" stroke-width="1.7"/>
+<line x1="620" y1="1031" x2="860" y2="1031" stroke="#111111" stroke-width="1.3"/>
+<text x="634" y="1019" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" text-anchor="start" fill="#111111" font-weight="700">资格</text>
+<text x="634" y="1059" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">资格名称、颁发机构</text>
+<text x="634" y="1084" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">资格说明、启用状态</text>
+<text x="634" y="1109" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" text-anchor="start" fill="#111111" font-weight="400">数据版本</text>
+<text x="634" y="1132" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="20" text-anchor="start" fill="#111111" font-weight="400">UC-07</text>
+<text x="344" y="1029" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" text-anchor="start" fill="#111111" font-weight="400">1:N 表示一对多</text>
+<text x="344" y="1059" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" text-anchor="start" fill="#111111" font-weight="400">0..1 表示至多一条</text>
+<text x="344" y="1089" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" text-anchor="start" fill="#111111" font-weight="400">归集用于季度核算</text>
+<text x="344" y="1119" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" text-anchor="start" fill="#111111" font-weight="400">历史价格使用快照</text>
+<text x="450" y="1176" font-family="Deng, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" text-anchor="middle" fill="#111111" font-weight="400">已完成就诊生成唯一结算单；报告保留审核版本。</text>
+</svg>

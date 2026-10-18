@@ -1,0 +1,21 @@
+/* accessibility: authored styles; bundled by tools/build-styles.mjs. */
+
+@media(prefers-reduced-motion:reduce) {
+html {
+  scroll-behavior: auto
+}
+*,:after,:before {
+  animation: none!important;
+  transition: none!important;
+  scroll-behavior: auto!important
+}
+.clinic-card:hover,.date-choice:hover,.nav a:hover,.primary:hover,.service-card:hover,.slot:hover,.stat:hover {
+  transform: none
+}
+.auth-photo img,.care-guide:hover .care-guide-photo img,.clinic-card:hover .clinic-card-image img,.hero-image,.hero-image img {
+  transform: none!important
+}
+.hero-scroll .icon {
+  transform: none
+}
+}

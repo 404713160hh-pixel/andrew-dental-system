@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="605" viewBox="0 0 600 605"><rect width="600" height="605" fill="white"/>
+<rect x="4" y="4" width="592" height="597" fill="white" stroke="black"/>
+<text x="15" y="25" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="700" text-anchor="start" fill="black">sd 改进预约与核对</text>
+<ellipse cx="64.0" cy="50.0" rx="8.0" ry="8.0" fill="white" stroke="black"/>
+<text x="64.0" y="54.666666666666664" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black"></text>
+<line x1="64.0" y1="58" x2="64.0" y2="82" stroke="black" stroke-width="1"/>
+<line x1="46.0" y1="67" x2="82.0" y2="67" stroke="black" stroke-width="1"/>
+<line x1="64.0" y1="82" x2="48.0" y2="99" stroke="black" stroke-width="1"/>
+<line x1="64.0" y1="82" x2="80.0" y2="99" stroke="black" stroke-width="1"/>
+<line x1="47.0" y1="37" x2="56.0" y2="37" stroke="black" stroke-width="1"/>
+<line x1="47.0" y1="37" x2="47.0" y2="49" stroke="black" stroke-width="1"/>
+<text x="64.0" y="119" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">前台</text>
+<line x1="64.0" y1="133" x2="64.0" y2="533" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<ellipse cx="221.33333333333334" cy="58.0" rx="16.0" ry="16.0" fill="white" stroke="black"/>
+<text x="221.33333333333334" y="62.666666666666664" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black"></text>
+<line x1="198.33333333333334" y1="77" x2="244.33333333333334" y2="77" stroke="black" stroke-width="1"/>
+<text x="221.33333333333334" y="97" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">患者档案</text>
+<line x1="221.33333333333334" y1="133" x2="221.33333333333334" y2="533" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<ellipse cx="378.6666666666667" cy="58.0" rx="16.0" ry="16.0" fill="white" stroke="black"/>
+<text x="378.6666666666667" y="62.666666666666664" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black"></text>
+<line x1="355.6666666666667" y1="77" x2="401.6666666666667" y2="77" stroke="black" stroke-width="1"/>
+<text x="378.6666666666667" y="97" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">统一预约台账</text>
+<line x1="378.6666666666667" y1="133" x2="378.6666666666667" y2="533" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<ellipse cx="536.0" cy="50.0" rx="8.0" ry="8.0" fill="white" stroke="black"/>
+<text x="536.0" y="54.666666666666664" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="14" font-weight="400" text-anchor="middle" fill="black"></text>
+<line x1="536.0" y1="58" x2="536.0" y2="82" stroke="black" stroke-width="1"/>
+<line x1="518.0" y1="67" x2="554.0" y2="67" stroke="black" stroke-width="1"/>
+<line x1="536.0" y1="82" x2="520.0" y2="99" stroke="black" stroke-width="1"/>
+<line x1="536.0" y1="82" x2="552.0" y2="99" stroke="black" stroke-width="1"/>
+<text x="536.0" y="119" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">顾客</text>
+<line x1="536.0" y1="133" x2="536.0" y2="533" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="457.33333333333337" y="153" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">1 自助选择已发布号源</text>
+<line x1="536.0" y1="163" x2="378.6666666666667" y2="163" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="378.6666666666667" y1="163" x2="384.8377420378147" y2="159.69578621097082" stroke="black" stroke-width="1"/>
+<line x1="378.6666666666667" y1="163" x2="384.8377420378147" y2="166.30421378902918" stroke="black" stroke-width="1"/>
+<text x="300.0" y="203" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">2 关联本人有效档案</text>
+<line x1="378.6666666666667" y1="213" x2="221.33333333333334" y2="213" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="221.33333333333334" y1="213" x2="227.50440870448134" y2="209.69578621097082" stroke="black" stroke-width="1"/>
+<line x1="221.33333333333334" y1="213" x2="227.50440870448134" y2="216.30421378902918" stroke="black" stroke-width="1"/>
+<text x="378.6666666666667" y="253" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">3 校验冲突并登记预约</text>
+<line x1="378.6666666666667" y1="263" x2="400.6666666666667" y2="263" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="400.6666666666667" y1="263" x2="400.6666666666667" y2="275" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="400.6666666666667" y1="275" x2="378.6666666666667" y2="275" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="378.6666666666667" y1="275" x2="384.8377420378147" y2="271.6957862109708" stroke="black" stroke-width="1"/>
+<line x1="378.6666666666667" y1="275" x2="384.8377420378147" y2="278.3042137890292" stroke="black" stroke-width="1"/>
+<text x="221.33333333333334" y="303" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">4 查看授权门诊预约</text>
+<line x1="64.0" y1="313" x2="378.6666666666667" y2="313" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="378.6666666666667" y1="313" x2="372.4955912955187" y2="316.3042137890292" stroke="black" stroke-width="1"/>
+<line x1="378.6666666666667" y1="313" x2="372.4955912955187" y2="309.6957862109708" stroke="black" stroke-width="1"/>
+<text x="300.0" y="353" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">5 核对身份并询问健康</text>
+<line x1="64.0" y1="363" x2="536.0" y2="363" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="536.0" y1="363" x2="529.828924628852" y2="366.3042137890292" stroke="black" stroke-width="1"/>
+<line x1="536.0" y1="363" x2="529.828924628852" y2="359.6957862109708" stroke="black" stroke-width="1"/>
+<text x="300.0" y="403" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">6 确认身份与健康申报</text>
+<line x1="536.0" y1="413" x2="64.0" y2="413" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="64.0" y1="413" x2="70.171075371148" y2="409.6957862109708" stroke="black" stroke-width="1"/>
+<line x1="64.0" y1="413" x2="70.171075371148" y2="416.3042137890292" stroke="black" stroke-width="1"/>
+<text x="142.66666666666669" y="453" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">7 记录人工核实资料</text>
+<line x1="64.0" y1="463" x2="221.33333333333334" y2="463" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="221.33333333333334" y1="463" x2="215.16225796218535" y2="466.3042137890292" stroke="black" stroke-width="1"/>
+<line x1="221.33333333333334" y1="463" x2="215.16225796218535" y2="459.6957862109708" stroke="black" stroke-width="1"/>
+<text x="221.33333333333334" y="503" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="black">8 登记实际到诊</text>
+<line x1="64.0" y1="513" x2="378.6666666666667" y2="513" stroke="black" stroke-width="1" stroke-dasharray="5 4"/>
+<line x1="378.6666666666667" y1="513" x2="372.4955912955187" y2="516.3042137890292" stroke="black" stroke-width="1"/>
+<line x1="378.6666666666667" y1="513" x2="372.4955912955187" y2="509.6957862109708" stroke="black" stroke-width="1"/>
+<text x="300" y="563.0" font-family="DengXian,Microsoft YaHei,sans-serif" font-size="12.5" font-weight="400" text-anchor="middle" fill="black">统一台账承担拟自动化责任；现实身份与健康核实仍由前台承担</text>
+</svg>
