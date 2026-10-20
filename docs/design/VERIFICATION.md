@@ -1,4 +1,6 @@
-# 交付与发布核验
+# 历史版本验收记录
+
+本文件记录截至 2026-10-19 的设计文档与应用检查，使用的 PDF 为当时版本，不能作为 2026-10-20 修订版的逐页验收记录。当前修订 PDF 的页数、图表、内容模型摘要与文件校验值见 `delivery-manifest.json`。
 
 核验日期：2026-10-19，应用版本3.1.0。文稿保留2026-10-15旧版本记录；本文件记录本轮五角色修订的实测结果。
 
@@ -37,6 +39,6 @@
 
 仅发布独立应用和设计资料；排除日常数据库、SQLite旁路文件、PID锁、备份、环境秘密、依赖目录、测试截图和临时渲染页。source/data/schema的SQL与JSON为结构材料，不含患者记录。
 
-发布清单为根目录 RELEASE-MANIFEST.json。Word、PDF及本地图源ZIP的SHA-256见delivery-manifest.json；仓库提供展开的源文件。私人仓库和当前提交的远端Actions结果以GitHub记录为准。
+根目录 RELEASE-MANIFEST.json 记录当前仓库文件哈希。上一版 Word 与图源包的交付哈希保留在历史 Git 提交中；2026-10-20 修订 PDF 的 SHA-256 见当前 delivery-manifest.json。私人仓库和远端 Actions 结果以 GitHub 记录为准。
 
 Docker、Nginx、证书、公网环境、真实医疗场景和外部支付/短信仍需目标环境验收，本轮没有将其作为已上线能力。

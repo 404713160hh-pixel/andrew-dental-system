@@ -1,31 +1,37 @@
 {
-  "preparedAt": "2026-10-18",
-  "revisedAt": "2026-10-19",
-  "finalizedAt": "2026-10-19",
-  "applicationVersion": "3.1.0",
-  "roles": [
-    "customer",
-    "front",
-    "clinical",
-    "manager",
-    "hq"
-  ],
-  "figures": 29,
-  "useCases": 24,
-  "tables": 38,
-  "columns": 296,
-  "physicalForeignKeys": 58,
-  "usedSkills": [
-    "csu-word-report",
-    "csu-academic-report"
-  ],
-  "skillHashes": {
-    "csu-word-report": "ef3ba510015c0e2d4192294dcaff745efbf2db58928280f654e2404dad028bf6",
-    "csu-academic-report": "9c20da1eedda097b128626b40e71973b0fbd6d0756f633df3e59fd1e4aabb87d"
+  "revisedAt": "2026-10-20",
+  "file": "1602240215.pdf",
+  "sha256": "45c5057ebb79ada5b7acfcebf658260d901228de99533125bccd4dedc8c6465b",
+  "pages": 585,
+  "figures": 192,
+  "numberedTables": 285,
+  "useCases": 48,
+  "businessProcesses": 27,
+  "sequenceMessages": 502,
+  "manuallyPerformedMessages": 70,
+  "database": {
+    "tables": 114,
+    "fields": 1570,
+    "logicalForeignKeys": 407,
+    "selfReferences": 25,
+    "physicalErFigures": 73
   },
-  "files": {
-    "1602240215.docx": "bdaf14355650b8310da493dc81099b2deae80cd1f403de3034ca9fedd4cc1fef",
-    "1602240215.pdf": "c0f6004c928facfc8dfc679ad807a66eb636fe1386fdbecf1155f53af98ede11",
-    "设计文档_TeX与可编辑图源.zip": "0dcb51a410f6ba39770d0c367453773d5da1d6a01b30fc32146ee65823498265"
-  }
+  "skills": [
+    "csu-academic-report",
+    "lieflat-less-ai-tone"
+  ],
+  "verification": {
+    "allPagesRendered": true,
+    "pageSize": "A4 portrait",
+    "missingGlyphs": false,
+    "unresolvedReferences": false,
+    "overfullLines": false,
+    "coverValueCenterOffsetPt": {
+      "1602242015": -0.002,
+      "张云福": -0.002,
+      "商学院": -0.002,
+      "毕文杰": -0.002
+    }
+  },
+  "scope": "This is the revised target-system design document. It does not claim application implementation, production deployment, or live clinical/payment integration."
 }

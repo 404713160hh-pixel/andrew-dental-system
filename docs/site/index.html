@@ -2,7 +2,9 @@
 
 当前版本 **3.1.0**。五个独立岗位门户，共享关系型 SQLite 数据库及 Node.js 后端；总部统筹连锁，店长管理机构分配的授权门诊。
 
-完整课程设计文档位于 [docs/design](docs/design/README.md)：[可编辑Word](docs/design/安德鲁牙科连锁系统设计文档.docx)、[PDF](docs/design/安德鲁牙科连锁系统设计文档.pdf) 及 [TeX和SVG图源](docs/design/source/README.md)。使用 `csu-word-report` 与 `csu-academic-report` 两个技能，包含完整用例规约、业务与UML图、数据库ER图和38表296字段的数据字典；文稿于2026-10-19同步总部与店长职责及排版修订。文稿中的10月15日本地测试和当时未执行的外部部署属于历史验收状态，后续远端检查以仓库Actions为准。
+课程设计成果：[1602240215.pdf](docs/design/1602240215.pdf)（2026-10-20 修订版，585 页）。文档围绕牙科连锁业务升级，包含行业调研、业务用例与详细流程、分析与系统设计、数据库模型和实施边界。完整页数、图表与数据库模型统计及 PDF 校验摘要见 [交付清单](docs/design/delivery-manifest.json)。
+
+`docs/design/source/` 保留上一版可编辑源材料和图稿，尚未同步到本次 PDF 的内容模型，不能据此重建本修订版。设计文档描述目标方案；应用现状与真实环境验收状态以本仓库代码和对应验收记录为准。
 
 - 顾客：`/customer/login`
 - 前台：`/frontdesk/login`
@@ -87,6 +89,7 @@ node tools/database.mjs restore &lt;快照路径&gt; --offline
 - [接口约定](API-CONTRACT.md)
 - [部署和恢复](DEPLOYMENT.md)
 - [本轮验收](REFACTOR-ACCEPTANCE.md)
+- [课程设计 PDF](docs/design/1602240215.pdf)
 
 `npm run build:docs` 生成仓库内 `docs/site/index.html`，通过 `/docs/index.html` 访问，不依赖课程根目录的旧项目或PDF文件。Docker、Compose、反向代理示例及GitHub Actions均位于本目录。可以将本目录作为独立仓库根目录，不包含工作区旧Clearbrook项目。
 

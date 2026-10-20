@@ -1,19 +1,7 @@
-# 设计文档与可编辑图源
+# 课程设计 PDF 交付
 
-本设计使用 csu-word-report 和 csu-academic-report 两个技能，分别生成可编辑Word与XeLaTeX/PDF。模型、源码及权限修订核对截至2026-10-19。Word和PDF使用同一内容模型，分页随排版引擎不同。
+当前修订版为 [1602240215.pdf](1602240215.pdf)，修订日期为 2026-10-20。它是本次课程设计的最终阅读版本，覆盖牙科连锁行业调研、业务用例与流程、系统分析与设计、数据库模型及实施边界。
 
-- 完整正文：愿景、调研、现状与改进业务序列、五角色权限、24份用例规约、分析类图与序列、状态机、架构、数据库、事务、安全、部署和测试追溯。总部统管全连锁，店长按授权门诊运营，顾客、前台、医生各按既有身份边界访问。
-- 图集：包含业务、用例、分析、架构及ER图，其中六张物理ER分图覆盖38表；字段字典296项，58组DDL外键，区分逻辑引用。精确图数见delivery-manifest.json。
-- Word目录、图录、SEQ/REF与页码保留为可更新域，已由Windows Word更新保存。嵌入图形为图片，SVG图源可分别编辑。
+图表保持黑白。用例、流程、图表和数据模型数量及排版核验摘要见 [delivery-manifest.json](delivery-manifest.json)。该设计描述目标系统方案；其中规划能力不应解读为现有程序已实现、已接入真实支付或临床生产已验收。
 
-## 源文件
-
-source/body.json为统一内容模型；data/usecases.json和traceability.json为用例和追溯；data/schema/schema_inventory.json为内存DDL核对结果。figures/含可编辑SVG、矢量PDF及PNG。latex/main.tex及其media/、figures/是自包含TeX工程。template/保留本次使用的两个技能说明和必要模板/生成工具，未包含个人档案规则。
-
-## 重建
-
-在Python环境安装python-docx、Pillow、ReportLab、pypdfium2、lxml。已有body.json时运行 python build_report.py；Word另用template/csu-word-report/scripts/update_fields.ps1更新域并保存。TeX进入latex目录，以XeLaTeX编译main.tex至少两轮，确认目录和交叉引用稳定。TeX字体有Windows宋体和其他CJK字体回退。
-
-更新内容时修改data中的材料及build_content.py，再运行 python build_content.py 和 python build_report.py。图形重建脚本build_diagrams.py和data/schema/build_schema_figures.py当前使用Windows等线字体路径，其他系统需指定等效字体；已嵌入字体的PDF图源可直接用于编译，不必重画。
-
-旧版本的测试历史与2026-10-19五角色修订验证分开记录，最新实测和排版验收见仓库docs/design/VERIFICATION.md，GitHub发布、Actions执行和上线状态以仓库README与Actions为准。源码包含合成演示账号，正式实例必须使用独立空库、关闭示例数据，并重新分配口令。人工收退款不是外部支付接入，文档不代表临床生产验收。
+`source/`、`1602240215.docx` 与旧版源材料保留自上一轮 2026-10-19 交付，内容模型与本次 PDF 未同步，不能重建本修订 PDF。此次提交更新 PDF 及必要的版本索引，不包含应用代码修改。

@@ -1,6 +1,6 @@
 {
   "format": "andrew-source-release-v3",
-  "generatedAt": "2026-10-18T23:54:04.535Z",
+  "generatedAt": "2026-10-20T05:13:16.069Z",
   "version": "3.1.0",
   "excludes": "databases, backups, secrets, dependency directories and generated test artifacts",
   "files": [
@@ -66,8 +66,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 6265,
-      "sha256": "0224f0eadfd838e180fb6d0a731b75c333ddceb7741b89f2f7e5923e7f589bb8"
+      "bytes": 6425,
+      "sha256": "04d0de1313fdeb4c27dcf47436cc08f7d77fb4d5e43ef1b1b586cb3075c9f0c3"
     },
     {
       "path": "REFACTOR-ACCEPTANCE.md",
@@ -95,24 +95,34 @@
       "sha256": "dac7c9bfac3e758a908723674bb6e2af257c7efb9d12b37ec0f2c6c61dd25752"
     },
     {
+      "path": "docs/design/1602240215.docx",
+      "bytes": 6908902,
+      "sha256": "bdaf14355650b8310da493dc81099b2deae80cd1f403de3034ca9fedd4cc1fef"
+    },
+    {
+      "path": "docs/design/1602240215.pdf",
+      "bytes": 13180299,
+      "sha256": "45c5057ebb79ada5b7acfcebf658260d901228de99533125bccd4dedc8c6465b"
+    },
+    {
       "path": "docs/design/README.md",
-      "bytes": 2464,
-      "sha256": "1a949c166c0fc515c3cc0bad7a5f22d21d71582aa9a3b81a4090d514be4c2539"
+      "bytes": 800,
+      "sha256": "6df451c80156ab9a265150e756423484352d13ce27140c33e928b9208288f01e"
     },
     {
       "path": "docs/design/VERIFICATION.md",
-      "bytes": 4173,
-      "sha256": "ee6000de367a7ff8b3b7c8e559788eede29c0ab371f812904cd84e49da58b0cf"
+      "bytes": 4531,
+      "sha256": "77362d100a22c13d5be3b2c45ec79dd8467a10a3da90d5f58d03dbc60346ab40"
     },
     {
       "path": "docs/design/delivery-manifest.json",
-      "bytes": 991,
-      "sha256": "7d3942f925ee42b9cf77078d9bf645bdcae2255b587dae83ec77bb9ff0eaa0ab"
+      "bytes": 1058,
+      "sha256": "edcc26edbbcf6418fd5864c956c2ee96dad257bb127053ba81157a38eb46f607"
     },
     {
       "path": "docs/design/source/README.md",
-      "bytes": 2457,
-      "sha256": "3bddb38cb58721f57b1e2922cb8f206e6e169ad380161324b3deb6d840040d41"
+      "bytes": 343,
+      "sha256": "f9b0687b645485810e883f9f256a584b105d3a44e7066c112b76180e3a70a7b5"
     },
     {
       "path": "docs/design/source/all-figures.json",
@@ -835,24 +845,14 @@
       "sha256": "6abf51606d23be17aaa35b99ea9e1f55132febeaa8d6c73fe2e6fbdbac4ee6ba"
     },
     {
-      "path": "docs/design/安德鲁牙科连锁系统设计文档.docx",
-      "bytes": 6908902,
-      "sha256": "bdaf14355650b8310da493dc81099b2deae80cd1f403de3034ca9fedd4cc1fef"
-    },
-    {
-      "path": "docs/design/安德鲁牙科连锁系统设计文档.pdf",
-      "bytes": 2352312,
-      "sha256": "c0f6004c928facfc8dfc679ad807a66eb636fe1386fdbecf1155f53af98ede11"
-    },
-    {
       "path": "docs/domain-model.svg",
       "bytes": 22615,
       "sha256": "0ccb09c41ae11d52c6701ab511a61760d2da36707458b917ca3f6c656792cc17"
     },
     {
       "path": "docs/site/index.html",
-      "bytes": 30155,
-      "sha256": "7723dede73e555ca5961f8b7a589e8021f05941880c269bd95efe173dcc19519"
+      "bytes": 30315,
+      "sha256": "7d56a67704bd82c9b81aa36ed7cf87e2db49a85f4a8e91df01f689faae23a11e"
     },
     {
       "path": "package-lock.json",
