@@ -1,0 +1,6 @@
+{
+  "pages": ["pages/home/index", "pages/login/index", "pages/booking/index", "pages/confirm/index", "pages/appointments/index", "pages/detail/index", "pages/profile/index"],
+  "window": {"navigationBarTitleText": "安德鲁牙科", "navigationBarBackgroundColor": "#f6fbfc", "navigationBarTextStyle": "black", "backgroundColor": "#f6f8fb", "backgroundTextStyle": "dark"},
+  "style": "v2", "sitemapLocation": "sitemap.json",
+  "tabBar": {"color": "#778998", "selectedColor": "#087d87", "backgroundColor": "#ffffff", "borderStyle": "white", "list": [{"pagePath": "pages/home/index", "text": "首页"}, {"pagePath": "pages/appointments/index", "text": "我的预约"}, {"pagePath": "pages/profile/index", "text": "个人中心"}]}
+}

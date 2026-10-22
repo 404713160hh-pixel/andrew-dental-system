@@ -1,0 +1,56 @@
+{
+  "status": "passed",
+  "verifiedAt": "2026-10-22T18:27:58.402Z",
+  "reportDate": "2026-10-23",
+  "timezone": "Asia/Shanghai",
+  "command": "npm run test:booking",
+  "runtime": {
+    "node": "v24.15.0",
+    "postgres": "17.10",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "results": {
+    "tests": 30,
+    "passed": 30,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "durationMs": 3078.5224
+  },
+  "testFile": "booking-api/test/booking.integration.test.ts",
+  "testFileSha256": "c2cf210c438d3e916b2257ac865e1607f5fc518cb2b8defa0f583cbf12701134",
+  "strictTypecheck": {
+    "status": "passed",
+    "command": "npx tsc --noEmit --module NodeNext --moduleResolution NodeNext --target ES2022 --strict --esModuleInterop --skipLibCheck --noUncheckedIndexedAccess booking-api/test/booking.integration.test.ts"
+  },
+  "isolation": {
+    "databaseNamePattern": "andrew_test_<20 hex digits>",
+    "createdNewDatabase": true,
+    "seedData": "synthetic",
+    "developerDatabaseModified": false,
+    "connectionsClosed": true,
+    "testDatabaseDropped": true
+  },
+  "deepChecks": [
+    "qualification AND and full service interval",
+    "final confirmation rechecks resource and qualification changes",
+    "actual PostgreSQL qualification lock wait observed via pg_stat_activity",
+    "same-key concurrent replay yields exactly one booking",
+    "cross-doctor chair and patient exclusion constraints",
+    "post-release downstream PostgreSQL fault rolls back reschedule, ledger, hold, history, audit and receipt",
+    "cancellation policy survives application configuration changes",
+    "staff role revocation blocks prior receipts and result recovery",
+    "overnight service fits a published shift and is grouped by Shanghai start date"
+  ],
+  "independentEvidence": {
+    "actualPostgresAndApiRestart": "docs/implementation/qa/persistence.json"
+  },
+  "notEstablished": [
+    "WeChat developer tools or physical device tests",
+    "real WeChat AppID/AppSecret authorization",
+    "production HTTPS deployment",
+    "capacity or backup RPO/RTO targets"
+  ]
+}

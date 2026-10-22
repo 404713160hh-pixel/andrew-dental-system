@@ -1,0 +1,547 @@
+{
+  "status": "passed",
+  "verifiedAt": "2026-10-22T18:31:08.352Z",
+  "reportDate": "2026-10-23",
+  "timezone": "Asia/Shanghai",
+  "baseCommit": "c1e3779",
+  "branch": "feat/postgres-booking-20261022",
+  "scope": "Native WeChat mini program + Vue staff UI + TypeScript/Fastify + PostgreSQL appointment core",
+  "design": {
+    "path": "docs/design/安德鲁牙科系统设计文档.pdf",
+    "pages": 300,
+    "sha256": "22483aee6c2ca681937bb667868e25c85f97f85dbc8e11f5dd6da3d6ce2ee3eb"
+  },
+  "checks": {
+    "strictTypecheck": true,
+    "productionBuilds": true,
+    "databaseApi": {
+      "passed": 30,
+      "failed": 0
+    },
+    "adminClientUnit": {
+      "passed": 4,
+      "failed": 0
+    },
+    "nativeClientUnit": {
+      "passed": 11,
+      "failed": 0
+    },
+    "nativeRealHttp": {
+      "passed": 16,
+      "failed": 0
+    },
+    "realBrowser": {
+      "passed": 12,
+      "failed": 0
+    },
+    "actualDatabaseAndApiRestart": true,
+    "legacy": {
+      "unchangedFiles": 91,
+      "passedTests": 54
+    },
+    "composeSchema": true,
+    "miniArtifactHash": "5a09aac247eb4341a99d941d950b4cbf7c044fde865996e8932adca7e19fe8f8",
+    "privateCredentialsAbsentFromDelivery": true
+  },
+  "notExecuted": [
+    "WeChat developer tools and physical devices",
+    "Real WeChat AppID/AppSecret authorization",
+    "Docker engine container build/run and Nginx/TLS",
+    "GitHub-hosted CI run",
+    "Production capacity or backup/recovery SLA"
+  ],
+  "files": [
+    {
+      "path": ".dockerignore",
+      "sha256": "03d598c379b6b621d551b636cb5b44963d991804bdadd62377c825f97417a713"
+    },
+    {
+      "path": ".env.booking.example",
+      "sha256": "fd830762a8329f0c73e314f6ed6a830e3002cf93103850448d3cc0aeb8b006bb"
+    },
+    {
+      "path": ".env.compose.example",
+      "sha256": "9d1fa724765845f895ecaa206cec856955e56145ac77232ee4f299ae0d2e8c49"
+    },
+    {
+      "path": ".github/workflows/booking.yml",
+      "sha256": "a2bfe40ff1f1a960ee62ecec96096d94f4a343fc29da372212d42255e131db86"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "d6781e194ceb03a4c44b56b226e41fff2d9cafcacd98c31ddb593fdc8e018461"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "8ff3ef7f9fae588128467b5195a8fa81989278eeb85b73cd7ce982f976e46563"
+    },
+    {
+      "path": "README.md",
+      "sha256": "8a8cdd713f0fe2a9309e9216e706a01a9fb33c153176ffb811b81c2e2ce95c25"
+    },
+    {
+      "path": "admin-web/.prettierrc.json",
+      "sha256": "031f20b09bd70372c1d243ad9d691b23d09e2c60764c734c6ca2552839ff7c27"
+    },
+    {
+      "path": "admin-web/index.html",
+      "sha256": "5b1254a4123c8faf0d30052791169940bbac2971edcfa59154ec368001ba7ff6"
+    },
+    {
+      "path": "admin-web/package.json",
+      "sha256": "0de8e89849c737a4a3a690e110c95812d8351f3063a128c249fa3cf32b34f7f4"
+    },
+    {
+      "path": "admin-web/src/App.vue",
+      "sha256": "7a96030ae7fd6dd80330be78d6bab7a267030b9f24379767c11c632b83e397be"
+    },
+    {
+      "path": "admin-web/src/api.ts",
+      "sha256": "e4ada101c9eccc8ca5ae9639fb6672e6218fe387d98e2f79c744a4c4dc93548e"
+    },
+    {
+      "path": "admin-web/src/components/PatientEditor.vue",
+      "sha256": "c60d37dcba2825a1c3090e68594b969dcfc686f73ddde693944314090cad8d48"
+    },
+    {
+      "path": "admin-web/src/main.ts",
+      "sha256": "7e502e9acaf6412eadc280c49ae7a8e4aea3941f191b0ad0234bf40a6c4200d2"
+    },
+    {
+      "path": "admin-web/src/router.ts",
+      "sha256": "94d1b9f38ca9704c8672c2e9d846383f4038270f02c9d48a698cce822032a8e4"
+    },
+    {
+      "path": "admin-web/src/stores/auth.ts",
+      "sha256": "08705bebb7956480d9fa7b9b2cd3fc20415120740202cdd273d85e8466b37c3a"
+    },
+    {
+      "path": "admin-web/src/stores/booking.ts",
+      "sha256": "71eb93654b22ad7186b58fa1c6101864ba404c1538d6d07d51cd10a24d3107ff"
+    },
+    {
+      "path": "admin-web/src/stores/catalog.ts",
+      "sha256": "e30534b13f3ed1d82335b2cb4e7175f509b6230b0bb9eab3aab34cbe5c605771"
+    },
+    {
+      "path": "admin-web/src/style.css",
+      "sha256": "7381b00e83d72b7144f5380ecbd09cd9594a74f3b55d4b271b881095f20fb889"
+    },
+    {
+      "path": "admin-web/src/utils.ts",
+      "sha256": "9fa1b4004a584fef200f23f691c1eee3ca5152d38b462f1e9e5e586847a0589a"
+    },
+    {
+      "path": "admin-web/src/views/AppointmentsView.vue",
+      "sha256": "25130d8eaa1a809bfc9ff500646c12ff4afbc19adc00fb319d6b63a05ce936b8"
+    },
+    {
+      "path": "admin-web/src/views/BookingView.vue",
+      "sha256": "e7d4701a399100ea9d7f7d733f283b3fcb14ef05e08d17b22606983a9ba5f3c9"
+    },
+    {
+      "path": "admin-web/src/views/LoginView.vue",
+      "sha256": "2c2395dae004a506abc286b1d2bb0f36d749d001ac94f891029285893dbad3e1"
+    },
+    {
+      "path": "admin-web/src/views/PatientsView.vue",
+      "sha256": "78e6e28d11c3699f47387a96f73a4d71411ffeb86680333b238f484ce1e50d9e"
+    },
+    {
+      "path": "admin-web/src/views/ResourcesView.vue",
+      "sha256": "13ed8d9d806e637ffe3c5d2a37ca9456b174a8d911de409ca4ac748e1cbcf3f1"
+    },
+    {
+      "path": "admin-web/src/views/ShiftsView.vue",
+      "sha256": "71b120fecff1d333f97cc0aacab0ee654be42a1bbafd5e1e997f06e3b295af1c"
+    },
+    {
+      "path": "admin-web/test/api-session.test.mjs",
+      "sha256": "08ff8e96a408e74f3bd3edb4e37fd64b0e1f74696d41c35060f68fbd9d99e59b"
+    },
+    {
+      "path": "admin-web/tsconfig.json",
+      "sha256": "37bcbb9113edb7ea2f46c6d9de4f4dba62851c0527d95d9fd0734e0ba3bb4a2a"
+    },
+    {
+      "path": "admin-web/vite.config.ts",
+      "sha256": "9f7d2a13fb3e563ef6f02ef2f4b6e5a1b23060b6daf66c67ab68971cef8653e5"
+    },
+    {
+      "path": "booking-api/package.json",
+      "sha256": "14b9098d15e88daf6475009587afc4c61d321fedfad7da74e99c90c1d1a41486"
+    },
+    {
+      "path": "booking-api/src/app.ts",
+      "sha256": "8d931d7390f949e763ddfd4e7258ef930d232f023eae26ea34d8664044370661"
+    },
+    {
+      "path": "booking-api/src/auth.ts",
+      "sha256": "afc6c4bfb78c42500d1d0d7f3c238fc2add6b17a68377c62efaa9549383c163f"
+    },
+    {
+      "path": "booking-api/src/cli.ts",
+      "sha256": "6ce88a3c53ca41d32ef43c51a99a5b84e11a2388f9fe106c041da8e1c9db84a7"
+    },
+    {
+      "path": "booking-api/src/config.ts",
+      "sha256": "81ac990f0135aa52ece121bcd2e1653c0ddb0ce260c534c3fe930559e146baf3"
+    },
+    {
+      "path": "booking-api/src/db.ts",
+      "sha256": "3369ce03d72e5f833b5d519240490a983b5e530f53dd7219f7970a5bc2da605c"
+    },
+    {
+      "path": "booking-api/src/errors.ts",
+      "sha256": "435cea65068f89a1cae422f0c7a5f6625deaf6577a2773210887d058a6a94868"
+    },
+    {
+      "path": "booking-api/src/main.ts",
+      "sha256": "4321223139a8acbdf4dcd9a45e73f89d0fe5f7c3e41e29060f5ea93b1c159e2f"
+    },
+    {
+      "path": "booking-api/src/paths.ts",
+      "sha256": "76496913f10fca5db8e6157199a74291b697f4b420bddb296b2a212d9d3e9b8e"
+    },
+    {
+      "path": "booking-api/src/repositories/booking.ts",
+      "sha256": "35c6bca979f4e275f0b4957cca5da471daa35b26c725bc5104cda21d42eecc2b"
+    },
+    {
+      "path": "booking-api/src/repositories/catalog.ts",
+      "sha256": "85100fda8626abce2acd630d29e8b27e376fcb8205a92eae2bacec283c3959b5"
+    },
+    {
+      "path": "booking-api/src/seed.ts",
+      "sha256": "11ce8178ec6164aece966dfc61fb5830183fb6f642e3706651b4b590489e5c4c"
+    },
+    {
+      "path": "booking-api/src/services/booking.ts",
+      "sha256": "30a5078dd06205d171ec8eebaf53e9903860f9443eec544a50e468feba4e379a"
+    },
+    {
+      "path": "booking-api/src/services/resources.ts",
+      "sha256": "932c1a1995868ed428b85419477d6ed22371e35984b5af33a1dc7913b870c919"
+    },
+    {
+      "path": "booking-api/src/validation.ts",
+      "sha256": "d7233f78e108199b21b5d14e41ee83d709a3c78c6c0079e439de5bb08bc625b1"
+    },
+    {
+      "path": "booking-api/test/booking.integration.test.ts",
+      "sha256": "c2cf210c438d3e916b2257ac865e1607f5fc518cb2b8defa0f583cbf12701134"
+    },
+    {
+      "path": "booking-api/tsconfig.json",
+      "sha256": "5c5a80887f314310186ff2f3ecae4afecd1f7cde23c0df815d5b7a061d5bc477"
+    },
+    {
+      "path": "compose.yaml",
+      "sha256": "aa331027c437d46cf12ce356d7aced98e3e0d0401ef52b9ae897a0c06d3747c6"
+    },
+    {
+      "path": "database/migrations/001_booking_core.sql",
+      "sha256": "5122dd7f9b7ee702ba977e9b67fe64c147efde68717f93de177f23abe4af359e"
+    },
+    {
+      "path": "database/migrations/002_policy_snapshots.sql",
+      "sha256": "e65bf4e91073094aa6123fe47d89eb52013dd3b7d54e9b341909746b0aa32e9b"
+    },
+    {
+      "path": "deploy/booking/api.Dockerfile",
+      "sha256": "712233296f9400b13cb5c01fe47d8d0d5acdff6f145579463cb9aeb1b5cadc1f"
+    },
+    {
+      "path": "deploy/booking/nginx.https.conf",
+      "sha256": "bbb1ad366864c4b1bb917d23f7276da6cad6c40be340e878b7f721ee9150feff"
+    },
+    {
+      "path": "deploy/booking/nginx.local.conf",
+      "sha256": "b3fb35c50a8b74b0c1703cb8f0427d2882e01dc99f92b3de2b518bc5c1a4d410"
+    },
+    {
+      "path": "deploy/booking/web.Dockerfile",
+      "sha256": "8a1f066b834f482ac458cc212a4d14c189a0726336fab864f4b1a79776e995df"
+    },
+    {
+      "path": "docs/implementation/acceptance.md",
+      "sha256": "bcc7c8e3dae7d74d4fea36806c35bcd2e9ce1df6115c83988a2ecb42206c9175"
+    },
+    {
+      "path": "docs/implementation/api.md",
+      "sha256": "38e54351daf0de81cf102bee4a0157ffdf851890b0547d42f46ee966664c25f1"
+    },
+    {
+      "path": "docs/implementation/architecture.md",
+      "sha256": "f1b486190f8b855a5f3b0fdc9a380fbf65098cedb0fb0fb36e6cf1f4b2fdd004"
+    },
+    {
+      "path": "docs/implementation/browser-acceptance.md",
+      "sha256": "e8404dbf0c40a8e2b68f33351163509f8a8acd4c327b22ef2089faf47383843f"
+    },
+    {
+      "path": "docs/implementation/deployment.md",
+      "sha256": "51c3f4a5cfe49e4972010b0f84126ca0a3615943728f744086ee3342fc097a62"
+    },
+    {
+      "path": "docs/implementation/design-review.md",
+      "sha256": "2ec1e3be878898279703b3042ff6f85b088a10ecf75e0817c10068979dbc03c4"
+    },
+    {
+      "path": "docs/implementation/legacy-review.md",
+      "sha256": "22c376d4ba91b4a2e84c6195eda66fd766475a1a958bb5e78261d3d5789781e9"
+    },
+    {
+      "path": "docs/implementation/miniprogram-acceptance.md",
+      "sha256": "af5030627e04ed1be38dea1ab4a5a0c550115bf1f9d7c4855cbe48c9e24ff188"
+    },
+    {
+      "path": "docs/implementation/test-design.md",
+      "sha256": "88877cf27de1e2d48efa69e7ed72e5a9d0fecbe7ca0bec3b4a3321275f987a15"
+    },
+    {
+      "path": "miniprogram/.gitignore",
+      "sha256": "f3dbb85b1688e19b885cd2ffcd21412baa2ccabda0a4b87f53ccc03f1b709ac6"
+    },
+    {
+      "path": "miniprogram/README.md",
+      "sha256": "e8257f2ba8ed79391f17675de7a3f9026479a39fa0e2641985d284beceaaabf7"
+    },
+    {
+      "path": "miniprogram/package.json",
+      "sha256": "6569c4e95803e2a0b37fa6dcce319110b1e4797826196175d9b3c95c5d146cf3"
+    },
+    {
+      "path": "miniprogram/project.config.json",
+      "sha256": "1f100ff2d4ab2d486c9b7da04d0f2795d79ad19d9c905a24184e65e63879446c"
+    },
+    {
+      "path": "miniprogram/scripts/artifact-hash.mjs",
+      "sha256": "2730fe3fdd5cf010e335e20c750e63289f856eb30b0edbe4a7dbef040caf7704"
+    },
+    {
+      "path": "miniprogram/scripts/build.mjs",
+      "sha256": "31654d44fcab1aff6e723f877a7dac3604bc407135719c60801293c2c6eb3d19"
+    },
+    {
+      "path": "miniprogram/scripts/client.test.mjs",
+      "sha256": "788bc85487cab0e56dd7469defba307ee07224b89b6562c4f5ba6fc1f8e273a7"
+    },
+    {
+      "path": "miniprogram/scripts/native-api-smoke.mjs",
+      "sha256": "6202e5ce471f438a99a80920866e15a75fd829e98205c2f23437d45dd5af7a62"
+    },
+    {
+      "path": "miniprogram/scripts/run-tests.mjs",
+      "sha256": "f2e2cc33ad9a01d171e942503f48d84d45261e507b5a0f7f1e6d22824ffe3382"
+    },
+    {
+      "path": "miniprogram/scripts/sync-contracts.mjs",
+      "sha256": "7682467fd44c3dd12d0392bde27895dee8e297604351725279132260453e1829"
+    },
+    {
+      "path": "miniprogram/src/app.json",
+      "sha256": "f21673cdf8712926e6f25e4c25d6ba6618ef531c4f1d5d0624ae09de97c2b12d"
+    },
+    {
+      "path": "miniprogram/src/app.ts",
+      "sha256": "6eb1e4cc1e84fdf4fc5d0d38c3f42f6d0520aa34beec38ada0ab746ac2c16c90"
+    },
+    {
+      "path": "miniprogram/src/app.wxss",
+      "sha256": "17be44daacfb5751e5aff33c1325b88abf9356fc947438159e3a8f4bc7d850e8"
+    },
+    {
+      "path": "miniprogram/src/components/patient-form/index.json",
+      "sha256": "6bcc2e9e536384851fcfbdd823aee8ae4331243636adc4a656a64a44d9cf9318"
+    },
+    {
+      "path": "miniprogram/src/components/patient-form/index.ts",
+      "sha256": "261f21d9cff9f292731795f01b2984607a3bbb9b5e6c3240de0e9c20d7062011"
+    },
+    {
+      "path": "miniprogram/src/components/patient-form/index.wxml",
+      "sha256": "030201e79cdc48f6d5411fcac0f8513f521965a7de19568871bcf1e4877bb742"
+    },
+    {
+      "path": "miniprogram/src/components/patient-form/index.wxss",
+      "sha256": "30bf1f147fc9217d6b0b5657ca171f1acadb10ddfeab50b626842e9d4ebd20c0"
+    },
+    {
+      "path": "miniprogram/src/config.ts",
+      "sha256": "011bd8410643d4d2c29f4a61aa3b12e373161d73ea5c1f7670e96e06cba25067"
+    },
+    {
+      "path": "miniprogram/src/pages/appointments/index.json",
+      "sha256": "06ee718057bd6dfe3c8a8e7a56797ee68c6535c585e2e1f53945ba6546432299"
+    },
+    {
+      "path": "miniprogram/src/pages/appointments/index.ts",
+      "sha256": "4f4e520d3f2071f0b812a0ad967c9bf60ec13a3a5e19b6374c483f8b1d5a3adf"
+    },
+    {
+      "path": "miniprogram/src/pages/appointments/index.wxml",
+      "sha256": "9eef05a3e8f9f47513f3a4f678e586a9f66bc721128c921d6437270446d0d2a4"
+    },
+    {
+      "path": "miniprogram/src/pages/appointments/index.wxss",
+      "sha256": "e2a2437f43f8f38b2875a70748c5f5dd557a6cd5bd642eacb65aa4e72248bc30"
+    },
+    {
+      "path": "miniprogram/src/pages/booking/index.json",
+      "sha256": "aa903f70f49ee5878941aeb3092dc739be1c4427e9304b7fbeee5dbe477ced75"
+    },
+    {
+      "path": "miniprogram/src/pages/booking/index.ts",
+      "sha256": "de0e0d92f59631297f6da0b3b2b9445534d7ee95ed6294e472cddccd5c7f3ac6"
+    },
+    {
+      "path": "miniprogram/src/pages/booking/index.wxml",
+      "sha256": "848e217e3d366831b7a9722c703cf75a3390d91b5a3ed98863ec07c8f9acb07a"
+    },
+    {
+      "path": "miniprogram/src/pages/booking/index.wxss",
+      "sha256": "e3029ebc0d48c881c46d9b7e36884fea8e1d6b02f2731e1e66b30585473c7b01"
+    },
+    {
+      "path": "miniprogram/src/pages/confirm/index.json",
+      "sha256": "4d8b7e77427a8102c216388202889f835cc25f53388d171ab535b145fab39a3d"
+    },
+    {
+      "path": "miniprogram/src/pages/confirm/index.ts",
+      "sha256": "c11eb91f3cb95fc629bdd8e02d0ce39da6a84fcd09d6de44eea5f2846e59b3c9"
+    },
+    {
+      "path": "miniprogram/src/pages/confirm/index.wxml",
+      "sha256": "a945f8832dbc9beeaeba6dcde2e1966b76fe2dd9371558b30f91bb22dc324bb4"
+    },
+    {
+      "path": "miniprogram/src/pages/confirm/index.wxss",
+      "sha256": "51166e897f96a03c9b5634b4bccf4ba1643c356899ee1c5b30951902929025fe"
+    },
+    {
+      "path": "miniprogram/src/pages/detail/index.json",
+      "sha256": "8b30e44668ca239f0f66e4185c8f454848dc8d43919e1cabf7c2786e1f167b1e"
+    },
+    {
+      "path": "miniprogram/src/pages/detail/index.ts",
+      "sha256": "182b01c29e1efc1d612a4a7e2d71f9e1562795c03856cd9fe16a9316f1206bc6"
+    },
+    {
+      "path": "miniprogram/src/pages/detail/index.wxml",
+      "sha256": "158b9f2122a80e27047e4508b483e078e798580fa0e8a759dfb39eea29ab2684"
+    },
+    {
+      "path": "miniprogram/src/pages/detail/index.wxss",
+      "sha256": "c976a4e4fd69518855db3c13fd9157908fbdb5b6580ee9d09e3ad740fa1eff2a"
+    },
+    {
+      "path": "miniprogram/src/pages/home/index.json",
+      "sha256": "27db261c71f49ceb18ad4151582b8bd83f81f46e2186eae41f86a7005454758c"
+    },
+    {
+      "path": "miniprogram/src/pages/home/index.ts",
+      "sha256": "ccae7c3d44d15e0f2cf05ff7e7bb285bc77739fea75e07b2f0ae9c8c51a1eeb2"
+    },
+    {
+      "path": "miniprogram/src/pages/home/index.wxml",
+      "sha256": "7615046db42394ace8e2ad4e5fc481bcc85f273b208caea4b0fe6ec065d682db"
+    },
+    {
+      "path": "miniprogram/src/pages/home/index.wxss",
+      "sha256": "19f184800a8b39ff16d50d0eb86a718d8590aab269d9128f6f2c352da6ae3b62"
+    },
+    {
+      "path": "miniprogram/src/pages/login/index.json",
+      "sha256": "48a7272b90c6b6afccec3d916cc5e57354097e55b4d1a7b87238cf2e794d0cea"
+    },
+    {
+      "path": "miniprogram/src/pages/login/index.ts",
+      "sha256": "eb419042920ccd9c997d6e41cf40a7f561bd0542ddc4b9354be4bd22b81a98d5"
+    },
+    {
+      "path": "miniprogram/src/pages/login/index.wxml",
+      "sha256": "a4ae4ab97c89f47ad5af16902691317867fec52212006b894327fdb8ebd63f99"
+    },
+    {
+      "path": "miniprogram/src/pages/login/index.wxss",
+      "sha256": "b37fc6fde5ad97cefa3e2fa19f92e0c370f6c9fefc33e988c8331d4ab51858bf"
+    },
+    {
+      "path": "miniprogram/src/pages/profile/index.json",
+      "sha256": "1a22d49dcddb5d8a82b3abe2a553bda76b6ab5bf30ca699b6285cfefa440b728"
+    },
+    {
+      "path": "miniprogram/src/pages/profile/index.ts",
+      "sha256": "074a942ea85f73e008019d1baa1135e9386070a0a13b0184103ee0cb09a52590"
+    },
+    {
+      "path": "miniprogram/src/pages/profile/index.wxml",
+      "sha256": "0b73ce103475127ff2852d930fcdf40daf86931decd5a4facc94afa2cd8cd863"
+    },
+    {
+      "path": "miniprogram/src/pages/profile/index.wxss",
+      "sha256": "f2c39739dba918762f721c7f180d2c2cd48b7a9d591daf307e9bd6cbe6d45d6f"
+    },
+    {
+      "path": "miniprogram/src/sitemap.json",
+      "sha256": "549f3524af2e86ba0ec6e11a5b979d327a5930c970ab3ba35da52fc9a5d692df"
+    },
+    {
+      "path": "miniprogram/src/types.ts",
+      "sha256": "0818e3573909654b72176d9cbd579f99ac85fb8e70d77ebb2c831ba5a1bb1957"
+    },
+    {
+      "path": "miniprogram/src/utils/api.ts",
+      "sha256": "e0fd212cd22b3cc1ed55bbba8d7a3dffd2f92932e6c95ed5a41cb14b8d86b046"
+    },
+    {
+      "path": "miniprogram/src/utils/booking.ts",
+      "sha256": "76cf9f07a1f297bf8786dd2de4ee0bd1404ece99d1f0cd96d04af1b277e19fde"
+    },
+    {
+      "path": "miniprogram/src/utils/format.ts",
+      "sha256": "484cf0e5e425d2fa0484a3db4bf2433234bb1d969ec1554e271105a076bc0893"
+    },
+    {
+      "path": "miniprogram/src/utils/session.ts",
+      "sha256": "571156773862c9453f7b493bd742d8faa541f595b0d0ec5c57df74fc1694b6c0"
+    },
+    {
+      "path": "miniprogram/tsconfig.json",
+      "sha256": "a82095624c8565bd4115944c7aef73bac75605480e20689175cc50552e8b0413"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "b346fa824be35d9ee8795465b292c2809966669e9da4ca69d75404c60df91c12"
+    },
+    {
+      "path": "package.json",
+      "sha256": "6901aa3c6deefe1626327d7a58966db09ac76a66cb75f542a4979e8f87df61c4"
+    },
+    {
+      "path": "scripts/booking-browser.mjs",
+      "sha256": "b551778f5edcdf2b6f40d832a5cf179ad3c5f299c7fb1337351cf098b5b979ec"
+    },
+    {
+      "path": "scripts/local-postgres.mjs",
+      "sha256": "4e8ef0be8d8922eaa4eefc5af78da41091db309f3f5fb7b61ef75cb9b69db802"
+    },
+    {
+      "path": "scripts/validate-compose.mjs",
+      "sha256": "0e42a52ab58b1dbcf2a09bb2fa7a15d7b593673f5bf88629c6b608fb579d9343"
+    },
+    {
+      "path": "scripts/verify-persistence.mjs",
+      "sha256": "59fd2348cdc4b8bb5f093049d2f8de9bb5ef553956fc79128bc1431f8426ea1f"
+    },
+    {
+      "path": "shared/package.json",
+      "sha256": "e35fce4f1ed3c62d208108c1599cebab558c5a573d79aa7d8ac6117d0a7803e6"
+    },
+    {
+      "path": "shared/src/index.ts",
+      "sha256": "23efab4b36d5425bf6df6f6f758b3b177bf8d5f8e6fdedd2e2a93d6fe28e6655"
+    }
+  ]
+}

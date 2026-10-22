@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "baseline": "c1e3779",
+  "checkedFiles": 91,
+  "changes": [],
+  "regression": {
+    "tests": 54,
+    "passed": 54,
+    "failed": 0,
+    "scope": "isolated memory/temp database tests; no default legacy DB startup"
+  }
+}

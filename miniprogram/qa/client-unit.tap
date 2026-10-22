@@ -1,0 +1,76 @@
+TAP version 13
+# Subtest: native build includes all configured pages, assets and callable WXML handlers
+ok 1 - native build includes all configured pages, assets and callable WXML handlers
+  ---
+  duration_ms: 52.5744
+  type: 'test'
+  ...
+# Subtest: uncertain confirmation persists original key and content; only same operation is retried
+ok 2 - uncertain confirmation persists original key and content; only same operation is retried
+  ---
+  duration_ms: 2.5053
+  type: 'test'
+  ...
+# Subtest: command not_found retains original key; completed clears only the owner operation
+ok 3 - command not_found retains original key; completed clears only the owner operation
+  ---
+  duration_ms: 1.9952
+  type: 'test'
+  ...
+# Subtest: switching account cannot read, overwrite or submit another account pending command
+ok 4 - switching account cannot read, overwrite or submit another account pending command
+  ---
+  duration_ms: 1.7495
+  type: 'test'
+  ...
+# Subtest: malformed successful response remains uncertain; definitive validation rejection permits correction
+ok 5 - malformed successful response remains uncertain; definitive validation rejection permits correction
+  ---
+  duration_ms: 1.6658
+  type: 'test'
+  ...
+# Subtest: 401 clears token and preserves pending command for the same account after login
+ok 6 - 401 clears token and preserves pending command for the same account after login
+  ---
+  duration_ms: 1.7771
+  type: 'test'
+  ...
+# Subtest: allergy unknown differs from none_reported and multiple-line editing preserves the next line
+ok 7 - allergy unknown differs from none_reported and multiple-line editing preserves the next line
+  ---
+  duration_ms: 1.2779
+  type: 'test'
+  ...
+# Subtest: cached patient pages clear previous account data before showing a new account
+ok 8 - cached patient pages clear previous account data before showing a new account
+  ---
+  duration_ms: 3.4139
+  type: 'test'
+  ...
+# Subtest: late profile response from previous account cannot populate current account form
+ok 9 - late profile response from previous account cannot populate current account form
+  ---
+  duration_ms: 2.3634
+  type: 'test'
+  ...
+# Subtest: late 401 response from previous account cannot revoke the current account session
+ok 10 - late 401 response from previous account cannot revoke the current account session
+  ---
+  duration_ms: 1.488
+  type: 'test'
+  ...
+# Subtest: late command success after account switch cannot return old patient data or clear new account hold
+ok 11 - late command success after account switch cannot return old patient data or clear new account hold
+  ---
+  duration_ms: 1.7741
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 279.2508

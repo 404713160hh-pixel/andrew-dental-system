@@ -1,0 +1,17 @@
+import Ajv2020 from 'ajv/dist/2020.js';
+import {parse} from 'yaml';
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import assert from 'node:assert/strict';
+const response=await fetch('https://raw.githubusercontent.com/compose-spec/compose-spec/main/schema/compose-spec.json',{signal:AbortSignal.timeout(30000)});
+assert.ok(response.ok,'Official Compose schema could not be loaded');const schema=await response.json();
+const text=readFileSync('compose.yaml','utf8');const document=parse(text,{merge:true});
+const validator=new Ajv2020({strict:false,validateFormats:false}).compile(schema);
+assert.ok(validator(document),JSON.stringify(validator.errors));
+assert.ok(!document.services.postgres.ports,'PostgreSQL must not have host ports');
+assert.ok(!document.services.api.ports,'API must stay behind the same-origin gateway');
+assert.equal(document.services.api.depends_on.migrate.condition,'service_completed_successfully');
+assert.equal(document.services.api.environment.ALLOW_DEMO_LOGIN,'false');
+assert.equal(document.services.postgres.healthcheck.test[0],'CMD-SHELL');
+const report={status:'passed',validation:'Official Compose JSON schema, without format assertions, and explicit deployment boundary assertions; not a container execution',composeSha256:createHash('sha256').update(text).digest('hex'),services:Object.keys(document.services),databaseHostPorts:false,apiHostPorts:false,dockerEngineExecuted:false,httpsExecuted:false};
+mkdirSync('docs/implementation/qa',{recursive:true});writeFileSync('docs/implementation/qa/compose-validation.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));

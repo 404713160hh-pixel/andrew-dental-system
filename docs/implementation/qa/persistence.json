@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "verifiedAt": "2026-10-22T18:13:12.488Z",
+  "postgresBefore": "2026-10-22T14:44:56.279Z",
+  "postgresAfter": "2026-10-22T18:12:59.554Z",
+  "patients": 4,
+  "appointments": 4,
+  "appointmentId": "b54a0ae0-290d-4083-9bdd-4b6065434bf5",
+  "dataHashMatched": true,
+  "apiAfterRestartReadSameAppointment": true,
+  "syntheticAppointmentCancelled": true
+}

@@ -1,0 +1,7 @@
+{
+  "description": "安德鲁牙科预约 · 微信原生 TypeScript",
+  "miniprogramRoot": "dist/", "compileType": "miniprogram", "appid": "touristappid",
+  "projectname": "andrew-dental-booking", "libVersion": "3.8.0",
+  "setting": {"urlCheck": false, "es6": true, "postcss": true, "minified": true, "enhance": true},
+  "condition": {}
+}

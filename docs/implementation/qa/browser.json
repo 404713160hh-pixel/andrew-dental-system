@@ -1,0 +1,105 @@
+{
+  "namespace": "UIQAmvjvc8j2968dad",
+  "startedAt": "2026-10-22T18:22:38.895Z",
+  "status": "passed",
+  "environment": {
+    "api": "http://127.0.0.1:3310/api/v1",
+    "admin": "http://127.0.0.1:5173",
+    "browser": "chrome",
+    "postgresqlVersion": "17.10",
+    "browserVersion": "155.0.8059.85"
+  },
+  "checks": [
+    {
+      "name": "独立合成夹具与真实PostgreSQL连接",
+      "status": "passed",
+      "namespace": "UIQAmvjvc8j2968dad",
+      "date": "2026-11-08"
+    },
+    {
+      "name": "总部通过真实浏览器登录",
+      "status": "passed"
+    },
+    {
+      "name": "UI发布未来班次，真实HTTP查询到对应号源",
+      "status": "passed",
+      "shiftId": "160a0fd5-07f0-444f-8870-d7cf0d453ecf",
+      "slotCount": 14
+    },
+    {
+      "name": "排班日期清空后查询全部授权日期，不发送null字符串",
+      "status": "passed"
+    },
+    {
+      "name": "患者API实际预约成功",
+      "status": "passed",
+      "appointmentId": "6a6ca1ef-e27c-4b64-b200-fd19ceb239d1"
+    },
+    {
+      "name": "前台UI看到患者API创建的同一笔预约",
+      "status": "passed",
+      "appointmentNo": "AD202610223A5BCA187F"
+    },
+    {
+      "name": "UI取消与资源释放在患者端同源可见",
+      "status": "passed"
+    },
+    {
+      "name": "前台UI完整代约、双确认、响应丢失后刷新恢复同一笔回执",
+      "status": "passed",
+      "appointmentId": "4821f768-4c67-4376-9c8a-71f3117cfa93",
+      "noDuplicate": true
+    },
+    {
+      "name": "UI原子改期保留替代链并释放原时段",
+      "status": "passed",
+      "previousId": "4821f768-4c67-4376-9c8a-71f3117cfa93",
+      "replacementId": "b367caf4-6a3d-4991-b9b4-dc92f09d1a86"
+    },
+    {
+      "name": "390px工作台布局无页面横向溢出",
+      "status": "passed"
+    },
+    {
+      "name": "店长共享资料只读、医生无代约入口且直接路由受控",
+      "status": "passed"
+    },
+    {
+      "name": "所有验收页面无未捕获浏览器异常",
+      "status": "passed"
+    }
+  ],
+  "screenshots": [
+    "screenshots/booking/UIQAmvjvc8j2968dad/01-overview-desktop.png",
+    "screenshots/booking/UIQAmvjvc8j2968dad/02-publish-shift.png",
+    "screenshots/booking/UIQAmvjvc8j2968dad/03-shared-appointment-detail.png",
+    "screenshots/booking/UIQAmvjvc8j2968dad/04-assisted-booking-confirmation.png",
+    "screenshots/booking/UIQAmvjvc8j2968dad/05-network-result-unknown.png",
+    "screenshots/booking/UIQAmvjvc8j2968dad/06-overview-mobile.png"
+  ],
+  "fixture": {
+    "clinicId": "d6febd74-79ee-4894-8a64-7f2800865850",
+    "qualificationId": "9962c4d5-7f88-4d55-b510-9d81e6de8bb5",
+    "doctorId": "0d51335b-d1b8-429f-a33b-7d52d4f49cc7",
+    "serviceId": "f24842ca-5115-43e1-bf90-298ea6c4a845",
+    "chairId": "a646b757-8cd8-4c1d-b6dc-3c6105b9ae06",
+    "patientId": "1d8af942-8d7f-4edd-a1a9-f5648d27c2c7",
+    "userId": "c85add12-82f3-4056-82cd-ac80e1b228db",
+    "date": "2026-11-08",
+    "patientAppointmentId": "6a6ca1ef-e27c-4b64-b200-fd19ceb239d1",
+    "staffAppointmentId": "4821f768-4c67-4376-9c8a-71f3117cfa93",
+    "replacementAppointmentId": "b367caf4-6a3d-4991-b9b4-dc92f09d1a86"
+  },
+  "cleanup": {
+    "additionalAppointmentsCancelled": 1,
+    "unconsumedSyntheticHoldsExpired": 0,
+    "shiftCancelled": true,
+    "serviceInactive": true,
+    "doctorInactive": true,
+    "chairInactive": true,
+    "qualificationInactive": true,
+    "syntheticAccountInactive": true,
+    "errors": []
+  },
+  "finishedAt": "2026-10-22T18:22:54.883Z"
+}

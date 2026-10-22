@@ -18,6 +18,14 @@ release/
 *.original.txt
 __pycache__/
 *.pyc
+.booking-data/
+booking-api/dist/
+admin-web/dist/
+miniprogram/dist/
+!.env.booking.example
+!.env.compose.example
+deploy/certs/
+.lot
 *.aux
 *.toc
 *.lof

@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "validation": "Official Compose JSON schema, without format assertions, and explicit deployment boundary assertions; not a container execution",
+  "composeSha256": "aa331027c437d46cf12ce356d7aced98e3e0d0401ef52b9ae897a0c06d3747c6",
+  "services": [
+    "postgres",
+    "migrate",
+    "api",
+    "web",
+    "seed",
+    "https"
+  ],
+  "databaseHostPorts": false,
+  "apiHostPorts": false,
+  "dockerEngineExecuted": false,
+  "httpsExecuted": false
+}

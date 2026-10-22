@@ -1,0 +1,14 @@
+<view class="page">
+  <view class="brand row"><view class="row"><view class="brand-symbol">A<text>＋</text></view><view><view class="brand-name">安德鲁牙科</view><view class="eyebrow">ANDREW'S DENTAL</view></view></view><view class="small link" bindtap="account">{{signedIn ? displayName : '登录 / 注册'}}</view></view>
+  <view class="hero"><view class="hero-art"><view></view><view></view><text>＋</text></view><view class="eyebrow">CARE FOR YOUR SMILE</view><view class="hero-title"><view>把微笑的事，</view><view>安心安排好。</view></view><view class="hero-description"><view>选择合适的门诊与时间</view><view>开启你的口腔健康之旅</view></view><button class="primary hero-button" bindtap="book">预约就诊 <text>→</text></button><view class="hero-note">真实号源 · 预约进度随时查看</view></view>
+  <view wx:if="{{demoEnabled}}" class="notice">当前为课程合成数据演示，请勿填写真实医疗信息。开发测试账号由服务端提供。</view>
+  <view class="two-columns shortcuts"><view class="card" bindtap="appointments"><view class="shortcut-icon">◷</view><view class="section-title">我的预约</view><view class="muted">查看、取消或改期 →</view></view><view class="card" bindtap="profile"><view class="shortcut-icon">◎</view><view class="section-title">就诊人资料</view><view class="muted">本人信息与过敏声明 →</view></view></view>
+  <view wx:if="{{error}}" class="error">{{error}}<button class="secondary space" bindtap="load">重新加载</button></view>
+  <view class="row"><view class="section-title">选择你的门诊</view><text class="muted small">{{clinics.length}} 家门诊</text></view>
+  <view wx:if="{{loading && !clinics.length}}" class="loading">正在读取门诊与服务…</view>
+  <view wx:for="{{clinics}}" wx:key="id" class="card clinic-card" data-id="{{item.id}}" bindtap="clinic"><view class="row"><view class="clinic-mark">＋</view><view class="grow"><view class="section-title">{{item.name}}</view><view class="muted">{{item.address}}</view><view class="small phone">{{item.phone}}</view></view><text class="link">→</text></view></view>
+  <view wx:if="{{!loading && !error && !clinics.length}}" class="empty">暂无开放门诊，请稍后再查看。</view>
+  <view class="section-title space">从了解开始</view><view class="muted intro">选择服务项目查询号源。就诊主诉由医生进一步评估，不作为医学诊断。</view>
+  <view wx:for="{{services}}" wx:key="id" class="card" data-id="{{item.id}}" bindtap="service"><view class="row"><view class="grow"><view class="section-title">{{item.name}}</view><view class="muted">{{item.description}}</view><view class="service-meta">约 {{item.durationMinutes}} 分钟 · ¥{{item.priceLabel}} / {{item.unit}}</view></view><text class="link">→</text></view></view>
+  <view class="footer-note">ANDREW'S DENTAL · 每一次微笑，认真对待</view>
+</view>

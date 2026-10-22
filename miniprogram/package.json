@@ -1,0 +1,1 @@
+{"name":"@andrew/miniprogram","version":"1.0.0","private":true,"type":"module","scripts":{"typecheck":"node scripts/sync-contracts.mjs && tsc --noEmit","build":"node scripts/build.mjs","test":"npm run build && node scripts/run-tests.mjs","watch":"node scripts/sync-contracts.mjs && tsc --watch"},"devDependencies":{"miniprogram-api-typings":"^4.0.0"}}

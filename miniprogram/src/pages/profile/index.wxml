@@ -1,0 +1,8 @@
+<view class="page"><view class="profile-hero"><view class="avatar">◎</view><view><view class="title">{{signedIn ? displayName : '你好，欢迎来到安德鲁'}}</view><view class="muted">{{signedIn ? '账号本人 · 一份连续的就诊身份' : '登录后完善资料并管理本人的预约'}}</view></view></view>
+  <view wx:if="{{!signedIn}}" class="card"><view class="section-title">安排就诊，从这里开始</view><view class="muted">联系方式与过敏声明会在预约确认时再次展示。</view><button class="primary space" bindtap="login">登录 / 注册</button></view>
+  <block wx:if="{{signedIn}}"><view wx:if="{{hasHold}}" class="notice">有一个时段正在短时保留。保存资料后可继续核对，截止时间仍由服务器校验。<button class="secondary space" bindtap="continueHold" disabled="{{busy || loading}}">继续核对预约 →</button></view><view class="card nav-card row" bindtap="appointments"><view><view class="section-title">我的预约</view><view class="muted">查看本人预约与变更记录</view></view><text class="link">→</text></view>
+    <view wx:if="{{loading}}" class="loading">正在读取就诊资料…</view><view wx:if="{{error}}" class="error">{{error}}<button class="secondary space" bindtap="load" disabled="{{busy || loading}}">重新读取服务器资料</button></view><view wx:if="{{saved}}" class="success">资料已保存，预约确认时会使用最新信息。</view>
+    <view wx:if="{{rowVersion}}" class="card"><view class="section-title">本人就诊资料</view><view class="muted small">患者编号 {{patientId}}</view><patient-form value="{{profile}}" disabled="{{busy || loading}}" bindchange="change" /><button class="primary space" bindtap="save" loading="{{busy}}" disabled="{{busy || loading}}">保存本人资料</button></view>
+    <button class="secondary" bindtap="logout" disabled="{{busy}}">退出登录</button><view class="footer-note">过敏信息为本人声明，不能代替医生的临床核对。</view>
+  </block>
+</view>
