@@ -1,14 +1,14 @@
 {
   "status": "passed",
-  "startedAt": "2026-10-22T18:16:27.700Z",
-  "finishedAt": "2026-10-22T18:16:28.198Z",
+  "startedAt": "2026-10-23T04:34:22.050Z",
+  "finishedAt": "2026-10-23T04:34:22.356Z",
   "command": "node --test --test-reporter=tap scripts/client.test.mjs",
   "runtime": "v24.15.0",
   "execution": "Compiled native modules and simulated wx API; no WeChat UI rendering or real device",
-  "tests": 11,
-  "passed": 11,
+  "tests": 17,
+  "passed": 17,
   "failed": 0,
   "skipped": 0,
   "exitCode": 0,
-  "artifactSha256": "5a09aac247eb4341a99d941d950b4cbf7c044fde865996e8932adca7e19fe8f8"
+  "artifactSha256": "4a9ff69924a75f51e79b728ed4f46f7475f7e12c361801cc377f67c469b65851"
 }

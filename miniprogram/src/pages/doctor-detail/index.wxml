@@ -1,0 +1,14 @@
+<view class="page doctor-detail-page">
+  <view wx:if="{{loading}}" class="loading">正在读取医生介绍与开放安排…</view>
+  <view wx:if="{{error}}" class="error">{{error}}<button class="secondary space" bindtap="load">重新加载</button></view>
+  <block wx:if="{{doctor}}">
+    <view class="doctor-profile"><view class="profile-orbit"></view><view class="profile-portrait"><view class="portrait-head"></view><view class="portrait-body"></view><text>{{doctor.initial}}</text></view><view class="eyebrow">YOUR DENTAL CARE PARTNER</view><view class="profile-name">{{doctor.name}}</view><text wx:if="{{doctor.isDemo}}" class="demo-badge">虚构医生 · 演示人物</text><view class="profile-specialty">{{doctor.specialty}}</view><view class="profile-focus"><text wx:for="{{doctor.focusLabels}}" wx:key="*this">{{item}}</text></view></view>
+    <view wx:if="{{doctor.isDemo}}" class="demo-notice">本页人物、经历简介及资格记录均为虚构演示资料，不对应真实医生、医院任职或执业证照。</view>
+    <view class="card"><view class="section-heading"><view class="section-rule"></view><view class="section-title">认识这位医生</view></view><view class="bio-paragraph">{{doctor.bioLabel || '尚未提供公开简介。具体就诊需求可在咨询时沟通。'}}</view><view class="detail-tip">擅长方向供预约咨询时参考，具体检查与治疗方案由面诊评估后确定。</view></view>
+    <view class="card"><view class="section-heading"><view class="section-rule"></view><view class="section-title">公开资格记录</view></view><view wx:for="{{doctor.qualificationRows}}" wx:key="id" class="qualification-item"><view class="qualification-icon">✓</view><view class="grow"><view class="qualification-name">{{item.name}}</view><view class="muted small">{{item.validityLabel}}</view></view></view><view wx:if="{{!doctor.qualificationRows.length}}" class="muted">暂未提供公开资格记录。</view></view>
+    <view class="card booking-card"><view class="section-heading"><view class="section-rule"></view><view class="section-title">预约这位医生</view></view><view class="muted small">先选门诊与本次咨询服务，再查看具体日期和可预约时段。</view>
+      <block wx:if="{{clinics.length}}"><text class="label">开放排班门诊</text><picker range="{{clinics}}" range-key="name" value="{{clinicIndex}}" bindchange="clinicChange"><view class="picker">{{clinics[clinicIndex].name}} ▾</view></picker><text class="label">本次预约服务</text><picker range="{{services}}" range-key="name" value="{{serviceIndex}}" bindchange="serviceChange" disabled="{{!services.length}}"><view class="picker">{{services[serviceIndex].name || '暂无匹配的开放咨询服务'}} ▾</view></picker><view wx:if="{{services.length}}" class="consultation-fee"><view class="row"><text>本次服务参考费</text><text class="fee">¥{{services[serviceIndex].priceLabel}} <text>/ {{services[serviceIndex].unit}}</text></text></view><view class="small">约 {{services[serviceIndex].durationMinutes}} 分钟；治疗方案、检查及材料费用另行面诊确认。</view></view><button class="primary space" bindtap="book" disabled="{{loading || !services.length}}">查询咨询时段 →</button></block>
+      <view wx:else class="empty space">暂未公布可预约门诊班次，请稍后查看。</view>
+    </view><view class="footer-note">医生形象为示意图 · 预约时会再次核对服务资格与班次</view>
+  </block>
+</view>

@@ -36,6 +36,16 @@ export async function seed(pool:pg.Pool,password:string){
     for(const service of [initial,consultation])await db.query('INSERT INTO doctor_shift_services(shift_id,service_id)VALUES($1,$2)',[shift,service]);
    }
   }
+  // Explicit provenance allows the additive demo command to recognise these
+  // exact identities later without adopting ordinary records by display name.
+  for(const [key,kind,recordId] of [
+   ['seed:clinic:a','clinic',ca],['seed:clinic:b','clinic',cb],
+   ['seed:doctor:a','doctor',da],['seed:doctor:b','doctor',dbid],
+   ['seed:service:initial','service',initial],['seed:service:consultation','service',consultation],['seed:qualification','qualification',q],
+  ])await db.query('INSERT INTO demo_seed_records(record_key,record_kind,record_id)VALUES($1,$2,$3)',[key,kind,recordId]);
+  for(const [username,key] of [['patient.a','seed:patient:a'],['patient.b','seed:patient:b']]){
+   await db.query('INSERT INTO demo_seed_records(record_key,record_kind,record_id)SELECT $1,$2,p.id FROM patients p JOIN users u ON u.id=p.user_id WHERE u.username=$3',[key,'patient',username]);
+  }
   return {alreadySeeded:false,clinicIds:[ca,cb],doctorIds:[da,dbid],serviceIds:[initial,consultation]};
  });
 }

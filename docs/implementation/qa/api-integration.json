@@ -1,9 +1,9 @@
 {
   "status": "passed",
-  "verifiedAt": "2026-10-22T18:27:58.402Z",
+  "verifiedAt": "2026-10-23T04:37:44.599Z",
   "reportDate": "2026-10-23",
   "timezone": "Asia/Shanghai",
-  "command": "npm run test:booking",
+  "command": "node --import tsx --test --test-reporter=tap --test-concurrency=1 booking-api/test/booking.integration.test.ts booking-api/test/demo.integration.test.ts",
   "runtime": {
     "node": "v24.15.0",
     "postgres": "17.10",
@@ -11,46 +11,35 @@
     "arch": "x64"
   },
   "results": {
-    "tests": 30,
-    "passed": 30,
+    "tests": 43,
+    "passed": 43,
     "failed": 0,
     "cancelled": 0,
-    "skipped": 0,
-    "todo": 0,
-    "durationMs": 3078.5224
+    "skipped": 0
   },
-  "testFile": "booking-api/test/booking.integration.test.ts",
-  "testFileSha256": "c2cf210c438d3e916b2257ac865e1607f5fc518cb2b8defa0f583cbf12701134",
+  "testFiles": [
+    {
+      "path": "booking-api/test/booking.integration.test.ts",
+      "sha256": "c2cf210c438d3e916b2257ac865e1607f5fc518cb2b8defa0f583cbf12701134"
+    },
+    {
+      "path": "booking-api/test/demo.integration.test.ts",
+      "sha256": "08f389e61ed4625e8c4d6dec470c426101e1b2f3de3ef3a2cf63ac7bd0226662"
+    }
+  ],
   "strictTypecheck": {
     "status": "passed",
-    "command": "npx tsc --noEmit --module NodeNext --moduleResolution NodeNext --target ES2022 --strict --esModuleInterop --skipLibCheck --noUncheckedIndexedAccess booking-api/test/booking.integration.test.ts"
+    "scope": "both TypeScript integration test files, strict and noUncheckedIndexedAccess"
   },
   "isolation": {
     "databaseNamePattern": "andrew_test_<20 hex digits>",
-    "createdNewDatabase": true,
-    "seedData": "synthetic",
+    "newRandomDatabasesOnly": true,
     "developerDatabaseModified": false,
-    "connectionsClosed": true,
-    "testDatabaseDropped": true
+    "cleanupRunsInAfterOrFinally": true
   },
-  "deepChecks": [
-    "qualification AND and full service interval",
-    "final confirmation rechecks resource and qualification changes",
-    "actual PostgreSQL qualification lock wait observed via pg_stat_activity",
-    "same-key concurrent replay yields exactly one booking",
-    "cross-doctor chair and patient exclusion constraints",
-    "post-release downstream PostgreSQL fault rolls back reschedule, ledger, hold, history, audit and receipt",
-    "cancellation policy survives application configuration changes",
-    "staff role revocation blocks prior receipts and result recovery",
-    "overnight service fits a published shift and is grouped by Shanghai start date"
-  ],
-  "independentEvidence": {
-    "actualPostgresAndApiRestart": "docs/implementation/qa/persistence.json"
+  "coverage": {
+    "bookingRegression": 30,
+    "demoCatalogAndProfiles": 13
   },
-  "notEstablished": [
-    "WeChat developer tools or physical device tests",
-    "real WeChat AppID/AppSecret authorization",
-    "production HTTPS deployment",
-    "capacity or backup RPO/RTO targets"
-  ]
+  "evidence": "api-integration.tap"
 }

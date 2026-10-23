@@ -29,9 +29,15 @@
 
 PatientInput：name、birthDate(YYYY-MM-DD)、phone、email(可null/空)、billingAddress、emergencyName、emergencyPhone、allergyStatus、allergies。`unknown`与`none_reported`必须无明细；`known`必须至少一个不同的非空过敏项。手机号没有唯一性要求。不提供凭手机号绑定或任意患者ID认领接口。
 
+`Patient.isDemo` 是服务端只读标记，不属于 PatientInput。资料更新和注册不能提交该字段；客户端须从返回对象中剥除 `id`、`rowVersion`、`isDemo` 后构造可编辑资料。普通档案不会因为名称相似而自动成为演示档案。
+
 ## 目录与排班
 
 公开数组接口：`GET /clinics`、`GET /services?clinicId`、`GET /doctors?clinicId&serviceId`、`GET /qualifications`、`GET /chairs?clinicId`。默认仅活动资源；`includeInactive=true`要求员工会话并按授权管理范围处理。目录不等于可预约承诺，最终号源接口检查资格有效期和全部资源。
+
+医生只读展示扩展为 `isDemo`、`bio`、`focusAreas`、`clinicIds`。`clinicIds` 来自已发布班次涉及的活动门诊。演示资格不是实际执照核验。原有医生维护输入保持原契约，不接受通过普通资料更新改写演示来源。
+
+`GET /treatment-references` 公开返回 `TreatmentReference[]`：`id`、`category`、`name`、`priceMinCents`、`priceMaxCents`、`unit`、`referenceYear`、`sourceLabel`、`description`、`bookingServiceId`。价格为非负整数分、上限不小于下限；年份与来源随资料保存，本轮来源明确为用户提供且未独立核验。`bookingServiceId` 可以为空，非空时只是关联评估/咨询的导航，不赋予额外诊疗能力；是否可约仍由号源与资格校验决定。资料价格不写入 Service.priceCents、hold 或预约费用。
 
 `GET /shifts?clinicId&date`为员工接口，返回Shift数组。医生仅本人，前台/店长仅授权门诊，总部全链。GET只读，时间查询不创建hold。
 

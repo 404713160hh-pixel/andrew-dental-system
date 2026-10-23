@@ -4,7 +4,7 @@ import { session } from './session';
 const pendingKey = 'andrew.booking.pending.v1';
 const holdKey = 'andrew.booking.hold.v1';
 const ownedKey = (base: string, owner = session()?.user.id ?? '') => base + ':' + owner;
-export interface HoldContext { hold: Hold; oldAppointmentId?: string; oldVersion?: number; reason?: string; ownerId: string }
+export interface HoldContext { hold: Hold; oldAppointmentId?: string; oldVersion?: number; reason?: string; ownerId: string; doctorIsDemo?: boolean; patientIsDemo?: boolean }
 export interface PendingCommand { key: string; path: string; body: ConfirmInput | ChangeInput; ownerId: string; createdAt: string }
 export function saveHold(value: Omit<HoldContext, 'ownerId'>): void { wx.setStorageSync(ownedKey(holdKey), { ...value, ownerId: session()?.user.id ?? '' }); }
 export function getHold(): HoldContext | null { const value = wx.getStorageSync(ownedKey(holdKey)) as HoldContext | undefined; return value && value.ownerId === session()?.user.id ? value : null; }

@@ -1,5 +1,6 @@
 {
   "status": "passed",
+  "verifiedAt": "2026-10-23T04:41:51.113Z",
   "baseline": "c1e3779",
   "checkedFiles": 91,
   "changes": [],
@@ -7,6 +8,6 @@
     "tests": 54,
     "passed": 54,
     "failed": 0,
-    "scope": "isolated memory/temp database tests; no default legacy DB startup"
+    "scope": "isolated memory/temp database tests rerun during this change; no default legacy DB startup"
   }
 }

@@ -1,0 +1,268 @@
+TAP version 13
+# Subtest: versioned migrations are repeatable and the test database is isolated
+ok 1 - versioned migrations are repeatable and the test database is isolated
+  ---
+  duration_ms: 990.0398
+  type: 'test'
+  ...
+# Subtest: authentication is on the server, demo login is gated, logout revokes its session
+ok 2 - authentication is on the server, demo login is gated, logout revokes its session
+  ---
+  duration_ms: 85.9451
+  type: 'test'
+  ...
+# Subtest: patient identity is not a unique phone number and registration has real PostgreSQL rows
+ok 3 - patient identity is not a unique phone number and registration has real PostgreSQL rows
+  ---
+  duration_ms: 110.8869
+  type: 'test'
+  ...
+# Subtest: patient can read self, cannot read or edit another patient, anonymous writes fail
+ok 4 - patient can read self, cannot read or edit another patient, anonymous writes fail
+  ---
+  duration_ms: 2.4028
+  type: 'test'
+  ...
+# Subtest: allergy unknown, explicit none and known items stay distinct; stale profile versions are rejected
+ok 5 - allergy unknown, explicit none and known items stay distinct; stale profile versions are rejected
+  ---
+  duration_ms: 16.0768
+  type: 'test'
+  ...
+# Subtest: staff role permissions and clinic scope are enforced by the API
+ok 6 - staff role permissions and clinic scope are enforced by the API
+  ---
+  duration_ms: 5.0701
+  type: 'test'
+  ...
+# Subtest: staff publishes a new shift and public API reads the same new PostgreSQL capacity
+ok 7 - staff publishes a new shift and public API reads the same new PostgreSQL capacity
+  ---
+  duration_ms: 26.0456
+  type: 'test'
+  ...
+# Subtest: public slot DTO does not disclose other patients and query alone never writes occupancy
+ok 8 - public slot DTO does not disclose other patients and query alone never writes occupancy
+  ---
+  duration_ms: 7.7609
+  type: 'test'
+  ...
+# Subtest: an overnight shift lists starts by Shanghai date without truncating service at midnight
+ok 9 - an overnight shift lists starts by Shanghai date without truncating service at midnight
+  ---
+  duration_ms: 57.0243
+  type: 'test'
+  ...
+# Subtest: confirmation commits an appointment visible to both patient and authorized staff
+ok 10 - confirmation commits an appointment visible to both patient and authorized staff
+  ---
+  duration_ms: 36.283
+  type: 'test'
+  ...
+# Subtest: two patients competing concurrently for one resource can produce at most one appointment
+ok 11 - two patients competing concurrently for one resource can produce at most one appointment
+  ---
+  duration_ms: 131.0731
+  type: 'test'
+  ...
+# Subtest: concurrent same-key submissions return one appointment; different body cannot reuse the key
+ok 12 - concurrent same-key submissions return one appointment; different body cannot reuse the key
+  ---
+  duration_ms: 205.8123
+  type: 'test'
+  ...
+# Subtest: cancellation keeps history, releases capacity and duplicate cancellation produces one event
+ok 13 - cancellation keeps history, releases capacity and duplicate cancellation produces one event
+  ---
+  duration_ms: 86.2307
+  type: 'test'
+  ...
+# Subtest: a stale appointment version cannot cancel or overwrite a confirmed booking
+ok 14 - a stale appointment version cannot cancel or overwrite a confirmed booking
+  ---
+  duration_ms: 38.4756
+  type: 'test'
+  ...
+# Subtest: a failed reschedule retains the original appointment, resources and version
+ok 15 - a failed reschedule retains the original appointment, resources and version
+  ---
+  duration_ms: 30.1386
+  type: 'test'
+  ...
+# Subtest: successful reschedule atomically preserves linked old/new records and exactly one booking
+ok 16 - successful reschedule atomically preserves linked old/new records and exactly one booking
+  ---
+  duration_ms: 47.8763
+  type: 'test'
+  ...
+# Subtest: overlapping cross-clinic shifts cannot be published for the same doctor
+ok 17 - overlapping cross-clinic shifts cannot be published for the same doctor
+  ---
+  duration_ms: 2.1914
+  type: 'test'
+  ...
+# Subtest: expired holds cannot confirm and their resource becomes available without a cleanup timer
+ok 18 - expired holds cannot confirm and their resource becomes available without a cleanup timer
+  ---
+  duration_ms: 20.0307
+  type: 'test'
+  ...
+# Subtest: the unified PostgreSQL ledger rejects cross-doctor chair conflicts and patient conflicts, while half-open adjacent slots are valid
+ok 19 - the unified PostgreSQL ledger rejects cross-doctor chair conflicts and patient conflicts, while half-open adjacent slots are valid
+  ---
+  duration_ms: 15.73
+  type: 'test'
+  ...
+# Subtest: a committed command can be recovered using the original key without granting another patient access
+ok 20 - a committed command can be recovered using the original key without granting another patient access
+  ---
+  duration_ms: 26.3671
+  type: 'test'
+  ...
+# Subtest: chair block removes affected slots even when the doctor is available
+ok 21 - chair block removes affected slots even when the doctor is available
+  ---
+  duration_ms: 15.3079
+  type: 'test'
+  ...
+# Subtest: service qualification requirements are AND conditions and must cover the entire service interval
+ok 22 - service qualification requirements are AND conditions and must cover the entire service interval
+  ---
+  duration_ms: 20.4541
+  type: 'test'
+  ...
+# Subtest: SQL-looking credentials cannot bypass authentication or destroy application tables
+ok 23 - SQL-looking credentials cannot bypass authentication or destroy application tables
+  ---
+  duration_ms: 25.2152
+  type: 'test'
+  ...
+# Subtest: appointment and audit events are append-only in PostgreSQL
+ok 24 - appointment and audit events are append-only in PostgreSQL
+  ---
+  duration_ms: 54.5785
+  type: 'test'
+  ...
+# Subtest: confirmation rechecks resource status and qualifications after the hold was created
+ok 25 - confirmation rechecks resource status and qualifications after the hold was created
+  ---
+  duration_ms: 137.0309
+  type: 'test'
+  ...
+# Subtest: a target becoming unavailable after a valid reschedule hold rolls back original state and events
+ok 26 - a target becoming unavailable after a valid reschedule hold rolls back original state and events
+  ---
+  duration_ms: 46.7984
+  type: 'test'
+  ...
+# Subtest: a real PostgreSQL failure after old-resource release rolls back the entire reschedule
+ok 27 - a real PostgreSQL failure after old-resource release rolls back the entire reschedule
+  ---
+  duration_ms: 50.7861
+  type: 'test'
+  ...
+# Subtest: staff role revocation also blocks old idempotency receipts and command-result recovery
+ok 28 - staff role revocation also blocks old idempotency receipts and command-result recovery
+  ---
+  duration_ms: 26.518
+  type: 'test'
+  ...
+# Subtest: cancellation policy is snapshotted at the hold and a later configuration cannot change the accepted rule
+ok 29 - cancellation policy is snapshotted at the hold and a later configuration cannot change the accepted rule
+  ---
+  duration_ms: 49.6148
+  type: 'test'
+  ...
+# Subtest: confirmation waits for a concurrent qualification change and rechecks its committed state
+ok 30 - confirmation waits for a concurrent qualification change and rechecks its committed state
+  ---
+  duration_ms: 54.3372
+  type: 'test'
+  ...
+# Subtest: demo migration creates schema only and production command cannot populate or mutate it
+ok 31 - demo migration creates schema only and production command cannot populate or mutate it
+  ---
+  duration_ms: 1147.392
+  type: 'test'
+  ...
+# Subtest: development enrichment creates six fictional doctors and eight fictional patients without adopting ordinary names
+ok 32 - development enrichment creates six fictional doctors and eight fictional patients without adopting ordinary names
+  ---
+  duration_ms: 200.899
+  type: 'test'
+  ...
+# Subtest: all 24 informational prices retain exact integer cents, units and unverified source; consultation fees are separate
+ok 33 - all 24 informational prices retain exact integer cents, units and unverified source; consultation fees are separate
+  ---
+  duration_ms: 2.6589
+  type: 'test'
+  ...
+# Subtest: existing confirmed appointments and reservations remain byte-equivalent after enrichment
+ok 34 - existing confirmed appointments and reservations remain byte-equivalent after enrichment
+  ---
+  duration_ms: 1.5928
+  type: 'test'
+  ...
+# Subtest: second enrichment is additive-idempotent and never duplicates resources or references
+ok 35 - second enrichment is additive-idempotent and never duplicates resources or references
+  ---
+  duration_ms: 57.0137
+  type: 'test'
+  ...
+# Subtest: public catalogs contain no patient records and private patient routes reject anonymous callers
+ok 36 - public catalogs contain no patient records and private patient routes reject anonymous callers
+  ---
+  duration_ms: 4.9523
+  type: 'test'
+  ...
+# Subtest: demo account picker uses the same current display name returned by authenticated login
+ok 37 - demo account picker uses the same current display name returned by authenticated login
+  ---
+  duration_ms: 10.4532
+  type: 'test'
+  ...
+# Subtest: patient profile rejects readonly demo marker and accepts a correctly selected PatientInput
+ok 38 - patient profile rejects readonly demo marker and accepts a correctly selected PatientInput
+  ---
+  duration_ms: 51.5732
+  type: 'test'
+  ...
+# Subtest: specialist consultations require the matching demo skill in addition to the base qualification
+ok 39 - specialist consultations require the matching demo skill in addition to the base qualification
+  ---
+  duration_ms: 2.7693
+  type: 'test'
+  ...
+# Subtest: an explicitly cancelled demo shift is not recreated or reactivated by repeated enrichment
+ok 40 - an explicitly cancelled demo shift is not recreated or reactivated by repeated enrichment
+  ---
+  duration_ms: 52.1599
+  type: 'test'
+  ...
+# Subtest: manual edits to enriched demo doctors and services are preserved on rerun
+ok 41 - manual edits to enriched demo doctors and services are preserved on rerun
+  ---
+  duration_ms: 48.9676
+  type: 'test'
+  ...
+# Subtest: pre-003 synthetic seed without provenance is recognised by its complete relational fingerprint
+ok 42 - pre-003 synthetic seed without provenance is recognised by its complete relational fingerprint
+  ---
+  duration_ms: 1014.4915
+  type: 'test'
+  ...
+# Subtest: provenance-less same-name identities with a changed creation fingerprint fail closed without any writes
+ok 43 - provenance-less same-name identities with a changed creation fingerprint fail closed without any writes
+  ---
+  duration_ms: 486.7558
+  type: 'test'
+  ...
+1..43
+# tests 43
+# suites 0
+# pass 43
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 6766.745

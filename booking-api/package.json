@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "migrate": "tsx src/cli.ts migrate",
     "seed": "tsx src/cli.ts seed",
+    "demo": "tsx src/cli.ts demo",
     "test": "tsx --test --test-concurrency=1 test/*.test.ts",
     "admin:create": "tsx src/cli.ts create-admin"
   },

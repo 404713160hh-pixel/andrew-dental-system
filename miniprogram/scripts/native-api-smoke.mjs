@@ -45,6 +45,15 @@ let shift, clinic, doctor, service, chair, qualification;
 const save = (kind, payload) => staff.api('/staff/' + kind, 'POST', payload);
 try {
   const health = await staff.api('/health'); check('real backend reports PostgreSQL', health.database === 'postgresql');
+  const references = await staff.api('/treatment-references');
+  check('public treatment references contain integer-cent ranges with explicit year, unit and unverified source', Array.isArray(references) && references.every(item => Number.isSafeInteger(item.priceMinCents) && Number.isSafeInteger(item.priceMaxCents) && item.priceMinCents >= 0 && item.priceMaxCents >= item.priceMinCents && item.referenceYear === 2026 && item.unit && item.sourceLabel === '用户提供的价格资料（未独立核验）' && !('patientId' in item)));
+  if (process.env.MINIPROGRAM_SMOKE_EXPECT_DEMO_CATALOG === '1') {
+    check('the requested price catalog is installed with prevention, treatment, restoration, implant and orthodontic groups', references.length >= 20 && new Set(references.map(item => item.category)).size >= 5);
+    const publicDoctors = await staff.api('/doctors'), services = await staff.api('/services');
+    check('six fictional doctor profiles are visibly labelled and include biography and focus areas', publicDoctors.filter(item => item.isDemo).length === 6 && publicDoctors.filter(item => item.isDemo).every(item => item.name.includes('虚构') && item.bio && item.focusAreas?.length && item.clinicIds?.length));
+    check('reference prices link only to a separately priced assessment or consultation, never replacing booking fees', references.every(item => item.bookingServiceId === null || services.some(service => service.id === item.bookingServiceId && /咨询|评估|检查/.test(service.name))) && references.some(item => item.unit === '疗程' && item.priceMinCents > Math.max(...services.map(service => service.priceCents))));
+    evidence.demoCatalog = { references: references.length, fictionalDoctors: publicDoctors.filter(item => item.isDemo).length, source: 'User supplied, not independently verified' };
+  }
   const config = await staff.api('/auth/config');
   assert.ok(config.demoLoginEnabled, '隔离测试 API 必须开启开发演示账号');
   for (const account of config.demoAccounts.filter(item => item.portal === 'staff')) {

@@ -1,0 +1,18 @@
+{
+  "status": "not_completed",
+  "version": "2.02.2609231",
+  "cli": "C:/Program Files (x86)/Tencent/微信web开发者工具/cli.bat",
+  "command": "auto --project <repository>/miniprogram --auto-port 9420 --trust-project",
+  "processExitCode": 0,
+  "initializationSucceeded": false,
+  "observedMessage": "IDE service port disabled / 工具的服务端口已关闭",
+  "nativeCompileVerified": false,
+  "nativeRenderingVerified": false,
+  "deviceVerified": false,
+  "previewOrUploadExecuted": false,
+  "settingChanged": false,
+  "nextAction": "手动导入可先验收；自动化需在工具→设置→安全设置开启服务端口。",
+  "attemptedDate": "2026-10-23",
+  "timezone": "Asia/Shanghai",
+  "recordedAt": "2026-10-23T04:42:28.868Z"
+}

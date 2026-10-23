@@ -91,7 +91,7 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
         <small>服务价格为预约参考价，实际诊疗费用以医生确认的方案为准。</small>
       </div>
       <button class="account" @click="logout">
-        <span class="avatar">{{ auth.user?.displayName.slice(-2) }}</span
+        <span class="avatar">{{ auth.user?.displayName.slice(0, 1) }}</span
         ><span
           >{{ auth.user?.displayName }}<small>{{ auth.roleLabel }}</small></span
         ><el-icon><SwitchButton /></el-icon>

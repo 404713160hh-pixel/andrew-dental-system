@@ -5,7 +5,7 @@ import rateLimit from '@fastify/rate-limit';
 import type pg from 'pg';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
-import type { Principal,Clinic,Doctor,Service,Chair,Qualification,Shift,Appointment,Patient,Page } from '@andrew/shared';
+import type { Principal,Clinic,Doctor,Service,Chair,Qualification,Shift,Appointment,Patient,Page,TreatmentReference } from '@andrew/shared';
 import type { Config } from './config.js';
 import { one,transaction,iso } from './db.js';
 import { AppError,requireThat,databaseError } from './errors.js';
@@ -39,7 +39,14 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
   }});
  }
  route('GET','/health','none',async()=>{await pool.query('SELECT 1');return {status:'ok',database:'postgresql'};});
- route('GET','/auth/config','none',async()=>({demoLoginEnabled:config.NODE_ENV!=='production'&&config.ALLOW_DEMO_LOGIN==='true',demoAccounts:config.NODE_ENV!=='production'&&config.ALLOW_DEMO_LOGIN==='true'?demoUsers.map(([username,displayName,portal])=>({username,displayName,portal})):[],wechatLoginEnabled:false}));
+ route('GET','/auth/config','none',async()=>{
+  const enabled=config.NODE_ENV!=='production'&&config.ALLOW_DEMO_LOGIN==='true';
+  if(!enabled)return {demoLoginEnabled:false,demoAccounts:[],wechatLoginEnabled:false};
+  const accounts=(await pool.query<{username:string;displayName:string}>('SELECT username,display_name AS "displayName" FROM users WHERE active AND username=ANY($1::text[])',[demoUsers.map(([username])=>username)])).rows;
+  return {demoLoginEnabled:true,demoAccounts:demoUsers.flatMap(([username,,portal])=>{
+   const account=accounts.find(item=>item.username===username);return account?[{...account,portal}]:[];
+  }),wechatLoginEnabled:false};
+ });
  route('POST','/auth/login','none',async(req)=>{
   const input=loginInput.parse(req.body);return transaction(pool,async db=>{const result=await login(db,config,input);await audit(db,result.user.id,'auth.login',result.user.id,req.id);return result;});
  });
@@ -75,6 +82,14 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
   });
  });
  route('GET','/booking-policy','none',async()=>bookingPolicy(config));
+ route('GET','/treatment-references','none',async()=>{
+  // This public projection contains no patient/account data. A consultation fee
+  // remains in services.price_cents; treatment ranges never price a booking.
+  return (await pool.query<TreatmentReference>(`SELECT tr.id,tr.category,tr.name,tr.price_min_cents AS "priceMinCents",
+   tr.price_max_cents AS "priceMaxCents",tr.unit,tr.reference_year AS "referenceYear",tr.source_label AS "sourceLabel",tr.description,
+   CASE WHEN s.active THEN tr.booking_service_id ELSE NULL END AS "bookingServiceId"
+   FROM treatment_references tr LEFT JOIN services s ON s.id=tr.booking_service_id ORDER BY tr.sort_order,tr.id`)).rows;
+ });
  // Catalog queries never return patient or account data. Inactive management
  // views are authenticated and scoped independently of these public views.
  route('GET','/clinics','optional',async(req,user)=>{
@@ -91,7 +106,7 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
  route('GET','/doctors','optional',async(req,user)=>{
   const inactive=req.query.includeInactive==='true';if(inactive){requireThat(user,401,'UNAUTHENTICATED','请先登录');staffOnly(user);}
   const clinic=req.query.clinicId?uuid.parse(req.query.clinicId):null;const service=req.query.serviceId?uuid.parse(req.query.serviceId):null;const scopes=inactive?scopeIds(user!):null;
-  return (await pool.query<Doctor>(doctorSelect+` WHERE s.is_dentist AND ($1::boolean OR s.active) AND ($2::uuid IS NULL OR EXISTS(SELECT 1 FROM doctor_shifts ds WHERE ds.doctor_id=s.id AND ds.clinic_id=$2 AND ds.status='published'))
+  return (await pool.query<Doctor>(doctorSelect+` WHERE s.is_dentist AND ($1::boolean OR s.active) AND ($2::uuid IS NULL OR EXISTS(SELECT 1 FROM doctor_shifts ds JOIN clinics c ON c.id=ds.clinic_id AND c.active WHERE ds.doctor_id=s.id AND ds.clinic_id=$2 AND ds.status='published' AND ds.ends_at>clock_timestamp()))
    AND ($3::uuid IS NULL OR NOT EXISTS(SELECT 1 FROM service_qualifications sq WHERE sq.service_id=$3 AND NOT EXISTS(SELECT 1 FROM dentist_qualifications dq JOIN qualifications q ON q.id=dq.qualification_id WHERE dq.dentist_id=s.id AND dq.qualification_id=sq.qualification_id AND q.active AND dq.valid_from<=now() AND (dq.valid_until IS NULL OR dq.valid_until>now()))))
    AND ($4::uuid[] IS NULL OR s.active OR EXISTS(SELECT 1 FROM doctor_shifts ds WHERE ds.doctor_id=s.id AND ds.clinic_id=ANY($4))) ORDER BY s.name`,[inactive,clinic,service,scopes])).rows;
  });

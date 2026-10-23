@@ -31,7 +31,7 @@ Page({
   },
   reschedule() {
     const item = this.data.appointment; if (!item || this.data.pending) return;
-    wx.navigateTo({ url: '/pages/booking/index?appointmentId=' + encodeURIComponent(item.id) + '&version=' + item.rowVersion + '&clinicId=' + encodeURIComponent(item.clinicId) + '&serviceId=' + encodeURIComponent(item.serviceId) });
+    wx.navigateTo({ url: '/pages/booking/index?appointmentId=' + encodeURIComponent(item.id) + '&version=' + item.rowVersion + '&clinicId=' + encodeURIComponent(item.clinicId) + '&serviceId=' + encodeURIComponent(item.serviceId) + '&doctorId=' + encodeURIComponent(item.doctorId) });
   },
   related(event: WechatMiniprogram.BaseEvent) { wx.navigateTo({ url: '/pages/detail/index?id=' + encodeURIComponent(String(event.currentTarget.dataset.id)) }); },
   async inspect() {

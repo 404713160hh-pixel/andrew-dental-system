@@ -1,0 +1,22 @@
+{
+  "verifiedAt": "2026-10-23T04:38:17.077Z",
+  "checks": [
+    {
+      "table": "appointments",
+      "originalRows": 20,
+      "unchanged": true
+    },
+    {
+      "table": "appointment_events",
+      "originalRows": 40,
+      "unchanged": true
+    }
+  ],
+  "dataSnapshot": "Private pre-demo logical snapshot; not committed; restore not exercised",
+  "demoCounts": {
+    "doctors": 6,
+    "patients": 8,
+    "references": 24
+  },
+  "status": "passed"
+}

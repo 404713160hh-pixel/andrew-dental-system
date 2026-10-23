@@ -1,0 +1,17 @@
+<view class="page doctors-page">
+  <view class="eyebrow">MEET YOUR CARE TEAM</view>
+  <view class="title">先了解医生，<view>再安排你的就诊。</view></view>
+  <view class="muted page-intro">查看公开的专业方向与门诊安排，选择适合本次咨询的医生。</view>
+  <view class="card doctor-filter"><view><view class="section-title">医生团队</view><view class="small muted">{{doctors.length}} 位医生</view></view><picker range="{{clinicNames}}" value="{{clinicIndex}}" bindchange="clinicChange" disabled="{{loading}}"><view class="filter-choice">{{clinicNames[clinicIndex]}} <text>⌄</text></view></picker></view>
+  <view wx:if="{{error}}" class="error">{{error}}<button class="secondary space" bindtap="load">重新加载</button></view>
+  <view wx:if="{{loading}}" class="loading">正在读取医生与门诊安排…</view>
+  <view wx:for="{{doctors}}" wx:key="id" class="card team-card" data-id="{{item.id}}" bindtap="openDoctor">
+    <view class="team-top"><view class="doctor-avatar tone-{{index % 3}}"><view class="portrait-head"></view><view class="portrait-body"></view><text>{{item.initial}}</text></view><view class="grow"><view class="name-line"><text class="doctor-name">{{item.name}}</text><text wx:if="{{item.isDemo}}" class="demo-badge">虚构医生</text></view><view class="doctor-specialty">{{item.specialty}}</view><view class="doctor-location">⌖ {{item.clinicLabel}}</view></view></view>
+    <view class="focus-tags"><text wx:for="{{item.focusLabels}}" wx:for-item="focus" wx:key="*this">{{focus}}</text></view>
+    <view class="doctor-bio">{{item.bioLabel || '公开介绍待补充，具体就诊问题可在预约咨询时沟通。'}}</view>
+    <view wx:if="{{item.isDemo}}" class="demo-inline">人物与资格记录均为虚构演示，不对应真实执业医生。</view>
+    <view class="team-footer"><text class="small muted">按开放班次提供预约</text><text class="link">了解医生与预约 →</text></view>
+  </view>
+  <view wx:if="{{!loading && !error && !doctors.length}}" class="empty">当前门诊暂无公开医生安排。<view class="space">可切换门诊，或稍后重新查看。</view></view>
+  <view class="footer-note">医生形象为示意图 · 服务资格和时段将在预约时核对</view>
+</view>

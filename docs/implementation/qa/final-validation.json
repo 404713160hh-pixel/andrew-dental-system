@@ -1,83 +1,75 @@
 {
-  "status": "passed",
-  "verifiedAt": "2026-10-22T18:31:08.352Z",
-  "reportDate": "2026-10-23",
-  "timezone": "Asia/Shanghai",
-  "baseCommit": "c1e3779",
-  "branch": "feat/postgres-booking-20261022",
-  "scope": "Native WeChat mini program + Vue staff UI + TypeScript/Fastify + PostgreSQL appointment core",
-  "design": {
-    "path": "docs/design/安德鲁牙科系统设计文档.pdf",
-    "pages": 300,
-    "sha256": "22483aee6c2ca681937bb667868e25c85f97f85dbc8e11f5dd6da3d6ce2ee3eb"
-  },
-  "checks": {
-    "strictTypecheck": true,
-    "productionBuilds": true,
-    "databaseApi": {
-      "passed": 30,
+  "status": "passed_with_manual_acceptance_remaining",
+  "verifiedAt": "2026-10-23T04:41:51.113Z",
+  "baseCommit": "f18ef53",
+  "scope": "Native mini program doctor and price catalog, fictional profiles and safe development data augmentation",
+  "results": {
+    "postgresApi": {
+      "passed": 43,
       "failed": 0
     },
-    "adminClientUnit": {
+    "nativeClient": {
+      "passed": 17,
+      "failed": 0
+    },
+    "nativeModulesRealHttp": {
+      "passed": 20,
+      "status": "passed"
+    },
+    "chromeWorkbench": {
+      "passed": 12,
+      "status": "passed"
+    },
+    "adminClient": {
       "passed": 4,
       "failed": 0
     },
-    "nativeClientUnit": {
-      "passed": 11,
-      "failed": 0
-    },
-    "nativeRealHttp": {
-      "passed": 16,
-      "failed": 0
-    },
-    "realBrowser": {
-      "passed": 12,
-      "failed": 0
-    },
-    "actualDatabaseAndApiRestart": true,
     "legacy": {
-      "unchangedFiles": 91,
-      "passedTests": 54
+      "passed": 54,
+      "failed": 0
     },
-    "composeSchema": true,
-    "miniArtifactHash": "5a09aac247eb4341a99d941d950b4cbf7c044fde865996e8932adca7e19fe8f8",
-    "privateCredentialsAbsentFromDelivery": true
+    "strictTypecheck": "passed",
+    "productionBuild": "passed"
   },
-  "notExecuted": [
-    "WeChat developer tools and physical devices",
-    "Real WeChat AppID/AppSecret authorization",
-    "Docker engine container build/run and Nginx/TLS",
-    "GitHub-hosted CI run",
-    "Production capacity or backup/recovery SLA"
+  "data": {
+    "fictionalDoctors": 6,
+    "fictionalPatients": 8,
+    "consultationServices": 6,
+    "treatmentReferences": 24,
+    "repeatEnrichment": {
+      "referencesAdded": 0,
+      "shiftsAdded": 0
+    },
+    "originalAppointmentsUnchanged": 20,
+    "originalAppointmentEventsUnchanged": 40,
+    "publicPatientDirectory": false,
+    "referenceSource": "User provided 2026 ranges, not independently verified"
+  },
+  "artifacts": {
+    "miniSha256": "4a9ff69924a75f51e79b728ed4f46f7475f7e12c361801cc377f67c469b65851",
+    "designPdfSha256": "22483aee6c2ca681937bb667868e25c85f97f85dbc8e11f5dd6da3d6ce2ee3eb",
+    "designPdfChanged": false,
+    "legacySourceFilesUnchanged": 91
+  },
+  "manualAcceptance": {
+    "wechatDevtools": "CLI initialization blocked by disabled service port; native compile/render not verified",
+    "physicalDevice": "not executed",
+    "realWechatLogin": "not configured",
+    "productionDeployment": "not executed"
+  },
+  "evidence": [
+    "api-integration.json",
+    "api-integration.tap",
+    "browser.json",
+    "demo-data-preservation.json",
+    "wechat-devtools.json",
+    "../../../miniprogram/qa/client-unit.json",
+    "../../../miniprogram/qa/native-api-smoke.json"
   ],
-  "files": [
-    {
-      "path": ".dockerignore",
-      "sha256": "03d598c379b6b621d551b636cb5b44963d991804bdadd62377c825f97417a713"
-    },
-    {
-      "path": ".env.booking.example",
-      "sha256": "fd830762a8329f0c73e314f6ed6a830e3002cf93103850448d3cc0aeb8b006bb"
-    },
-    {
-      "path": ".env.compose.example",
-      "sha256": "9d1fa724765845f895ecaa206cec856955e56145ac77232ee4f299ae0d2e8c49"
-    },
-    {
-      "path": ".github/workflows/booking.yml",
-      "sha256": "a2bfe40ff1f1a960ee62ecec96096d94f4a343fc29da372212d42255e131db86"
-    },
-    {
-      "path": ".github/workflows/ci.yml",
-      "sha256": "d6781e194ceb03a4c44b56b226e41fff2d9cafcacd98c31ddb593fdc8e018461"
-    },
-    {
-      "path": ".gitignore",
-      "sha256": "8ff3ef7f9fae588128467b5195a8fa81989278eeb85b73cd7ce982f976e46563"
-    },
+  "sourceFiles": [
     {
       "path": "README.md",
-      "sha256": "8a8cdd713f0fe2a9309e9216e706a01a9fb33c153176ffb811b81c2e2ce95c25"
+      "sha256": "84a7fe52386194e8d4e24b6fbbbd489a31667e8409daa538801aab2fd01df005"
     },
     {
       "path": "admin-web/.prettierrc.json",
@@ -93,7 +85,7 @@
     },
     {
       "path": "admin-web/src/App.vue",
-      "sha256": "7a96030ae7fd6dd80330be78d6bab7a267030b9f24379767c11c632b83e397be"
+      "sha256": "4e30abc58b2a699c2f035175cdec5d2a7e44ff0ebae9f45b09ed0e4154e00dbc"
     },
     {
       "path": "admin-web/src/api.ts",
@@ -169,11 +161,11 @@
     },
     {
       "path": "booking-api/package.json",
-      "sha256": "14b9098d15e88daf6475009587afc4c61d321fedfad7da74e99c90c1d1a41486"
+      "sha256": "d860169c61fda4fbb849a48e38a94354577e7f0a26af4aee900301bc14000d71"
     },
     {
       "path": "booking-api/src/app.ts",
-      "sha256": "8d931d7390f949e763ddfd4e7258ef930d232f023eae26ea34d8664044370661"
+      "sha256": "4d69507950a92b2a84c13b56d21f6afc7caaa1c8fcc9e1d8d778be54b1308f2d"
     },
     {
       "path": "booking-api/src/auth.ts",
@@ -181,7 +173,7 @@
     },
     {
       "path": "booking-api/src/cli.ts",
-      "sha256": "6ce88a3c53ca41d32ef43c51a99a5b84e11a2388f9fe106c041da8e1c9db84a7"
+      "sha256": "db7a5bcae97242d598896abf120173171a2606d6f5971a817d39579cc37af3c9"
     },
     {
       "path": "booking-api/src/config.ts",
@@ -190,6 +182,14 @@
     {
       "path": "booking-api/src/db.ts",
       "sha256": "3369ce03d72e5f833b5d519240490a983b5e530f53dd7219f7970a5bc2da605c"
+    },
+    {
+      "path": "booking-api/src/demo-reference-data.ts",
+      "sha256": "807f6c24f07960b476381dde44b66db9798a1dd71ae4decd0cf2683bd47b27c0"
+    },
+    {
+      "path": "booking-api/src/demo.ts",
+      "sha256": "31e8296a7d9bed6b88f4456e9d6927b72e8f43c0c57dc2d598beaf8914562480"
     },
     {
       "path": "booking-api/src/errors.ts",
@@ -209,11 +209,11 @@
     },
     {
       "path": "booking-api/src/repositories/catalog.ts",
-      "sha256": "85100fda8626abce2acd630d29e8b27e376fcb8205a92eae2bacec283c3959b5"
+      "sha256": "5021054798560a0e5cc0b08db5d75bf1b741331b72fa1e45fbb85bf40b3f21db"
     },
     {
       "path": "booking-api/src/seed.ts",
-      "sha256": "11ce8178ec6164aece966dfc61fb5830183fb6f642e3706651b4b590489e5c4c"
+      "sha256": "1d544af7e3bc4c051264a5eefb33b14f24414bac387bfa6d85742c90be361a0a"
     },
     {
       "path": "booking-api/src/services/booking.ts",
@@ -232,12 +232,12 @@
       "sha256": "c2cf210c438d3e916b2257ac865e1607f5fc518cb2b8defa0f583cbf12701134"
     },
     {
-      "path": "booking-api/tsconfig.json",
-      "sha256": "5c5a80887f314310186ff2f3ecae4afecd1f7cde23c0df815d5b7a061d5bc477"
+      "path": "booking-api/test/demo.integration.test.ts",
+      "sha256": "08f389e61ed4625e8c4d6dec470c426101e1b2f3de3ef3a2cf63ac7bd0226662"
     },
     {
-      "path": "compose.yaml",
-      "sha256": "aa331027c437d46cf12ce356d7aced98e3e0d0401ef52b9ae897a0c06d3747c6"
+      "path": "booking-api/tsconfig.json",
+      "sha256": "5c5a80887f314310186ff2f3ecae4afecd1f7cde23c0df815d5b7a061d5bc477"
     },
     {
       "path": "database/migrations/001_booking_core.sql",
@@ -248,28 +248,20 @@
       "sha256": "e65bf4e91073094aa6123fe47d89eb52013dd3b7d54e9b341909746b0aa32e9b"
     },
     {
-      "path": "deploy/booking/api.Dockerfile",
-      "sha256": "712233296f9400b13cb5c01fe47d8d0d5acdff6f145579463cb9aeb1b5cadc1f"
+      "path": "database/migrations/003_demo_profiles_and_treatment_references.sql",
+      "sha256": "402f816e59f5bb6a2a1c84b4ee843a4e3db98a3838838e56bc803d7d3a7bd29e"
     },
     {
-      "path": "deploy/booking/nginx.https.conf",
-      "sha256": "bbb1ad366864c4b1bb917d23f7276da6cad6c40be340e878b7f721ee9150feff"
-    },
-    {
-      "path": "deploy/booking/nginx.local.conf",
-      "sha256": "b3fb35c50a8b74b0c1703cb8f0427d2882e01dc99f92b3de2b518bc5c1a4d410"
-    },
-    {
-      "path": "deploy/booking/web.Dockerfile",
-      "sha256": "8a1f066b834f482ac458cc212a4d14c189a0726336fab864f4b1a79776e995df"
+      "path": "docs/implementation/DEMO-NEXT-STEPS.md",
+      "sha256": "595c712faaa0ebdb9a25a9b799131dc47686fc9aaa0441ce157b7d2cc0552867"
     },
     {
       "path": "docs/implementation/acceptance.md",
-      "sha256": "bcc7c8e3dae7d74d4fea36806c35bcd2e9ce1df6115c83988a2ecb42206c9175"
+      "sha256": "de59f45f791264fa601dcbbbaf06c372a62fc0c02651ebd133d6c249c7b627c2"
     },
     {
       "path": "docs/implementation/api.md",
-      "sha256": "38e54351daf0de81cf102bee4a0157ffdf851890b0547d42f46ee966664c25f1"
+      "sha256": "005c4039f5e32aaaba8a96dd019b0e7f364cd06d56b74c91e39fe88efde61750"
     },
     {
       "path": "docs/implementation/architecture.md",
@@ -277,7 +269,7 @@
     },
     {
       "path": "docs/implementation/browser-acceptance.md",
-      "sha256": "e8404dbf0c40a8e2b68f33351163509f8a8acd4c327b22ef2089faf47383843f"
+      "sha256": "ca3a99c593fb18400f96b0b1ce0413a7e4a54190da32e84ede19d1604db58c1b"
     },
     {
       "path": "docs/implementation/deployment.md",
@@ -293,7 +285,7 @@
     },
     {
       "path": "docs/implementation/miniprogram-acceptance.md",
-      "sha256": "af5030627e04ed1be38dea1ab4a5a0c550115bf1f9d7c4855cbe48c9e24ff188"
+      "sha256": "bef71414f6377ac92c6a017ddd2b18cc5829d945901db299474f96cc575ce985"
     },
     {
       "path": "docs/implementation/test-design.md",
@@ -305,7 +297,7 @@
     },
     {
       "path": "miniprogram/README.md",
-      "sha256": "e8257f2ba8ed79391f17675de7a3f9026479a39fa0e2641985d284beceaaabf7"
+      "sha256": "4fa94e0b3c47941447e2022d76df0b5018a7aabce32dddb264409cf14c5b8604"
     },
     {
       "path": "miniprogram/package.json",
@@ -325,11 +317,11 @@
     },
     {
       "path": "miniprogram/scripts/client.test.mjs",
-      "sha256": "788bc85487cab0e56dd7469defba307ee07224b89b6562c4f5ba6fc1f8e273a7"
+      "sha256": "3589ae803569ed00b2b8911c8b176ebb6a56c3ddcfeb36ab99fb9518c0a5b6f0"
     },
     {
       "path": "miniprogram/scripts/native-api-smoke.mjs",
-      "sha256": "6202e5ce471f438a99a80920866e15a75fd829e98205c2f23437d45dd5af7a62"
+      "sha256": "b1dd1789dec104202cdfc25ef151f034b172657d85c6620efc284c491d4da62a"
     },
     {
       "path": "miniprogram/scripts/run-tests.mjs",
@@ -341,7 +333,7 @@
     },
     {
       "path": "miniprogram/src/app.json",
-      "sha256": "f21673cdf8712926e6f25e4c25d6ba6618ef531c4f1d5d0624ae09de97c2b12d"
+      "sha256": "86efe0ba56295ab4e5fa2cc13ce72bbe45de75c2841b2ae43adef7aedeb935ee"
     },
     {
       "path": "miniprogram/src/app.ts",
@@ -349,7 +341,11 @@
     },
     {
       "path": "miniprogram/src/app.wxss",
-      "sha256": "17be44daacfb5751e5aff33c1325b88abf9356fc947438159e3a8f4bc7d850e8"
+      "sha256": "fddc3a97945705e7e86737b7d250c82849aaace25137784e046bb29739596711"
+    },
+    {
+      "path": "miniprogram/src/assets/tooth-care.svg",
+      "sha256": "03836d7d87a57dbfde6878024478ad872b55e56f5a24b6c2733321273f02e1de"
     },
     {
       "path": "miniprogram/src/components/patient-form/index.json",
@@ -381,7 +377,7 @@
     },
     {
       "path": "miniprogram/src/pages/appointments/index.wxml",
-      "sha256": "9eef05a3e8f9f47513f3a4f678e586a9f66bc721128c921d6437270446d0d2a4"
+      "sha256": "2142be4da1c2a499d01c7c7ff32b887f664822660e503d7039e2a2437e093551"
     },
     {
       "path": "miniprogram/src/pages/appointments/index.wxss",
@@ -393,11 +389,11 @@
     },
     {
       "path": "miniprogram/src/pages/booking/index.ts",
-      "sha256": "de0e0d92f59631297f6da0b3b2b9445534d7ee95ed6294e472cddccd5c7f3ac6"
+      "sha256": "578e58265b8e3152ab073caa0f499b34cb6687f872a64d2d3b943ebc2e943741"
     },
     {
       "path": "miniprogram/src/pages/booking/index.wxml",
-      "sha256": "848e217e3d366831b7a9722c703cf75a3390d91b5a3ed98863ec07c8f9acb07a"
+      "sha256": "26abd8423cea5f78519a3f901e98306fed2fd612a760466947df39ce64ba3be9"
     },
     {
       "path": "miniprogram/src/pages/booking/index.wxss",
@@ -413,7 +409,7 @@
     },
     {
       "path": "miniprogram/src/pages/confirm/index.wxml",
-      "sha256": "a945f8832dbc9beeaeba6dcde2e1966b76fe2dd9371558b30f91bb22dc324bb4"
+      "sha256": "cad3d0e4eb5bc162e0bc900f4b02b8f8591cc87e7b1e8c80095d1b1938debb7f"
     },
     {
       "path": "miniprogram/src/pages/confirm/index.wxss",
@@ -425,15 +421,47 @@
     },
     {
       "path": "miniprogram/src/pages/detail/index.ts",
-      "sha256": "182b01c29e1efc1d612a4a7e2d71f9e1562795c03856cd9fe16a9316f1206bc6"
+      "sha256": "55a2f8e1f5e4e5dd5edb176b01c633a2a041b96350b77f89a0ef61663a2bcba1"
     },
     {
       "path": "miniprogram/src/pages/detail/index.wxml",
-      "sha256": "158b9f2122a80e27047e4508b483e078e798580fa0e8a759dfb39eea29ab2684"
+      "sha256": "c1b8de0f02e93a3a4ef0a88fad566a64f495eb8956bde657951624b9c0f0ee7f"
     },
     {
       "path": "miniprogram/src/pages/detail/index.wxss",
       "sha256": "c976a4e4fd69518855db3c13fd9157908fbdb5b6580ee9d09e3ad740fa1eff2a"
+    },
+    {
+      "path": "miniprogram/src/pages/doctor-detail/index.json",
+      "sha256": "4bd84a915d0f8e27a8e89d6517f350a8c04d4d8bed4dff34a325c49d671b7406"
+    },
+    {
+      "path": "miniprogram/src/pages/doctor-detail/index.ts",
+      "sha256": "43ea0d768eeb6046e133d973a8fc3017e5f7be49ba6ab1592f3d2d99b4f1b3f6"
+    },
+    {
+      "path": "miniprogram/src/pages/doctor-detail/index.wxml",
+      "sha256": "09e7a7f551c2cc134b4daf6bf352d7948193778e69e5df66b91b3c12896b8b60"
+    },
+    {
+      "path": "miniprogram/src/pages/doctor-detail/index.wxss",
+      "sha256": "c49e0aa0588c1dc773b66bd95f532c9a1729297bd763625d8adec8febcb294a7"
+    },
+    {
+      "path": "miniprogram/src/pages/doctors/index.json",
+      "sha256": "c97416dea427298b25a3fb01dafe79d17cf180fff4d7c83d3e339d36d34135fd"
+    },
+    {
+      "path": "miniprogram/src/pages/doctors/index.ts",
+      "sha256": "f33c303f4d90e7ad7e7dba055164e06018322fb0a3b963a4fe82b445a052688c"
+    },
+    {
+      "path": "miniprogram/src/pages/doctors/index.wxml",
+      "sha256": "1b0e9b18bc995278d72cceb7da8656b83023d88afd8b2a1bedc837bd74e2d11e"
+    },
+    {
+      "path": "miniprogram/src/pages/doctors/index.wxss",
+      "sha256": "2ec51f413df6bdcebf8e637414e5fe2e33f6cd3dd90e8a9fe40a4936c6442bdc"
     },
     {
       "path": "miniprogram/src/pages/home/index.json",
@@ -441,15 +469,15 @@
     },
     {
       "path": "miniprogram/src/pages/home/index.ts",
-      "sha256": "ccae7c3d44d15e0f2cf05ff7e7bb285bc77739fea75e07b2f0ae9c8c51a1eeb2"
+      "sha256": "d8c1396760e26f35b2781aaddd6b29580f95dbd8a7c2977579fb65185894ca8c"
     },
     {
       "path": "miniprogram/src/pages/home/index.wxml",
-      "sha256": "7615046db42394ace8e2ad4e5fc481bcc85f273b208caea4b0fe6ec065d682db"
+      "sha256": "572c8ac87e2a067cdd9a916044ce3957e67696f4fb5b56d580bf3af03434a0b8"
     },
     {
       "path": "miniprogram/src/pages/home/index.wxss",
-      "sha256": "19f184800a8b39ff16d50d0eb86a718d8590aab269d9128f6f2c352da6ae3b62"
+      "sha256": "cf935d0865259bc6dccb1458698f4212f6969dd27b117f827fac90f79226a319"
     },
     {
       "path": "miniprogram/src/pages/login/index.json",
@@ -461,11 +489,27 @@
     },
     {
       "path": "miniprogram/src/pages/login/index.wxml",
-      "sha256": "a4ae4ab97c89f47ad5af16902691317867fec52212006b894327fdb8ebd63f99"
+      "sha256": "1fc42878405ac550059f7646d0d12b719d4adc725ee106f63fab78b79825fac6"
     },
     {
       "path": "miniprogram/src/pages/login/index.wxss",
       "sha256": "b37fc6fde5ad97cefa3e2fa19f92e0c370f6c9fefc33e988c8331d4ab51858bf"
+    },
+    {
+      "path": "miniprogram/src/pages/prices/index.json",
+      "sha256": "bc38661941150e6a0fedea988126967bd08ce364c85fb015737dce9ca04a07c0"
+    },
+    {
+      "path": "miniprogram/src/pages/prices/index.ts",
+      "sha256": "2f90a402c5f9e94011268852591923be0e4f98fda70eb7e2307f5134ed9a30bf"
+    },
+    {
+      "path": "miniprogram/src/pages/prices/index.wxml",
+      "sha256": "384ba14a7592e8309169986b635fc05f6e20d1e5c2026bd8792f39b688589a49"
+    },
+    {
+      "path": "miniprogram/src/pages/prices/index.wxss",
+      "sha256": "8c0b18ebc08d9c9132fc7530abad2373c2f6958230e5a41e086390c78fa092b4"
     },
     {
       "path": "miniprogram/src/pages/profile/index.json",
@@ -473,11 +517,11 @@
     },
     {
       "path": "miniprogram/src/pages/profile/index.ts",
-      "sha256": "074a942ea85f73e008019d1baa1135e9386070a0a13b0184103ee0cb09a52590"
+      "sha256": "5ef268c316960e03c7b586ab2f47d24280d58f8ac0fdbc85f36cfeee04105510"
     },
     {
       "path": "miniprogram/src/pages/profile/index.wxml",
-      "sha256": "0b73ce103475127ff2852d930fcdf40daf86931decd5a4facc94afa2cd8cd863"
+      "sha256": "2c8b954661d3bd958469fdbb434d298f1f8c68b9ee248f799856d14eacc99ef5"
     },
     {
       "path": "miniprogram/src/pages/profile/index.wxss",
@@ -497,7 +541,11 @@
     },
     {
       "path": "miniprogram/src/utils/booking.ts",
-      "sha256": "76cf9f07a1f297bf8786dd2de4ee0bd1404ece99d1f0cd96d04af1b277e19fde"
+      "sha256": "9b30ce7db7b2ec816138f6e0a224a88c2d2c71281c443d22359593eac09cb25e"
+    },
+    {
+      "path": "miniprogram/src/utils/catalog.ts",
+      "sha256": "dfeacf308cfeadcba1140932628469a933f562b547f985b8da4d8c7f11781718"
     },
     {
       "path": "miniprogram/src/utils/format.ts",
@@ -517,7 +565,7 @@
     },
     {
       "path": "package.json",
-      "sha256": "6901aa3c6deefe1626327d7a58966db09ac76a66cb75f542a4979e8f87df61c4"
+      "sha256": "1b06381cc768629a896100faa2ef7042363d8c7d9e85f115913710b926f86b94"
     },
     {
       "path": "scripts/booking-browser.mjs",
@@ -541,7 +589,7 @@
     },
     {
       "path": "shared/src/index.ts",
-      "sha256": "23efab4b36d5425bf6df6f6f758b3b177bf8d5f8e6fdedd2e2a93d6fe28e6655"
+      "sha256": "315fc178fbbb7f941fa4353290344d1f1f3f53a0053a24c1be9e3f17db7430ea"
     }
   ]
 }

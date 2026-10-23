@@ -1,0 +1,19 @@
+<view class="page prices-page">
+  <view class="price-hero"><view class="price-orbit"></view><view class="eyebrow">UNDERSTAND BEFORE YOU PLAN</view><view class="price-heading">先了解项目，<view>再讨论适合的方案。</view></view><view class="price-subtitle">{{referenceYearLabel ? referenceYearLabel + ' 年价格资料' : '治疗项目价格资料'}} · 用于了解项目与预算区间</view><view class="reference-seal">资料参考</view></view>
+  <view class="source-notice"><view class="source-title">资料价格，供了解与咨询</view><view>本页资料由用户提供，未独立核验，不能作为本门诊报价。检查、材料及个体治疗难度会影响实际费用，请在面诊后确认方案与完整费用。</view><view class="source-note">种植、正畸等项目的疗程参考价与单次咨询预约费用分别展示。</view></view>
+  <view class="price-search"><text>⌕</text><input value="{{keyword}}" bindinput="searchInput" placeholder="搜索项目、材料或治疗类别" maxlength="80" confirm-type="search" /></view>
+  <scroll-view class="category-scroll" scroll-x enhanced show-scrollbar="{{false}}"><view class="category-tabs"><view wx:for="{{categories}}" wx:key="*this" class="category-tab {{selectedCategory === item ? 'active' : ''}}" data-category="{{item}}" bindtap="categoryTap">{{item}}</view></view></scroll-view>
+  <view class="price-results"><view class="section-title">{{selectedCategory === '全部' ? '全部项目资料' : selectedCategory}}</view><text class="small muted">{{filteredItems.length}} 项</text></view>
+  <view wx:if="{{error}}" class="error">{{error}}<button class="secondary space" bindtap="load">重新加载</button></view>
+  <view wx:if="{{loading}}" class="loading">正在读取项目参考资料…</view>
+  <view wx:for="{{filteredItems}}" wx:key="id" class="card reference-card">
+    <view class="reference-top"><text class="reference-category">{{item.category}}</text><text class="reference-year">{{item.referenceYear}} 资料</text></view>
+    <view class="reference-name" data-id="{{item.id}}" bindtap="toggle">{{item.name}}</view>
+    <view class="reference-price"><text class="currency">¥</text><text>{{item.priceLabel}}</text><text class="price-unit">/ {{item.unit}}</text></view>
+    <view class="reference-source">{{item.sourceLabel}}</view>
+    <view class="reference-actions"><text class="reference-expand" data-id="{{item.id}}" bindtap="toggle">{{expandedId === item.id ? '收起说明 −' : '查看项目说明 ＋'}}</text><button wx:if="{{item.bookingServiceId}}" class="consult-button" data-id="{{item.id}}" bindtap="consult">预约相关咨询 →</button><text wx:else class="small muted">咨询门诊了解安排</text></view>
+    <view wx:if="{{expandedId === item.id}}" class="reference-expanded"><view>{{item.description || '具体项目范围、检查与材料费用，需由门诊面诊后确认。'}}</view><view class="expanded-note">此处为项目资料参考区间。点击预约将进入相关咨询服务，预约金额以该服务与最终确认页为准。</view></view>
+  </view>
+  <view wx:if="{{!loading && !error && !filteredItems.length}}" class="empty">暂无匹配项目。<view class="space">请更换关键词或选择其他类别。</view></view>
+  <view class="footer-note">面诊评估 · 方案沟通 · 明确费用后再决定治疗</view>
+</view>
