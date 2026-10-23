@@ -1,45 +1,84 @@
+name: andrew-booking
+x-api: &api
+  build:
+    context: .
+    dockerfile: deploy/booking/api.Dockerfile
+  init: true
+  environment: &api-env
+    NODE_ENV: production
+    DATABASE_URL: postgresql://${POSTGRES_USER:-andrew}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-andrew_booking}
+    BOOKING_HOST: 0.0.0.0
+    BOOKING_PORT: "3310"
+    ALLOW_DEMO_LOGIN: "false"
+    CORS_ORIGINS: ${CORS_ORIGINS:-http://127.0.0.1:8080}
+    HOLD_SECONDS: ${HOLD_SECONDS:-300}
+    CANCELLATION_NOTICE_MINUTES: ${CANCELLATION_NOTICE_MINUTES:-120}
+    TRANSFER_BUFFER_MINUTES: ${TRANSFER_BUFFER_MINUTES:-30}
 services:
-  app:
-    build: .
+  postgres:
+    image: postgres:17.10-bookworm
     restart: unless-stopped
-    init: true
     environment:
-      NODE_ENV: production
-      DENTAL_SEED_DEMO: "0"
-      DENTAL_DB_PATH: /var/lib/dental/dental.sqlite
-      HOST: 0.0.0.0
-      PORT: "3210"
-      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:?Set PUBLIC_ORIGIN to your HTTPS origin}
-      COOKIE_SECURE: "1"
-    ports:
-      - "127.0.0.1:3210:3210"
+      POSTGRES_USER: ${POSTGRES_USER:-andrew}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-andrew_booking}
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256 --auth-local=scram-sha-256
     volumes:
-      - dental-data:/var/lib/dental
-      - dental-backups:/var/backups/dental
-    stop_grace_period: 30s
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "5"
-  backup:
-    build: .
-    restart: unless-stopped
-    init: true
-    command: ["node", "tools/backup-daemon.mjs"]
-    environment:
-      DENTAL_DB_PATH: /var/lib/dental/dental.sqlite
-      DENTAL_BACKUP_DIR: /var/backups/dental
-      DENTAL_BACKUP_INTERVAL_HOURS: "6"
-      DENTAL_BACKUP_KEEP: "28"
-    volumes:
-      - dental-data:/var/lib/dental
-      - dental-backups:/var/backups/dental
+      - booking-postgres:/var/lib/postgresql/data
     healthcheck:
-      disable: true
+      test: [CMD-SHELL, "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  migrate:
+    <<: *api
+    command: [node, booking-api/dist/booking-api/src/cli.js, migrate]
     depends_on:
-      app:
+      postgres:
         condition: service_healthy
+  api:
+    <<: *api
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3310/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  web:
+    build:
+      context: .
+      dockerfile: deploy/booking/web.Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${ADMIN_PORT:-8080}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+  seed:
+    <<: *api
+    profiles: [demo]
+    command: [node, booking-api/dist/booking-api/src/cli.js, seed]
+    environment:
+      <<: *api-env
+      NODE_ENV: development
+      SEED_PASSWORD: ${SEED_PASSWORD:-}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+  https:
+    image: nginx:1.28-alpine
+    profiles: [https]
+    restart: unless-stopped
+    environment:
+      SERVER_NAME: ${SERVER_NAME:-localhost}
+      NGINX_ENVSUBST_FILTER: SERVER_NAME
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./deploy/booking/nginx.https.conf:/etc/nginx/templates/default.conf.template:ro
+      - ${TLS_CERT_DIR:-./deploy/certs}:/etc/nginx/certs:ro
+    depends_on: [web]
 volumes:
-  dental-data:
-  dental-backups:
+  booking-postgres:

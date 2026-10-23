@@ -1,96 +1,94 @@
-# 安德鲁牙科就诊与运营系统
+# 安德鲁牙科预约系统
 
-当前版本 **3.1.0**。五个独立岗位门户，共享关系型 SQLite 数据库及 Node.js 后端；总部统筹连锁，店长管理机构分配的授权门诊。
+本次交付是 **微信原生小程序 + Vue 3 工作台 + TypeScript/Fastify API + PostgreSQL 17** 的预约闭环。两端使用同一 `/api/v1` 后端和 PostgreSQL，不读取旧 SQLite。
 
-课程设计成果：[1602240215.pdf](docs/design/1602240215.pdf)（2026-10-20 修订版，585 页）。文档围绕牙科连锁业务升级，包含行业调研、业务用例与详细流程、分析与系统设计、数据库模型和实施边界。完整页数、图表与数据库模型统计及 PDF 校验摘要见 [交付清单](docs/design/delivery-manifest.json)。
+设计依据为 [300页设计文档](docs/design/安德鲁牙科系统设计文档.pdf)，SHA-256 `22483aee6c2ca681937bb667868e25c85f97f85dbc8e11f5dd6da3d6ce2ee3eb`。本次实现 UC-01～07 的预约核心，不声称已实现全部24个用例。完整设计目标与本次交付范围见[设计审查](docs/implementation/design-review.md)。
 
-`docs/design/source/` 保留上一版可编辑源材料和图稿，尚未同步到本次 PDF 的内容模型，不能据此重建本修订版。设计文档描述目标方案；应用现状与真实环境验收状态以本仓库代码和对应验收记录为准。
+## 本地运行
 
-- 顾客：`/customer/login`
-- 前台：`/frontdesk/login`
-- 医生：`/doctor/login`
-- 店长：`/manager/login`（授权门诊）
-- 总部：`/hq/login`（全部门诊）
-
-## 本地启动
-
-需要 Node.js **24.15.0** 或经过完整回归的兼容版本。
+需要 Node.js 24、npm 11。先在此仓库执行 `npm ci`。以下终端均在仓库根目录：
 
 ```powershell
-cd andrew-system
-npm ci
-npm run build
-npm start
+# 终端1：独立、持久的真实 PostgreSQL，只监听127.0.0.1:55432
+npm run dev:postgres
 ```
 
-访问 `http://127.0.0.1:3210/customer/login`。默认本机演示首次创建合成患者与五个演示账号 `chen`、`front`、`doctor`、`manager`、`hq`，密码均为 `Dental2026!`。员工入口没有公开注册。已有数据库不会重置；旧版结构自动迁移前会保存完整快照，运行中的旧服务会阻止升级。
+首次运行生成未入库的 `.env.booking`，含随机数据库及演示密码；已有数据与凭据保留。Windows中文路径的原生PG二进制和数据放入ASCII缓存目录，具体位置记录于 `.booking-data/postgres-location.json`。可用环境变量 `ANDREW_PG_HOME` 指定ASCII目录。**保持该终端运行**，Ctrl+C安全停库，重新执行后数据仍在。该工具只供本地开发，不用于公网部署。
 
-正式新库设 `DENTAL_SEED_DEMO=0`，关闭演示数据与演示入口。该开关不会删除已有演示账号，正式数据必须使用独立数据库。首个总部账号通过 `tools/accounts.mjs create-staff owner hq` 初始化；总部登录后创建门诊，再为店长分配明确的门诊范围。
+```powershell
+# 终端2：迁移、合成演示数据和新API
+npm run db:migrate
+npm run db:seed
+npm run dev:api
+```
 
-## 已实现的业务
+```powershell
+# 终端3：员工工作台
+npm run dev:admin
+```
 
-- 患者资料、结构化过敏申报与工作人员核实；身份核验后查询、绑定顾客账号、版本受控归并与历史别名。
-- 排班、预约、改期、取消、到诊、爽约更正；跨门诊牙医冲突与患者时间冲突检查；失败改期回滚。
-- 治疗明细与价格快照、就诊完成冻结、带作者/时间/原因的不可覆盖附记。
-- 费用开单、人工核对收款、欠款余额、原款限额退款、保留原单的冲销、按北京时间核对营业日资金与差额、来源变化失效提示。
-- 成本录入审核、季度报告及基金测算；收入明确采用有效开单口径，另有收款账簿，不将两者混用。
-- 员工创建、归属调整、启停与离职；撤销旧会话、保留有效总部账号、本人改密、机构核验后的限时单次恢复凭证。
+访问 **http://127.0.0.1:5173**。API健康检查：`http://127.0.0.1:3310/api/v1/health`。工作台开发快捷登录选总部、前台、店长或医生；账号由后端动态给出，非前端绕过鉴权。脚本生成的开发配置允许演示登录，生产配置默认关闭且禁止开启。密码登录使用本地 `.env.booking` 中的 `SEED_PASSWORD`，不要公开该值。
 
-现金/银行/POS 均为工作人员核验凭证后的人工记账，代码不执行银行转账或线上支付；恢复凭证由机构核验后交付，未接入短信。尚未提供完整牙位病历、影像、处方、知情同意、医保及正式票据，也未经真实临床或公网容量验收。
+```powershell
+# 微信原生小程序：构建后，微信开发者工具导入 miniprogram 目录
+npm run build -w @andrew/miniprogram
+```
 
-## 代码结构
+AppID/API地址、游客模式、开发合法域名设置、真机局域网连接及正式HTTPS域名见[小程序说明](miniprogram/README.md)。小程序端真实登录由后端处理；没有真实AppID/AppSecret时，使用开发演示账号或密码注册登录，不宣称完成微信授权。
+
+### 演示数据
+
+内置两家合成门诊、两位医生、检查/咨询两类项目、每店两把牙椅，以及从初始化日期后第2天起连续7天的班次。首页当天没有可预约时段属于正常情况，请在日期选择器选择这些未来日期，或由工作台发布新班次。Seed幂等，不覆盖已有库；长期演示可继续发布未来班次。
+
+账号：患者 `patient.a`、`patient.b`；员工 `hq`、`front.a`、`manager.a`、`doctor.a`。这些是合成账号标识，口令从环境配置获得。无账号情况下可在患者端注册完整资料，手机号仅用于联系，不承担患者唯一身份。
+
+## 已实现范围
+
+- 患者后端注册/登录/退出、本人资料、联系方式、三态过敏与逐项明细、版本冲突检查。
+- 门诊、服务、资格、医生、牙椅维护；医生资格有效期、班次开放服务、跨店时间与转场缓冲校验。
+- 后端按门诊/服务/日期/医生计算号源，计入服务时长、缓冲、牙椅停用、正式预约与有效占位。
+- 服务器短时占位、带幂等键的正式确认、本人查询、带原因取消、原子改期与前后记录追溯。
+- 前台核对患者后代约/取消/改期；总部共享资源权限，店长本院管理，医生仅本人班次和预约。
+- SQL事务、固定顺序资源锁、三类时间排斥约束、跨表一致性约束、审计及操作回执。
+- 网络写入结果未知时保留原请求和原键，核对或重试同一操作，不能生成假成功记录。
+
+默认保留300秒、取消/改期提前120分钟、跨店转场30分钟；它们是可配置的演示规则，不是调研得出的统一行业规定。取消规则随预约保存快照。过敏未知不自动拒绝预约，不能被解释为“明确无过敏”。同一账号当前只管理本人，家庭成员共享账号、微信授权、正式通知等未实现。
+
+**本次未迁移**：诊疗病历、支付/退款、发票、药品/耗材库存、日结、跨店财务、季度业绩与基金。旧版这些代码仍属legacy，不是新架构已实现能力。
+
+## 验证
+
+```powershell
+npm run check:booking
+npm run build:booking
+npm run test:booking
+npm run test -w @andrew/admin-web
+npm run test -w @andrew/miniprogram
+npm test
+```
+
+预约集成测试创建独立随机 `andrew_test_*` PostgreSQL数据库，结束只清理自己新建的测试库，绝不清空开发库。需要本地测试服务器创建数据库权限；没有PostgreSQL时明确失败，不回退成Mock。新建开发库、迁移与测试均不接触原SQLite。
+
+[验收记录](docs/implementation/acceptance.md)区分真实PG/API验证、浏览器验证、原生模块HTTP验证，以及尚需人工完成的微信开发者工具/真机/Docker/TLS测试。[测试设计](docs/implementation/test-design.md)列出并发、幂等、回滚和权限断言。
+
+## 目录与接口
 
 ```text
-public/app.js                 浏览器入口
-public/js/core/               API、状态、门户、格式、事件
-public/js/components/         外壳、表单、弹窗、分页
-public/js/pages/              患者、预约、诊疗、结算、财务、账号等页面
-public/css/                   九个可维护样式源文件
-public/styles.css             构建生成的CSS，修改源文件后重新构建
-server/index.js               HTTP入口与路由
-server/http/                  会话、限流、请求幂等、部署配置校验
-server/policies/              五岗位权限
-server/services/              独立业务服务与按页查询
-server/repositories/          明确字段映射、批量关联、条件查询
-server/migrations/            带版本及checksum的事务迁移
-server/schema.sql             初始关系型结构，不可修改已应用迁移
-server/data/                  默认数据库及升级快照，Git忽略
+miniprogram/           微信原生TS/WXML/WXSS（导入本目录，构建到dist）
+admin-web/             Vue3 + Router + Pinia + Vite + Element Plus
+booking-api/src/       DTO验证、路由、Service、Repository与事务
+shared/src/index.ts   两端和API共享的传输类型
+database/migrations/   版本化PostgreSQL迁移（带checksum，已应用文件不可改）
+scripts/               本地PG工具与可复现验证
+deploy/booking/        API/Web镜像、Nginx HTTP/HTTPS
+docs/implementation/   审查、API、架构、运行和验收记录
+server/ public/ test/  原SQLite/Web实现与回归参照，完整保留
 ```
 
-当前38张表。十二类核心业务对象采用明确类型列，过敏、资格、治疗行、结算行、报告行等采用关系子表。`users.data` 保留身份对象兼容格式，同时以同步列和索引提供查询；审计及请求重放结果使用JSON快照。
+新入口放在 `booking-api`，以免迁移前移动或覆盖 `server`。新架构只运行PostgreSQL，两套数据库之间不做双写，也不默认迁移业务数据。详见[API契约](docs/implementation/api.md)、[架构与迁移边界](docs/implementation/architecture.md)。
 
-日常前端使用 `/api/workspace` 按页面、筛选及分页读取，主区更新保留导航外壳。`/api/state` 保留给兼容验证；不用于日常整包刷新。写入检查权限、范围与版本，并支持同一逻辑操作幂等重放。
+## Docker、HTTPS与Linux迁移
 
-## 验证与维护
+见[部署步骤](docs/implementation/deployment.md)。默认 `compose.yaml` 现指向新PostgreSQL/API/Web，数据库没有宿主端口映射。生产不自动Seed，不自动开启测试登录。旧Compose备份在 `deploy/legacy/compose.yaml`，旧运行说明在[legacy README](docs/legacy/README-3.1.md)；旧代码仍可用 `npm start` 在3210端口运行，但与新客户端无业务连接。
 
-```powershell
-npm run check
-npm test
-npm run test:maintenance
-npm run test:browser
-npm run test:load
-npm run release:manifest
-```
-
-首次使用自动浏览器测试可运行 `npx playwright install chromium`。Windows已有Edge时可设置 `$env:DENTAL_BROWSER_CHANNEL='msedge'`。浏览器测试使用独立临时数据库和3227端口，结束后清理临时库；容量测试使用内存合成数据。
-
-```powershell
-node tools/database.mjs backup
-node tools/database.mjs restore <快照路径> --offline
-```
-
-恢复必须停服，先检查完整结构与外键，再在临时副本上迁移，成功后替换；保留旧库并撤销会话和恢复凭证。完整恢复使用SQLite快照；网页业务JSON导出包含财务和附记等业务资料，不含账号口令及恢复凭证，不是灾备恢复文件。
-
-员工初始化、改密码时用临时环境变量传入密码，完成后删除环境变量，不提交到Git。CLI不会自动填充演示数据。
-
-## 文档与发布
-
-- [架构说明](ARCHITECTURE.md)
-- [接口约定](API-CONTRACT.md)
-- [部署和恢复](DEPLOYMENT.md)
-- [本轮验收](REFACTOR-ACCEPTANCE.md)
-- [课程设计 PDF](docs/design/1602240215.pdf)
-
-`npm run build:docs` 生成仓库内 `docs/site/index.html`，通过 `/docs/index.html` 访问，不依赖课程根目录的旧项目或PDF文件。Docker、Compose、反向代理示例及GitHub Actions均位于本目录。可以将本目录作为独立仓库根目录，不包含工作区旧Clearbrook项目。
-
-`RELEASE-MANIFEST.json` 是当前源码发布哈希清单；较早 `SHA256.json` 仅保留在本地，`ACCEPTANCE` 和设计自查文件按原日期保留为历史证据，不代表当前版本。数据库、快照、环境秘密、依赖目录和测试产物均排除发布。
+首次部署生产空库可用环境变量 `ADMIN_USERNAME`、`ADMIN_PASSWORD` 运行后端 `cli.js create-admin` 初始化总部账号；不存在公开员工注册接口。不要使用合成演示库承载实际患者数据。

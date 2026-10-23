@@ -11,3 +11,10 @@ playwright-report
 *.sqlite*
 *.log
 server/domain.original.txt
+.booking-data
+booking-api/dist
+admin-web/dist
+miniprogram/dist
+deploy/certs
+docs/design
+docs/legacy

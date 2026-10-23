@@ -1,0 +1,16 @@
+import { spawnSync } from 'node:child_process';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { artifactHash } from './artifact-hash.mjs';
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const startedAt = new Date().toISOString();
+const result = spawnSync(process.execPath, ['--test', '--test-reporter=tap', 'scripts/client.test.mjs'], { cwd: root, encoding: 'utf8' });
+const output = result.stdout + result.stderr;
+const count = name => Number(output.match(new RegExp('# ' + name + ' (\\d+)'))?.[1] ?? 0);
+const report = { status: result.status === 0 ? 'passed' : 'failed', startedAt, finishedAt: new Date().toISOString(), command: 'node --test --test-reporter=tap scripts/client.test.mjs', runtime: process.version, execution: 'Compiled native modules and simulated wx API; no WeChat UI rendering or real device', tests: count('tests'), passed: count('pass'), failed: count('fail'), skipped: count('skipped'), exitCode: result.status, artifactSha256: artifactHash(resolve(root, 'dist')) };
+mkdirSync(resolve(root, 'qa'), { recursive: true });
+writeFileSync(resolve(root, 'qa/client-unit.tap'), output);
+writeFileSync(resolve(root, 'qa/client-unit.json'), JSON.stringify(report, null, 2) + '\n');
+if (result.status !== 0) process.stderr.write(output);
+console.log(JSON.stringify(report, null, 2)); process.exitCode = result.status ?? 1;

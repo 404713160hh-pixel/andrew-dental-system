@@ -1,0 +1,1 @@
+.login-intro{padding:32rpx 8rpx 38rpx}.login-tabs{display:flex;gap:36rpx;border-bottom:1rpx solid #edf1f3}.login-tabs view{padding:8rpx 0 20rpx;color:#8a9ba6}.login-tabs .active{color:#087d87;font-weight:700;border-bottom:5rpx solid #0b858d}

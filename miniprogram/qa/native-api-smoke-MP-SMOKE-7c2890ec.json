@@ -1,0 +1,97 @@
+{
+  "namespace": "MP-SMOKE-7c2890ec",
+  "startedAt": "2026-10-22T18:14:03.989Z",
+  "api": "http://127.0.0.1:3310/api/v1",
+  "execution": "Generated native CommonJS modules with wx.request-to-fetch adapter and real HTTP/PostgreSQL backend; no WeChat tool or device execution",
+  "checks": [
+    {
+      "label": "real backend reports PostgreSQL",
+      "status": "passed"
+    },
+    {
+      "label": "different patients may share phone without sharing identity",
+      "status": "passed"
+    },
+    {
+      "label": "unknown allergy differs from declared none",
+      "status": "passed"
+    },
+    {
+      "label": "GET me matches current patient only",
+      "status": "passed"
+    },
+    {
+      "label": "staff published shift is queryable through native client",
+      "status": "passed"
+    },
+    {
+      "label": "two patients race for same doctor/chair: exactly one hold succeeds",
+      "status": "passed"
+    },
+    {
+      "label": "response loss after real commit persists original command key",
+      "status": "passed"
+    },
+    {
+      "label": "native client relaunch restores pending key from owned storage",
+      "status": "passed"
+    },
+    {
+      "label": "same-key recovery returns original committed appointment",
+      "status": "passed"
+    },
+    {
+      "label": "duplicate replay creates exactly one appointment",
+      "status": "passed"
+    },
+    {
+      "label": "staff workbench API sees same appointment",
+      "status": "passed"
+    },
+    {
+      "label": "another patient cannot read appointment detail",
+      "status": "passed"
+    },
+    {
+      "label": "cancel stores original record as cancelled",
+      "status": "passed"
+    },
+    {
+      "label": "cancel releases original slot",
+      "status": "passed"
+    },
+    {
+      "label": "failed reschedule preserves original confirmed appointment",
+      "status": "passed"
+    },
+    {
+      "label": "successful reschedule preserves traceable old/new linkage",
+      "status": "passed"
+    }
+  ],
+  "resources": [
+    {
+      "clinicId": "9463548b-cea0-4d7a-bfe9-c8c34b2af433",
+      "doctorId": "d2fb4ce0-8784-45f0-9f3c-03db6f577543",
+      "serviceId": "37da6297-b3e6-478c-aed0-70dd4b53e742",
+      "chairId": "cdd79710-9721-454e-a828-1588b2e5998d",
+      "qualificationId": "78967987-ab54-4861-b754-62c730197e92",
+      "shiftId": "29e70384-c663-4fa1-8906-e19a94bc3c8a"
+    }
+  ],
+  "appointmentIds": [
+    "d5536a0f-fd6c-4a10-b8a6-20ec44d7e973",
+    "01fbbdac-1c7c-4c55-b80f-17bdb4944554",
+    "b1069747-167d-4244-9b49-f979cc4b667b"
+  ],
+  "status": "passed",
+  "cleanup": [
+    "合成班次已撤销",
+    "chairs已停用",
+    "services已停用",
+    "doctors已停用",
+    "clinics已停用",
+    "qualifications已停用"
+  ],
+  "finishedAt": "2026-10-22T18:14:04.490Z"
+}

@@ -1,0 +1,1 @@
+.profile-hero{display:flex;align-items:center;gap:25rpx;padding:18rpx 0 32rpx}.profile-hero .title{font-size:36rpx;margin:0 0 8rpx}.avatar{width:100rpx;height:100rpx;background:linear-gradient(140deg,#d4eee9,#e6f1fb);border-radius:32rpx;color:#1e8b85;font-size:64rpx;text-align:center;line-height:100rpx;flex-shrink:0}
