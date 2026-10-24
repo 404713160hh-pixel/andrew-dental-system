@@ -1,6 +1,6 @@
 # 课程演示的下一步
 
-先完成微信开发者工具中的本地验收，再连接手机和部署环境。当前工程是微信原生 TypeScript 小程序，共享 PostgreSQL/API；微信授权、真机和正式发布需分别验收。
+微信开发者工具与网站的本地预约闭环已实测，当前结果见 `qa/cross-client.json`。下一步连接手机和部署环境；微信授权、真机和正式发布需分别验收。
 
 ## 1. 本地服务和数据准备
 
@@ -37,19 +37,20 @@ Invoke-RestMethod http://127.0.0.1:3310/api/v1/health
 npm run typecheck -w @andrew/miniprogram
 npm run build -w @andrew/miniprogram
 npm run test -w @andrew/miniprogram
+npm run sync:wechat
 ```
 
-1. 在微信开发者工具选择“导入项目”，目录选择仓库的 **`miniprogram` 文件夹**。`project.config.json` 会将 `dist/` 作为小程序根目录。
-2. 当前使用 `touristappid`。游客模式能力有限；工具要求 AppID 或需要预览时，使用自己的测试/正式小程序 AppID。
+1. 本机使用已打开的 **`D:\AndrewDentalMiniProgram`**，同步脚本先备份源码、产物与配置，再同步源码和产物，保留 AppID 和工具配置；依赖安装与构建从仓库根执行。其他电脑可以导入仓库 **`miniprogram` 文件夹**，`miniprogramRoot` 为 `dist/`。
+2. 当前沿用原工程的 AppID；其他开发者须使用自己有权限的测试/正式小程序 AppID。
 3. 在“详情→本地设置”确认开发环境的域名、TLS、HTTPS 证书校验开关。当前本地项目 `urlCheck:false`，只适用于调试。
 4. 模拟器 API 配置在 `miniprogram/src/config.ts`，本地地址为 `http://127.0.0.1:3310/api/v1`。改地址后重新 build，再点击工具“编译”。
 5. 观察工具 Console/Network：门诊、虚构医生、参考价格和号源应来自真实 API。先检查后端连接，再处理白屏或页面错误。
 
 `watch` 只监听 TypeScript；WXML、WXSS、JSON 或共享类型改变后执行完整 build。`npm start` 是旧版 SQLite 入口，本轮使用 `npm run dev:api`。
 
-本机已安装微信开发者工具 **2.02.2609231**，命令行入口为 `C:\Program Files (x86)\Tencent\微信web开发者工具\cli.bat`。实际尝试 `auto` 后提示“工具服务端口已关闭”，因此尚未完成原生编译或渲染验证；命令退出码为 0 也不能视为初始化成功，诊断记录见 `qa/wechat-devtools.json`。
+本机微信开发者工具为 **2.02.2609231 RC**，服务端口已按用户要求开启。官方 CLI 对 D 盘工程执行 `auto` 后，官方 SDK 驱动真实微信模拟器与 Chrome 员工网站完成发布、预约、改期、取消，并用同一 PostgreSQL 核对记录，证据见 `qa/cross-client.json`。
 
-**手动导入和本地操作可以先做，不依赖 CLI 服务端口。** 若需要自动联调，请在开发者工具“设置→安全设置”开启“服务端口”，再运行本地自动化。此次没有执行 preview 或 upload。
+复测时先构建、同步，再通过官方 CLI 打开 D 盘工程的自动化端口。保持 API3310、Vue5173和 PostgreSQL55432运行后，设置 `$env:CROSS_CLIENT_ALLOW_FIXTURES='1'`，执行 `node scripts/booking-cross-client.mjs`。该脚本只允许本地开发库，建立独立合成资源并精确收尾。此次没有执行 preview、upload 或发布。
 
 ## 3. 价格与虚构人物的呈现边界
 
@@ -84,4 +85,4 @@ npm run test -w @andrew/miniprogram
 
 部署时采用目标服务器的 PostgreSQL、API、Nginx、持久卷和环境变量；先备份，再迁移。配置有效 HTTPS 证书、域名及微信 request 合法域名，恢复域名/证书校验并重建小程序。正式环境默认关闭演示登录，不把虚构演示患者作为真实业务患者，也不把课程参考价格直接当作正式收费表。是否接入微信授权、通知及其他外部能力，按真实凭据和联调结果分别记录。
 
-当前 CLI 诊断未完成原生编译或渲染，真机、正式域名和微信授权也需单独验收；完成上述步骤后再补记录。
+微信模拟器闭环通过不代表手机、公网域名或微信授权已经通过；这些结果完成后分别补充记录。

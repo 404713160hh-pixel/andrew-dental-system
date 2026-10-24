@@ -33,13 +33,13 @@ Page({
   book() { wx.navigateTo({ url: '/pages/booking/index' }); },
   async inspect() {
     if (this.data.busy) return; this.setData({ busy: true, error: '' });
-    try { const result = await inspectCommand(); if (result) { wx.navigateTo({ url: '/pages/detail/index?id=' + encodeURIComponent(result.id) + '&success=1' }); await this.load(true); } else this.setData({ error: '暂未查到已完成结果。原请求已保留，请稍后核对或重试原操作。' }); }
+    try { const result = await inspectCommand(); if (result) { wx.navigateTo({ url: '/pages/detail/index?id=' + encodeURIComponent(result.id) }); await this.load(true); } else this.setData({ error: '暂未查到已完成结果。原请求已保留，请稍后核对或重试原操作。' }); }
     catch (error) { this.setData({ error: errorMessage(error) }); } finally { this.setData({ busy: false, pending: Boolean(pendingCommand()) }); }
   },
   async retry() {
     const command = pendingCommand(); if (!command || this.data.busy) return;
     this.setData({ busy: true, error: '' });
-    try { const result = await sendCommand(command); wx.navigateTo({ url: '/pages/detail/index?id=' + encodeURIComponent(result.id) + '&success=1' }); await this.load(true); }
+    try { const result = await sendCommand(command); wx.navigateTo({ url: '/pages/detail/index?id=' + encodeURIComponent(result.id) }); await this.load(true); }
     catch (error) { this.setData({ error: errorMessage(error) }); } finally { this.setData({ busy: false, pending: Boolean(pendingCommand()) }); }
   }
 });

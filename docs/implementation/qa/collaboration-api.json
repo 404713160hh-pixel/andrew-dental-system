@@ -1,0 +1,127 @@
+{
+  "status": "passed",
+  "startedAt": "2026-10-24T03:59:01.8959400Z",
+  "finishedAt": "2026-10-24T03:59:11.4417887Z",
+  "timezone": "Asia/Shanghai",
+  "command": "node --import tsx --test --test-reporter=tap --test-concurrency=1 booking-api/test/booking.integration.test.ts booking-api/test/demo.integration.test.ts",
+  "runtime": {
+    "node": "v24.15.0",
+    "platform": "win32"
+  },
+  "execution": "Real PostgreSQL integration through Fastify.inject; newly created random isolated databases; no mock database or developer database mutation",
+  "results": {
+    "tests": 45,
+    "pass": 45,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "exitCode": 0,
+  "sourceUnchangedDuringRun": true,
+  "sourceFiles": [
+    {
+      "path": "booking-api/src/app.ts",
+      "sha256": "f12a15c60ddac0eeb0a3051e755904c405a3e234167c2af50e284e7c0bd4dc3d"
+    },
+    {
+      "path": "booking-api/src/auth.ts",
+      "sha256": "afc6c4bfb78c42500d1d0d7f3c238fc2add6b17a68377c62efaa9549383c163f"
+    },
+    {
+      "path": "booking-api/src/cli.ts",
+      "sha256": "db7a5bcae97242d598896abf120173171a2606d6f5971a817d39579cc37af3c9"
+    },
+    {
+      "path": "booking-api/src/config.ts",
+      "sha256": "81ac990f0135aa52ece121bcd2e1653c0ddb0ce260c534c3fe930559e146baf3"
+    },
+    {
+      "path": "booking-api/src/db.ts",
+      "sha256": "3369ce03d72e5f833b5d519240490a983b5e530f53dd7219f7970a5bc2da605c"
+    },
+    {
+      "path": "booking-api/src/demo-reference-data.ts",
+      "sha256": "807f6c24f07960b476381dde44b66db9798a1dd71ae4decd0cf2683bd47b27c0"
+    },
+    {
+      "path": "booking-api/src/demo.ts",
+      "sha256": "31e8296a7d9bed6b88f4456e9d6927b72e8f43c0c57dc2d598beaf8914562480"
+    },
+    {
+      "path": "booking-api/src/errors.ts",
+      "sha256": "435cea65068f89a1cae422f0c7a5f6625deaf6577a2773210887d058a6a94868"
+    },
+    {
+      "path": "booking-api/src/main.ts",
+      "sha256": "4321223139a8acbdf4dcd9a45e73f89d0fe5f7c3e41e29060f5ea93b1c159e2f"
+    },
+    {
+      "path": "booking-api/src/paths.ts",
+      "sha256": "76496913f10fca5db8e6157199a74291b697f4b420bddb296b2a212d9d3e9b8e"
+    },
+    {
+      "path": "booking-api/src/repositories/booking.ts",
+      "sha256": "35c6bca979f4e275f0b4957cca5da471daa35b26c725bc5104cda21d42eecc2b"
+    },
+    {
+      "path": "booking-api/src/repositories/catalog.ts",
+      "sha256": "5021054798560a0e5cc0b08db5d75bf1b741331b72fa1e45fbb85bf40b3f21db"
+    },
+    {
+      "path": "booking-api/src/seed.ts",
+      "sha256": "1d544af7e3bc4c051264a5eefb33b14f24414bac387bfa6d85742c90be361a0a"
+    },
+    {
+      "path": "booking-api/src/services/booking.ts",
+      "sha256": "30a5078dd06205d171ec8eebaf53e9903860f9443eec544a50e468feba4e379a"
+    },
+    {
+      "path": "booking-api/src/services/resources.ts",
+      "sha256": "932c1a1995868ed428b85419477d6ed22371e35984b5af33a1dc7913b870c919"
+    },
+    {
+      "path": "booking-api/src/validation.ts",
+      "sha256": "d7233f78e108199b21b5d14e41ee83d709a3c78c6c0079e439de5bb08bc625b1"
+    },
+    {
+      "path": "booking-api/test/booking.integration.test.ts",
+      "sha256": "a78b948826584bba54205971903b8efc8ecec5238673c51ca4ad3d067da40b13"
+    },
+    {
+      "path": "booking-api/test/demo.integration.test.ts",
+      "sha256": "08f389e61ed4625e8c4d6dec470c426101e1b2f3de3ef3a2cf63ac7bd0226662"
+    },
+    {
+      "path": "database/migrations/001_booking_core.sql",
+      "sha256": "5122dd7f9b7ee702ba977e9b67fe64c147efde68717f93de177f23abe4af359e"
+    },
+    {
+      "path": "database/migrations/002_policy_snapshots.sql",
+      "sha256": "e65bf4e91073094aa6123fe47d89eb52013dd3b7d54e9b341909746b0aa32e9b"
+    },
+    {
+      "path": "database/migrations/003_demo_profiles_and_treatment_references.sql",
+      "sha256": "402f816e59f5bb6a2a1c84b4ee843a4e3db98a3838838e56bc803d7d3a7bd29e"
+    },
+    {
+      "path": "shared/src/index.ts",
+      "sha256": "315fc178fbbb7f941fa4353290344d1f1f3f53a0053a24c1be9e3f17db7430ea"
+    }
+  ],
+  "isolation": {
+    "databaseNamePattern": "andrew_test_<20 hex digits>",
+    "newRandomDatabasesOnly": true,
+    "developerDatabaseModified": false
+  },
+  "coverage": {
+    "bookingRegression": 32,
+    "demoCatalogAndProfiles": 13,
+    "newDoctorScopeTests": 2
+  },
+  "evidence": "collaboration-api.tap",
+  "tapSha256": "30d953b25dc751dd3d35f80e6d6d6220451a141a209b2c19b31759df5bfddbad",
+  "limitations": [
+    "No browser or native WeChat UI execution in this command."
+  ]
+}

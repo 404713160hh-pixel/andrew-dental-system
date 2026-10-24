@@ -219,3 +219,266 @@ test('booking deep links select the offering clinic and doctor; unavailable choi
   assert.equal(r.requests.length, after); assert.match(page.data.error, /所选医生/);
   page.doctorChange({ detail: { value: '0' } }); await page.search(); assert.ok(r.requests.length > after); assert.equal(new URL(r.requests.at(-1).url).searchParams.has('doctorId'), false);
 });
+
+function bookingAvailabilityFixture(r) {
+  r.load('utils/session').setSession(login('availability-patient'));
+  r.load('pages/booking/index');
+  const options = r.pages.at(-1);
+  const page = { ...options, data: structuredClone(options.data), setData(update) { Object.assign(this.data, update); } };
+  const slot = {
+    clinicId: 'clinic-old', clinicName: '原门诊', serviceId: 'service-old', serviceName: '原咨询',
+    doctorId: 'doctor-old', doctorName: '原医生', chairId: 'chair-old', shiftId: 'shift-old',
+    startsAt: '2099-01-02T01:00:00Z', endsAt: '2099-01-02T01:30:00Z', occupiedUntil: '2099-01-02T01:40:00Z',
+    durationMinutes: 30, bufferMinutes: 10, priceCents: 6000, doctorIsDemo: false,
+    key: '0', startLabel: '09:00', endLabel: '09:30', priceLabel: '60.00',
+  };
+  const oldService = { id: 'service-old', name: '原咨询', clinicIds: ['clinic-old'], priceCents: 6000 };
+  const newService = { id: 'service-new', name: '新咨询', clinicIds: ['clinic-new', 'clinic-old'], priceCents: 8000 };
+  Object.assign(page.data, {
+    clinics: [{ id: 'clinic-old', name: '原门诊' }, { id: 'clinic-new', name: '新门诊' }],
+    services: [oldService, newService], clinicIndex: 0, serviceIndex: 0,
+    doctors: [{ id: 'doctor-old', name: '原医生', qualifications: [], serviceIds: ['service-old'] }],
+    doctorNames: ['不限医生', '原医生'], doctorIndex: 1, slots: [slot], queried: true,
+  });
+  const patient = {
+    id: 'patient-availability-patient', name: '本人患者', birthDate: '2000-01-01', phone: '00000000001',
+    email: null, billingAddress: '合成地址', emergencyName: '合成联系人', emergencyPhone: '00000000002',
+    allergyStatus: 'unknown', allergies: [], rowVersion: 1,
+  };
+  const reply = (request, data) => request.success({ statusCode: 200, data: { data, requestId: 'availability-test' } });
+  const replyToBooking = request => {
+    const path = new URL(request.url).pathname;
+    if (path.endsWith('/patients/me')) reply(request, patient);
+    else if (path.endsWith('/booking-holds')) reply(request, { id: 'hold-new', expiresAt: '2099-01-02T00:00:00Z', rowVersion: 1, slot: { ...slot, ...request.data }, policy: {} });
+    else throw new Error('Unexpected request: ' + request.url);
+  };
+  return { page, slot, oldService, newService, reply, replyToBooking };
+}
+
+test('changing clinic removes old selectable candidates during a slow request and after failure; recovery can book only the new clinic', async () => {
+  const r = runtime();
+  const { page, slot, newService, reply, replyToBooking } = bookingAvailabilityFixture(r);
+  let delayed;
+  r.respond(request => {
+    if (new URL(request.url).pathname.endsWith('/services')) delayed = request;
+    else replyToBooking(request);
+  });
+  const switching = page.clinicChange({ detail: { value: '1' } });
+  assert.equal(new URL(delayed.url).searchParams.get('clinicId'), 'clinic-new');
+  await page.choose({ currentTarget: { dataset: { index: 0 } } });
+  assert.equal(r.requests.filter(request => request.method === 'POST').length, 0, 'A click while the new clinic catalog is pending must not reserve the old clinic');
+  assert.equal(r.navigations.length, 0);
+  assert.equal(page.data.slots.length, 0); assert.equal(page.data.queried, false);
+  assert.equal(page.data.services.length, 0); assert.equal(page.data.doctors.length, 0);
+  delayed.fail({ errMsg: 'request:fail timed out' });
+  await switching;
+  assert.equal(page.data.loading, false); assert.match(page.data.error, /网络|连接/);
+  await page.choose({ currentTarget: { dataset: { index: 0 } } });
+  assert.equal(r.requests.filter(request => request.method === 'POST').length, 0, 'A failed clinic request must not resurrect the previous candidates');
+  assert.equal(page.data.slots.length, 0); assert.equal(page.data.services.length, 0);
+
+  const newSlot = { ...slot, clinicId: 'clinic-new', clinicName: '新门诊', serviceId: 'service-new', serviceName: '新咨询', doctorId: 'doctor-new' };
+  r.respond(request => {
+    const path = new URL(request.url).pathname;
+    if (path.endsWith('/services')) reply(request, [newService]);
+    else if (path.endsWith('/doctors')) reply(request, [{ id: 'doctor-new', name: '新医生', specialty: '咨询', qualifications: [], serviceIds: ['service-new'] }]);
+    else if (path.endsWith('/booking-slots')) reply(request, [newSlot]);
+    else replyToBooking(request);
+  });
+  await page.clinicChange({ detail: { value: '1' } });
+  await page.search();
+  await page.choose({ currentTarget: { dataset: { index: 0 } } });
+  const holds = r.requests.filter(request => request.url.endsWith('/booking-holds'));
+  assert.equal(holds.length, 1);
+  assert.equal(holds[0].data.clinicId, 'clinic-new'); assert.equal(holds[0].data.serviceId, 'service-new');
+  assert.equal(holds[0].data.doctorId, 'doctor-new');
+  assert.equal(r.navigations.at(-1).url, '/pages/confirm/index');
+});
+
+test('changing service invalidates old doctor and time candidates before a delayed or failed doctor lookup', async () => {
+  const r = runtime();
+  const { page, replyToBooking } = bookingAvailabilityFixture(r);
+  page.data.preferredDoctorId = 'doctor-old';
+  let delayed;
+  r.respond(request => {
+    if (new URL(request.url).pathname.endsWith('/doctors')) delayed = request;
+    else replyToBooking(request);
+  });
+  const switching = page.serviceChange({ detail: { value: '1' } });
+  assert.equal(new URL(delayed.url).searchParams.get('serviceId'), 'service-new');
+  await page.choose({ currentTarget: { dataset: { index: 0 } } });
+  assert.equal(r.requests.filter(request => request.method === 'POST').length, 0);
+  assert.equal(page.data.slots.length, 0); assert.equal(page.data.doctors.length, 0); assert.equal(page.data.queried, false);
+  delayed.fail({ errMsg: 'request:fail offline' });
+  await switching;
+  assert.equal(page.data.loading, false); assert.match(page.data.error, /网络|连接/);
+  await page.choose({ currentTarget: { dataset: { index: 0 } } });
+  assert.equal(r.navigations.length, 0); assert.equal(r.requests.filter(request => request.method === 'POST').length, 0);
+  const count = r.requests.length;
+  await page.search();
+  assert.equal(r.requests.length, count, 'A failed lookup must not silently discard the requested doctor');
+  assert.match(page.data.error, /所选医生/);
+});
+
+test('late slot clicks cannot create a hold while loading or searching, but an idle valid candidate still can', async () => {
+  for (const flag of ['loading', 'searching']) {
+    const r = runtime();
+    const { page, replyToBooking } = bookingAvailabilityFixture(r);
+    r.respond(replyToBooking);
+    page.data[flag] = true;
+    // Keep an old rendered node/candidate to exercise the event guard itself,
+    // independently of invalidating the page's candidate array.
+    await page.choose({ currentTarget: { dataset: { index: 0 } } });
+    assert.equal(r.requests.length, 0, flag + ' must block even a late event from an old slot node');
+    assert.equal(r.navigations.length, 0);
+    page.data[flag] = false;
+    await page.choose({ currentTarget: { dataset: { index: 0 } } });
+    assert.equal(r.requests.filter(request => request.url.endsWith('/booking-holds')).length, 1);
+    assert.equal(r.navigations.at(-1).url, '/pages/confirm/index');
+  }
+});
+
+function resultFixture(overrides = {}) {
+  return {
+    id: 'confirmed-feedback', appointmentNo: 'FB-2026-0001', patientId: 'patient-one', patientName: '反馈测试患者',
+    clinicId: 'clinic-feedback', clinicName: '反馈测试门诊', clinicAddress: '合成地址', doctorId: 'doctor-feedback',
+    doctorName: '反馈测试医生', serviceId: 'service-feedback', serviceName: '初诊咨询', chairId: 'chair-feedback',
+    startsAt: '2099-01-02T01:00:00Z', endsAt: '2099-01-02T01:30:00Z', occupiedUntil: '2099-01-02T01:40:00Z',
+    status: 'confirmed', attendance: 'not_recorded', rowVersion: 1, supersedesAppointmentId: null,
+    replacementAppointmentId: null, cancellationReason: null, createdAt: '2026-01-01T00:00:00Z',
+    policy: { holdSeconds: 180, cancellationNoticeMinutes: 120, transferBufferMinutes: 30, slotStepMinutes: 15, timezone: 'Asia/Shanghai' },
+    events: [], ...overrides,
+  };
+}
+function detailPage(r, id, query = {}) {
+  r.load('pages/detail/index');
+  const options = r.pages.find(page => typeof page.showCompleted === 'function');
+  const page = { ...options, data: structuredClone(options.data), setData(update) { Object.assign(this.data, update); } };
+  const load = page.load;
+  page.load = function () { this.lastLoad = load.call(this); return this.lastLoad; };
+  page.onLoad({ id, ...query });
+  return page;
+}
+async function submitFeedbackFixture(r, appointment, reschedule = false) {
+  const booking = r.load('utils/booking');
+  const hold = { id: 'feedback-hold', rowVersion: 1, expiresAt: '2099-01-01T00:00:00Z', policy: appointment.policy, slot: {
+    ...appointment, shiftId: 'shift-feedback', priceCents: 6000, durationMinutes: 30, bufferMinutes: 10,
+  } };
+  booking.saveHold({ hold, ...(reschedule ? { oldAppointmentId: 'before-feedback', oldVersion: 1 } : {}) });
+  r.load('pages/confirm/index');
+  const options = r.pages.find(page => typeof page.loadPatient === 'function');
+  const page = { ...options, data: structuredClone(options.data), setData(update) { Object.assign(this.data, update); } };
+  Object.assign(page.data, { ownerId: 'one', patientConfirmed: true, rulesAccepted: true, reason: reschedule ? '需要调整就诊时间' : '', patient: {
+    id: 'patient-one', rowVersion: 1, name: '反馈测试患者', birthDate: '2000-01-01', phone: '00000000001', email: null,
+    billingAddress: '合成地址', emergencyName: '合成联系人', emergencyPhone: '00000000002', allergyStatus: 'unknown', allergies: [],
+  } });
+  r.respond(request => {
+    assert.equal(request.method, 'POST');
+    assert.equal(new URL(request.url).pathname.endsWith(reschedule ? '/before-feedback/changes' : '/appointments/confirm'), true);
+    request.success({ statusCode: 200, data: { data: appointment, requestId: 'feedback-result' } });
+  });
+  await page.submit();
+  assert.equal(page.data.error, '');
+  return booking;
+}
+
+test('confirmed command remains visibly successful when the subsequent detail GET fails; URL flags and reopening cannot forge success', async () => {
+  const r = runtime(), auth = r.load('utils/session'); auth.setSession(login('one'));
+  const result = resultFixture();
+  await submitFeedbackFixture(r, result);
+  const destination = new URL(r.navigations.at(-1).url, 'https://test.invalid');
+  assert.equal(destination.searchParams.get('id'), result.id);
+  assert.equal(destination.searchParams.has('success'), false);
+  r.respond(request => request.fail({ errMsg: 'request:fail after committed confirmation' }));
+  const page = detailPage(r, result.id); page.onShow(); await page.lastLoad;
+  assert.equal(page.data.success, true); assert.equal(page.data.successTitle, '预约已确认');
+  assert.equal(page.data.appointment.appointmentNo, result.appointmentNo);
+  assert.equal(page.data.appointment.status, 'confirmed'); assert.match(page.data.error, /连接|网络/);
+  assert.equal(page.data.changeAllowed, false, 'A saved snapshot must not enable changes before the latest detail can be read');
+  const before = r.requests.length; page.reschedule(); await page.cancel();
+  assert.equal(r.requests.length, before); assert.equal(r.navigations.length, 1);
+  r.success({ ...result, rowVersion: 2 }); await page.load();
+  assert.equal(page.data.error, ''); assert.equal(page.data.appointment.rowVersion, 2); assert.equal(page.data.changeAllowed, true);
+  const reopened = detailPage(r, result.id, { success: '1' }); reopened.onShow(); await reopened.lastLoad;
+  assert.equal(reopened.data.appointment.status, 'confirmed'); assert.equal(reopened.data.success, false);
+  assert.equal(reopened.data.successTitle, '');
+});
+
+test('reschedule command shows the new confirmed arrangement and an explicit reschedule result while detail is offline', async () => {
+  const r = runtime(); r.load('utils/session').setSession(login('one'));
+  const result = resultFixture({ id: 'replacement-feedback', supersedesAppointmentId: 'before-feedback', startsAt: '2099-01-02T03:00:00Z', endsAt: '2099-01-02T03:30:00Z' });
+  await submitFeedbackFixture(r, result, true);
+  assert.equal(r.requests[0].data.intent, 'reschedule');
+  r.respond(request => request.fail({ errMsg: 'request:fail after committed reschedule' }));
+  const page = detailPage(r, result.id); page.onShow(); await page.lastLoad;
+  assert.equal(page.data.successTitle, '预约改期成功'); assert.equal(page.data.success, true);
+  assert.equal(page.data.appointment.id, result.id); assert.equal(page.data.appointment.supersedesAppointmentId, 'before-feedback');
+  assert.equal(page.data.appointment.startsAt, result.startsAt); assert.match(page.data.error, /连接|网络/);
+});
+
+test('cancel command keeps an explicit cancelled result and the API snapshot when detail refresh fails', async () => {
+  const r = runtime(); r.load('utils/session').setSession(login('one'));
+  const original = resultFixture(); r.success(original);
+  const page = detailPage(r, original.id); page.onShow(); await page.lastLoad;
+  assert.equal(page.data.success, false); assert.equal(page.data.changeAllowed, true);
+  page.data.reason = '行程变化需要取消';
+  const cancelled = { ...original, status: 'cancelled', rowVersion: 2, cancellationReason: page.data.reason };
+  r.respond(request => {
+    if (request.method === 'POST') request.success({ statusCode: 200, data: { data: cancelled } });
+    else request.fail({ errMsg: 'request:fail after committed cancellation' });
+  });
+  await page.cancel();
+  assert.equal(page.data.success, true); assert.equal(page.data.successTitle, '预约已取消');
+  assert.equal(page.data.appointment.status, 'cancelled'); assert.equal(page.data.appointment.rowVersion, 2);
+  assert.equal(page.data.appointment.cancellationReason, cancelled.cancellationReason);
+  assert.match(page.data.error, /连接|网络/); assert.equal(page.data.pending, false);
+});
+
+test('uncertain or rejected operations cannot claim success; a completed command lookup can recover a trustworthy result', async () => {
+  const r = runtime(), auth = r.load('utils/session'), booking = r.load('utils/booking'); auth.setSession(login('one'));
+  const command = booking.newCommand('/appointments/confirm', body);
+  await assert.rejects(booking.sendCommand(command), error => error.uncertain);
+  assert.equal(booking.consumeCompletedOperation('confirmed-feedback'), null);
+  const page = detailPage(r, 'confirmed-feedback', { success: '1' }); page.onShow(); await page.lastLoad;
+  assert.equal(page.data.success, false); assert.equal(page.data.appointment, null); assert.equal(page.data.pending, true);
+  const result = resultFixture();
+  r.respond(request => {
+    if (new URL(request.url).pathname.includes('/commands/')) request.success({ statusCode: 200, data: { data: { status: 'completed', result } } });
+    else request.fail({ errMsg: 'request:fail reading latest details' });
+  });
+  await page.inspect();
+  assert.equal(page.data.success, true); assert.equal(page.data.successTitle, '预约已确认');
+  assert.equal(page.data.appointment.id, result.id); assert.equal(page.data.pending, false);
+  const rejected = booking.newCommand('/appointments/confirm', body);
+  r.respond(request => request.success({ statusCode: 409, data: { error: { code: 'HOLD_EXPIRED', message: '占位已到期' } } }));
+  await assert.rejects(booking.sendCommand(rejected), /占位已到期/);
+  assert.equal(booking.consumeCompletedOperation(result.id), null);
+});
+
+test('completion handoff is bound to both account and login session and is not restored after app restart', async () => {
+  for (const change of ['account', 'session', 'restart']) {
+    const r = runtime(), auth = r.load('utils/session'), booking = r.load('utils/booking'); auth.setSession(login('one'));
+    const result = resultFixture(); r.success(result);
+    await booking.sendCommand(booking.newCommand('/appointments/confirm', body));
+    if (change === 'account') auth.setSession(login('two'));
+    if (change === 'session') auth.setSession({ ...login('one'), token: 'a-new-login-session' });
+    const target = change === 'restart' ? runtime() : r;
+    if (change === 'restart') {
+      for (const [key, value] of r.storage) target.storage.set(key, structuredClone(value));
+    }
+    target.respond(request => request.fail({ errMsg: 'request:fail offline' }));
+    const page = detailPage(target, result.id, { success: '1' }); page.onShow(); await page.lastLoad;
+    assert.equal(page.data.success, false, change + ' must not reuse an old completion');
+    assert.equal(page.data.appointment, null, change + ' must not expose the previous API result');
+  }
+});
+
+test('a newer authoritative status replaces an earlier operation success banner', async () => {
+  const r = runtime(), auth = r.load('utils/session'), booking = r.load('utils/booking'); auth.setSession(login('one'));
+  const result = resultFixture(); r.success(result);
+  await booking.sendCommand(booking.newCommand('/appointments/confirm', body));
+  r.success({ ...result, status: 'cancelled', rowVersion: 2, cancellationReason: '门诊后续取消' });
+  const page = detailPage(r, result.id); page.onShow(); await page.lastLoad;
+  assert.equal(page.data.appointment.status, 'cancelled'); assert.equal(page.data.success, false);
+  assert.equal(page.data.successTitle, '');
+});

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { Calendar, Search, Refresh, Plus, ArrowRight } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -17,6 +17,7 @@ import {
 import { useAuth } from '../stores/auth';
 import { useCatalog } from '../stores/catalog';
 import { statusLabels, statusType, time, today } from '../utils';
+import { createLatestRequest, startVisibleRefresh } from '../visible-refresh';
 const auth = useAuth();
 const catalog = useCatalog();
 const router = useRouter();
@@ -29,26 +30,42 @@ const total = ref(0);
 const rows = ref<Appointment[]>([]);
 const loading = ref(false);
 const error = ref('');
+const syncError = ref('');
 const selected = ref<Appointment | null>(null);
 const drawer = ref(false);
+const detailOpening = ref(false);
 const writing = ref(false);
+const cancellationPromptOpen = ref(false);
 const pending = ref<PendingCommand | null>(readPending());
 const activeCount = computed(() => rows.value.filter((item) => item.status === 'confirmed').length);
 const doctorCount = computed(() => new Set(rows.value.map((item) => item.doctorId)).size);
 const currentTitle = computed(() => (date.value === today() ? '今日预约' : '预约总览'));
-async function load() {
-  loading.value = true;
-  error.value = '';
+const listRequests = createLatestRequest(() => auth.user?.id);
+const detailRequests = createLatestRequest(() => auth.user?.id);
+let disposed = false;
+let stopRefresh = () => {};
+watch(drawer, open => {
+  if (!open) { detailRequests.invalidate(); detailOpening.value = false; }
+});
+async function load(background = false) {
+  if (disposed || !auth.user || background && loading.value) return;
+  const current = listRequests.begin();
+  if (!background) { loading.value = true; error.value = ''; }
   try {
     const result = await api<Page<Appointment>>(
       `/staff/appointments${query({ clinicId: clinicId.value, date: date.value, status: status.value, page: page.value, pageSize: pageSize.value })}`,
     );
+    if (!current()) return;
     rows.value = result.items;
     total.value = result.total;
+    syncError.value = '';
   } catch (e) {
-    error.value = errorText(e);
+    if (current()) {
+      if (background) syncError.value = errorText(e);
+      else error.value = errorText(e);
+    }
   } finally {
-    loading.value = false;
+    if (current()) loading.value = false;
   }
 }
 async function search() {
@@ -56,18 +73,47 @@ async function search() {
   await load();
 }
 async function detail(row: Appointment) {
+  const current = detailRequests.begin();
+  detailOpening.value = true;
   try {
-    selected.value = await api<Appointment>(`/appointments/${row.id}`);
+    const result = await api<Appointment>(`/appointments/${row.id}`);
+    if (!current()) return;
+    selected.value = result;
     drawer.value = true;
   } catch (e) {
-    ElMessage.error(errorText(e));
+    if (current()) ElMessage.error(errorText(e));
+  } finally {
+    if (current()) detailOpening.value = false;
   }
+}
+async function refreshDetail() {
+  if (!drawer.value || !selected.value || detailOpening.value || writing.value || cancellationPromptOpen.value) return;
+  const id = selected.value.id;
+  const current = detailRequests.begin();
+  const accepts = () => current() && drawer.value && selected.value?.id === id && !writing.value && !cancellationPromptOpen.value;
+  try {
+    const result = await api<Appointment>(`/appointments/${id}`);
+    if (accepts()) selected.value = result;
+  } catch (e) {
+    if (!accepts()) return;
+    syncError.value = errorText(e);
+    if (e instanceof ApiError && [401, 403, 404].includes(e.status)) {
+      selected.value = null;
+      drawer.value = false;
+    }
+  }
+}
+async function refreshVisible() {
+  if (disposed || !auth.user || writing.value || cancellationPromptOpen.value) return;
+  await Promise.all([load(true), refreshDetail()]);
 }
 async function cancel(row: Appointment) {
   if (pending.value) {
     ElMessage.warning('请先查询上一笔提交的结果。');
     return;
   }
+  cancellationPromptOpen.value = true;
+  detailRequests.invalidate();
   try {
     const answer = await ElMessageBox.prompt(
       `取消 ${row.patientName} 的 ${time(row.startsAt, true)} 预约。取消后将释放医生和牙椅资源。`,
@@ -99,6 +145,7 @@ async function cancel(row: Appointment) {
   } catch (e) {
     if (e !== 'cancel' && e !== 'close') ElMessage.error(errorText(e));
   } finally {
+    cancellationPromptOpen.value = false;
     writing.value = false;
   }
 }
@@ -135,12 +182,27 @@ async function retryPending() {
   }
 }
 onMounted(async () => {
+  stopRefresh = startVisibleRefresh(refreshVisible, {
+    isVisible: () => document.visibilityState === 'visible',
+    subscribe: listener => {
+      document.addEventListener('visibilitychange', listener);
+      return () => document.removeEventListener('visibilitychange', listener);
+    },
+    schedule: (callback, delay) => window.setTimeout(callback, delay),
+    cancel: handle => window.clearTimeout(handle),
+  });
   try {
     if (!catalog.loaded) await catalog.load();
   } catch (e) {
-    error.value = errorText(e);
+    if (!disposed) error.value = errorText(e);
   }
-  await load();
+  if (!disposed) await load();
+});
+onUnmounted(() => {
+  disposed = true;
+  stopRefresh();
+  listRequests.stop();
+  detailRequests.stop();
 });
 </script>
 <template>
@@ -148,9 +210,9 @@ onMounted(async () => {
     <div>
       <div class="eyebrow">APPOINTMENT OVERVIEW</div>
       <h1>{{ currentTitle }}</h1>
-      <p>查看患者就诊安排，及时处理预约变更。</p>
+      <p>查看患者就诊安排，页面可见时自动同步预约变更。</p>
     </div>
-    <el-button :icon="Refresh" @click="load" :loading="loading">刷新数据</el-button>
+    <el-button :icon="Refresh" @click="load()" :loading="loading">刷新数据</el-button>
   </section>
   <div class="hero-strip">
     <div>
@@ -204,6 +266,7 @@ onMounted(async () => {
       ></template
     ></el-alert
   ><el-alert v-if="error" :title="error" type="error" show-icon :closable="false" class="mb-24" />
+  <el-alert v-if="syncError && !error" :title="'自动同步暂未完成：' + syncError" type="warning" show-icon :closable="false" class="mb-24" />
   <section class="panel">
     <div class="panel-heading">
       <div>
@@ -293,7 +356,7 @@ onMounted(async () => {
         :page-sizes="[10, 20, 50]"
         :total="total"
         layout="sizes, prev, pager, next"
-        @current-change="load"
+        @current-change="load()"
         @size-change="search"
       />
     </div>

@@ -1,6 +1,6 @@
 # 患者小程序实现与验收
 
-记录日期：2026-10-23（Asia/Shanghai）。当前工程为微信原生 TypeScript/WXML/WXSS，共10页；与 Vue 工作台共享 `/api/v1` 和 PostgreSQL。以下结果区分编译模块、真实 HTTP、微信渲染和真机。
+更新日期：2026-10-24（Asia/Shanghai）。当前工程为微信原生 TypeScript/WXML/WXSS，共10页；与 Vue 工作台共享 `/api/v1` 和 PostgreSQL。以下结果区分编译模块、真实 HTTP、微信渲染和真机。
 
 ## 1. 本轮完善内容
 
@@ -30,30 +30,30 @@
 | 验证 | 结果与证据 |
 | --- | --- |
 | 严格类型与三端构建 | `check:booking`、`build:booking` 通过；配置10页均有JS/JSON/WXML/WXSS及事件处理 |
-| 原生客户端单元测试 | **17/17**，见[JSON](../../miniprogram/qa/client-unit.json)和[TAP](../../miniprogram/qa/client-unit.tap) |
+| 原生客户端单元测试 | 最新数量、产物和时间见[JSON](../../miniprogram/qa/client-unit.json)和[TAP](../../miniprogram/qa/client-unit.tap) |
 | 原生模块→真实 API/PG | **20/20**，见[HTTP smoke](../../miniprogram/qa/native-api-smoke.json) |
-| 后端真实 PG | **43/43**，30项预约回归与13项演示扩展验证，见[后端记录](qa/api-integration.json) |
+| 后端真实 PG | **45/45**，含医生本人范围和缺失员工关联拒绝，见[本轮记录](qa/collaboration-api.json)；旧43项记录单独保留 |
 | Vue实际 Chrome | **12/12**，见[浏览器记录](qa/browser.json) |
+| 微信模拟器与Vue真实联动 | 官方SDK驱动D盘工程，网站发布→小程序预约→网站查看→小程序改期/取消→网站显示同一记录，见[跨端记录](qa/cross-client.json) |
+| Vue自动刷新回归 | 14项受控异步测试，见[客户端记录](qa/collaboration-admin.json)；真实自动同步由跨端记录验证 |
 | 原数据 | 本轮增量及联调后，原20笔预约与40条预约事件未变，见[数据核对](qa/demo-data-preservation.json) |
 
-17项客户端测试运行真实编译的原生 CommonJS 模块，使用受控的 `wx` API。覆盖未知写入、原键恢复、账号隔离、迟到回包、过敏输入，以及本轮价格精度/单位、虚构资格、只读标记剥除、分类搜索、咨询导航、门诊和医生深链与失配阻断。这些是逻辑测试，没有运行微信页面渲染。
+客户端测试运行真实编译的原生 CommonJS 模块，使用受控的 `wx` API。覆盖未知写入、原键恢复、账号隔离、迟到回包、过敏输入、筛选重载清理、价格精度/单位、虚构资格、只读标记剥除、分类搜索、咨询导航、门诊和医生深链与失配阻断。这些是逻辑测试，没有运行微信页面渲染。
 
 20项 HTTP 检查加载相同产物，用 `wx.request`→fetch 适配器连接实际 API/PostgreSQL。包含本轮24条参考价、6位医生、独立咨询费用，以及患者竞争、丢失已提交响应、重启客户端恢复原键、唯一预约、跨端可见、越权拒绝、取消释放和原子改期。夹具精确收尾并保留审计历史。
 
-本次客户端测试与 HTTP smoke 的产物 SHA-256 一致：
+各次测试在记录中保存实际产物SHA-256。HTTP适配器是较早的独立记录；当前微信验收在执行前后核对仓库与 `D:\AndrewDentalMiniProgram\dist` 的哈希，避免把旧产物当作新版本。
 
-`4a9ff69924a75f51e79b728ed4f46f7475f7e12c361801cc377f67c469b65851`
-
-开发者工具自动化尝试记录在[qa/wechat-devtools.json](qa/wechat-devtools.json)。已安装2.02.2609231；官方 CLI 的 `auto` 初始化返回“服务端口已关闭”，即使退出码为0也判作未执行成功。没有把此结果记为微信编译、页面截图或真机通过，也没有执行预览上传或发布。
+开发者工具为2.02.2609231 RC，已按用户要求开启服务端口并使用现有工程AppID。官方SDK操作真实小程序控件，确认双方预约编号一致、改期链一致、取消后资源释放，记录见[qa/wechat-devtools.json](qa/wechat-devtools.json)与[完整结果](qa/cross-client.json)。没有执行真机、预览上传或发布。
 
 ## 4. 下一步人工验收
 
-1. 构建后在微信开发者工具手动导入 `miniprogram/`；配置中的小程序根目录为 `dist/`。手动导入不依赖 CLI 服务端口。
-2. 若需要自动联调，在工具“设置→安全设置”开启“服务端口”，再运行本地自动化。
+1. 构建后执行 `npm run sync:wechat` 同步到已打开的 `D:\AndrewDentalMiniProgram`；小程序根目录为 `dist/`，保留原AppID和工具配置。
+2. 本机服务端口已开启，自动化需先启动官方CLI的 `auto`，再运行跨端验收脚本，步骤见[下一步操作](DEMO-NEXT-STEPS.md)。
 3. 检查10页的渲染、320/375/414宽度、长名称、键盘、滚动、安全区域及倒计时；用 `patient.a` 预约未来演示日期，完成改期、取消，并在前台核对同一预约。
 4. 弱网和账号切换下核对结果未知、原键恢复和资料隔离。更换真实 AppID 后再验证预览及手机网络。
 5. 正式部署配置 HTTPS、request 合法域名及证书，关闭演示登录；微信授权、通知、Docker/Nginx/TLS和真实业务资料分别验收。
 
-当前 `touristappid` 和 `urlCheck:false` 仅供开发。手机的127.0.0.1指向手机自身；局域网和后端监听配置见[下一步操作](DEMO-NEXT-STEPS.md)及[小程序说明](../../miniprogram/README.md)。网页窄屏截图不是微信或真机证据。
+当前已有工程AppID；`urlCheck:false` 仅供开发。手机的127.0.0.1指向手机自身；局域网和后端监听配置见[下一步操作](DEMO-NEXT-STEPS.md)及[小程序说明](../../miniprogram/README.md)。微信模拟器截图不能替代真机证据。
 
 设计 PDF 和旧 SQLite 业务代码没有修改。此前的实际数据库重启及 Compose 静态校验记录保留为各自日期的证据；本轮不将它们重述为新的生产部署验收。

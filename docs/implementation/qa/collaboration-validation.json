@@ -1,0 +1,117 @@
+{
+  "status": "passed",
+  "verifiedAt": "2026-10-24T04:08:23.927Z",
+  "timezone": "Asia/Shanghai",
+  "scope": "Native patient bookings and Vue staff/doctor collaboration through one Node.js TypeScript API and PostgreSQL",
+  "results": {
+    "realPostgresApi": {
+      "tests": 45,
+      "pass": 45,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "controlledAdmin": {
+      "tests": 14,
+      "pass": 14,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "compiledMini": {
+      "tests": 26,
+      "passed": 26
+    },
+    "realWechatAndVue": {
+      "checks": 15,
+      "mode": "wechat",
+      "automaticVueSync": [
+        {
+          "operation": "reschedule",
+          "startedAt": "2026-10-24T04:07:45.709Z",
+          "observedAt": "2026-10-24T04:07:49.602Z",
+          "query": {
+            "date": "2026-11-09",
+            "page": "1",
+            "pageSize": "20"
+          },
+          "expectedStates": {
+            "0f6766e2-87ab-4c3c-9d43-13a2ff55e003": "rescheduled",
+            "888765e4-e941-4701-b3de-4471ba311936": "confirmed"
+          },
+          "observedMatchingResponses": 1,
+          "noManualNavigation": true,
+          "noManualRefresh": true
+        },
+        {
+          "operation": "cancel",
+          "startedAt": "2026-10-24T04:07:51.120Z",
+          "observedAt": "2026-10-24T04:07:54.629Z",
+          "query": {
+            "date": "2026-11-09",
+            "page": "1",
+            "pageSize": "20"
+          },
+          "expectedStates": {
+            "888765e4-e941-4701-b3de-4471ba311936": "cancelled"
+          },
+          "observedMatchingResponses": 1,
+          "noManualNavigation": true,
+          "noManualRefresh": true
+        }
+      ]
+    },
+    "realDoctorBrowser": {
+      "checks": 7,
+      "businessDataWritten": false
+    }
+  },
+  "nativeProject": {
+    "path": "D:/AndrewDentalMiniProgram",
+    "sourceSha256": "d84b7e6ff8ef703b5de8da24b187d33e6b1039bab384b7eb2d06900dafd7be1f",
+    "compiledSha256": "b26d97a32846182f13d0d81f15f539c65afe7d477aa014083046570c9bcdd1c9",
+    "sameAsRepository": true,
+    "existingConfigurationsPreserved": true
+  },
+  "evidence": [
+    {
+      "kind": "api",
+      "path": "docs/implementation/qa/collaboration-api.json",
+      "sha256": "8efe84afbfd3a34148143c4ad81be0ba772208ee4a96a174c72eadc55c7eb00e"
+    },
+    {
+      "kind": "admin",
+      "path": "docs/implementation/qa/collaboration-admin.json",
+      "sha256": "9e5b3c8e3c1e48ca74c4ea813bb7b5f0e9c4dc9d28d027839b4b9c612b32eeb7"
+    },
+    {
+      "kind": "mini",
+      "path": "miniprogram/qa/client-unit.json",
+      "sha256": "0847fcf11b29feb985a782f825148582542f20cb6f2b64e7bf33776a6e121638"
+    },
+    {
+      "kind": "crossClient",
+      "path": "docs/implementation/qa/cross-client.json",
+      "sha256": "35282bc39d1d249afdf798db9333d0d1e8db5faab01825220d3e1178ab149bb0"
+    },
+    {
+      "kind": "doctorView",
+      "path": "docs/implementation/qa/doctor-view.json",
+      "sha256": "5b285a2be530980a0c70305c9caa8e42c5db4f5810afb53795331a1e72bf5a74"
+    }
+  ],
+  "designPdf": {
+    "path": "docs/design/安德鲁牙科系统设计文档.pdf",
+    "sha256": "22483aee6c2ca681937bb667868e25c85f97f85dbc8e11f5dd6da3d6ce2ee3eb",
+    "unchanged": true
+  },
+  "boundaries": {
+    "physicalDeviceVerified": false,
+    "wechatIdentityLoginVerified": false,
+    "publicDeploymentVerified": false,
+    "previewUploadExecuted": false,
+    "paymentFinanceAdded": false
+  }
+}

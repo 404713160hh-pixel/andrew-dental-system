@@ -11,6 +11,6 @@
   </view>
   <view wx:if="{{error}}" class="error">{{error}}</view><view wx:if="{{searching}}" class="loading">正在查询合适的医生与就诊时段…</view>
   <block wx:if="{{queried}}"><view class="row"><view class="section-title">{{date}} 的时段</view><text class="muted">{{slots.length}} 个可选</text></view><view wx:if="{{!slots.length}}" class="empty">当天暂无匹配时段。<view class="space">请调整日期、门诊或医生后重新查询。</view></view>
-    <view class="slot-grid"><view wx:for="{{slots}}" wx:key="key" class="card slot-card"><view class="slot-time">{{item.startLabel}}<text>—{{item.endLabel}}</text></view><view class="muted">{{item.doctorName}} · {{item.durationMinutes}} 分钟</view><text wx:if="{{item.doctorIsDemo}}" class="demo-badge">虚构医生</text><view class="slot-price">本次参考费 ¥{{item.priceLabel}}</view><button class="secondary" data-index="{{index}}" bindtap="choose" disabled="{{holding || pending}}" loading="{{holding}}">选择时段</button></view></view>
+    <view class="slot-grid"><view wx:for="{{slots}}" wx:key="key" class="card slot-card"><view class="slot-time">{{item.startLabel}}<text>—{{item.endLabel}}</text></view><view class="muted">{{item.doctorName}} · {{item.durationMinutes}} 分钟</view><text wx:if="{{item.doctorIsDemo}}" class="demo-badge">虚构医生</text><view class="slot-price">本次参考费 ¥{{item.priceLabel}}</view><button class="secondary" data-index="{{index}}" bindtap="choose" disabled="{{loading || searching || holding || pending}}" loading="{{holding}}">选择时段</button></view></view>
   </block><view class="footer-note">实际医疗方案与费用需由医务人员评估确认</view>
 </view>

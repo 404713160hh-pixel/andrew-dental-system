@@ -1,0 +1,129 @@
+{
+  "status": "passed",
+  "startedAt": "2026-10-24T04:07:12.303Z",
+  "command": "node scripts/booking-doctor-view.mjs",
+  "execution": "Real installed Google Chrome, rendered Vue UI and real HTTP; existing doctor.a data only",
+  "environment": {
+    "api": "http://127.0.0.1:3310/api/v1",
+    "admin": "http://127.0.0.1:5173",
+    "browser": "chrome",
+    "headless": true,
+    "timezone": "Asia/Shanghai",
+    "browserVersion": "155.0.8059.85"
+  },
+  "sourceFiles": [
+    {
+      "path": "scripts/booking-doctor-view.mjs",
+      "sha256": "c40a5689bfa883dc7e1af6956cd5290f091f81adaf931f61ded735e71f16d790"
+    },
+    {
+      "path": "booking-api/src/app.ts",
+      "sha256": "f12a15c60ddac0eeb0a3051e755904c405a3e234167c2af50e284e7c0bd4dc3d"
+    },
+    {
+      "path": "booking-api/src/auth.ts",
+      "sha256": "afc6c4bfb78c42500d1d0d7f3c238fc2add6b17a68377c62efaa9549383c163f"
+    },
+    {
+      "path": "booking-api/src/services/booking.ts",
+      "sha256": "30a5078dd06205d171ec8eebaf53e9903860f9443eec544a50e468feba4e379a"
+    },
+    {
+      "path": "admin-web/src/router.ts",
+      "sha256": "94d1b9f38ca9704c8672c2e9d846383f4038270f02c9d48a698cce822032a8e4"
+    },
+    {
+      "path": "admin-web/src/stores/auth.ts",
+      "sha256": "08705bebb7956480d9fa7b9b2cd3fc20415120740202cdd273d85e8466b37c3a"
+    },
+    {
+      "path": "admin-web/src/views/ShiftsView.vue",
+      "sha256": "71b120fecff1d333f97cc0aacab0ee654be42a1bbafd5e1e997f06e3b295af1c"
+    },
+    {
+      "path": "admin-web/src/views/AppointmentsView.vue",
+      "sha256": "db83cfc6aa4ef6f284819928d11a69c425109dad8d66f1edbb5bb72802bfdb21"
+    },
+    {
+      "path": "admin-web/src/visible-refresh.ts",
+      "sha256": "8aeb8a2080dc1b41fdf0bd552add7a5d1383f2bdc92ca589484d606a77171fc1"
+    }
+  ],
+  "sourceHashesAreWorkspaceSnapshot": true,
+  "checks": [
+    {
+      "name": "真实Chrome通过医生演示入口登录，两API入口返回同一当前医生",
+      "status": "passed"
+    },
+    {
+      "name": "真实排班页显示非空本人班次，后端每条doctorId等于当前staffId",
+      "status": "passed",
+      "date": "2026-10-24",
+      "queriedRows": 14,
+      "renderedRows": 1,
+      "shiftIds": [
+        "ec24b532-6ccb-47bf-a4f5-7a4f721325a8"
+      ]
+    },
+    {
+      "name": "医生排班页无发布和撤销按钮，导航无资源维护、代约与患者管理入口",
+      "status": "passed"
+    },
+    {
+      "name": "真实预约页返回并显示非空本人预约",
+      "status": "passed",
+      "date": "2026-10-25",
+      "totalAcrossDates": 1,
+      "renderedRows": 1,
+      "appointmentIds": [
+        "b54a0ae0-290d-4083-9bdd-4b6065434bf5"
+      ]
+    },
+    {
+      "name": "医生能打开本人预约详情，详情无取消或改期按钮",
+      "status": "passed",
+      "appointmentId": "b54a0ae0-290d-4083-9bdd-4b6065434bf5"
+    },
+    {
+      "name": "医生直接访问代约、患者管理及五类资源维护URL均回预约列表",
+      "status": "passed"
+    },
+    {
+      "name": "整个检查无业务写请求、无未捕获页面错误",
+      "status": "passed"
+    }
+  ],
+  "screenshots": [
+    "screenshots/booking/doctor-view-mvlvnu0e/01-own-shifts-readonly.png",
+    "screenshots/booking/doctor-view-mvlvnu0e/02-own-appointments-readonly.png"
+  ],
+  "blockedMutations": [],
+  "pageErrors": [],
+  "businessDataWritten": false,
+  "allowedSessionWrites": [
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/demo",
+      "username": "doctor.a"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/logout"
+    }
+  ],
+  "limitations": [],
+  "principal": {
+    "id": "391041b1-6fad-41f5-94f0-a4f3c3a544b4",
+    "staffId": "8e8cb3b0-0085-4f1a-b966-7309277b306d",
+    "roles": [
+      "doctor"
+    ],
+    "clinicIds": [
+      "d6febd74-79ee-4894-8a64-7f2800865850",
+      "50019e5d-8e69-46aa-a5a5-074d68bf60df"
+    ]
+  },
+  "sourceUnchangedDuringRun": true,
+  "sessionRevoked": true,
+  "finishedAt": "2026-10-24T04:07:17.170Z"
+}

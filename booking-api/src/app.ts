@@ -123,6 +123,7 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
   staffOnly(user!);const clinic=req.query.clinicId?uuid.parse(req.query.clinicId):null;const day=req.query.date?date.parse(req.query.date):null;
   if(clinic)clinicAccess(user!,clinic);
   const scopes=scopeIds(user!);const doctorOnly=!user!.roles.some(r=>['hq','manager','front'].includes(r));
+  requireThat(!doctorOnly||user!.staffId,403,'DOCTOR_PROFILE_REQUIRED','医生账号尚未关联员工档案，请联系管理员');
   return (await pool.query<Shift>(shiftSelect+` WHERE ($1::uuid IS NULL OR ds.clinic_id=$1) AND ($2::date IS NULL OR (ds.starts_at AT TIME ZONE 'Asia/Shanghai')::date=$2)
    AND ($3::uuid[] IS NULL OR ds.clinic_id=ANY($3)) AND ($4::uuid IS NULL OR ds.doctor_id=$4) ORDER BY ds.starts_at DESC LIMIT 500`,[clinic,day,scopes,doctorOnly?user!.staffId:null])).rows.map(s=>({...s,startsAt:iso(s.startsAt),endsAt:iso(s.endsAt)}));
  });
@@ -169,6 +170,7 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
   const status=req.query.status?z.enum(['confirmed','cancelled','rescheduled']).parse(req.query.status):null;
   if(staff&&clinic)clinicAccess(user,clinic);
   const scopes=staff?scopeIds(user):null;const doctorOnly=staff&&!user.roles.some(r=>['hq','manager','front'].includes(r));
+  requireThat(!doctorOnly||user.staffId,403,'DOCTOR_PROFILE_REQUIRED','医生账号尚未关联员工档案，请联系管理员');
   const where=` WHERE ($1::uuid IS NULL OR a.patient_id=$1) AND ($2::uuid IS NULL OR r.clinic_id=$2) AND ($3::date IS NULL OR (r.starts_at AT TIME ZONE 'Asia/Shanghai')::date=$3)
    AND ($4::text IS NULL OR a.status=$4) AND ($5::uuid[] IS NULL OR r.clinic_id=ANY($5)) AND ($6::uuid IS NULL OR r.doctor_id=$6)`;
   const values=[staff?null:user.patientId,clinic,day,status,scopes,doctorOnly?user.staffId:null];

@@ -1,0 +1,94 @@
+TAP version 13
+# Subtest: late 401 from account A preserves newly logged-in account B
+ok 1 - late 401 from account A preserves newly logged-in account B
+  ---
+  duration_ms: 2.1322
+  type: 'test'
+  ...
+# Subtest: 401 for the current token clears it and emits the unauthorized event
+ok 2 - 401 for the current token clears it and emits the unauthorized event
+  ---
+  duration_ms: 0.719
+  type: 'test'
+  ...
+# Subtest: late success clears only captured owner A pending command, keeping B pending
+ok 3 - late success clears only captured owner A pending command, keeping B pending
+  ---
+  duration_ms: 0.7701
+  type: 'test'
+  ...
+# Subtest: late A unauthorized confirmation preserves both owners pending commands
+ok 4 - late A unauthorized confirmation preserves both owners pending commands
+  ---
+  duration_ms: 0.6275
+  type: 'test'
+  ...
+# Subtest: visible refresh waits for each request, pauses hidden tabs and refreshes immediately on return
+ok 5 - visible refresh waits for each request, pauses hidden tabs and refreshes immediately on return
+  ---
+  duration_ms: 5.1651
+  type: 'test'
+  ...
+# Subtest: visibility recovery queues one refresh while busy, and stopping prevents all later scheduling
+ok 6 - visibility recovery queues one refresh while busy, and stopping prevents all later scheduling
+  ---
+  duration_ms: 0.4163
+  type: 'test'
+  ...
+# Subtest: a failed automatic refresh can recover on its next interval without an unhandled rejection
+ok 7 - a failed automatic refresh can recover on its next interval without an unhandled rejection
+  ---
+  duration_ms: 0.4211
+  type: 'test'
+  ...
+# Subtest: latest-request acceptance rejects old results, changed accounts and disposed views
+ok 8 - latest-request acceptance rejects old results, changed accounts and disposed views
+  ---
+  duration_ms: 0.1867
+  type: 'test'
+  ...
+# Subtest: actual appointments view keeps the newest filter result when older requests complete last
+ok 9 - actual appointments view keeps the newest filter result when older requests complete last
+  ---
+  duration_ms: 30.6049
+  type: 'test'
+  ...
+# Subtest: actual view ignores a previous account response and the older of two detail selections
+ok 10 - actual view ignores a previous account response and the older of two detail selections
+  ---
+  duration_ms: 13.4217
+  type: 'test'
+  ...
+# Subtest: automatic refresh updates both the current list and the opened detail from the API
+ok 11 - automatic refresh updates both the current list and the opened detail from the API
+  ---
+  duration_ms: 12.5588
+  type: 'test'
+  ...
+# Subtest: opening detail B keeps priority over polling the still-open detail A
+ok 12 - opening detail B keeps priority over polling the still-open detail A
+  ---
+  duration_ms: 10.9387
+  type: 'test'
+  ...
+# Subtest: a cancellation draft survives automatic refresh, including a response already in flight
+ok 13 - a cancellation draft survives automatic refresh, including a response already in flight
+  ---
+  duration_ms: 12.4195
+  type: 'test'
+  ...
+# Subtest: unmount removes visibility timers and rejects in-flight list responses
+ok 14 - unmount removes visibility timers and rejects in-flight list responses
+  ---
+  duration_ms: 12.0948
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 479.2241

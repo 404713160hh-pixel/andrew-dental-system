@@ -17,11 +17,13 @@ npm run test -w @andrew/miniprogram
 
 打开微信开发者工具，选择导入 **本目录 `miniprogram`**，不要导入 `src`、`dist` 或旧版 `public`。根 `project.config.json` 的 `miniprogramRoot` 为 `dist/`。`npm run build` 将 TypeScript 编译为原生 CommonJS，并复制 WXML、WXSS 和 JSON 到 `dist`。修改源码后重新构建；`watch` 只监听 TypeScript，修改 WXML/WXSS/JSON 后仍需运行完整 build。
 
+本机已打开的工程为 `D:\AndrewDentalMiniProgram`。在仓库根目录构建后执行 `npm run sync:wechat`，将源码与产物同步到该工程；脚本先备份到忽略目录 `.booking-data/wechat-backups/`，保留 D 盘的 AppID 和本地工具配置，并核对两边产物哈希。可先用 `npm run sync:wechat -- --dry-run` 检查。修改 API 地址也须重新构建、同步。D 盘工程用于工具运行，依赖与共享类型的构建仍从本仓库执行。
+
 `src/contracts.d.ts` 在构建/检查时从仓库 `shared/src/index.ts` 自动生成，仅用于编译，不手工维护另一份 DTO；`dist` 和该声明文件不入库。所有网络响应来自真实 API，没有客户端硬编码的门诊、医生、服务、号源或成功预约数据。
 
 ## AppID、地址与微信配置
 
-- 未配置真实 AppID 时，`project.config.json` 使用 `touristappid` 方便本地工程导入。不同版本开发者工具的游客能力可能有限；需要登录开发者工具或真机预览时，请替换为自己的测试/正式小程序 AppID。
+- 当前配置沿用已打开工程的 AppID；其他开发者导入时须配置自己有权限的测试/正式 AppID。AppID 与微信授权登录、AppSecret 是不同事项，配置 AppID 不表示授权登录已经接入。
 - 唯一 API 地址位于 `src/config.ts`。模拟器可使用 `127.0.0.1`；真机的 `127.0.0.1` 是手机本身，应改为电脑的局域网 IP，并确保手机和电脑在同一网络、后端可由局域网访问，再重新 build。
 - 本地项目 `urlCheck:false`。在开发者工具“详情→本地设置”确认已关闭合法域名、TLS 版本及 HTTPS 证书校验，仅用于开发调试。
 - 发布前必须把 API 改为 HTTPS，使用有效证书，并在微信公众平台配置 `request` 合法域名；恢复域名校验。数据库端口不供小程序直接访问。

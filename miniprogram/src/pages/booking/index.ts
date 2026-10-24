@@ -37,11 +37,15 @@ Page({
       }
       this.setData({ clinics, policy, clinicIndex });
       await this.loadServices();
-    } catch (error) { this.setData({ error: errorMessage(error), services: [], doctors: [], doctorNames: ['不限医生'], slots: [] }); }
+    } catch (error) { this.setData({ error: errorMessage(error), services: [], doctors: [], doctorNames: ['不限医生'], doctorIndex: 0, slots: [], queried: false }); }
     finally { this.setData({ loading: false }); }
   },
   async loadServices() {
     const clinic = this.data.clinics[this.data.clinicIndex];
+    // Previous candidates belong to the previous filter, even while the new
+    // catalog request is still in flight or ultimately fails.
+    this.setData({ services: [], serviceIndex: 0, doctors: [], doctorNames: ['不限医生'], doctorIndex: 0,
+      doctorUnavailable: Boolean(this.data.preferredDoctorId), slots: [], queried: false });
     if (!clinic) { this.setData({ services: [], doctors: [], doctorNames: ['不限医生'], slots: [] }); return; }
     const services = await api<Service[]>('/services' + query({ clinicId: clinic.id }));
     const matchingIndex = services.findIndex(item => item.id === this.data.preferredServiceId);
@@ -54,6 +58,8 @@ Page({
   },
   async loadDoctors() {
     const clinic = this.data.clinics[this.data.clinicIndex], service = this.data.services[this.data.serviceIndex];
+    this.setData({ doctors: [], doctorNames: ['不限医生'], doctorIndex: 0,
+      doctorUnavailable: Boolean(this.data.preferredDoctorId), slots: [], queried: false });
     if (!clinic || !service || this.data.serviceUnavailable) { this.setData({ doctors: [], doctorNames: ['不限医生'], doctorIndex: 0, slots: [] }); return; }
     const doctors = await api<Doctor[]>('/doctors' + query({ clinicId: clinic.id, serviceId: service.id }));
     const matchingIndex = doctors.findIndex(item => item.id === this.data.preferredDoctorId);
@@ -92,7 +98,7 @@ Page({
     } catch (error) { this.setData({ error: errorMessage(error) }); } finally { this.setData({ searching: false }); }
   },
   async choose(event: WechatMiniprogram.BaseEvent) {
-    if (this.data.holding || !requireLogin()) return;
+    if (this.data.loading || this.data.searching || this.data.holding || !requireLogin()) return;
     if (pendingCommand()) { wx.showModal({ title: '有一笔结果待确认', content: '请到“我的预约”核对原操作，完成后再选择新时段。', showCancel: false }); return; }
     const slot = this.data.slots[Number(event.currentTarget.dataset.index)]; if (!slot) return;
     const ownerId = session()?.user.id; if (!ownerId) return;

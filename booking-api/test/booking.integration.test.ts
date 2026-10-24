@@ -192,6 +192,49 @@ test('staff role permissions and clinic scope are enforced by the API', async ()
   rejected(await request('GET', `/staff/appointments?clinicId=${foreignClinic.id}`, 'front.a'), [403]);
 });
 
+test('a doctor assignment without a linked staff profile cannot bypass list ownership filters', async () => {
+  const username = `orphan.doctor.${randomBytes(5).toString('hex')}`;
+  const clinicId = identities['doctor.a']!.user.assignments[0]!.clinicId!;
+  const userId = (await db.query('INSERT INTO users(username,password_hash,display_name) SELECT $1,password_hash,$2 FROM users WHERE username=$3 RETURNING id',
+    [username, '无员工关联的合成医生账号', 'doctor.a'])).rows[0].id;
+  await db.query("INSERT INTO role_assignments(user_id,role,clinic_id)VALUES($1,'doctor',$2)", [userId, clinicId]);
+  identities[username] = data<LoginResult>(await request('POST', '/auth/login', undefined, { username, password, portal: 'staff' }));
+  assert.equal(identities[username]!.user.staffId, null);
+  assert.deepEqual(identities[username]!.user.roles, ['doctor']);
+  for (const path of ['/shifts', `/shifts?clinicId=${clinicId}`, '/staff/appointments', `/staff/appointments?clinicId=${clinicId}`]) {
+    const response = await request('GET', path, username);
+    rejected(response, [403]);
+    assert.equal(response.json().error.code, 'DOCTOR_PROFILE_REQUIRED');
+  }
+});
+
+test('a linked doctor reads only own shifts and appointments even across multiple authorized clinics', async () => {
+  const doctor = identities['doctor.a']!.user;
+  assert.ok(doctor.staffId);
+  const ownShift = shifts.find(shift => shift.doctorId === doctor.staffId)!;
+  const otherShift = shifts.find(shift => shift.doctorId !== doctor.staffId && doctor.assignments.some(grant => grant.clinicId === shift.clinicId))!;
+  assert.ok(ownShift && otherShift, 'Both own and another doctor shifts must exist inside the authorized clinic scope');
+  const own = await confirm('patient.a', await hold('patient.a', await firstSlot({ clinicId: ownShift.clinicId, doctorId: ownShift.doctorId, serviceId: ownShift.serviceIds[0]! })));
+  const other = await confirm('patient.b', await hold('patient.b', await firstSlot({ clinicId: otherShift.clinicId, doctorId: otherShift.doctorId, serviceId: otherShift.serviceIds[0]! })));
+  try {
+    const doctorShifts = data<Shift[]>(await request('GET', '/shifts', 'doctor.a'));
+    assert.ok(doctorShifts.some(shift => shift.id === ownShift.id));
+    assert.ok(doctorShifts.every(shift => shift.doctorId === doctor.staffId));
+    assert.ok(!doctorShifts.some(shift => shift.id === otherShift.id));
+    const appointments = data<{ items: Appointment[]; total: number }>(await request('GET', '/staff/appointments?pageSize=100', 'doctor.a'));
+    assert.equal(appointments.total, 1);
+    assert.deepEqual(appointments.items.map(appointment => appointment.id), [own.id]);
+    assert.ok(appointments.items.every(appointment => appointment.doctorId === doctor.staffId));
+    assert.equal(data<Appointment>(await request('GET', `/appointments/${own.id}`, 'doctor.a')).id, own.id);
+    rejected(await request('GET', `/appointments/${other.id}`, 'doctor.a'), [404]);
+    rejected(await request('POST', `/appointments/${own.id}/changes`, 'doctor.a',
+      { intent: 'cancel', expectedVersion: own.rowVersion, reason: '医生不能代为取消' }, randomUUID()), [403]);
+  } finally {
+    await cancel('patient.a', own);
+    await cancel('patient.b', other);
+  }
+});
+
 test('staff publishes a new shift and public API reads the same new PostgreSQL capacity', async () => {
   const baseShift = shifts[0]!;
   const start = new Date(new Date(baseShift.startsAt).getTime() + 10 * 86_400_000);

@@ -1,0 +1,110 @@
+{
+  "status": "passed",
+  "startedAt": "2026-10-24T04:07:02.0068807Z",
+  "finishedAt": "2026-10-24T04:07:02.6956112Z",
+  "timezone": "Asia/Shanghai",
+  "command": "node --test --test-reporter=tap admin-web/test/api-session.test.mjs admin-web/test/appointments-refresh.test.mjs",
+  "runtime": {
+    "node": "v24.15.0",
+    "platform": "win32"
+  },
+  "execution": "Controlled async transport, visibility host and transpiled Vue component script under Node; no real HTTP, browser rendering or business data writes",
+  "results": {
+    "tests": 14,
+    "pass": 14,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "exitCode": 0,
+  "sourceUnchangedDuringRun": true,
+  "sourceFiles": [
+    {
+      "path": "admin-web/src/api.ts",
+      "sha256": "e4ada101c9eccc8ca5ae9639fb6672e6218fe387d98e2f79c744a4c4dc93548e"
+    },
+    {
+      "path": "admin-web/src/App.vue",
+      "sha256": "4e30abc58b2a699c2f035175cdec5d2a7e44ff0ebae9f45b09ed0e4154e00dbc"
+    },
+    {
+      "path": "admin-web/src/components/PatientEditor.vue",
+      "sha256": "c60d37dcba2825a1c3090e68594b969dcfc686f73ddde693944314090cad8d48"
+    },
+    {
+      "path": "admin-web/src/main.ts",
+      "sha256": "7e502e9acaf6412eadc280c49ae7a8e4aea3941f191b0ad0234bf40a6c4200d2"
+    },
+    {
+      "path": "admin-web/src/router.ts",
+      "sha256": "94d1b9f38ca9704c8672c2e9d846383f4038270f02c9d48a698cce822032a8e4"
+    },
+    {
+      "path": "admin-web/src/stores/auth.ts",
+      "sha256": "08705bebb7956480d9fa7b9b2cd3fc20415120740202cdd273d85e8466b37c3a"
+    },
+    {
+      "path": "admin-web/src/stores/booking.ts",
+      "sha256": "71eb93654b22ad7186b58fa1c6101864ba404c1538d6d07d51cd10a24d3107ff"
+    },
+    {
+      "path": "admin-web/src/stores/catalog.ts",
+      "sha256": "e30534b13f3ed1d82335b2cb4e7175f509b6230b0bb9eab3aab34cbe5c605771"
+    },
+    {
+      "path": "admin-web/src/style.css",
+      "sha256": "7381b00e83d72b7144f5380ecbd09cd9594a74f3b55d4b271b881095f20fb889"
+    },
+    {
+      "path": "admin-web/src/utils.ts",
+      "sha256": "9fa1b4004a584fef200f23f691c1eee3ca5152d38b462f1e9e5e586847a0589a"
+    },
+    {
+      "path": "admin-web/src/views/AppointmentsView.vue",
+      "sha256": "db83cfc6aa4ef6f284819928d11a69c425109dad8d66f1edbb5bb72802bfdb21"
+    },
+    {
+      "path": "admin-web/src/views/BookingView.vue",
+      "sha256": "e7d4701a399100ea9d7f7d733f283b3fcb14ef05e08d17b22606983a9ba5f3c9"
+    },
+    {
+      "path": "admin-web/src/views/LoginView.vue",
+      "sha256": "2c2395dae004a506abc286b1d2bb0f36d749d001ac94f891029285893dbad3e1"
+    },
+    {
+      "path": "admin-web/src/views/PatientsView.vue",
+      "sha256": "78e6e28d11c3699f47387a96f73a4d71411ffeb86680333b238f484ce1e50d9e"
+    },
+    {
+      "path": "admin-web/src/views/ResourcesView.vue",
+      "sha256": "13ed8d9d806e637ffe3c5d2a37ca9456b174a8d911de409ca4ac748e1cbcf3f1"
+    },
+    {
+      "path": "admin-web/src/views/ShiftsView.vue",
+      "sha256": "71b120fecff1d333f97cc0aacab0ee654be42a1bbafd5e1e997f06e3b295af1c"
+    },
+    {
+      "path": "admin-web/src/visible-refresh.ts",
+      "sha256": "8aeb8a2080dc1b41fdf0bd552add7a5d1383f2bdc92ca589484d606a77171fc1"
+    },
+    {
+      "path": "admin-web/test/api-session.test.mjs",
+      "sha256": "08ff8e96a408e74f3bd3edb4e37fd64b0e1f74696d41c35060f68fbd9d99e59b"
+    },
+    {
+      "path": "admin-web/test/appointments-refresh.test.mjs",
+      "sha256": "50922982ff8eabcaf81abfc3d13573bff71229edaa83a86cb8d03f9783824c2b"
+    }
+  ],
+  "coverage": {
+    "existingAccountSessionTests": 4,
+    "schedulingAndComponentResponseTests": 10,
+    "detailOpeningVsPollingRace": 1
+  },
+  "evidence": "collaboration-admin.tap",
+  "tapSha256": "e2118a3635fe9f770ee7b7453c6095bc84f317dbe2b68924232233ba7e435153",
+  "limitations": [
+    "Tests evaluate the actual Vue script with controlled dependencies; they do not prove browser layout or the real WeChat runtime."
+  ]
+}

@@ -31,11 +31,11 @@ npm run dev:admin
 访问 **http://127.0.0.1:5173**。API健康检查：`http://127.0.0.1:3310/api/v1/health`。工作台开发快捷登录选总部、前台、店长或医生；账号由后端动态给出，非前端绕过鉴权。脚本生成的开发配置允许演示登录，生产配置默认关闭且禁止开启。密码登录使用本地 `.env.booking` 中的 `SEED_PASSWORD`，不要公开该值。
 
 ```powershell
-# 微信原生小程序：构建后，微信开发者工具导入 miniprogram 目录
+# 微信原生小程序：构建后同步到本机已打开的 D:\AndrewDentalMiniProgram
 npm run build -w @andrew/miniprogram
 ```
 
-AppID/API地址、游客模式、开发合法域名设置、真机局域网连接及正式HTTPS域名见[小程序说明](miniprogram/README.md)。小程序端真实登录由后端处理；没有真实AppID/AppSecret时，使用开发演示账号或密码注册登录，不宣称完成微信授权。
+在仓库构建后执行 `npm run sync:wechat`，备份并同步至本机已打开的 `D:\AndrewDentalMiniProgram`，保留该工程的工具配置。其他电脑也可直接导入仓库 `miniprogram`。AppID/API地址、开发域名设置、真机局域网连接及正式HTTPS域名见[小程序说明](miniprogram/README.md)。当前使用后端账号会话，微信授权登录需单独配置和验收。
 
 ### 演示数据
 
@@ -75,9 +75,9 @@ npm test
 
 预约集成测试创建独立随机 `andrew_test_*` PostgreSQL数据库，结束只清理自己新建的测试库，绝不清空开发库。需要本地测试服务器创建数据库权限；没有PostgreSQL时明确失败，不回退成Mock。新建开发库、迁移与测试均不接触原SQLite。
 
-[验收记录](docs/implementation/acceptance.md)区分真实PG/API验证、浏览器验证、原生模块HTTP验证，以及尚需人工完成的微信开发者工具/真机/Docker/TLS测试。[测试设计](docs/implementation/test-design.md)列出并发、幂等、回滚和权限断言。
+[验收记录](docs/implementation/acceptance.md)区分真实PG/API、浏览器、原生模块HTTP以及真实微信模拟器联动验证；真机、Docker与TLS另行验收。[测试设计](docs/implementation/test-design.md)列出并发、幂等、回滚和权限断言。
 
-本轮小程序目录扩展的结果见[小程序验收](docs/implementation/miniprogram-acceptance.md)，后续操作见[开发者工具与部署准备](docs/implementation/DEMO-NEXT-STEPS.md)。优先导入工具并完成一次预约、改期、取消，再进行手机和部署环境验收。
+小程序结果见[小程序验收](docs/implementation/miniprogram-acceptance.md)，核心链路的实际工程路径、预约编号、SQL核对和截图位置见[跨端验收记录](docs/implementation/qa/cross-client.json)。后续手机和部署操作见[开发者工具与部署准备](docs/implementation/DEMO-NEXT-STEPS.md)。
 
 ## 目录与接口
 
