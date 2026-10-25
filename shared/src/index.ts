@@ -19,6 +19,8 @@ export interface Shift { id: string; clinicId: string; doctorId: string; doctorN
 export interface BookingSlot { clinicId: string; clinicName: string; serviceId: string; serviceName: string; doctorId: string; doctorName: string; chairId: string; shiftId: string; startsAt: string; endsAt: string; occupiedUntil: string; durationMinutes: number; bufferMinutes: number; priceCents: number }
 export interface SlotSelection { clinicId: string; serviceId: string; doctorId: string; chairId: string; shiftId: string; startsAt: string }
 export interface BookingPolicy { holdSeconds: number; cancellationNoticeMinutes: number; transferBufferMinutes: number; slotStepMinutes: number; timezone: 'Asia/Shanghai' }
+/** Read-only query window; historical appointment/hold policy snapshots are unchanged. */
+export interface BookingQueryPolicy extends BookingPolicy { queryWindow: { fromDate: string; toDate: string } }
 export interface Hold { id: string; expiresAt: string; rowVersion: number; slot: BookingSlot; policy: BookingPolicy }
 export type AppointmentStatus = 'confirmed' | 'cancelled' | 'rescheduled';
 export interface Appointment { id: string; appointmentNo: string; patientId: string; patientName: string; clinicId: string; clinicName: string; clinicAddress: string; doctorId: string; doctorName: string; serviceId: string; serviceName: string; chairId: string; startsAt: string; endsAt: string; occupiedUntil: string; status: AppointmentStatus; attendance: 'not_recorded'; rowVersion: number; supersedesAppointmentId: string | null; replacementAppointmentId: string | null; cancellationReason: string | null; createdAt: string; policy: BookingPolicy; events?: AppointmentEvent[]; doctorIsDemo?: boolean; patientIsDemo?: boolean }

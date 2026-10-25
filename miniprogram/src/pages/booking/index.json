@@ -1,1 +1,9 @@
-{"navigationBarTitleText":"选择就诊时间"}
+{
+  "navigationBarTitleText": "选择就诊时间",
+  "usingComponents": {
+    "van-calendar": "/vendor/vant/calendar/index",
+    "van-empty": "/vendor/vant/empty/index",
+    "van-loading": "/vendor/vant/loading/index",
+    "van-steps": "/vendor/vant/steps/index"
+  }
+}

@@ -2,6 +2,8 @@
 
 本次交付是 **微信原生小程序 + Vue 3 工作台 + TypeScript/Fastify API + PostgreSQL 17** 的预约闭环。两端使用同一 `/api/v1` 后端和 PostgreSQL，不读取旧 SQLite。
 
+2026-10-25 界面优化：小程序接入 Vant 日历与分时段号源，网站增加日期导航、医生分组日程、本人视角和紧凑/手机布局；[参考与改动对照](docs/implementation/reference-ui-20261025.md)列出 DentalPin、Open Dental 和 Vant 的实际参考范围及测试记录。
+
 设计依据为 [300页设计文档](docs/design/安德鲁牙科系统设计文档.pdf)，SHA-256 `22483aee6c2ca681937bb667868e25c85f97f85dbc8e11f5dd6da3d6ce2ee3eb`。本次实现 UC-01～07 的预约核心，不声称已实现全部24个用例。完整设计目标与本次交付范围见[设计审查](docs/implementation/design-review.md)。
 
 ## 本地运行

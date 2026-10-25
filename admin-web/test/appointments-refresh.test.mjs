@@ -14,6 +14,7 @@ function compile(source, require = () => { throw new Error('Unexpected import');
   return exports;
 }
 const scheduler = compile(readFileSync(new URL('../src/visible-refresh.ts', import.meta.url), 'utf8'));
+const scheduleView = compile(readFileSync(new URL('../src/schedule-view.ts', import.meta.url), 'utf8'));
 const flush = () => new Promise(resolve => setImmediate(resolve));
 function deferred() {
   let resolve, reject;
@@ -124,13 +125,14 @@ function view() {
     },
     '../api': { api, ApiError, errorText: error => error.message, query: values => '?' + new URLSearchParams(values), readPending: () => null },
     '../stores/auth': { useAuth: () => auth },
-    '../stores/catalog': { useCatalog: () => ({ loaded: true }) },
+    '../stores/catalog': { useCatalog: () => ({ loaded: true, clinics: [] }) },
     '../utils': { today: () => '2026-10-24', time: value => value, statusLabels: {} },
     '../visible-refresh': scheduler,
+    '../schedule-view': scheduleView,
   };
   const source = readFileSync(new URL('../src/views/AppointmentsView.vue', import.meta.url), 'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1];
   const exports = {};
-  const compiled = ts.transpileModule(source + '\nexport const exposed = { load, detail, refreshVisible, cancel, rows, total, loading, selected, drawer, date };', {
+  const compiled = ts.transpileModule(source + '\nexport const exposed = { load, detail, refreshVisible, cancel, rows, total, loading, selected, drawer, date, selectDate, selectView, viewMode, agendaRows, agendaComplete, agendaWarning, currentTitle, doctorOnly };', {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText;
   vm.runInNewContext(compiled, {
@@ -238,4 +240,48 @@ test('unmount removes visibility timers and rejects in-flight list responses', a
   assert.equal(page.visible.listeners.size, 0);
   listResult(page.requests[1], 'after-unmount'); await pending;
   assert.equal(page.rows.value[0].id, 'initial');
+});
+
+test('the agenda loads all selected-day pages at 100 rows and verifies its leading page', async () => {
+  const page = view();
+  page.viewMode.value = 'agenda';
+  const rows = Array.from({ length: 150 }, (_, index) => ({ ...appointment('full-' + index), rowVersion: 1 }));
+  const loading = page.load();
+  assert.ok(page.requests[0].path.includes('pageSize=100'));
+  page.requests[0].resolve({ items: rows.slice(0, 100), total: 150, page: 1, pageSize: 100 });
+  await flush();
+  assert.ok(page.requests[1].path.includes('page=2'));
+  page.requests[1].resolve({ items: rows.slice(100), total: 150, page: 2, pageSize: 100 });
+  await flush();
+  assert.ok(page.requests[2].path.includes('page=1'));
+  page.requests[2].resolve({ items: rows.slice(0, 100), total: 150, page: 1, pageSize: 100 });
+  await loading;
+  assert.equal(page.agendaRows.value.length, 150);
+  assert.equal(page.agendaComplete.value, true);
+  assert.equal(page.rows.value.length, 0, 'The agenda cannot reuse the ordinary paginated list');
+});
+
+test('changing the agenda date invalidates old pages before they can start more queries', async () => {
+  const page = view();
+  page.viewMode.value = 'agenda';
+  const old = page.load();
+  const next = page.selectDate('2026-10-25');
+  page.requests[0].resolve({ items: Array.from({ length: 100 }, (_, index) => ({ ...appointment('old-' + index), rowVersion: 1 })), total: 101, page: 1, pageSize: 100 });
+  await old;
+  assert.equal(page.requests.length, 2, 'A superseded agenda must not request its next page');
+  assert.ok(page.requests[1].path.includes('date=2026-10-25'));
+  page.requests[1].resolve({ items: [], total: 0, page: 1, pageSize: 100 });
+  await next;
+  assert.equal(page.agendaRows.value.length, 0);
+  assert.equal(page.agendaComplete.value, true);
+});
+
+test('an agenda without one selected day does not query or imply a complete all-date schedule', async () => {
+  const page = view();
+  page.date.value = '';
+  page.viewMode.value = 'agenda';
+  await page.load();
+  assert.equal(page.requests.length, 0);
+  assert.equal(page.agendaComplete.value, false);
+  assert.match(page.agendaWarning.value, /选择某一天/);
 });

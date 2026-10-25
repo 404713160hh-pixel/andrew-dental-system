@@ -1,6 +1,6 @@
 {
   "status": "passed",
-  "startedAt": "2026-10-24T04:07:12.303Z",
+  "startedAt": "2026-10-25T13:07:07.944Z",
   "command": "node scripts/booking-doctor-view.mjs",
   "execution": "Real installed Google Chrome, rendered Vue UI and real HTTP; existing doctor.a data only",
   "environment": {
@@ -14,11 +14,11 @@
   "sourceFiles": [
     {
       "path": "scripts/booking-doctor-view.mjs",
-      "sha256": "c40a5689bfa883dc7e1af6956cd5290f091f81adaf931f61ded735e71f16d790"
+      "sha256": "39ec26196b6a0e0ff8aeacc0667efbbec4bb8297801b3eff17ecfb934acaae8c"
     },
     {
       "path": "booking-api/src/app.ts",
-      "sha256": "f12a15c60ddac0eeb0a3051e755904c405a3e234167c2af50e284e7c0bd4dc3d"
+      "sha256": "fb935981e7b74108acb8b4185cf5e1c9842358eaf7627bb5828660a6b156daa1"
     },
     {
       "path": "booking-api/src/auth.ts",
@@ -38,15 +38,31 @@
     },
     {
       "path": "admin-web/src/views/ShiftsView.vue",
-      "sha256": "71b120fecff1d333f97cc0aacab0ee654be42a1bbafd5e1e997f06e3b295af1c"
+      "sha256": "71881b8ce460bac1f1169b3f934681c3814b0a8498a3244d198f4a2e3254cff4"
     },
     {
       "path": "admin-web/src/views/AppointmentsView.vue",
-      "sha256": "db83cfc6aa4ef6f284819928d11a69c425109dad8d66f1edbb5bb72802bfdb21"
+      "sha256": "08f6ba59ac77e506e6d86b488dc82b4c26b7ef661a713d087523f8392b0a1fbe"
     },
     {
       "path": "admin-web/src/visible-refresh.ts",
       "sha256": "8aeb8a2080dc1b41fdf0bd552add7a5d1383f2bdc92ca589484d606a77171fc1"
+    },
+    {
+      "path": "admin-web/src/App.vue",
+      "sha256": "7ae5da4df292daa98a1a277dd748eaad4a47f50293e9df4374472314511375a8"
+    },
+    {
+      "path": "admin-web/src/style.css",
+      "sha256": "b56f0a417106d63d6cec662354f762d65789098155d6bc3063c5a83b17e0b26a"
+    },
+    {
+      "path": "admin-web/src/schedule-view.ts",
+      "sha256": "3b92c43a655c0cd88abd88249f0ef85991b1d12564915efc39865b2b9e6572e5"
+    },
+    {
+      "path": "admin-web/src/components/DateNavigator.vue",
+      "sha256": "2b6bb472406400b367dfcf27ea8d61a8eb8a037f9ba627041475eed765a61b1d"
     }
   ],
   "sourceHashesAreWorkspaceSnapshot": true,
@@ -58,15 +74,23 @@
     {
       "name": "真实排班页显示非空本人班次，后端每条doctorId等于当前staffId",
       "status": "passed",
-      "date": "2026-10-24",
+      "date": "2026-10-26",
       "queriedRows": 14,
       "renderedRows": 1,
       "shiftIds": [
-        "ec24b532-6ccb-47bf-a4f5-7a4f721325a8"
+        "c3b0583d-bb2a-4bd7-8750-01af66a0c1fe"
       ]
     },
     {
       "name": "医生排班页无发布和撤销按钮，导航无资源维护、代约与患者管理入口",
+      "status": "passed"
+    },
+    {
+      "name": "医生排班卡片与列表记录数一致，快捷日期明确选中实际日期",
+      "status": "passed"
+    },
+    {
+      "name": "医生预约日程读取完整筛选数据，按本人分组且可切回列表",
       "status": "passed"
     },
     {
@@ -85,6 +109,14 @@
       "appointmentId": "b54a0ae0-290d-4083-9bdd-4b6065434bf5"
     },
     {
+      "name": "紧凑视图按当前账号保存，页面重载后保持并可恢复舒适视图",
+      "status": "passed"
+    },
+    {
+      "name": "390px移动导航可展开并进入我的排班，路由切换后导航自动收起",
+      "status": "passed"
+    },
+    {
       "name": "医生直接访问代约、患者管理及五类资源维护URL均回预约列表",
       "status": "passed"
     },
@@ -94,8 +126,11 @@
     }
   ],
   "screenshots": [
-    "screenshots/booking/doctor-view-mvlvnu0e/01-own-shifts-readonly.png",
-    "screenshots/booking/doctor-view-mvlvnu0e/02-own-appointments-readonly.png"
+    "screenshots/booking/doctor-view-mvnue1bc/01-own-shifts-readonly.png",
+    "screenshots/booking/doctor-view-mvnue1bc/03-own-shift-cards.png",
+    "screenshots/booking/doctor-view-mvnue1bc/04-own-appointment-agenda.png",
+    "screenshots/booking/doctor-view-mvnue1bc/02-own-appointments-readonly.png",
+    "screenshots/booking/doctor-view-mvnue1bc/05-mobile-own-schedule.png"
   ],
   "blockedMutations": [],
   "pageErrors": [],
@@ -125,5 +160,5 @@
   },
   "sourceUnchangedDuringRun": true,
   "sessionRevoked": true,
-  "finishedAt": "2026-10-24T04:07:17.170Z"
+  "finishedAt": "2026-10-25T13:07:15.135Z"
 }

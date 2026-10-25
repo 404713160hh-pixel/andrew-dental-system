@@ -125,6 +125,18 @@ after(async () => {
   }
 });
 
+test('public query policy publishes the inclusive server date window used by slot validation', async () => {
+  const policy=data<{queryWindow:{fromDate:string;toDate:string}}>(await request('GET','/booking-policy'));
+  assert.match(policy.queryWindow.fromDate,/^\d{4}-\d{2}-\d{2}$/);
+  assert.match(policy.queryWindow.toDate,/^\d{4}-\d{2}-\d{2}$/);
+  for(const date of [policy.queryWindow.fromDate,policy.queryWindow.toDate]) {
+    const response=await request('GET','/booking-slots?'+new URLSearchParams({clinicId:clinics[0]!.id,serviceId:services[0]!.id,date}));
+    assert.equal(response.statusCode,200,response.body);
+  }
+  const after=new Date(Date.parse(policy.queryWindow.toDate+'T00:00:00Z')+86400000).toISOString().slice(0,10);
+  const rejected=await request('GET','/booking-slots?'+new URLSearchParams({clinicId:clinics[0]!.id,serviceId:services[0]!.id,date:after}));
+  assert.equal(rejected.statusCode,400);assert.equal(rejected.json().error.code,'DATE_OUT_OF_RANGE');
+});
 test('versioned migrations are repeatable and the test database is isolated', async () => {
   assert.equal((await db.query('SELECT current_database() AS name')).rows[0].name, databaseName);
   assert.deepEqual(await migrate(db), []);

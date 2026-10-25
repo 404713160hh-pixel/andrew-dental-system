@@ -15,6 +15,7 @@ import { patientSelect,getPatient,insertPatient,saveAllergies,clinicSelect,docto
 import { querySlots } from './repositories/booking.js';
 import { bookingPolicy,createHold,confirmAppointment,changeAppointment,appointmentAccess } from './services/booking.js';
 import { saveResource,publishShift,cancelShift } from './services/resources.js';
+import { isQueryDateAllowed,queryWindow,QUERY_MAX_DAYS } from './query-window.js';
 type Shape={Params:Record<string,string>;Querystring:Record<string,string>;Body:unknown};
 type Request=FastifyRequest<Shape>;
 type Handler=(request:Request,user:Principal|undefined)=>Promise<unknown>;
@@ -81,7 +82,7 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
    await saveAllergies(db,patientId,input.allergies);await audit(db,user!.id,'patient.profile.updated',patientId,req.id);return getPatient(db,patientId);
   });
  });
- route('GET','/booking-policy','none',async()=>bookingPolicy(config));
+ route('GET','/booking-policy','none',async()=>({...bookingPolicy(config),queryWindow:queryWindow()}));
  route('GET','/treatment-references','none',async()=>{
   // This public projection contains no patient/account data. A consultation fee
   // remains in services.price_cents; treatment ranges never price a booking.
@@ -158,8 +159,7 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
  });
  route('GET','/booking-slots','optional',async(req,user)=>{
   const input=z.object({clinicId:uuid,serviceId:uuid,date,doctorId:uuid.optional()}).parse(req.query);
-  const days=(Date.parse(input.date+'T00:00:00+08:00')-Date.now())/86400000;
-  requireThat(days>=-1&&days<=90,400,'DATE_OUT_OF_RANGE','请选择未来90天内的日期');
+  requireThat(isQueryDateAllowed(input.date),400,'DATE_OUT_OF_RANGE',`请选择未来${QUERY_MAX_DAYS}天内的日期`);
   return querySlots(pool,{...input,...(user?.patientId?{patientId:user.patientId}:{})},bookingPolicy(config));
  });
  route('POST','/booking-holds','required',async(req,user)=>createHold(pool,config,user!,req.body,req.id));

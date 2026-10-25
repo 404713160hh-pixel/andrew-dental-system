@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
-import { cpSync, mkdirSync, readdirSync } from 'node:fs';
-import { dirname, resolve, extname, join } from 'node:path';
+import { cpSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, existsSync } from 'node:fs';
+import { dirname, resolve, extname, join, sep } from 'node:path';
+import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import './sync-contracts.mjs';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -17,4 +18,38 @@ function copyAssets(relative = '') {
   }
 }
 copyAssets();
+const require = createRequire(import.meta.url);
+const packagePath = require.resolve('@vant/weapp/package.json');
+const vendorPackage = JSON.parse(readFileSync(packagePath, 'utf8'));
+if (vendorPackage.version !== '1.11.7') throw new Error('请使用锁定的 @vant/weapp@1.11.7 后重新构建。');
+const outputRoot = resolve(root, 'dist');
+const vendorTarget = resolve(outputRoot, 'vendor/vant');
+if (!vendorTarget.startsWith(outputRoot + sep)) throw new Error('组件输出目录超出小程序构建目录。');
+rmSync(vendorTarget, { recursive: true, force: true });
+cpSync(resolve(dirname(packagePath), 'dist'), vendorTarget, { recursive: true });
+cpSync(resolve(dirname(packagePath), 'LICENSE'), resolve(vendorTarget, 'LICENSE'));
+
+let outputBytes = 0;
+function verifyOutput(directory) {
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    const path = resolve(directory, entry.name);
+    if (entry.isDirectory()) verifyOutput(path);
+    else {
+      outputBytes += statSync(path).size;
+      if (!path.endsWith('.json')) continue;
+      const config = JSON.parse(readFileSync(path, 'utf8'));
+      for (const component of Object.values(config.usingComponents ?? {})) {
+        if (/^(?:plugin|wx):\/\//.test(component)) continue;
+        const target = component.startsWith('/') ? resolve(outputRoot, '.' + component) : resolve(dirname(path), component);
+        if (!target.startsWith(outputRoot + sep)) throw new Error('组件引用超出构建目录：' + component);
+        for (const extension of ['.js', '.json', '.wxml', '.wxss']) {
+          if (!existsSync(target + extension)) throw new Error('组件构建文件缺失：' + target + extension);
+        }
+      }
+    }
+  }
+}
+verifyOutput(outputRoot);
+if (outputBytes >= 2 * 1024 * 1024) throw new Error('小程序构建产物超过 2 MiB，请先检查包体。');
+console.log(`已复制 @vant/weapp@${vendorPackage.version} 与 LICENSE；构建产物 ${outputBytes} 字节。`);
 console.log('原生小程序已构建到 miniprogram/dist；开发者工具导入 miniprogram 目录。');

@@ -1,6 +1,6 @@
 {
-  "namespace": "UIQAmvkh9m5208f53c",
-  "startedAt": "2026-10-23T04:36:28.118Z",
+  "namespace": "UIQAmvnucho6dc8d9b",
+  "startedAt": "2026-10-25T13:05:55.831Z",
   "status": "passed",
   "environment": {
     "api": "http://127.0.0.1:3310/api/v1",
@@ -13,8 +13,8 @@
     {
       "name": "独立合成夹具与真实PostgreSQL连接",
       "status": "passed",
-      "namespace": "UIQAmvkh9m5208f53c",
-      "date": "2026-11-08"
+      "namespace": "UIQAmvnucho6dc8d9b",
+      "date": "2026-11-10"
     },
     {
       "name": "总部通过真实浏览器登录",
@@ -23,7 +23,7 @@
     {
       "name": "UI发布未来班次，真实HTTP查询到对应号源",
       "status": "passed",
-      "shiftId": "df9a4597-b31a-4191-88d7-98d9bb411e6c",
+      "shiftId": "dbcf859a-5c28-45d4-984b-002ef579c197",
       "slotCount": 14
     },
     {
@@ -33,12 +33,12 @@
     {
       "name": "患者API实际预约成功",
       "status": "passed",
-      "appointmentId": "aa552468-a11d-4d8f-b711-c1db8845dde2"
+      "appointmentId": "c8494323-c458-49ec-8d10-d10aba4c925b"
     },
     {
       "name": "前台UI看到患者API创建的同一笔预约",
       "status": "passed",
-      "appointmentNo": "AD2026102385913F4B72"
+      "appointmentNo": "AD2026102572D6DCB40D"
     },
     {
       "name": "UI取消与资源释放在患者端同源可见",
@@ -47,14 +47,14 @@
     {
       "name": "前台UI完整代约、双确认、响应丢失后刷新恢复同一笔回执",
       "status": "passed",
-      "appointmentId": "e9ce3599-a279-4897-b766-87cf6839bf06",
+      "appointmentId": "446e1353-4e42-4809-a491-ca895b806488",
       "noDuplicate": true
     },
     {
       "name": "UI原子改期保留替代链并释放原时段",
       "status": "passed",
-      "previousId": "e9ce3599-a279-4897-b766-87cf6839bf06",
-      "replacementId": "f3418ea6-c3ea-4ed1-b062-429ba26c65d4"
+      "previousId": "446e1353-4e42-4809-a491-ca895b806488",
+      "replacementId": "b21e998a-8788-4eca-b03e-d1afa942abcf"
     },
     {
       "name": "390px工作台布局无页面横向溢出",
@@ -70,25 +70,25 @@
     }
   ],
   "screenshots": [
-    "screenshots/booking/UIQAmvkh9m5208f53c/01-overview-desktop.png",
-    "screenshots/booking/UIQAmvkh9m5208f53c/02-publish-shift.png",
-    "screenshots/booking/UIQAmvkh9m5208f53c/03-shared-appointment-detail.png",
-    "screenshots/booking/UIQAmvkh9m5208f53c/04-assisted-booking-confirmation.png",
-    "screenshots/booking/UIQAmvkh9m5208f53c/05-network-result-unknown.png",
-    "screenshots/booking/UIQAmvkh9m5208f53c/06-overview-mobile.png"
+    "screenshots/booking/UIQAmvnucho6dc8d9b/01-overview-desktop.png",
+    "screenshots/booking/UIQAmvnucho6dc8d9b/02-publish-shift.png",
+    "screenshots/booking/UIQAmvnucho6dc8d9b/03-shared-appointment-detail.png",
+    "screenshots/booking/UIQAmvnucho6dc8d9b/04-assisted-booking-confirmation.png",
+    "screenshots/booking/UIQAmvnucho6dc8d9b/05-network-result-unknown.png",
+    "screenshots/booking/UIQAmvnucho6dc8d9b/06-overview-mobile.png"
   ],
   "fixture": {
     "clinicId": "d6febd74-79ee-4894-8a64-7f2800865850",
-    "qualificationId": "c47557db-105e-4cb8-bc94-054d8b7ae65e",
-    "doctorId": "2e1a4787-dc3f-452a-926e-becf1ed00f86",
-    "serviceId": "76bb06dd-19c8-49e2-925a-af0bc15f1cca",
-    "chairId": "381964af-d8f5-49a6-b681-7834866cbd65",
-    "patientId": "2c71f0ce-d792-4df7-bf29-cda7d0311ef8",
-    "userId": "4e3e087f-b262-4201-ad70-8ab98bfa6791",
-    "date": "2026-11-08",
-    "patientAppointmentId": "aa552468-a11d-4d8f-b711-c1db8845dde2",
-    "staffAppointmentId": "e9ce3599-a279-4897-b766-87cf6839bf06",
-    "replacementAppointmentId": "f3418ea6-c3ea-4ed1-b062-429ba26c65d4"
+    "qualificationId": "866c4aca-ba7a-461e-8f91-4989255872f2",
+    "doctorId": "bd0224f1-d2c6-4f2b-8f79-1bd5fe64183a",
+    "serviceId": "830dc9a6-a3df-4f54-8cde-6d09e182c2a7",
+    "chairId": "f46dc520-c335-472b-aa36-d7a3cb009351",
+    "patientId": "ca6e482e-2987-49df-8bd3-add3d617d72a",
+    "userId": "bb5320db-4d0d-434d-9646-bee2ab7d52f4",
+    "date": "2026-11-10",
+    "patientAppointmentId": "c8494323-c458-49ec-8d10-d10aba4c925b",
+    "staffAppointmentId": "446e1353-4e42-4809-a491-ca895b806488",
+    "replacementAppointmentId": "b21e998a-8788-4eca-b03e-d1afa942abcf"
   },
   "cleanup": {
     "additionalAppointmentsCancelled": 1,
@@ -101,5 +101,5 @@
     "syntheticAccountInactive": true,
     "errors": []
   },
-  "finishedAt": "2026-10-23T04:36:42.551Z"
+  "finishedAt": "2026-10-25T13:06:12.009Z"
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Plus, Refresh } from '@element-plus/icons-vue';
 import type { Shift } from '@andrew/shared';
@@ -7,11 +7,15 @@ import { api, errorText, query } from '../api';
 import { useAuth } from '../stores/auth';
 import { useCatalog } from '../stores/catalog';
 import { instant, statusLabels, statusType, time, today } from '../utils';
+import { createLatestRequest } from '../visible-refresh';
+import { groupByDoctor, isDoctorOnly } from '../schedule-view';
+import DateNavigator from '../components/DateNavigator.vue';
 const auth = useAuth();
 const catalog = useCatalog();
 const clinicId = ref('');
 const date = ref(today());
 const rows = ref<Shift[]>([]);
+const viewMode = ref<'list' | 'agenda'>('list');
 const loading = ref(false);
 const error = ref('');
 const dialog = ref(false);
@@ -24,6 +28,11 @@ const form = reactive({
   endsAt: '',
   serviceIds: [] as string[],
 });
+const doctorOnly = computed(() => isDoctorOnly(auth.user?.roles));
+const groups = computed(() => groupByDoctor(rows.value));
+const filterSummary = computed(() => [date.value || '全部日期', clinicName(clinicId.value) || '全部授权门诊'].join(' · '));
+const requests = createLatestRequest(() => auth.user?.id);
+let disposed = false;
 const permittedClinics = computed(() =>
   catalog.clinics.filter((item) => auth.isHq || auth.clinicIds.has(item.id)),
 );
@@ -36,18 +45,23 @@ function canCancel(shift: Shift) {
   return auth.isHq || (auth.canManage && auth.clinicIds.has(shift.clinicId));
 }
 async function load() {
+  if (disposed || !auth.user) return;
+  const current = requests.begin();
   loading.value = true;
   error.value = '';
   try {
-    rows.value = await api<Shift[]>(
+    const result = await api<Shift[]>(
       `/shifts${query({ clinicId: clinicId.value, date: date.value })}`,
     );
+    if (current()) rows.value = result;
   } catch (e) {
-    error.value = errorText(e);
+    if (current()) { rows.value = []; error.value = errorText(e); }
   } finally {
-    loading.value = false;
+    if (current()) loading.value = false;
   }
 }
+async function search() { rows.value = []; await load(); }
+async function selectDate(value: string) { date.value = value; await search(); }
 function open() {
   Object.assign(form, {
     clinicId: clinicId.value || permittedClinics.value.find((item) => item.active)?.id || '',
@@ -123,16 +137,17 @@ onMounted(async () => {
   try {
     if (!catalog.loaded) await catalog.load();
   } catch (e) {
-    error.value = errorText(e);
+    if (!disposed) error.value = errorText(e);
   }
-  await load();
+  if (!disposed) await load();
 });
+onUnmounted(() => { disposed = true; requests.stop(); });
 </script>
 <template>
   <section class="page-heading">
     <div>
       <div class="eyebrow">DOCTOR SCHEDULES</div>
-      <h1>医生排班</h1>
+      <h1>{{ doctorOnly ? '我的排班' : '医生排班' }}</h1>
       <p>让医生资格、门诊服务与可预约时段保持一致。</p>
     </div>
     <div class="button-row">
@@ -140,6 +155,17 @@ onMounted(async () => {
       ><el-button v-if="auth.canManage" type="primary" :icon="Plus" @click="open"
         >发布班次</el-button
       >
+    </div>
+  </section>
+  <section class="schedule-navigation" aria-label="排班日期与视图">
+    <DateNavigator :date="date" :today="today()" @select="selectDate">
+      <el-button-group aria-label="排班展示方式">
+        <el-button :type="viewMode === 'list' ? 'primary' : 'default'" :aria-pressed="viewMode === 'list'" @click="viewMode = 'list'">列表</el-button>
+        <el-button :type="viewMode === 'agenda' ? 'primary' : 'default'" :aria-pressed="viewMode === 'agenda'" @click="viewMode = 'agenda'">日程卡片</el-button>
+      </el-button-group>
+    </DateNavigator>
+    <div class="schedule-filter-summary" aria-live="polite"><span>{{ filterSummary }}</span>
+      <span v-if="doctorOnly" class="schedule-scope-badge">仅本人</span><span v-else class="schedule-scope-badge">授权范围</span>
     </div>
   </section>
   <el-alert
@@ -166,20 +192,21 @@ onMounted(async () => {
           placeholder="全部日期"
           clearable
           style="width: 170px"
-          @change="load" /></el-form-item
+          @change="search" /></el-form-item
       ><el-form-item label="门诊"
         ><el-select
           v-model="clinicId"
           clearable
           style="width: 210px"
           placeholder="全部授权门诊"
-          @change="load"
+          @change="search"
           ><el-option
             v-for="clinic in catalog.clinics"
             :key="clinic.id"
             :value="clinic.id"
             :label="clinic.name" /></el-select></el-form-item></el-form
-    ><el-table :data="rows" row-key="id" v-loading="loading" empty-text="暂无符合条件的排班"
+    ><p class="schedule-query-note">本次查询展示 {{ rows.length }} 条排班，服务端最多返回 500 条；不代表全部历史记录或可预约容量。{{ rows.length === 500 ? '已达到展示上限，请按日期或门诊缩小范围。' : '' }}</p>
+    <el-table v-if="viewMode === 'list'" :data="rows" row-key="id" v-loading="loading" :empty-text="error ? '排班读取失败，请点击刷新重试' : '暂无符合条件的排班'"
       ><el-table-column prop="doctorName" label="医生" min-width="130" /><el-table-column
         label="门诊"
         min-width="180"
@@ -217,6 +244,19 @@ onMounted(async () => {
         ></el-table-column
       ></el-table
     >
+    <div v-else class="schedule-shift-grid" v-loading="loading" aria-label="按医生分组的排班卡片">
+      <section v-for="group in groups" :key="group.doctorId" class="schedule-agenda-group">
+        <header class="schedule-agenda-header"><h3>{{ group.doctorName }}</h3><small>{{ group.items.length }} 条查询记录</small></header>
+        <article v-for="shift in group.items" :key="shift.id" class="schedule-shift-card">
+          <div class="schedule-agenda-header"><strong>{{ time(shift.startsAt, true) }} — {{ time(shift.endsAt, true) }}</strong><el-tag :type="statusType(shift.status)">{{ statusLabels[shift.status] || shift.status }}</el-tag></div>
+          <p class="schedule-agenda-meta">{{ clinicName(shift.clinicId) }}</p>
+          <div class="tag-list"><el-tag v-for="id in shift.serviceIds" :key="id" size="small" type="info">{{ serviceName(id) }}</el-tag></div>
+          <el-button v-if="shift.status === 'published' && canCancel(shift)" type="danger" text @click="cancel(shift)">撤销班次</el-button>
+          <span v-else class="muted small">{{ shift.status === 'cancelled' ? '已撤销' : '只读' }}</span>
+        </article>
+      </section>
+      <el-empty v-if="!loading && !rows.length" :description="error ? '排班读取失败，请刷新重试' : '当前筛选范围内暂无排班'" />
+    </div>
   </section>
   <el-dialog v-model="dialog" title="发布医生班次" width="630px" :close-on-click-modal="false"
     ><el-alert

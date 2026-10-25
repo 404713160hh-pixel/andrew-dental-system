@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { Plus, Refresh, Search } from '@element-plus/icons-vue';
@@ -14,7 +14,8 @@ import type {
 import { api, ApiError, errorText } from '../api';
 import { useAuth } from '../stores/auth';
 import { useCatalog } from '../stores/catalog';
-import { calendarDate, instant, money, today } from '../utils';
+import { instant, money, today } from '../utils';
+import { createLatestRequest } from '../visible-refresh';
 type Kind = 'clinics' | 'doctors' | 'services' | 'chairs' | 'qualifications';
 type Resource = Clinic | Doctor | Service | Chair | Qualification;
 interface ResourceForm {
@@ -43,6 +44,12 @@ const q = ref('');
 const clinicId = ref('');
 const loading = ref(false);
 const error = ref('');
+const ready = ref(false);
+const completedKind = ref<Kind | null>(null);
+const requestScope = createLatestRequest(() => auth.user?.id);
+const clock = ref(Date.now());
+let clockTimer: number | undefined;
+let disposed = false;
 const dialog = ref(false);
 const saving = ref(false);
 const editing = ref<Resource | null>(null);
@@ -61,8 +68,10 @@ const explanations: Record<Kind, string> = {
   chairs: '按门诊维护牙椅资源，预约占用由系统统一校验。',
   qualifications: '总部统一维护资格目录，医生资质与服务要求使用同一目录。',
 };
-const allRows = computed<Resource[]>(() =>
-  kind.value === 'clinics'
+const allRows = computed<Resource[]>(() => {
+  if (!ready.value || error.value || completedKind.value !== kind.value || !catalog.loaded) return [];
+  if (kind.value === 'chairs' && catalog.chairsClinicId !== clinicId.value) return [];
+  return kind.value === 'clinics'
     ? catalog.clinics
     : kind.value === 'doctors'
       ? catalog.doctors
@@ -70,8 +79,8 @@ const allRows = computed<Resource[]>(() =>
         ? catalog.services
         : kind.value === 'chairs'
           ? catalog.chairs
-          : catalog.qualifications,
-);
+          : catalog.qualifications;
+});
 const rows = computed(() =>
   allRows.value.filter((item) => item.name.toLowerCase().includes(q.value.trim().toLowerCase())),
 );
@@ -80,6 +89,14 @@ const permittedClinics = computed(() =>
   catalog.clinics.filter((item) => auth.isHq || auth.clinicIds.has(item.id)),
 );
 const canCreate = computed(() => auth.isHq || (kind.value === 'chairs' && auth.canManage));
+const scopeLabel = computed(() => kind.value === 'chairs'
+  ? permittedClinics.value.find(item => item.id === clinicId.value)?.name || (clinicId.value ? '所选门诊（目录待加载）' : '尚未选择门诊')
+  : auth.isHq ? '全部门诊共享目录' : '当前账号授权目录');
+const emptyText = computed(() => loading.value ? '正在加载当前筛选的资源…'
+  : error.value ? '当前筛选加载失败，请重新加载'
+  : !ready.value ? '当前资源尚未确认，请重新加载'
+  : kind.value === 'chairs' && !clinicId.value ? '暂无可管理的门诊'
+  : q.value.trim() ? '当前名称筛选没有匹配资源' : '当前范围暂无资源');
 function canEdit(row: Resource) {
   if (auth.isHq) return true;
   if (!auth.canManage) return false;
@@ -105,23 +122,39 @@ const defaults = (): ResourceForm => ({
   clinicId: clinicId.value || permittedClinics.value[0]?.id || '',
 });
 const form = reactive<ResourceForm>(defaults());
-async function load() {
+async function load(refreshDirectory = true) {
+  const requestKind = kind.value;
+  const selectedClinicId = clinicId.value;
+  const current = requestScope.begin();
+  const accepts = () => current() && !disposed && kind.value === requestKind;
   loading.value = true;
   error.value = '';
+  ready.value = false;
+  completedKind.value = null;
   try {
-    await catalog.load();
-    if (kind.value === 'chairs') {
-      if (!clinicId.value) clinicId.value = permittedClinics.value[0]?.id || '';
-      if (clinicId.value) await catalog.loadChairs(clinicId.value);
-      else catalog.chairs = [];
+    if (refreshDirectory || !catalog.loaded) {
+      const accepted = await catalog.load();
+      if (!accepts() || !accepted) return;
     }
+    if (!accepts()) return;
+    if (requestKind === 'chairs') {
+      const selected = permittedClinics.value.find(item => item.id === selectedClinicId)?.id
+        || permittedClinics.value[0]?.id || '';
+      clinicId.value = selected;
+      if (selected) {
+        const accepted = await catalog.loadChairs(selected);
+        if (!accepts() || !accepted || catalog.chairsClinicId !== selected) return;
+      }
+    }
+    if (accepts()) { completedKind.value = requestKind; ready.value = true; }
   } catch (e) {
-    error.value = errorText(e);
+    if (accepts()) error.value = errorText(e);
   } finally {
-    loading.value = false;
+    if (accepts()) loading.value = false;
   }
 }
 function open(row: Resource | null = null) {
+  if (!ready.value || loading.value || error.value) return;
   formError.value = '';
   editing.value = row;
   Object.assign(form, defaults());
@@ -286,12 +319,28 @@ function clinicName(id: string) {
 function qualificationName(id: string) {
   return catalog.qualifications.find((item) => item.id === id)?.name || id;
 }
-watch(kind, () => {
+function qualificationState(qualification: DentistQualification) {
+  if (Date.parse(qualification.validFrom) > clock.value) return { label: '未生效', tone: 'info' as const };
+  if (qualification.validUntil && Date.parse(qualification.validUntil) <= clock.value) return { label: '已过期', tone: 'warning' as const };
+  return { label: '生效中', tone: 'success' as const };
+}
+function qualificationPeriod(qualification: DentistQualification) {
+  return `${localDateTime(qualification.validFrom).replace('T', ' ')} 至 ${qualification.validUntil ? localDateTime(qualification.validUntil).replace('T', ' ') : '长期（无失效时刻）'}`;
+}
+watch([kind, () => auth.user?.id], () => {
   q.value = '';
+  clinicId.value = '';
   dialog.value = false;
   void load();
 });
-onMounted(load);
+onMounted(() => {
+  void load();
+  clockTimer = window.setInterval(() => { clock.value = Date.now(); }, 60000);
+});
+onUnmounted(() => {
+  disposed = true; requestScope.stop();
+  if (clockTimer !== undefined) window.clearInterval(clockTimer);
+});
 </script>
 <template>
   <section class="page-heading">
@@ -301,8 +350,8 @@ onMounted(load);
       <p>{{ explanations[kind] }}</p>
     </div>
     <div class="button-row">
-      <el-button :icon="Refresh" @click="load" :loading="loading">刷新</el-button
-      ><el-button v-if="canCreate" type="primary" :icon="Plus" @click="open()"
+      <el-button :icon="Refresh" @click="load()" :loading="loading">刷新</el-button
+      ><el-button v-if="canCreate" type="primary" :icon="Plus" :disabled="loading || !!error || !ready" @click="open()"
         >新增{{
           kind === 'doctors'
             ? '医生'
@@ -324,11 +373,22 @@ onMounted(load);
     :closable="false"
     show-icon
     class="mb-24"
-  /><el-alert v-if="error" :title="error" type="error" :closable="false" show-icon class="mb-24" />
+  /><el-alert v-if="error" title="当前资源未加载成功" type="error" :closable="false" show-icon class="mb-24 resource-load-state">
+    <template #default><p>{{ error }}</p><p>当前筛选的结果尚未确认，请重新加载后再编辑资源。</p>
+      <el-button :icon="Refresh" :loading="loading" @click="load()">重新加载</el-button>
+    </template>
+  </el-alert>
+  <div class="resource-filter-summary" aria-live="polite">
+    <span>当前门诊 / 范围：<strong>{{ scopeLabel }}</strong></span>
+    <span>名称筛选：<strong>{{ q.trim() || '不限名称' }}</strong></span>
+    <span>匹配 <strong>{{ ready ? rows.length : '—' }}</strong> / 总计 <strong>{{ ready ? allRows.length : '—' }}</strong> 条</span>
+    <span v-if="loading" class="muted">正在读取当前范围…</span>
+    <span v-else-if="error" class="muted">加载失败，结果尚未确认</span>
+  </div>
   <div class="resource-count">
-    <strong>{{ allRows.length }}</strong
-    ><span>条资源</span><el-tag type="success" round>启用 {{ enabledCount }}</el-tag
-    ><el-tag type="info" round>停用 {{ allRows.length - enabledCount }}</el-tag>
+    <strong>{{ ready ? allRows.length : '—' }}</strong
+    ><span>条范围内资源</span><template v-if="ready"><el-tag type="success" round>启用 {{ enabledCount }}</el-tag
+    ><el-tag type="info" round>停用 {{ allRows.length - enabledCount }}</el-tag></template>
   </div>
   <section class="panel">
     <div class="panel-heading">
@@ -339,7 +399,7 @@ onMounted(load);
           v-model="clinicId"
           style="width: 210px"
           placeholder="选择门诊"
-          @change="load"
+          @change="load(false)"
           ><el-option
             v-for="clinic in permittedClinics"
             :key="clinic.id"
@@ -354,7 +414,8 @@ onMounted(load);
         />
       </div>
     </div>
-    <el-table :data="rows" row-key="id" v-loading="loading" empty-text="暂无匹配资源"
+    <p v-if="kind === 'doctors'" class="muted small qualification-validity">资格状态按当前时间辅助展示；完整班次的资格有效性仍由服务端在发布和预约时校验。</p>
+    <el-table :data="rows" row-key="id" v-loading="loading" :empty-text="emptyText"
       ><el-table-column prop="name" label="名称" min-width="170"
         ><template #default="{ row }"
           ><strong>{{ row.name }}</strong>
@@ -370,16 +431,15 @@ onMounted(load);
       ><template v-if="kind === 'doctors'"
         ><el-table-column label="专业资格" min-width="250"
           ><template #default="{ row }"
-            ><div class="tag-list">
-              <el-tag
+            ><div class="qualification-summary">
+              <div
                 v-for="qualification in row.qualifications"
                 :key="qualification.qualificationId"
-                type="info"
-                size="small"
-                >{{ qualificationName(qualification.qualificationId) }} ·
-                {{
-                  qualification.validUntil ? calendarDate(qualification.validUntil) : '长期有效'
-                }}</el-tag
+                class="qualification-item"
+                ><div><strong>{{ qualificationName(qualification.qualificationId) }}</strong>
+                  <el-tag :type="qualificationState(qualification).tone" size="small" class="qualification-validity">{{ qualificationState(qualification).label }}</el-tag>
+                </div><div class="qualification-period muted small">{{ qualificationPeriod(qualification) }} · 北京时间</div>
+              </div
               ><span v-if="!row.qualifications.length" class="muted">未配置资格</span>
             </div></template
           ></el-table-column

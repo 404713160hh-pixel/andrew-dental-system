@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
@@ -25,6 +25,7 @@ function runtime() {
 }
 const login = id => ({ token: 'test-token-' + id, expiresAt: new Date(Date.now() + 3600000).toISOString(), user: { id, username: id, patientId: 'patient-' + id, staffId: null, displayName: id, roles: ['patient'], assignments: [] } });
 const body = { holdId: 'hold-fixture', holdVersion: 1, patientConfirmed: true, rulesAccepted: true };
+const queryPolicyFixture = () => ({ holdSeconds: 300, cancellationNoticeMinutes: 120, transferBufferMinutes: 30, slotStepMinutes: 15, timezone: 'Asia/Shanghai', queryWindow: { fromDate: '2000-01-01', toDate: '2099-12-31' } });
 test('native build includes all configured pages, assets and callable WXML handlers', () => {
   const app = JSON.parse(readFileSync(join(root, 'dist/app.json'), 'utf8'));
   assert.deepEqual([...app.pages].sort(), ['home', 'login', 'booking', 'confirm', 'appointments', 'detail', 'profile', 'doctors', 'doctor-detail', 'prices'].map(name => 'pages/' + name + '/index').sort());
@@ -33,7 +34,7 @@ test('native build includes all configured pages, assets and callable WXML handl
     for (const extension of ['.js', '.json', '.wxml', '.wxss']) assert.ok(existsSync(join(root, 'dist', page + extension)), page + extension);
     r.load(page); const options = r.pages.at(-1), template = readFileSync(join(root, 'dist', page + '.wxml'), 'utf8');
     assert.ok(options);
-    for (const match of template.matchAll(/(?:bind|catch)(?:tap|input|change|submit)="([A-Za-z]\w*)"/g)) assert.equal(typeof options[match[1]], 'function', page + ' handler ' + match[1]);
+    for (const match of template.matchAll(/(?:bind|catch):?(?:tap|input|change|submit|click|confirm|close)="([A-Za-z]\w*)"/g)) assert.equal(typeof options[match[1]], 'function', page + ' handler ' + match[1]);
     assert.doesNotMatch(template, /<\/?(?:br|div|span|img)\b/);
   }
   r.load('components/patient-form/index'); assert.equal(r.components.length, 1);
@@ -203,7 +204,7 @@ test('booking deep links select the offering clinic and doctor; unavailable choi
   r.respond(options => {
     const url = new URL(options.url); let data;
     if (url.pathname.endsWith('/clinics')) data = clinics;
-    else if (url.pathname.endsWith('/booking-policy')) data = { timezone: 'Asia/Shanghai' };
+    else if (url.pathname.endsWith('/booking-policy')) data = queryPolicyFixture();
     else if (url.pathname.endsWith('/services')) data = url.searchParams.has('clinicId') ? services.filter(item => item.clinicIds.includes(url.searchParams.get('clinicId'))) : services;
     else if (url.pathname.endsWith('/doctors')) data = url.searchParams.get('serviceId') === 'consult-b' ? [doctor] : [];
     else if (url.pathname.endsWith('/booking-slots')) data = [];
@@ -239,6 +240,7 @@ function bookingAvailabilityFixture(r) {
     services: [oldService, newService], clinicIndex: 0, serviceIndex: 0,
     doctors: [{ id: 'doctor-old', name: '原医生', qualifications: [], serviceIds: ['service-old'] }],
     doctorNames: ['不限医生', '原医生'], doctorIndex: 1, slots: [slot], queried: true,
+    policy: queryPolicyFixture(), calendarEndDate: '2099-12-31',
   });
   const patient = {
     id: 'patient-availability-patient', name: '本人患者', birthDate: '2000-01-01', phone: '00000000001',
@@ -481,4 +483,140 @@ test('a newer authoritative status replaces an earlier operation success banner'
   const page = detailPage(r, result.id); page.onShow(); await page.lastLoad;
   assert.equal(page.data.appointment.status, 'cancelled'); assert.equal(page.data.success, false);
   assert.equal(page.data.successTitle, '');
+});
+
+test('Vant components are self-contained build output with their license and stay below the package size budget', () => {
+  const app = JSON.parse(readFileSync(join(root, 'dist/app.json'), 'utf8'));
+  assert.equal(app.style, undefined, 'Vant officially requires removing the v2 base component style');
+  const config = JSON.parse(readFileSync(join(root, 'dist/pages/booking/index.json'), 'utf8'));
+  assert.deepEqual(Object.keys(config.usingComponents).sort(), ['van-calendar', 'van-empty', 'van-loading', 'van-steps']);
+  for (const component of Object.values(config.usingComponents)) {
+    assert.match(component, /^\/vendor\/vant\//);
+    for (const extension of ['.js', '.json', '.wxml', '.wxss']) assert.ok(existsSync(join(root, 'dist', component + extension)));
+  }
+  assert.ok(existsSync(join(root, 'dist/vendor/vant/calendar/components/month/index.wxs')));
+  assert.ok(existsSync(join(root, 'dist/vendor/vant/wxs/utils.wxs')));
+  assert.match(readFileSync(join(root, 'dist/vendor/vant/LICENSE'), 'utf8'), /MIT/);
+  const bytes = directory => readdirSync(directory, { withFileTypes: true }).reduce((total, entry) => total + (entry.isDirectory() ? bytes(join(directory, entry.name)) : statSync(join(directory, entry.name)).size), 0);
+  assert.ok(bytes(join(root, 'dist')) < 2 * 1024 * 1024);
+  const template = readFileSync(join(root, 'dist/pages/booking/index.wxml'), 'utf8');
+  assert.equal([...template.matchAll(/<picker\b/g)].length, 4, 'Existing native picker order must remain available to the actual WeChat acceptance flow');
+  assert.match(template.match(/<picker\s+mode="date"[^>]+>/)?.[0] ?? '', /end="{{calendarEndDate}}"/, 'Native picker and calendar share the server-provided query window');
+  assert.match(template, /data-index="{{slotIndex}}"/);
+});
+
+test('calendar days round-trip without UTC truncation and quick choices cover exactly seven calendar days across a year boundary', () => {
+  const r = runtime(), dates = r.load('utils/availability');
+  for (const day of ['2026-10-25', '2026-12-31', '2028-02-29']) assert.equal(dates.calendarDateText(dates.calendarTimestamp(day)), day);
+  assert.equal(dates.calendarDateText(NaN), '');
+  assert.equal(dates.dayAfter('2028-02-28', 1), '2028-02-29');
+  const choices = dates.quickDateChoices('2026-12-29');
+  assert.equal(choices.length, 7); assert.equal(new Set(choices.map(item => item.date)).size, 7);
+  assert.equal(choices[0].label, '今天'); assert.equal(choices[1].label, '明天');
+  assert.equal(choices.at(-1).date, '2027-01-04');
+  assert.equal(choices.some(item => Object.hasOwn(item, 'available')), false, 'A calendar date is not evidence of a published available slot');
+});
+
+test('morning, afternoon and evening use China time and grouped selection reserves exactly the original returned slot', async () => {
+  const r = runtime(), { page, slot, reply, replyToBooking } = bookingAvailabilityFixture(r);
+  const returned = [
+    { ...slot, doctorId: 'doctor-evening', chairId: 'chair-evening', startsAt: '2099-01-02T10:00:00Z', endsAt: '2099-01-02T10:30:00Z' },
+    { ...slot, doctorId: 'doctor-morning', chairId: 'chair-morning', startsAt: '2099-01-02T03:59:00Z', endsAt: '2099-01-02T04:29:00Z' },
+    { ...slot, doctorId: 'doctor-afternoon', chairId: 'chair-afternoon', startsAt: '2099-01-02T04:00:00Z', endsAt: '2099-01-02T04:30:00Z' },
+  ];
+  r.respond(request => new URL(request.url).pathname.endsWith('/booking-slots') ? reply(request, returned) : replyToBooking(request));
+  await page.search();
+  assert.equal(JSON.stringify(page.data.slotGroups.map(group => [group.key, [...group.indices]])), JSON.stringify([['morning', [1]], ['afternoon', [2]], ['evening', [0]]]));
+  assert.equal(JSON.stringify(page.data.slots.map(item => item.doctorId)), JSON.stringify(returned.map(item => item.doctorId)), 'Grouping must not reorder the source slot array');
+  const indices = page.data.slotGroups.flatMap(group => [...group.indices]);
+  assert.equal(new Set(indices).size, returned.length); assert.equal(indices.length, returned.length);
+  await page.choose({ currentTarget: { dataset: { index: page.data.slotGroups[0].indices[0] } } });
+  const writes = r.requests.filter(request => request.method === 'POST');
+  assert.equal(writes.length, 1); assert.equal(writes[0].data.doctorId, 'doctor-morning');
+  assert.equal(writes[0].data.chairId, 'chair-morning'); assert.equal(writes[0].data.startsAt, returned[1].startsAt);
+});
+
+test('all date controls and doctor events ignore busy clicks; choosing an idle date invalidates old groups without querying or reserving', async () => {
+  for (const flag of ['loading', 'searching', 'holding']) {
+    const r = runtime(), { page } = bookingAvailabilityFixture(r);
+    const date = r.load('utils/format').dateToday(), nextDate = r.load('utils/availability').dayAfter(date, 1);
+    Object.assign(page.data, { date, slotGroups: [{ key: 'morning', title: '上午', indices: [0] }], [flag]: true });
+    page.quickDate({ currentTarget: { dataset: { date: nextDate } } });
+    page.dateChange({ detail: { value: nextDate } });
+    page.calendarConfirm({ detail: r.load('utils/availability').calendarTimestamp(nextDate) });
+    page.doctorChange({ detail: { value: '0' } });
+    page.openCalendar(); await page.choose({ currentTarget: { dataset: { index: 0 } } });
+    assert.equal(page.data.date, date); assert.equal(page.data.doctorIndex, 1); assert.equal(page.data.calendarVisible, false);
+    assert.equal(r.requests.length, 0); assert.equal(r.navigations.length, 0);
+    page.data[flag] = false;
+    page.quickDate({ currentTarget: { dataset: { date: nextDate } } });
+    assert.equal(page.data.date, nextDate); assert.equal(page.data.slots.length, 0); assert.equal(page.data.slotGroups.length, 0); assert.equal(page.data.queried, false);
+    assert.equal(r.requests.length, 0, 'Selecting a date must not create an implicit hold or claim availability');
+    page.openCalendar(); assert.equal(page.data.calendarVisible, true);
+    page.calendarConfirm({ detail: r.load('utils/availability').calendarTimestamp(date) });
+    assert.equal(page.data.date, date); assert.equal(page.data.calendarVisible, false);
+  }
+});
+
+test('calendar and native picker follow a changed server window without a hardcoded booking horizon', async () => {
+  const r = runtime(), { page, reply } = bookingAvailabilityFixture(r);
+  const dates = r.load('utils/availability');
+  const window = dates.queryWindowLimits({ fromDate: '2099-01-01', toDate: '2099-01-05' }, '2099-01-01');
+  Object.assign(page.data, { minDate: window.minDate, calendarEndDate: window.maxDate, date: '2099-01-01', calendarMax: dates.calendarTimestamp(window.maxDate), policy: { ...queryPolicyFixture(), queryWindow: { fromDate: window.minDate, toDate: window.maxDate } } });
+  page.dateChange({ detail: { value: '2099-01-06' } });
+  assert.equal(page.data.date, '2099-01-01'); assert.match(page.data.error, /2099-01-05/);
+  const date = '2099-01-05'; page.dateChange({ detail: { value: date } });
+  assert.equal(page.data.date, date); assert.equal(page.data.error, ''); page.openCalendar();
+  assert.equal(page.data.calendarDate, dates.calendarTimestamp(date));
+  r.respond(request => reply(request, [])); await page.search();
+  assert.equal(new URL(r.requests.at(-1).url).searchParams.get('date'), date);
+  assert.equal(page.data.queried, true); assert.equal(page.data.slots.length, 0);
+});
+
+test('catalog connection failure remains a retryable failure and is distinct from a successfully returned empty clinic catalog', async () => {
+  const r = runtime(); r.load('pages/booking/index'); const options = r.pages.at(-1);
+  const page = { ...options, data: structuredClone(options.data), setData(update) { Object.assign(this.data, update); } };
+  const load = page.load; page.load = function () { this.lastLoad = load.call(this); return this.lastLoad; };
+  r.respond(request => request.fail({ errMsg: 'request:fail initial catalog offline' }));
+  await page.load();
+  assert.equal(page.data.catalogFailed, true); assert.match(page.data.error, /连接|网络/);
+  assert.equal(page.data.queried, false); assert.equal(page.data.slots.length, 0);
+  r.respond(request => request.success({ statusCode: 200, data: { data: new URL(request.url).pathname.endsWith('/clinics') ? [] : queryPolicyFixture() } }));
+  page.retryLoad(); await page.lastLoad;
+  assert.equal(page.data.catalogFailed, false); assert.equal(page.data.error, ''); assert.equal(page.data.clinics.length, 0);
+  assert.equal(page.data.queried, false, 'An empty clinic catalog is not an empty slot-query result');
+  assert.equal(r.requests.filter(request => new URL(request.url).pathname.endsWith('/booking-slots')).length, 0);
+});
+
+test('superseded catalog responses and late slot responses after page unload cannot resurrect old availability', async () => {
+  const r = runtime(); r.load('pages/booking/index'); const options = r.pages.at(-1);
+  const page = { ...options, data: structuredClone(options.data), setData(update) { Object.assign(this.data, update); } };
+  const responses = [];
+  r.respond(request => {
+    const path = new URL(request.url).pathname;
+    if (path.endsWith('/clinics') || path.endsWith('/booking-policy')) responses.push(request);
+    else request.success({ statusCode: 200, data: { data: path.endsWith('/services') ? [{ id: 'new-service', name: '新咨询', clinicIds: ['new-clinic'], priceCents: 6000 }] : [] } });
+  });
+  const oldLoad = page.load(), newLoad = page.load();
+  responses[2].success({ statusCode: 200, data: { data: [{ id: 'new-clinic', name: '新门诊' }] } });
+  responses[3].success({ statusCode: 200, data: { data: queryPolicyFixture() } });
+  await newLoad; assert.equal(page.data.clinics[0].id, 'new-clinic');
+  responses[0].success({ statusCode: 200, data: { data: [{ id: 'old-clinic', name: '旧门诊' }] } });
+  responses[1].success({ statusCode: 200, data: { data: queryPolicyFixture() } });
+  await oldLoad; assert.equal(page.data.clinics[0].id, 'new-clinic'); assert.equal(page.data.services[0].id, 'new-service');
+  const q = runtime(), { page: bookingPage, slot, reply } = bookingAvailabilityFixture(q); let delayed;
+  q.respond(request => { delayed = request; }); const search = bookingPage.search();
+  bookingPage.onUnload(); reply(delayed, [slot]); await search;
+  assert.equal(bookingPage.data.slots.length, 0); assert.equal(bookingPage.data.slotGroups.length, 0); assert.equal(bookingPage.data.queried, false);
+});
+
+test('missing or invalid server query window stays a retryable catalog failure and cannot open a calendar or query slots', async () => {
+  const r = runtime(); r.load('pages/booking/index'); const options = r.pages.at(-1);
+  const page = { ...options, data: structuredClone(options.data), setData(update) { Object.assign(this.data, update); } };
+  r.respond(request => request.success({ statusCode: 200, data: { data: new URL(request.url).pathname.endsWith('/clinics') ? [] : { timezone: 'Asia/Shanghai' } } }));
+  await page.load(); assert.equal(page.data.catalogFailed, true); assert.match(page.data.error, /日期范围/);
+  page.openCalendar(); assert.equal(page.data.calendarVisible, false);
+  assert.equal(r.requests.filter(request => new URL(request.url).pathname.endsWith('/booking-slots')).length, 0);
+  const dates = r.load('utils/availability');
+  for (const window of [null, {}, {fromDate:'2026-02-30',toDate:'2026-03-31'}, {fromDate:'2026-10-05',toDate:'2026-10-01'}]) assert.throws(() => dates.queryWindowLimits(window,'2026-10-01'),/日期范围/);
 });

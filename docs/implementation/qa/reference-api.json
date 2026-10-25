@@ -1,0 +1,103 @@
+{
+  "status": "passed",
+  "startedAt": "2026-10-25T12:52:52.054Z",
+  "finishedAt": "2026-10-25T12:52:59.281Z",
+  "command": "node --import tsx --test-concurrency=1 --test --test-reporter=tap booking-api/test/booking.integration.test.ts booking-api/test/demo.integration.test.ts booking-api/test/query-window.test.ts",
+  "runtime": "v24.15.0",
+  "execution": "Real PostgreSQL isolated random databases and Fastify.inject; no developer-data mutation",
+  "exitCode": 0,
+  "results": {
+    "tests": 47,
+    "passed": 47,
+    "failed": 0,
+    "skipped": 0
+  },
+  "sourceUnchangedDuringRun": true,
+  "sourceFiles": [
+    {
+      "path": "booking-api/src/app.ts",
+      "sha256": "fb935981e7b74108acb8b4185cf5e1c9842358eaf7627bb5828660a6b156daa1"
+    },
+    {
+      "path": "booking-api/src/auth.ts",
+      "sha256": "afc6c4bfb78c42500d1d0d7f3c238fc2add6b17a68377c62efaa9549383c163f"
+    },
+    {
+      "path": "booking-api/src/cli.ts",
+      "sha256": "db7a5bcae97242d598896abf120173171a2606d6f5971a817d39579cc37af3c9"
+    },
+    {
+      "path": "booking-api/src/config.ts",
+      "sha256": "81ac990f0135aa52ece121bcd2e1653c0ddb0ce260c534c3fe930559e146baf3"
+    },
+    {
+      "path": "booking-api/src/db.ts",
+      "sha256": "3369ce03d72e5f833b5d519240490a983b5e530f53dd7219f7970a5bc2da605c"
+    },
+    {
+      "path": "booking-api/src/demo-reference-data.ts",
+      "sha256": "807f6c24f07960b476381dde44b66db9798a1dd71ae4decd0cf2683bd47b27c0"
+    },
+    {
+      "path": "booking-api/src/demo.ts",
+      "sha256": "31e8296a7d9bed6b88f4456e9d6927b72e8f43c0c57dc2d598beaf8914562480"
+    },
+    {
+      "path": "booking-api/src/errors.ts",
+      "sha256": "435cea65068f89a1cae422f0c7a5f6625deaf6577a2773210887d058a6a94868"
+    },
+    {
+      "path": "booking-api/src/main.ts",
+      "sha256": "4321223139a8acbdf4dcd9a45e73f89d0fe5f7c3e41e29060f5ea93b1c159e2f"
+    },
+    {
+      "path": "booking-api/src/paths.ts",
+      "sha256": "76496913f10fca5db8e6157199a74291b697f4b420bddb296b2a212d9d3e9b8e"
+    },
+    {
+      "path": "booking-api/src/query-window.ts",
+      "sha256": "b7d5a7d8c15d348cfdfb0706303d65f01b678035986594ac5cf85689d8e68699"
+    },
+    {
+      "path": "booking-api/src/repositories/booking.ts",
+      "sha256": "35c6bca979f4e275f0b4957cca5da471daa35b26c725bc5104cda21d42eecc2b"
+    },
+    {
+      "path": "booking-api/src/repositories/catalog.ts",
+      "sha256": "5021054798560a0e5cc0b08db5d75bf1b741331b72fa1e45fbb85bf40b3f21db"
+    },
+    {
+      "path": "booking-api/src/seed.ts",
+      "sha256": "1d544af7e3bc4c051264a5eefb33b14f24414bac387bfa6d85742c90be361a0a"
+    },
+    {
+      "path": "booking-api/src/services/booking.ts",
+      "sha256": "30a5078dd06205d171ec8eebaf53e9903860f9443eec544a50e468feba4e379a"
+    },
+    {
+      "path": "booking-api/src/services/resources.ts",
+      "sha256": "932c1a1995868ed428b85419477d6ed22371e35984b5af33a1dc7913b870c919"
+    },
+    {
+      "path": "booking-api/src/validation.ts",
+      "sha256": "d7233f78e108199b21b5d14e41ee83d709a3c78c6c0079e439de5bb08bc625b1"
+    },
+    {
+      "path": "booking-api/test/booking.integration.test.ts",
+      "sha256": "2b46e3490e94433fe3ac8b5025757bc90f5be3ee3f683e9fb84fa4c90f547c3f"
+    },
+    {
+      "path": "booking-api/test/demo.integration.test.ts",
+      "sha256": "08f389e61ed4625e8c4d6dec470c426101e1b2f3de3ef3a2cf63ac7bd0226662"
+    },
+    {
+      "path": "booking-api/test/query-window.test.ts",
+      "sha256": "d9864d6c91ba96c2b4c387cf430c73bf09abdf405c00aa53525a1d8095e73ea2"
+    },
+    {
+      "path": "shared/src/index.ts",
+      "sha256": "8e0fa072c6be914283a9ce748d19bebf8f28ff7ee3e70941da8361d58872e767"
+    }
+  ],
+  "tapSha256": "082cd3f88ebbcef37e7ee54c23aff18cfc9a3ed1acb7764d4404e12ebeb03691"
+}

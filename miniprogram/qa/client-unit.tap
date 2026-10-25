@@ -2,165 +2,213 @@ TAP version 13
 # Subtest: native build includes all configured pages, assets and callable WXML handlers
 ok 1 - native build includes all configured pages, assets and callable WXML handlers
   ---
-  duration_ms: 65.9254
+  duration_ms: 31.9782
   type: 'test'
   ...
 # Subtest: uncertain confirmation persists original key and content; only same operation is retried
 ok 2 - uncertain confirmation persists original key and content; only same operation is retried
   ---
-  duration_ms: 1.8895
+  duration_ms: 2.0105
   type: 'test'
   ...
 # Subtest: command not_found retains original key; completed clears only the owner operation
 ok 3 - command not_found retains original key; completed clears only the owner operation
   ---
-  duration_ms: 1.3196
+  duration_ms: 1.3271
   type: 'test'
   ...
 # Subtest: switching account cannot read, overwrite or submit another account pending command
 ok 4 - switching account cannot read, overwrite or submit another account pending command
   ---
-  duration_ms: 1.1854
+  duration_ms: 1.2259
   type: 'test'
   ...
 # Subtest: malformed successful response remains uncertain; definitive validation rejection permits correction
 ok 5 - malformed successful response remains uncertain; definitive validation rejection permits correction
   ---
-  duration_ms: 1.1171
+  duration_ms: 1.4285
   type: 'test'
   ...
 # Subtest: 401 clears token and preserves pending command for the same account after login
 ok 6 - 401 clears token and preserves pending command for the same account after login
   ---
-  duration_ms: 1.1208
+  duration_ms: 1.1848
   type: 'test'
   ...
 # Subtest: allergy unknown differs from none_reported and multiple-line editing preserves the next line
 ok 7 - allergy unknown differs from none_reported and multiple-line editing preserves the next line
   ---
-  duration_ms: 0.9231
+  duration_ms: 0.9304
   type: 'test'
   ...
 # Subtest: cached patient pages clear previous account data before showing a new account
 ok 8 - cached patient pages clear previous account data before showing a new account
   ---
-  duration_ms: 2.7976
+  duration_ms: 3.2128
   type: 'test'
   ...
 # Subtest: late profile response from previous account cannot populate current account form
 ok 9 - late profile response from previous account cannot populate current account form
   ---
-  duration_ms: 1.3279
+  duration_ms: 1.4826
   type: 'test'
   ...
 # Subtest: late 401 response from previous account cannot revoke the current account session
 ok 10 - late 401 response from previous account cannot revoke the current account session
   ---
-  duration_ms: 0.9654
+  duration_ms: 1.0393
   type: 'test'
   ...
 # Subtest: late command success after account switch cannot return old patient data or clear new account hold
 ok 11 - late command success after account switch cannot return old patient data or clear new account hold
   ---
-  duration_ms: 1.0293
+  duration_ms: 1.0989
   type: 'test'
   ...
 # Subtest: reference ranges preserve integer cents, units and source without becoming appointment fees
 ok 12 - reference ranges preserve integer cents, units and source without becoming appointment fees
   ---
-  duration_ms: 0.7771
+  duration_ms: 0.8762
   type: 'test'
   ...
 # Subtest: doctor cards disclose fictional credentials and safely handle an ordinary doctor without demo metadata
 ok 13 - doctor cards disclose fictional credentials and safely handle an ordinary doctor without demo metadata
   ---
-  duration_ms: 0.7322
+  duration_ms: 0.7947
   type: 'test'
   ...
 # Subtest: read-only patient demo metadata stays visible and is never submitted as editable profile input
 ok 14 - read-only patient demo metadata stays visible and is never submitted as editable profile input
   ---
-  duration_ms: 1.3666
+  duration_ms: 1.4137
   type: 'test'
   ...
 # Subtest: price browsing combines category and search and passes only the linked consultation to booking
 ok 15 - price browsing combines category and search and passes only the linked consultation to booking
   ---
-  duration_ms: 1.3519
+  duration_ms: 1.7162
   type: 'test'
   ...
 # Subtest: doctor detail limits booking to doctor qualifications and the selected clinic
 ok 16 - doctor detail limits booking to doctor qualifications and the selected clinic
   ---
-  duration_ms: 1.4133
+  duration_ms: 1.6532
   type: 'test'
   ...
 # Subtest: booking deep links select the offering clinic and doctor; unavailable choices are never silently substituted
 ok 17 - booking deep links select the offering clinic and doctor; unavailable choices are never silently substituted
   ---
-  duration_ms: 2.1594
+  duration_ms: 3.0811
   type: 'test'
   ...
 # Subtest: changing clinic removes old selectable candidates during a slow request and after failure; recovery can book only the new clinic
 ok 18 - changing clinic removes old selectable candidates during a slow request and after failure; recovery can book only the new clinic
   ---
-  duration_ms: 2.4218
+  duration_ms: 2.4068
   type: 'test'
   ...
 # Subtest: changing service invalidates old doctor and time candidates before a delayed or failed doctor lookup
 ok 19 - changing service invalidates old doctor and time candidates before a delayed or failed doctor lookup
   ---
-  duration_ms: 1.3704
+  duration_ms: 1.7246
   type: 'test'
   ...
 # Subtest: late slot clicks cannot create a hold while loading or searching, but an idle valid candidate still can
 ok 20 - late slot clicks cannot create a hold while loading or searching, but an idle valid candidate still can
   ---
-  duration_ms: 2.4202
+  duration_ms: 3.6421
   type: 'test'
   ...
 # Subtest: confirmed command remains visibly successful when the subsequent detail GET fails; URL flags and reopening cannot forge success
 ok 21 - confirmed command remains visibly successful when the subsequent detail GET fails; URL flags and reopening cannot forge success
   ---
-  duration_ms: 2.2682
+  duration_ms: 2.4131
   type: 'test'
   ...
 # Subtest: reschedule command shows the new confirmed arrangement and an explicit reschedule result while detail is offline
 ok 22 - reschedule command shows the new confirmed arrangement and an explicit reschedule result while detail is offline
   ---
-  duration_ms: 1.6318
+  duration_ms: 1.9089
   type: 'test'
   ...
 # Subtest: cancel command keeps an explicit cancelled result and the API snapshot when detail refresh fails
 ok 23 - cancel command keeps an explicit cancelled result and the API snapshot when detail refresh fails
   ---
-  duration_ms: 1.2785
+  duration_ms: 1.3997
   type: 'test'
   ...
 # Subtest: uncertain or rejected operations cannot claim success; a completed command lookup can recover a trustworthy result
 ok 24 - uncertain or rejected operations cannot claim success; a completed command lookup can recover a trustworthy result
   ---
-  duration_ms: 1.9106
+  duration_ms: 1.7225
   type: 'test'
   ...
 # Subtest: completion handoff is bound to both account and login session and is not restored after app restart
 ok 25 - completion handoff is bound to both account and login session and is not restored after app restart
   ---
-  duration_ms: 4.3897
+  duration_ms: 5.1111
   type: 'test'
   ...
 # Subtest: a newer authoritative status replaces an earlier operation success banner
 ok 26 - a newer authoritative status replaces an earlier operation success banner
   ---
-  duration_ms: 1.3178
+  duration_ms: 1.4371
   type: 'test'
   ...
-1..26
-# tests 26
+# Subtest: Vant components are self-contained build output with their license and stay below the package size budget
+ok 27 - Vant components are self-contained build output with their license and stay below the package size budget
+  ---
+  duration_ms: 48.863
+  type: 'test'
+  ...
+# Subtest: calendar days round-trip without UTC truncation and quick choices cover exactly seven calendar days across a year boundary
+ok 28 - calendar days round-trip without UTC truncation and quick choices cover exactly seven calendar days across a year boundary
+  ---
+  duration_ms: 0.882
+  type: 'test'
+  ...
+# Subtest: morning, afternoon and evening use China time and grouped selection reserves exactly the original returned slot
+ok 29 - morning, afternoon and evening use China time and grouped selection reserves exactly the original returned slot
+  ---
+  duration_ms: 1.8176
+  type: 'test'
+  ...
+# Subtest: all date controls and doctor events ignore busy clicks; choosing an idle date invalidates old groups without querying or reserving
+ok 30 - all date controls and doctor events ignore busy clicks; choosing an idle date invalidates old groups without querying or reserving
+  ---
+  duration_ms: 5.3341
+  type: 'test'
+  ...
+# Subtest: calendar and native picker follow a changed server window without a hardcoded booking horizon
+ok 31 - calendar and native picker follow a changed server window without a hardcoded booking horizon
+  ---
+  duration_ms: 1.6264
+  type: 'test'
+  ...
+# Subtest: catalog connection failure remains a retryable failure and is distinct from a successfully returned empty clinic catalog
+ok 32 - catalog connection failure remains a retryable failure and is distinct from a successfully returned empty clinic catalog
+  ---
+  duration_ms: 1.6885
+  type: 'test'
+  ...
+# Subtest: superseded catalog responses and late slot responses after page unload cannot resurrect old availability
+ok 33 - superseded catalog responses and late slot responses after page unload cannot resurrect old availability
+  ---
+  duration_ms: 3.093
+  type: 'test'
+  ...
+# Subtest: missing or invalid server query window stays a retryable catalog failure and cannot open a calendar or query slots
+ok 34 - missing or invalid server query window stays a retryable catalog failure and cannot open a calendar or query slots
+  ---
+  duration_ms: 1.8588
+  type: 'test'
+  ...
+1..34
+# tests 34
 # suites 0
-# pass 26
+# pass 34
 # fail 0
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 231.6158
+# duration_ms 326.398

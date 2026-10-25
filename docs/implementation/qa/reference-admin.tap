@@ -1,0 +1,256 @@
+TAP version 13
+# Subtest: late 401 from account A preserves newly logged-in account B
+ok 1 - late 401 from account A preserves newly logged-in account B
+  ---
+  duration_ms: 2.5977
+  type: 'test'
+  ...
+# Subtest: 401 for the current token clears it and emits the unauthorized event
+ok 2 - 401 for the current token clears it and emits the unauthorized event
+  ---
+  duration_ms: 0.8733
+  type: 'test'
+  ...
+# Subtest: late success clears only captured owner A pending command, keeping B pending
+ok 3 - late success clears only captured owner A pending command, keeping B pending
+  ---
+  duration_ms: 0.9676
+  type: 'test'
+  ...
+# Subtest: late A unauthorized confirmation preserves both owners pending commands
+ok 4 - late A unauthorized confirmation preserves both owners pending commands
+  ---
+  duration_ms: 0.7295
+  type: 'test'
+  ...
+# Subtest: visible refresh waits for each request, pauses hidden tabs and refreshes immediately on return
+ok 5 - visible refresh waits for each request, pauses hidden tabs and refreshes immediately on return
+  ---
+  duration_ms: 3.4791
+  type: 'test'
+  ...
+# Subtest: visibility recovery queues one refresh while busy, and stopping prevents all later scheduling
+ok 6 - visibility recovery queues one refresh while busy, and stopping prevents all later scheduling
+  ---
+  duration_ms: 0.5877
+  type: 'test'
+  ...
+# Subtest: a failed automatic refresh can recover on its next interval without an unhandled rejection
+ok 7 - a failed automatic refresh can recover on its next interval without an unhandled rejection
+  ---
+  duration_ms: 0.4946
+  type: 'test'
+  ...
+# Subtest: latest-request acceptance rejects old results, changed accounts and disposed views
+ok 8 - latest-request acceptance rejects old results, changed accounts and disposed views
+  ---
+  duration_ms: 0.2791
+  type: 'test'
+  ...
+# Subtest: actual appointments view keeps the newest filter result when older requests complete last
+ok 9 - actual appointments view keeps the newest filter result when older requests complete last
+  ---
+  duration_ms: 27.0096
+  type: 'test'
+  ...
+# Subtest: actual view ignores a previous account response and the older of two detail selections
+ok 10 - actual view ignores a previous account response and the older of two detail selections
+  ---
+  duration_ms: 15.2568
+  type: 'test'
+  ...
+# Subtest: automatic refresh updates both the current list and the opened detail from the API
+ok 11 - automatic refresh updates both the current list and the opened detail from the API
+  ---
+  duration_ms: 12.4347
+  type: 'test'
+  ...
+# Subtest: opening detail B keeps priority over polling the still-open detail A
+ok 12 - opening detail B keeps priority over polling the still-open detail A
+  ---
+  duration_ms: 12.0093
+  type: 'test'
+  ...
+# Subtest: a cancellation draft survives automatic refresh, including a response already in flight
+ok 13 - a cancellation draft survives automatic refresh, including a response already in flight
+  ---
+  duration_ms: 12.0672
+  type: 'test'
+  ...
+# Subtest: unmount removes visibility timers and rejects in-flight list responses
+ok 14 - unmount removes visibility timers and rejects in-flight list responses
+  ---
+  duration_ms: 11.6199
+  type: 'test'
+  ...
+# Subtest: the agenda loads all selected-day pages at 100 rows and verifies its leading page
+ok 15 - the agenda loads all selected-day pages at 100 rows and verifies its leading page
+  ---
+  duration_ms: 15.9724
+  type: 'test'
+  ...
+# Subtest: changing the agenda date invalidates old pages before they can start more queries
+ok 16 - changing the agenda date invalidates old pages before they can start more queries
+  ---
+  duration_ms: 8.7501
+  type: 'test'
+  ...
+# Subtest: an agenda without one selected day does not query or imply a complete all-date schedule
+ok 17 - an agenda without one selected day does not query or imply a complete all-date schedule
+  ---
+  duration_ms: 10.1703
+  type: 'test'
+  ...
+# Subtest: on a 390px page the selected Sunday is revealed by scrolling only its date strip after nextTick
+ok 18 - on a 390px page the selected Sunday is revealed by scrolling only its date strip after nextTick
+  ---
+  duration_ms: 46.9837
+  type: 'test'
+  ...
+# Subtest: changing to an offscreen earlier day scrolls the container back without moving the page
+ok 19 - changing to an offscreen earlier day scrolls the container back without moving the page
+  ---
+  duration_ms: 7.8409
+  type: 'test'
+  ...
+# Subtest: an already visible selection preserves manual horizontal position; an empty date or unmount does nothing
+ok 20 - an already visible selection preserves manual horizontal position; an empty date or unmount does nothing
+  ---
+  duration_ms: 8.3432
+  type: 'test'
+  ...
+# Subtest: actual catalog accepts clinic B and ignores the later clinic A chair response
+ok 21 - actual catalog accepts clinic B and ignores the later clinic A chair response
+  ---
+  duration_ms: 22.1944
+  type: 'test'
+  ...
+# Subtest: a stale chair error cannot clear the newer clinic result or introduce an error
+ok 22 - a stale chair error cannot clear the newer clinic result or introduce an error
+  ---
+  duration_ms: 8.9998
+  type: 'test'
+  ...
+# Subtest: failed current chair lookup clears prior chairs and can be retried normally
+ok 23 - failed current chair lookup clears prior chairs and can be retried normally
+  ---
+  duration_ms: 7.547
+  type: 'test'
+  ...
+# Subtest: directory batches accept only the latest load, even when the earlier batch finishes last
+ok 24 - directory batches accept only the latest load, even when the earlier batch finishes last
+  ---
+  duration_ms: 7.2498
+  type: 'test'
+  ...
+# Subtest: current directory failure removes stale success data and a successful retry restores it
+ok 25 - current directory failure removes stale success data and a successful retry restores it
+  ---
+  duration_ms: 6.6914
+  type: 'test'
+  ...
+# Subtest: account A to B to A invalidates original pending directory and chair responses
+ok 26 - account A to B to A invalidates original pending directory and chair responses
+  ---
+  duration_ms: 5.9185
+  type: 'test'
+  ...
+# Subtest: reset invalidates in-flight work without changing the public load interface
+ok 27 - reset invalidates in-flight work without changing the public load interface
+  ---
+  duration_ms: 4.698
+  type: 'test'
+  ...
+# Subtest: actual resource view keeps the current clinic label, rows and counts after reversed chair responses
+ok 28 - actual resource view keeps the current clinic label, rows and counts after reversed chair responses
+  ---
+  duration_ms: 23.0262
+  type: 'test'
+  ...
+# Subtest: actual resource view distinguishes a failed current filter from a successful empty list
+ok 29 - actual resource view distinguishes a failed current filter from a successful empty list
+  ---
+  duration_ms: 17.0237
+  type: 'test'
+  ...
+# Subtest: actual resource view shows matching versus total without fetching again for a name filter
+ok 30 - actual resource view shows matching versus total without fetching again for a name filter
+  ---
+  duration_ms: 16.6066
+  type: 'test'
+  ...
+# Subtest: qualification display includes the full period and labels future, current and expired grants
+ok 31 - qualification display includes the full period and labels future, current and expired grants
+  ---
+  duration_ms: 31.9447
+  type: 'test'
+  ...
+# Subtest: resource permissions remain HQ editable and manager restricted to assigned clinics/chairs
+ok 32 - resource permissions remain HQ editable and manager restricted to assigned clinics/chairs
+  ---
+  duration_ms: 10.972
+  type: 'test'
+  ...
+# Subtest: date-only navigation crosses leap days, months and years without timezone drift
+ok 33 - date-only navigation crosses leap days, months and years without timezone drift
+  ---
+  duration_ms: 2.4428
+  type: 'test'
+  ...
+# Subtest: doctor grouping uses identity rather than display name and preserves source items
+ok 34 - doctor grouping uses identity rather than display name and preserves source items
+  ---
+  duration_ms: 9.5957
+  type: 'test'
+  ...
+# Subtest: full-day collection reads every page and rechecks the head before declaring complete
+ok 35 - full-day collection reads every page and rechecks the head before declaring complete
+  ---
+  duration_ms: 0.986
+  type: 'test'
+  ...
+# Subtest: changing totals, duplicate rows and a changed head version produce an explicit incomplete result
+ok 36 - changing totals, duplicate rows and a changed head version produce an explicit incomplete result
+  ---
+  duration_ms: 0.6956
+  type: 'test'
+  ...
+# Subtest: invalid metadata and a display query limit never masquerade as the entire day
+ok 37 - invalid metadata and a display query limit never masquerade as the entire day
+  ---
+  duration_ms: 0.5014
+  type: 'test'
+  ...
+# Subtest: superseded full-day reads stop without requesting another page
+ok 38 - superseded full-day reads stop without requesting another page
+  ---
+  duration_ms: 0.2963
+  type: 'test'
+  ...
+# Subtest: the actual shifts view keeps the newer date response and ignores the old error
+ok 39 - the actual shifts view keeps the newer date response and ignores the old error
+  ---
+  duration_ms: 30.5721
+  type: 'test'
+  ...
+# Subtest: a failed shifts query clears stale records and a later refresh recovers
+ok 40 - a failed shifts query clears stale records and a later refresh recovers
+  ---
+  duration_ms: 16.6243
+  type: 'test'
+  ...
+# Subtest: the shifts view enforces read-only doctor actions and ignores responses after account change or unmount
+ok 41 - the shifts view enforces read-only doctor actions and ignores responses after account change or unmount
+  ---
+  duration_ms: 10.5881
+  type: 'test'
+  ...
+1..41
+# tests 41
+# suites 0
+# pass 41
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 976.7756

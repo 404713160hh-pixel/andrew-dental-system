@@ -1,6 +1,6 @@
 {
-  "namespace": "XCLIENTmvlvnyiq48ce50",
-  "startedAt": "2026-10-24T04:07:18.146Z",
+  "namespace": "XCLIENTmvnuanyb6c7be6",
+  "startedAt": "2026-10-25T13:04:30.660Z",
   "status": "passed",
   "mode": "wechat",
   "execution": "Real Vue browser + official miniprogram-automator SDK driving real WeChat DevTools simulator controls and rendered native pages + shared real HTTP/PostgreSQL; NOT physical device execution",
@@ -13,8 +13,8 @@
       "configPath": "D:\\AndrewDentalMiniProgram\\project.config.json",
       "appId": "wxb384991780e8d7c6",
       "miniprogramRoot": "D:\\AndrewDentalMiniProgram\\dist",
-      "compiledSha256": "b26d97a32846182f13d0d81f15f539c65afe7d477aa014083046570c9bcdd1c9",
-      "repositoryCompiledSha256": "b26d97a32846182f13d0d81f15f539c65afe7d477aa014083046570c9bcdd1c9",
+      "compiledSha256": "dec96eeccad754f3cb2b8d9e1b9f1e521682d0d84c6519548692b47a947b6b23",
+      "repositoryCompiledSha256": "dec96eeccad754f3cb2b8d9e1b9f1e521682d0d84c6519548692b47a947b6b23",
       "observedSimulatorAppId": "wxb384991780e8d7c6"
     },
     "postgresqlVersion": "17.10",
@@ -27,14 +27,14 @@
     },
     "browserVersion": "155.0.8059.85"
   },
-  "nativeArtifactSha256": "b26d97a32846182f13d0d81f15f539c65afe7d477aa014083046570c9bcdd1c9",
+  "nativeArtifactSha256": "dec96eeccad754f3cb2b8d9e1b9f1e521682d0d84c6519548692b47a947b6b23",
   "checks": [
     {
       "name": "真实微信工程路径、非游客AppID、编译目录哈希及同源API配置预检一致",
       "status": "passed",
       "projectPath": "D:\\AndrewDentalMiniProgram",
       "miniprogramRoot": "D:\\AndrewDentalMiniProgram\\dist",
-      "compiledSha256": "b26d97a32846182f13d0d81f15f539c65afe7d477aa014083046570c9bcdd1c9"
+      "compiledSha256": "dec96eeccad754f3cb2b8d9e1b9f1e521682d0d84c6519548692b47a947b6b23"
     },
     {
       "name": "显式允许的本机专用环境、真实PostgreSQL与唯一命名夹具",
@@ -43,7 +43,7 @@
     {
       "name": "官方SDK连接真实微信开发者工具模拟器且运行AppID与指定工程一致",
       "status": "passed",
-      "initiallyOpenedPage": "pages/home/index"
+      "initiallyOpenedPage": "pages/booking/index"
     },
     {
       "name": "官方SDK通过真实演示登录按钮进入虚构患者账号，无未决操作或现存占位",
@@ -53,25 +53,25 @@
     {
       "name": "Vue真实页面发布班次，SQL确认相同班次ID/医生/门诊",
       "status": "passed",
-      "shiftId": "7889cb29-39c7-4f92-9ca6-de7b906c5a70"
+      "shiftId": "e0418e2a-9e93-40c5-b43c-80a9eb52622f"
     },
     {
       "name": "原生预约/确认/详情Page完成真实占位与双确认预约，SQL同ID已占用",
       "status": "passed",
-      "appointmentId": "0f6766e2-87ab-4c3c-9d43-13a2ff55e003",
-      "appointmentNo": "AD202610247B39780155"
+      "appointmentId": "454ff971-2b03-4325-9a45-970d9c37cbd6",
+      "appointmentNo": "AD202610259173E81025"
     },
     {
       "name": "Vue真实页面看到原生Page创建的同一预约编号和已确认状态",
       "status": "passed",
-      "appointmentNo": "AD202610247B39780155"
+      "appointmentNo": "AD202610259173E81025"
     },
     {
       "name": "原生详情改期入口和预约确认Page完成原子改期，SQL替代链一致且旧资源释放",
       "status": "passed",
-      "oldId": "0f6766e2-87ab-4c3c-9d43-13a2ff55e003",
-      "newId": "888765e4-e941-4701-b3de-4471ba311936",
-      "newAppointmentNo": "AD20261024F244BCAD3D"
+      "oldId": "454ff971-2b03-4325-9a45-970d9c37cbd6",
+      "newId": "fb491443-9335-4e98-a746-8f0d2250ab90",
+      "newAppointmentNo": "AD202610250083195839"
     },
     {
       "name": "已打开的Vue页面自动轮询收到小程序改期状态，无手动刷新或导航",
@@ -84,7 +84,7 @@
     {
       "name": "原生详情Page实际取消预约，SQL保留同ID并释放新资源",
       "status": "passed",
-      "appointmentId": "888765e4-e941-4701-b3de-4471ba311936"
+      "appointmentId": "fb491443-9335-4e98-a746-8f0d2250ab90"
     },
     {
       "name": "已打开的Vue页面自动轮询收到小程序取消状态，无手动刷新或导航",
@@ -93,7 +93,7 @@
     {
       "name": "Vue真实页面显示同一替代预约编号已取消",
       "status": "passed",
-      "appointmentNo": "AD20261024F244BCAD3D"
+      "appointmentNo": "AD202610250083195839"
     },
     {
       "name": "原生Page重新查询同时看到原时段及改期时段，SQL确认无残留活动占位",
@@ -106,81 +106,81 @@
   ],
   "screenshots": [
     {
-      "path": "screenshots/booking/XCLIENTmvlvnyiq48ce50/00-wechat-fictional-profile.png",
+      "path": "screenshots/booking/XCLIENTmvnuanyb6c7be6/00-wechat-fictional-profile.png",
       "surface": "Real WeChat DevTools simulator via official SDK; not physical device"
     },
     {
-      "path": "screenshots/booking/XCLIENTmvlvnyiq48ce50/01-vue-publish-shift.png",
+      "path": "screenshots/booking/XCLIENTmvnuanyb6c7be6/01-vue-publish-shift.png",
       "surface": "Real Vue browser only; no mini-program rendering"
     },
     {
-      "path": "screenshots/booking/XCLIENTmvlvnyiq48ce50/01-wechat-available-slots.png",
+      "path": "screenshots/booking/XCLIENTmvnuanyb6c7be6/01-wechat-available-slots.png",
       "surface": "Real WeChat DevTools simulator via official SDK; not physical device"
     },
     {
-      "path": "screenshots/booking/XCLIENTmvlvnyiq48ce50/02-wechat-confirm-controls.png",
+      "path": "screenshots/booking/XCLIENTmvnuanyb6c7be6/02-wechat-confirm-controls.png",
       "surface": "Real WeChat DevTools simulator via official SDK; not physical device"
     },
     {
-      "path": "screenshots/booking/XCLIENTmvlvnyiq48ce50/03-wechat-confirmed-detail.png",
+      "path": "screenshots/booking/XCLIENTmvnuanyb6c7be6/03-wechat-confirmed-detail.png",
       "surface": "Real WeChat DevTools simulator via official SDK; not physical device"
     },
     {
-      "path": "screenshots/booking/XCLIENTmvlvnyiq48ce50/02-vue-native-confirmed.png",
+      "path": "screenshots/booking/XCLIENTmvnuanyb6c7be6/02-vue-native-confirmed.png",
       "surface": "Real Vue browser only; no mini-program rendering"
     },
     {
-      "path": "screenshots/booking/XCLIENTmvlvnyiq48ce50/06-wechat-reschedule-slots.png",
+      "path": "screenshots/booking/XCLIENTmvnuanyb6c7be6/06-wechat-reschedule-slots.png",
       "surface": "Real WeChat DevTools simulator via official SDK; not physical device"
     },
     {
-      "path": "screenshots/booking/XCLIENTmvlvnyiq48ce50/07-wechat-reschedule-confirm.png",
+      "path": "screenshots/booking/XCLIENTmvnuanyb6c7be6/07-wechat-reschedule-confirm.png",
       "surface": "Real WeChat DevTools simulator via official SDK; not physical device"
     },
     {
-      "path": "screenshots/booking/XCLIENTmvlvnyiq48ce50/08-wechat-rescheduled-detail.png",
+      "path": "screenshots/booking/XCLIENTmvnuanyb6c7be6/08-wechat-rescheduled-detail.png",
       "surface": "Real WeChat DevTools simulator via official SDK; not physical device"
     },
     {
-      "path": "screenshots/booking/XCLIENTmvlvnyiq48ce50/03-vue-old-rescheduled.png",
+      "path": "screenshots/booking/XCLIENTmvnuanyb6c7be6/03-vue-old-rescheduled.png",
       "surface": "Real Vue browser only; no mini-program rendering"
     },
     {
-      "path": "screenshots/booking/XCLIENTmvlvnyiq48ce50/04-vue-replacement-confirmed.png",
+      "path": "screenshots/booking/XCLIENTmvnuanyb6c7be6/04-vue-replacement-confirmed.png",
       "surface": "Real Vue browser only; no mini-program rendering"
     },
     {
-      "path": "screenshots/booking/XCLIENTmvlvnyiq48ce50/09-wechat-cancel-controls.png",
+      "path": "screenshots/booking/XCLIENTmvnuanyb6c7be6/09-wechat-cancel-controls.png",
       "surface": "Real WeChat DevTools simulator via official SDK; not physical device"
     },
     {
-      "path": "screenshots/booking/XCLIENTmvlvnyiq48ce50/10-wechat-cancelled-detail.png",
+      "path": "screenshots/booking/XCLIENTmvnuanyb6c7be6/10-wechat-cancelled-detail.png",
       "surface": "Real WeChat DevTools simulator via official SDK; not physical device"
     },
     {
-      "path": "screenshots/booking/XCLIENTmvlvnyiq48ce50/05-vue-native-cancelled.png",
+      "path": "screenshots/booking/XCLIENTmvnuanyb6c7be6/05-vue-native-cancelled.png",
       "surface": "Real Vue browser only; no mini-program rendering"
     },
     {
-      "path": "screenshots/booking/XCLIENTmvlvnyiq48ce50/11-wechat-released-slots.png",
+      "path": "screenshots/booking/XCLIENTmvnuanyb6c7be6/11-wechat-released-slots.png",
       "surface": "Real WeChat DevTools simulator via official SDK; not physical device"
     }
   ],
   "fixture": {
     "clinicId": "50019e5d-8e69-46aa-a5a5-074d68bf60df",
-    "qualificationId": "47262ff1-29e9-4784-89d9-8387bd51812f",
-    "doctorId": "b9f54d49-4e9a-482a-a8e9-38ff263af980",
-    "serviceId": "13ea2649-e470-4877-a2db-865eecf1fceb",
-    "chairId": "94be7358-3e92-46e9-834c-37b5d85f98ed",
-    "shiftId": "7889cb29-39c7-4f92-9ca6-de7b906c5a70",
+    "qualificationId": "ed55d587-99fa-47ab-b003-7c27d5afb73f",
+    "doctorId": "e30d519f-75e5-4db8-b553-7a9d642b0405",
+    "serviceId": "b1bfd2d3-b853-45a3-b2ca-1cbac8cd111c",
+    "chairId": "9b1d528c-51a3-4567-a23a-31b2fec14b0c",
+    "shiftId": "e0418e2a-9e93-40c5-b43c-80a9eb52622f",
     "patientId": "48167efd-3d83-40b5-8984-6a895219f58e",
     "userId": "42e20e06-0634-4d17-ae5c-3844e86e3b84",
     "existingFictionalPatientReused": true,
-    "date": "2026-11-09",
-    "originalAppointmentId": "0f6766e2-87ab-4c3c-9d43-13a2ff55e003",
-    "originalAppointmentNo": "AD202610247B39780155",
-    "replacementAppointmentId": "888765e4-e941-4701-b3de-4471ba311936",
-    "replacementAppointmentNo": "AD20261024F244BCAD3D"
+    "date": "2026-11-10",
+    "originalAppointmentId": "454ff971-2b03-4325-9a45-970d9c37cbd6",
+    "originalAppointmentNo": "AD202610259173E81025",
+    "replacementAppointmentId": "fb491443-9335-4e98-a746-8f0d2250ab90",
+    "replacementAppointmentNo": "AD202610250083195839"
   },
   "cleanup": {
     "additionalAppointmentsCancelled": 0,
@@ -198,19 +198,19 @@
   "vueListResponses": [
     {
       "source": "initial-date-filter",
-      "receivedAt": "2026-10-24T04:07:44.698Z",
+      "receivedAt": "2026-10-25T13:04:54.026Z",
       "query": {
-        "date": "2026-11-09",
+        "date": "2026-11-10",
         "page": "1",
         "pageSize": "20"
       },
-      "total": 7,
+      "total": 3,
       "page": 1,
       "pageSize": 20,
       "syntheticAppointments": [
         {
-          "id": "0f6766e2-87ab-4c3c-9d43-13a2ff55e003",
-          "appointmentNo": "AD202610247B39780155",
+          "id": "454ff971-2b03-4325-9a45-970d9c37cbd6",
+          "appointmentNo": "AD202610259173E81025",
           "status": "confirmed",
           "rowVersion": 1
         }
@@ -218,25 +218,25 @@
     },
     {
       "source": "automatic-reschedule",
-      "receivedAt": "2026-10-24T04:07:49.602Z",
+      "receivedAt": "2026-10-25T13:04:58.797Z",
       "query": {
-        "date": "2026-11-09",
+        "date": "2026-11-10",
         "page": "1",
         "pageSize": "20"
       },
-      "total": 8,
+      "total": 4,
       "page": 1,
       "pageSize": 20,
       "syntheticAppointments": [
         {
-          "id": "888765e4-e941-4701-b3de-4471ba311936",
-          "appointmentNo": "AD20261024F244BCAD3D",
+          "id": "fb491443-9335-4e98-a746-8f0d2250ab90",
+          "appointmentNo": "AD202610250083195839",
           "status": "confirmed",
           "rowVersion": 1
         },
         {
-          "id": "0f6766e2-87ab-4c3c-9d43-13a2ff55e003",
-          "appointmentNo": "AD202610247B39780155",
+          "id": "454ff971-2b03-4325-9a45-970d9c37cbd6",
+          "appointmentNo": "AD202610259173E81025",
           "status": "rescheduled",
           "rowVersion": 2
         }
@@ -244,25 +244,25 @@
     },
     {
       "source": "automatic-cancel",
-      "receivedAt": "2026-10-24T04:07:54.629Z",
+      "receivedAt": "2026-10-25T13:05:03.811Z",
       "query": {
-        "date": "2026-11-09",
+        "date": "2026-11-10",
         "page": "1",
         "pageSize": "20"
       },
-      "total": 8,
+      "total": 4,
       "page": 1,
       "pageSize": 20,
       "syntheticAppointments": [
         {
-          "id": "888765e4-e941-4701-b3de-4471ba311936",
-          "appointmentNo": "AD20261024F244BCAD3D",
+          "id": "fb491443-9335-4e98-a746-8f0d2250ab90",
+          "appointmentNo": "AD202610250083195839",
           "status": "cancelled",
           "rowVersion": 2
         },
         {
-          "id": "0f6766e2-87ab-4c3c-9d43-13a2ff55e003",
-          "appointmentNo": "AD202610247B39780155",
+          "id": "454ff971-2b03-4325-9a45-970d9c37cbd6",
+          "appointmentNo": "AD202610259173E81025",
           "status": "rescheduled",
           "rowVersion": 2
         }
@@ -272,16 +272,16 @@
   "automaticVueSync": [
     {
       "operation": "reschedule",
-      "startedAt": "2026-10-24T04:07:45.709Z",
-      "observedAt": "2026-10-24T04:07:49.602Z",
+      "startedAt": "2026-10-25T13:04:54.859Z",
+      "observedAt": "2026-10-25T13:04:58.797Z",
       "query": {
-        "date": "2026-11-09",
+        "date": "2026-11-10",
         "page": "1",
         "pageSize": "20"
       },
       "expectedStates": {
-        "0f6766e2-87ab-4c3c-9d43-13a2ff55e003": "rescheduled",
-        "888765e4-e941-4701-b3de-4471ba311936": "confirmed"
+        "454ff971-2b03-4325-9a45-970d9c37cbd6": "rescheduled",
+        "fb491443-9335-4e98-a746-8f0d2250ab90": "confirmed"
       },
       "observedMatchingResponses": 1,
       "noManualNavigation": true,
@@ -289,15 +289,15 @@
     },
     {
       "operation": "cancel",
-      "startedAt": "2026-10-24T04:07:51.120Z",
-      "observedAt": "2026-10-24T04:07:54.629Z",
+      "startedAt": "2026-10-25T13:05:00.506Z",
+      "observedAt": "2026-10-25T13:05:03.811Z",
       "query": {
-        "date": "2026-11-09",
+        "date": "2026-11-10",
         "page": "1",
         "pageSize": "20"
       },
       "expectedStates": {
-        "888765e4-e941-4701-b3de-4471ba311936": "cancelled"
+        "fb491443-9335-4e98-a746-8f0d2250ab90": "cancelled"
       },
       "observedMatchingResponses": 1,
       "noManualNavigation": true,
@@ -306,20 +306,20 @@
   ],
   "commandReceipts": [
     {
-      "command_key": "61511dcd-9db4-41d9-a259-b6340f6eec78",
-      "appointment_id": "0f6766e2-87ab-4c3c-9d43-13a2ff55e003",
+      "command_key": "dde47024-7c12-4aba-82ea-af3d10991605",
+      "appointment_id": "454ff971-2b03-4325-9a45-970d9c37cbd6",
       "status": "confirmed"
     },
     {
-      "command_key": "e6693ad7-d712-4692-8fb1-2e7586dcbcb5",
-      "appointment_id": "888765e4-e941-4701-b3de-4471ba311936",
+      "command_key": "c4f2429b-f717-46d3-9295-706a797de269",
+      "appointment_id": "fb491443-9335-4e98-a746-8f0d2250ab90",
       "status": "confirmed"
     },
     {
-      "command_key": "cb4f5007-6736-4d23-a1fc-8729b6b3f2e3",
-      "appointment_id": "888765e4-e941-4701-b3de-4471ba311936",
+      "command_key": "a97ab28d-15e7-4bbb-b332-38842d07f92e",
+      "appointment_id": "fb491443-9335-4e98-a746-8f0d2250ab90",
       "status": "cancelled"
     }
   ],
-  "finishedAt": "2026-10-24T04:08:00.354Z"
+  "finishedAt": "2026-10-25T13:05:10.039Z"
 }

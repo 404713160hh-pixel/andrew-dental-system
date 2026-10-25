@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
   Calendar,
@@ -21,14 +21,30 @@ const route = useRoute();
 const router = useRouter();
 const catalog = useCatalog();
 const booking = useBooking();
+const compact = ref(false);
+const menuOpen = ref(false);
+const doctorView = computed(() => !!auth.user?.roles.includes('doctor') && !auth.canBook);
+function restoreDensity() {
+  try { compact.value = !!auth.user && localStorage.getItem('andrew.staff.density:' + auth.user.id) === 'compact'; }
+  catch { compact.value = false; }
+}
+function toggleDensity() {
+  compact.value = !compact.value;
+  try { if (auth.user) localStorage.setItem('andrew.staff.density:' + auth.user.id, compact.value ? 'compact' : 'comfortable'); }
+  catch { /* Display preferences never block clinical work. */ }
+}
 watch(
   () => auth.user?.id,
   () => {
     catalog.reset();
     booking.patient = null;
+    restoreDensity();
   },
+  { immediate: true },
 );
-const title = computed(() => String(route.meta.title || '预约工作台'));
+watch(() => route.fullPath, () => { menuOpen.value = false; });
+const title = computed(() => doctorView.value && route.path === '/appointments' ? '我的预约'
+  : doctorView.value && route.path === '/shifts' ? '我的排班' : String(route.meta.title || '预约工作台'));
 async function logout() {
   try {
     await auth.logout();
@@ -46,8 +62,9 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
 </script>
 <template>
   <router-view v-if="route.meta.public" />
-  <div v-else class="app-shell">
-    <aside class="sidebar">
+  <div v-else class="app-shell" :class="{ 'is-compact': compact, 'is-doctor': doctorView }" @keyup.esc="menuOpen = false">
+    <button v-if="menuOpen" class="navigation-backdrop" aria-label="收起导航" @click="menuOpen = false"></button>
+    <aside id="staff-navigation" class="sidebar" :class="{ 'is-open': menuOpen }">
       <router-link class="brand" to="/appointments"
         ><span class="brand-mark">A<span>+</span></span
         ><span>ANDREW<span class="brand-sub">安德鲁牙科 · 预约工作台</span></span></router-link
@@ -55,7 +72,7 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
       <div class="nav-label">工作空间</div>
       <nav aria-label="主导航">
         <router-link to="/appointments"
-          ><el-icon><Calendar /></el-icon>预约总览</router-link
+          ><el-icon><Calendar /></el-icon>{{ doctorView ? '我的预约' : '预约总览' }}</router-link
         >
         <router-link v-if="auth.canBook" to="/patients"
           ><el-icon><User /></el-icon>患者档案</router-link
@@ -64,7 +81,7 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
           ><el-icon><Plus /></el-icon>患者代约</router-link
         >
         <router-link to="/shifts"
-          ><el-icon><Clock /></el-icon>医生排班</router-link
+          ><el-icon><Clock /></el-icon>{{ doctorView ? '我的排班' : '医生排班' }}</router-link
         >
         <template v-if="auth.canManage"
           ><div class="nav-label">资源管理</div>
@@ -99,10 +116,12 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
     </aside>
     <div class="workspace">
       <header class="topbar">
+        <button class="mobile-menu" aria-label="展开导航" aria-controls="staff-navigation" :aria-expanded="menuOpen" @click="menuOpen = !menuOpen"><span></span><span></span><span></span></button>
         <div class="breadcrumb">
           工作台 <el-icon><ArrowRight /></el-icon><strong>{{ title }}</strong>
         </div>
         <div class="topbar-right">
+          <button class="density-toggle" :aria-pressed="compact" @click="toggleDensity"><span class="density-icon" aria-hidden="true">☷</span>{{ compact ? '舒适视图' : '紧凑视图' }}</button>
           <span class="role-pill">{{ auth.roleLabel }}</span
           ><el-button
             v-if="auth.canBook && route.path !== '/booking'"

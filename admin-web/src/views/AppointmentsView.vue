@@ -18,6 +18,8 @@ import { useAuth } from '../stores/auth';
 import { useCatalog } from '../stores/catalog';
 import { statusLabels, statusType, time, today } from '../utils';
 import { createLatestRequest, startVisibleRefresh } from '../visible-refresh';
+import { collectAppointmentPages, groupByDoctor, isDoctorOnly, type PageCollectionReason } from '../schedule-view';
+import DateNavigator from '../components/DateNavigator.vue';
 const auth = useAuth();
 const catalog = useCatalog();
 const router = useRouter();
@@ -28,6 +30,10 @@ const page = ref(1);
 const pageSize = ref(20);
 const total = ref(0);
 const rows = ref<Appointment[]>([]);
+const viewMode = ref<'list' | 'agenda'>('list');
+const agendaRows = ref<Appointment[]>([]);
+const agendaComplete = ref(false);
+const agendaWarning = ref('');
 const loading = ref(false);
 const error = ref('');
 const syncError = ref('');
@@ -37,9 +43,15 @@ const detailOpening = ref(false);
 const writing = ref(false);
 const cancellationPromptOpen = ref(false);
 const pending = ref<PendingCommand | null>(readPending());
-const activeCount = computed(() => rows.value.filter((item) => item.status === 'confirmed').length);
-const doctorCount = computed(() => new Set(rows.value.map((item) => item.doctorId)).size);
-const currentTitle = computed(() => (date.value === today() ? '今日预约' : '预约总览'));
+const doctorOnly = computed(() => isDoctorOnly(auth.user?.roles));
+const displayedRows = computed(() => viewMode.value === 'agenda' ? agendaRows.value : rows.value);
+const agendaGroups = computed(() => groupByDoctor(agendaRows.value));
+const activeCount = computed(() => displayedRows.value.filter((item) => item.status === 'confirmed').length);
+const doctorCount = computed(() => new Set(displayedRows.value.map((item) => item.doctorId)).size);
+const currentTitle = computed(() => doctorOnly.value ? '我的预约' : date.value === today() ? '今日预约' : '预约总览');
+const filterSummary = computed(() => [date.value || '全部日期',
+  catalog.clinics.find(item => item.id === clinicId.value)?.name || '全部授权门诊',
+  statusLabels[status.value] || '全部状态'].join(' · '));
 const listRequests = createLatestRequest(() => auth.user?.id);
 const detailRequests = createLatestRequest(() => auth.user?.id);
 let disposed = false;
@@ -50,17 +62,36 @@ watch(drawer, open => {
 async function load(background = false) {
   if (disposed || !auth.user || background && loading.value) return;
   const current = listRequests.begin();
+  const mode = viewMode.value;
+  const filters = { clinicId: clinicId.value, date: date.value, status: status.value };
   if (!background) { loading.value = true; error.value = ''; }
   try {
-    const result = await api<Page<Appointment>>(
-      `/staff/appointments${query({ clinicId: clinicId.value, date: date.value, status: status.value, page: page.value, pageSize: pageSize.value })}`,
-    );
-    if (!current()) return;
-    rows.value = result.items;
-    total.value = result.total;
+    if (mode === 'agenda') {
+      if (!filters.date) { agendaRows.value = []; agendaComplete.value = false; agendaWarning.value = '请先选择某一天，再查看该日的预约日程。'; return; }
+      const result = await collectAppointmentPages<Appointment>((requestedPage, requestedSize) => api<Page<Appointment>>(
+        `/staff/appointments${query({ ...filters, page: requestedPage, pageSize: requestedSize })}`), current);
+      if (!current()) return;
+      agendaRows.value = result.items;
+      total.value = result.total;
+      agendaComplete.value = result.complete;
+      const warnings: Record<PageCollectionReason, string> = {
+        changed: '查询期间预约记录有变化，当前日程可能不完整，请刷新后核对。',
+        invalid: '预约分页响应不完整，当前日程可能不完整，请刷新后核对。',
+        limit: '当前日程记录较多，未能全部加载，请缩小门诊或状态范围。',
+        superseded: '筛选已变化，请等待新日程加载。',
+      };
+      agendaWarning.value = result.reason ? warnings[result.reason] : '';
+    } else {
+      const result = await api<Page<Appointment>>(
+        `/staff/appointments${query({ ...filters, page: page.value, pageSize: pageSize.value })}`);
+      if (!current()) return;
+      rows.value = result.items;
+      total.value = result.total;
+    }
     syncError.value = '';
   } catch (e) {
     if (current()) {
+      if (mode === 'agenda') { agendaComplete.value = false; agendaWarning.value = '当前日程未能完成更新，请刷新后核对。'; }
       if (background) syncError.value = errorText(e);
       else error.value = errorText(e);
     }
@@ -70,6 +101,13 @@ async function load(background = false) {
 }
 async function search() {
   page.value = 1;
+  rows.value = []; agendaRows.value = []; total.value = 0; agendaComplete.value = false; agendaWarning.value = '';
+  await load();
+}
+async function selectDate(value: string) { date.value = value; await search(); }
+async function selectView(value: 'list' | 'agenda') {
+  if (viewMode.value === value) return;
+  viewMode.value = value;
   await load();
 }
 async function detail(row: Appointment) {
@@ -214,35 +252,29 @@ onUnmounted(() => {
     </div>
     <el-button :icon="Refresh" @click="load()" :loading="loading">刷新数据</el-button>
   </section>
-  <div class="hero-strip">
-    <div>
-      <span class="hero-tag">让协作有序发生</span>
-      <h2>{{ auth.canBook ? '每一个预约，都值得认真安排。' : '专注当日安排，从容开始接诊。' }}</h2>
-      <p>预约经医生资格、班次时段和牙椅资源共同校验后确认。</p>
+  <section class="schedule-navigation" aria-label="预约日期与视图">
+    <DateNavigator :date="date" :today="today()" @select="selectDate">
+      <el-button-group aria-label="预约展示方式">
+        <el-button :type="viewMode === 'list' ? 'primary' : 'default'" :aria-pressed="viewMode === 'list'" @click="selectView('list')">列表</el-button>
+        <el-button :type="viewMode === 'agenda' ? 'primary' : 'default'" :aria-pressed="viewMode === 'agenda'" @click="selectView('agenda')">日程</el-button>
+      </el-button-group>
+    </DateNavigator>
+    <div class="schedule-filter-summary" aria-live="polite"><span>{{ filterSummary }}</span>
+      <span v-if="doctorOnly" class="schedule-scope-badge">仅本人</span><span v-else class="schedule-scope-badge">授权范围</span>
     </div>
-    <div class="hero-calendar" aria-hidden="true">
-      <span>{{
-        new Date(`${date || today()}T12:00:00+08:00`).toLocaleString('zh-CN', {
-          month: 'long',
-          timeZone: 'Asia/Shanghai',
-        })
-      }}</span
-      ><strong>{{ (date || today()).slice(-2) }}</strong>
-      <div><i></i><i></i><i></i></div>
-    </div>
-  </div>
+  </section>
   <div class="stat-grid">
     <div class="stat-card">
       <span>筛选结果总数</span><strong>{{ total }}<small>笔</small></strong>
       <p>当前日期、门诊与状态</p>
     </div>
     <div class="stat-card">
-      <span>本页已确认</span><strong>{{ activeCount }}<small>笔</small></strong>
-      <p>本页 {{ rows.length }} 条记录中</p>
+      <span>{{ viewMode === 'list' ? '本页已确认' : '已加载记录中已确认' }}</span><strong>{{ activeCount }}<small>笔</small></strong>
+      <p>{{ viewMode === 'list' ? '本页' : '已加载' }} {{ displayedRows.length }} 条记录中</p>
     </div>
     <div class="stat-card">
-      <span>本页服务医生</span><strong>{{ doctorCount }}<small>人</small></strong>
-      <p>按本页预约去重统计</p>
+      <span>{{ viewMode === 'list' ? '本页服务医生' : '已加载记录中服务医生' }}</span><strong>{{ doctorCount }}<small>人</small></strong>
+      <p>按当前已加载预约去重统计</p>
     </div>
     <div class="stat-card stat-note">
       <el-icon><Calendar /></el-icon>
@@ -312,7 +344,7 @@ onUnmounted(() => {
             :label="label"
             :value="key" /></el-select></el-form-item
       ><el-button :icon="Search" native-type="submit">查询</el-button></el-form
-    ><el-table
+    ><el-table v-if="viewMode === 'list'"
       :data="rows"
       v-loading="loading"
       row-key="id"
@@ -348,7 +380,7 @@ onUnmounted(() => {
           ><el-button text type="primary" @click.stop="detail(row)"
             >查看<el-icon><ArrowRight /></el-icon></el-button></template></el-table-column
     ></el-table>
-    <div class="pagination">
+    <div v-if="viewMode === 'list'" class="pagination">
       <span>共 {{ total }} 笔预约</span
       ><el-pagination
         v-model:current-page="page"
@@ -359,6 +391,19 @@ onUnmounted(() => {
         @current-change="load()"
         @size-change="search"
       />
+    </div>
+    <div v-else class="schedule-agenda" v-loading="loading" aria-label="按医生分组的预约日程">
+      <el-alert v-if="agendaWarning" :title="agendaWarning" type="warning" :closable="false" show-icon />
+      <p class="schedule-query-note" v-if="date">已加载 {{ agendaRows.length }} 条预约{{ agendaComplete ? '，当前筛选记录已加载。' : '，当前结果可能不完整。' }}记录会自动更新，变更请以最新详情为准。</p>
+      <section v-for="group in agendaGroups" :key="group.doctorId" class="schedule-agenda-group">
+        <header class="schedule-agenda-header"><h3>{{ group.doctorName }}</h3><small>{{ group.items.length }} 条已加载记录</small></header>
+        <button v-for="item in group.items" :key="item.id" type="button" class="schedule-agenda-item" :class="'is-' + item.status" @click="detail(item)">
+          <span class="schedule-agenda-time"><strong>{{ time(item.startsAt) }}</strong><small>— {{ time(item.endsAt) }}</small></span>
+          <span class="schedule-agenda-content"><strong>{{ item.patientName }} · {{ item.serviceName }}</strong><span class="schedule-agenda-meta">{{ item.clinicName }} · {{ item.appointmentNo }}</span></span>
+          <el-tag :type="statusType(item.status)">{{ statusLabels[item.status] }}</el-tag>
+        </button>
+      </section>
+      <el-empty v-if="!loading && !agendaRows.length" :description="!date ? '请选择日期查看预约日程' : error || agendaWarning ? '日程尚未完整加载，请核对提示后重试' : '当前日期与筛选范围内暂无预约'" />
     </div>
   </section>
   <el-drawer v-model="drawer" title="预约详情" size="480px"

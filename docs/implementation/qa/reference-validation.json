@@ -1,0 +1,100 @@
+{
+  "status": "passed",
+  "verifiedAt": "2026-10-25T13:11:00.600Z",
+  "timezone": "Asia/Shanghai",
+  "scope": "DentalPin/Open Dental interaction references and Vant Weapp native UI; shared booking collaboration",
+  "results": {
+    "api": {
+      "tests": 47,
+      "passed": 47,
+      "failed": 0,
+      "skipped": 0
+    },
+    "admin": {
+      "tests": 41,
+      "passed": 41,
+      "failed": 0,
+      "skipped": 0
+    },
+    "mini": {
+      "tests": 34,
+      "passed": 34
+    },
+    "realDoctorBrowser": 11,
+    "realWechatNativeUI": 9,
+    "realCrossClient": 15,
+    "realStaffBrowser": 12
+  },
+  "queryWindow": {
+    "source": "GET /api/v1/booking-policy",
+    "sameExistingBackendBoundary": true,
+    "historicalAppointmentPoliciesUnchanged": true
+  },
+  "nativeProject": {
+    "path": "D:/AndrewDentalMiniProgram",
+    "sourceSha256": "d8156c5f4ecd2c62f1c6e95884c77ba7a7e9829e8eee8cceb499ef718a7efa90",
+    "compiledSha256": "dec96eeccad754f3cb2b8d9e1b9f1e521682d0d84c6519548692b47a947b6b23",
+    "vantVersion": "1.11.7",
+    "bothTreesMatchRepository": true
+  },
+  "evidence": [
+    {
+      "kind": "api",
+      "path": "docs/implementation/qa/reference-api.json",
+      "sha256": "18371323e11d0ae5fb5608b94a1b418092a079b8c2c4a5f673bae881ba6f31a8"
+    },
+    {
+      "kind": "admin",
+      "path": "docs/implementation/qa/reference-admin.json",
+      "sha256": "63fd437c01efe8c7c9db5ee3c40993939b9267c375b606f3973e0c5412645b60"
+    },
+    {
+      "kind": "mini",
+      "path": "miniprogram/qa/client-unit.json",
+      "sha256": "67aa2e11b456ab4e928fd6d20048601ff98b4aa9989dcb06ed46de42826ba896"
+    },
+    {
+      "kind": "doctor",
+      "path": "docs/implementation/qa/doctor-view.json",
+      "sha256": "59d51c5fa05f23a6e76e8d60b3c554ce3c76b730cdd1a2f20d9634f1ef37b4c5"
+    },
+    {
+      "kind": "native",
+      "path": "docs/implementation/qa/reference-native-ui.json",
+      "sha256": "6676158c09697cf013d51157b099f81d2602011efb2ac9f379c9c31040b41d1b"
+    },
+    {
+      "kind": "cross",
+      "path": "docs/implementation/qa/cross-client.json",
+      "sha256": "ac494da34078ff910f6a293eb2fbe6aa20fb72f98989095b1d0fb38a499f4abd"
+    },
+    {
+      "kind": "browser",
+      "path": "docs/implementation/qa/browser.json",
+      "sha256": "9dc347151314da1aeb237b0eefe14cdb28200ccabcf4535f22185cef44ebad62"
+    }
+  ],
+  "designPdf": {
+    "path": "docs/design/安德鲁牙科系统设计文档.pdf",
+    "sha256": "22483aee6c2ca681937bb667868e25c85f97f85dbc8e11f5dd6da3d6ce2ee3eb",
+    "unchanged": true
+  },
+  "boundaries": {
+    "physicalDeviceVerified": false,
+    "wechatIdentityLoginVerified": false,
+    "publicDeploymentVerified": false,
+    "previewUploadExecuted": false,
+    "paymentFinanceAdded": false
+  },
+  "screenshots": {
+    "website": "screenshots/booking/doctor-view-mvnue1bc/04-own-appointment-agenda.png",
+    "miniCalendar": {
+      "path": "screenshots/booking/NATIVE-REFERENCE-79277ae9/01-calendar-tomorrow-selected.png",
+      "surface": "Real WeChat DevTools simulator viewport; not physical device"
+    },
+    "miniSlots": {
+      "path": "screenshots/booking/NATIVE-REFERENCE-79277ae9/02-slot-groups.png",
+      "surface": "Real WeChat DevTools simulator viewport; not physical device"
+    }
+  }
+}

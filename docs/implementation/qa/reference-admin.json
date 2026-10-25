@@ -1,0 +1,115 @@
+{
+  "status": "passed",
+  "startedAt": "2026-10-25T12:52:50.891Z",
+  "finishedAt": "2026-10-25T12:52:52.050Z",
+  "command": "node --test --test-reporter=tap admin-web/test/api-session.test.mjs admin-web/test/appointments-refresh.test.mjs admin-web/test/date-navigator.test.mjs admin-web/test/resources-catalog.test.mjs admin-web/test/schedule-view.test.mjs",
+  "runtime": "v24.15.0",
+  "execution": "Node controlled transports, real Pinia and transpiled Vue scripts; no browser rendering",
+  "exitCode": 0,
+  "results": {
+    "tests": 41,
+    "passed": 41,
+    "failed": 0,
+    "skipped": 0
+  },
+  "sourceUnchangedDuringRun": true,
+  "sourceFiles": [
+    {
+      "path": "admin-web/src/api.ts",
+      "sha256": "e4ada101c9eccc8ca5ae9639fb6672e6218fe387d98e2f79c744a4c4dc93548e"
+    },
+    {
+      "path": "admin-web/src/App.vue",
+      "sha256": "7ae5da4df292daa98a1a277dd748eaad4a47f50293e9df4374472314511375a8"
+    },
+    {
+      "path": "admin-web/src/components/DateNavigator.vue",
+      "sha256": "2b6bb472406400b367dfcf27ea8d61a8eb8a037f9ba627041475eed765a61b1d"
+    },
+    {
+      "path": "admin-web/src/components/PatientEditor.vue",
+      "sha256": "c60d37dcba2825a1c3090e68594b969dcfc686f73ddde693944314090cad8d48"
+    },
+    {
+      "path": "admin-web/src/main.ts",
+      "sha256": "7e502e9acaf6412eadc280c49ae7a8e4aea3941f191b0ad0234bf40a6c4200d2"
+    },
+    {
+      "path": "admin-web/src/router.ts",
+      "sha256": "94d1b9f38ca9704c8672c2e9d846383f4038270f02c9d48a698cce822032a8e4"
+    },
+    {
+      "path": "admin-web/src/schedule-view.ts",
+      "sha256": "3b92c43a655c0cd88abd88249f0ef85991b1d12564915efc39865b2b9e6572e5"
+    },
+    {
+      "path": "admin-web/src/stores/auth.ts",
+      "sha256": "08705bebb7956480d9fa7b9b2cd3fc20415120740202cdd273d85e8466b37c3a"
+    },
+    {
+      "path": "admin-web/src/stores/booking.ts",
+      "sha256": "71eb93654b22ad7186b58fa1c6101864ba404c1538d6d07d51cd10a24d3107ff"
+    },
+    {
+      "path": "admin-web/src/stores/catalog.ts",
+      "sha256": "9f443dea93343f8e3cd27cab2a318fc054158c596253555d5a1138c17be56c37"
+    },
+    {
+      "path": "admin-web/src/style.css",
+      "sha256": "b56f0a417106d63d6cec662354f762d65789098155d6bc3063c5a83b17e0b26a"
+    },
+    {
+      "path": "admin-web/src/utils.ts",
+      "sha256": "9fa1b4004a584fef200f23f691c1eee3ca5152d38b462f1e9e5e586847a0589a"
+    },
+    {
+      "path": "admin-web/src/views/AppointmentsView.vue",
+      "sha256": "08f6ba59ac77e506e6d86b488dc82b4c26b7ef661a713d087523f8392b0a1fbe"
+    },
+    {
+      "path": "admin-web/src/views/BookingView.vue",
+      "sha256": "e7d4701a399100ea9d7f7d733f283b3fcb14ef05e08d17b22606983a9ba5f3c9"
+    },
+    {
+      "path": "admin-web/src/views/LoginView.vue",
+      "sha256": "2c2395dae004a506abc286b1d2bb0f36d749d001ac94f891029285893dbad3e1"
+    },
+    {
+      "path": "admin-web/src/views/PatientsView.vue",
+      "sha256": "78e6e28d11c3699f47387a96f73a4d71411ffeb86680333b238f484ce1e50d9e"
+    },
+    {
+      "path": "admin-web/src/views/ResourcesView.vue",
+      "sha256": "d82c65c961c20d9a4b04bb7783491b3edb4b2fd264e83fc8d550569354a2500e"
+    },
+    {
+      "path": "admin-web/src/views/ShiftsView.vue",
+      "sha256": "71881b8ce460bac1f1169b3f934681c3814b0a8498a3244d198f4a2e3254cff4"
+    },
+    {
+      "path": "admin-web/src/visible-refresh.ts",
+      "sha256": "8aeb8a2080dc1b41fdf0bd552add7a5d1383f2bdc92ca589484d606a77171fc1"
+    },
+    {
+      "path": "admin-web/test/api-session.test.mjs",
+      "sha256": "08ff8e96a408e74f3bd3edb4e37fd64b0e1f74696d41c35060f68fbd9d99e59b"
+    },
+    {
+      "path": "admin-web/test/appointments-refresh.test.mjs",
+      "sha256": "8eed662de933c4cd736f2c22292074709b328a53ee066f917b3d6863254bcae8"
+    },
+    {
+      "path": "admin-web/test/date-navigator.test.mjs",
+      "sha256": "18e5b604b6c3e76dde0b12115836aefa0ed5fe81924ecbedea5cd0d366b7189e"
+    },
+    {
+      "path": "admin-web/test/resources-catalog.test.mjs",
+      "sha256": "7770c0c1a8e4f4bb2f6674dad36e08dde0784ad0b416d6ba2cb18978f75b81d4"
+    },
+    {
+      "path": "admin-web/test/schedule-view.test.mjs",
+      "sha256": "2fd9e43171fce5931a0218c108bd95a214d9f097e2b92e860ee87000b5167bcf"
+    }
+  ],
+  "tapSha256": "03175cce76b2615154b050d14ae5a29ad9928956a31c288d94bda293a580afda"
+}

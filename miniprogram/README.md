@@ -19,6 +19,8 @@ npm run test -w @andrew/miniprogram
 
 本机已打开的工程为 `D:\AndrewDentalMiniProgram`。在仓库根目录构建后执行 `npm run sync:wechat`，将源码与产物同步到该工程；脚本先备份到忽略目录 `.booking-data/wechat-backups/`，保留 D 盘的 AppID 和本地工具配置，并核对两边产物哈希。可先用 `npm run sync:wechat -- --dry-run` 检查。修改 API 地址也须重新构建、同步。D 盘工程用于工具运行，依赖与共享类型的构建仍从本仓库执行。
 
+预约页已接入锁定的 `@vant/weapp@1.11.7` 日历、步骤、空态和加载组件。构建会复制组件与许可证到 `dist/vendor/vant`，无需在开发者工具手工构建 npm。日历与日期选择器的范围来自后端 `queryWindow`；七日快选不预报有号，实际号源按北京时间分段展示。[本轮参考与验收](../docs/implementation/reference-ui-20261025.md)记录采用的交互及证据边界。
+
 `src/contracts.d.ts` 在构建/检查时从仓库 `shared/src/index.ts` 自动生成，仅用于编译，不手工维护另一份 DTO；`dist` 和该声明文件不入库。所有网络响应来自真实 API，没有客户端硬编码的门诊、医生、服务、号源或成功预约数据。
 
 ## AppID、地址与微信配置

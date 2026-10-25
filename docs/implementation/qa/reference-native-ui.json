@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "namespace": "NATIVE-REFERENCE-79277ae9",
+  "status": "passed",
+  "startedAt": "2026-10-25T13:04:11.626Z",
+  "execution": "Official miniprogram-automator SDK driving real WeChat DevTools rendered native controls; real read-only local API; not a physical device test",
+  "environment": {
+    "api": "http://127.0.0.1:3310/api/v1",
+    "automationEndpoint": "ws://127.0.0.1:9420",
+    "projectPath": "D:\\AndrewDentalMiniProgram",
+    "compiledRoot": "D:\\AndrewDentalMiniProgram\\dist",
+    "appId": "wxb384991780e8d7c6",
+    "artifactSha256": "dec96eeccad754f3cb2b8d9e1b9f1e521682d0d84c6519548692b47a947b6b23",
+    "vantVersion": "1.11.7"
+  },
+  "checks": [
+    {
+      "name": "本机3310数据库健康且服务端明确处于非生产演示环境",
+      "status": "passed"
+    },
+    {
+      "name": "真实D工程与仓库编译哈希、API地址、Vant 1.11.7组件一致",
+      "status": "passed"
+    },
+    {
+      "name": "原生日期选择器与页面共享服务端查询窗口，没有本地固定天数",
+      "status": "passed"
+    },
+    {
+      "name": "原生预约页面目录成功、4个原生picker保留、7个快捷日真实渲染",
+      "status": "passed"
+    },
+    {
+      "name": "真实Vant月份渲染、明日单元格与内层原生确认按钮完成选日",
+      "status": "passed",
+      "selectedDate": "2026-10-26",
+      "monthCount": 4,
+      "dayIndex": 25
+    },
+    {
+      "name": "明日实际号源分组精确覆盖原号源索引且DOM按钮唯一",
+      "status": "passed",
+      "slotCount": 90,
+      "groupCount": 2
+    },
+    {
+      "name": "点击快捷日清除旧slots/slotGroups与queried，不执行占位",
+      "status": "passed"
+    },
+    {
+      "name": "服务端实际返回空号源并渲染Vant真实空态，无可选按钮",
+      "status": "passed",
+      "selectedDate": "2027-01-23"
+    },
+    {
+      "name": "全程停留预约查询页，无登录/占位/确认命令，真实编译产物保持一致",
+      "status": "passed"
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "screenshots/booking/NATIVE-REFERENCE-79277ae9/01-calendar-tomorrow-selected.png",
+      "surface": "Real WeChat DevTools simulator viewport; not physical device"
+    },
+    {
+      "path": "screenshots/booking/NATIVE-REFERENCE-79277ae9/02-slot-groups.png",
+      "surface": "Real WeChat DevTools simulator viewport; not physical device"
+    },
+    {
+      "path": "screenshots/booking/NATIVE-REFERENCE-79277ae9/03-distant-query-outcome.png",
+      "surface": "Real WeChat DevTools simulator viewport; not physical device"
+    }
+  ],
+  "queries": [
+    {
+      "label": "tomorrow slot query",
+      "date": "2026-10-26",
+      "clinicId": "50019e5d-8e69-46aa-a5a5-074d68bf60df",
+      "serviceId": "ebda336f-2445-43ba-9119-f6673479b595",
+      "outcome": "available",
+      "slotCount": 90
+    },
+    {
+      "label": "distant native-picker query",
+      "date": "2027-01-23",
+      "clinicId": "50019e5d-8e69-46aa-a5a5-074d68bf60df",
+      "serviceId": "ebda336f-2445-43ba-9119-f6673479b595",
+      "outcome": "empty",
+      "slotCount": 0
+    }
+  ],
+  "limitations": [],
+  "businessMutationsInvoked": false,
+  "credentialsRead": false,
+  "distantDate": {
+    "date": "2027-01-23",
+    "outcome": "empty",
+    "genuineEmptyStateVerified": true
+  },
+  "finishedAt": "2026-10-25T13:04:18.922Z"
+}
