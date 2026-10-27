@@ -4,7 +4,7 @@
 
 2026-10-22 的历史开发起点为 `c1e3779`，当时的开发分支为 `feat/postgres-booking-20261022`；这不是当前分支或当前 HEAD 的声明。开始时工作区干净，HEAD/status/diff与旧server/public/test/tools哈希保存于工作区外层 `tmp/booking-baseline-20261022`。原SQLite数据目录没有迁移、覆盖或删除。当前实现和证据见[设计与开发核对](design-implementation-status.md)。
 
-需求为正式300页PDF中的UC-01～07及第7～9章，本次仅实现预约业务。设计原始案例和目标方案的关系不由旧程序反推；新旧差异见设计审查与legacy审查。
+需求为设计PDF中的UC-01～07及第7～9章，本次仅实现预约业务。设计原始案例和目标方案的关系不由旧程序反推；新旧差异见设计审查与legacy审查。
 
 选择Fastify模块化单体：同一进程提供认证、目录、排班与预约API，利用成熟的HTTP生命周期、结构化日志与测试注入；无需分布式事务或微服务。输入使用Zod DTO验证，数据库访问使用`pg`参数化SQL，使范围查询、排斥约束和锁语义可直接审阅。Vue 3/TypeScript与原生微信TS只通过REST交互，不持有数据库连接。
 

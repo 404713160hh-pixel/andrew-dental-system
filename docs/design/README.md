@@ -1,8 +1,5 @@
-# 设计基线
+# 设计文档
 
-本次预约系统的正式依据为本目录的安德鲁牙科系统设计文档.pdf，共 300 页，SHA-256：
-22483aee6c2ca681937bb667868e25c85f97f85dbc8e11f5dd6da3d6ce2ee3eb。
+本目录的《安德鲁牙科系统设计文档》为 2026-10-27 修订版，共 305 页；SHA-256：`096bd52dcafed8f3a797318ac3d3e696650f86a384a2e40c3d296346d855f34b`。预约业务设计同步了号源查询、确认和改期接口、资源占用、参考价格，以及患者端与员工工作台的交互。完整业务目标继续保留。
 
-参考 UC-01～07、第 7～9 章；正文第 277 页图 104（PDF 物理第 292 页）与正文第 278 页表 264 为患者预约交互依据。其余 24 个用例完整目标不表示本次全部实现。
-
-1602240215.pdf、delivery-manifest.json 及 source/ 等为 2026-10-20 及更早版本的历史材料，本次开发不以这些旧文件作为需求基线，也不运行旧 build-docs 覆盖当前文件。仓库仅保留 PDF 作为正式设计文档阅读版本，不提交 Word 版设计文档。具体页码与实现取舍见 ../implementation/design-review.md。
+当前可编辑 TeX 主文件及编译图形位于 [source-current](source-current/README.md)。`source/`、`1602240215.pdf`、`delivery-manifest.json` 与 `VERIFICATION.md` 属于历史版本，不用于重建当前 PDF。预约系统实现与验证记录见 [开发现状核对](../implementation/design-implementation-status.md)。
