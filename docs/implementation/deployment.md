@@ -41,6 +41,12 @@ docker compose --env-file .env.compose run --rm -e ADMIN_USERNAME -e ADMIN_PASSW
 
 ## Linux HTTPS
 
+目前小程序 `miniprogram/src/config.ts` 指向 `http://127.0.0.1:3310/api/v1`，正式环境必须替换为实际可达的 HTTPS API 地址、重新构建并上传；手机上的 127.0.0.1 指向手机自身。微信公众平台需配置 request 合法域名，按实际主体核实域名备案、证书、业务类目和资质，恢复域名及证书检查，再在体验版真机验证。当前 `POST /auth/wechat` 固定返回 501；提供 AppID 或密钥不会自动实现微信身份登录，现有登录为后端账号会话。
+
+当前 API 配置 `trustProxy: false`，限流使用请求 IP。双层 Nginx 部署下需在目标拓扑验证是否将多个用户识别为同一代理 IP；根据实际可信代理边界设计并测试 IP 转发及限流，不能直接信任任意客户端传入的转发头。
+
+真实患者上线前，应依据实际医疗机构主体和经营范围核实微信服务类目及所需资质，并完善隐私告知、授权、访问控制、账户恢复和运维制度。患者健康及过敏信息属于敏感个人信息，应依[《个人信息保护法》](https://www.miit.gov.cn/jgsj/zfs/fl/art/2022/art_515a4b20c12f430eab54bb4f56d89f56.html)及实际业务核对处理目的、必要性、单独同意、未成年人保护和安全措施。合成医生、患者、参考价格与演示账号不能作为真实业务资料直接上线。
+
 设置.env.compose中的SERVER_NAME为自己域名，CORS_ORIGINS为同一HTTPS来源，TLS_CERT_DIR为安全的证书目录，内含fullchain.pem和privkey.pem；证书、DNS、备案与微信合法域名需由使用者在真实环境配置。
 
 ```bash

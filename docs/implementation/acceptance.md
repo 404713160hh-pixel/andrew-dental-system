@@ -74,7 +74,7 @@ npm run test:persistence:after
 - `qa/collaboration-api.json/.tap`：本轮45项真实PG/API测试，独立随机测试库、执行时间和源码哈希。
 - `qa/collaboration-admin.json/.tap`：14项受控异步客户端测试，验证刷新暂停/恢复、卸载清理、迟到响应、详情切换和编辑保护；不冒称浏览器测试。
 - `qa/cross-client.json`：15项真实微信模拟器+Chrome+PG联动，网站在原页面自动收到改期和取消，不手动刷新、不重新导航。
-- `qa/doctor-view.json`：7项真实Chrome医生视图检查，排班和预约均有非空本人记录；无发布、撤销、资源维护、代约或预约变更入口，直接维护URL回到只读预约页。
+- `qa/doctor-view.json`：最新记录为11项真实Chrome医生视图检查，排班和预约均有非空本人记录；无发布、撤销、资源维护、代约或预约变更入口，直接维护URL回到只读预约页。该文件已由后续检查更新，不作为前一轮7项的原始证据。
 - `qa/browser.json`：真实Chrome操作、请求关联和夹具收尾；截图在Git忽略的screenshots/booking目录。
 - `qa/persistence.json`：实际PG/API重启，非仅关闭一条连接。
 - `qa/compose-validation.json`：官方JSON schema和数据库无宿主端口等静态断言，**未执行Docker容器或TLS**。

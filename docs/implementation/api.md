@@ -58,9 +58,9 @@ qualifications项为 `{qualificationId,validFrom,validUntil:null|ISO时间}`；�
 
 ## 查询、占位与确认
 
-`GET /booking-policy`返回holdSeconds、cancellationNoticeMinutes、transferBufferMinutes、slotStepMinutes、timezone。
+`GET /booking-policy`返回holdSeconds、cancellationNoticeMinutes、transferBufferMinutes、slotStepMinutes、timezone，以及当前可查询日期边界 `queryWindow: {fromDate, toDate}`（均为 YYYY-MM-DD，包含两端）。这是查询时根据服务器时钟计算的窗口；已保存的预约规则快照不增加该字段。
 
-`GET /booking-slots?clinicId=UUID&serviceId=UUID&date=YYYY-MM-DD&doctorId=UUID` → BookingSlot数组；doctorId可选，日期为未来90天范围。包括实际服务结束endsAt、含缓冲occupiedUntil、服务时长及参考价格。没有其他患者ID、姓名或预约详情。
+`GET /booking-slots?clinicId=UUID&serviceId=UUID&date=YYYY-MM-DD&doctorId=UUID` → BookingSlot数组；doctorId可选。日期按服务器当前时刻及中国时区当天零点的差值校验，接受差值从 -1 天到 90 天（含边界）；客户端应使用 `GET /booking-policy` 返回的动态窗口，不自行推算。小程序另将起始日期限制为不早于中国时区当天。包括实际服务结束endsAt、含缓冲occupiedUntil、服务时长及参考价格。没有其他患者ID、姓名或预约详情。
 
 `POST /booking-holds`：
 

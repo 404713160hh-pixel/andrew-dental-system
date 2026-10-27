@@ -2,7 +2,7 @@
 
 ## 基线与工程决策
 
-Git起点为 `c1e3779`，开发分支 `feat/postgres-booking-20261022`。开始时工作区干净，HEAD/status/diff与旧server/public/test/tools哈希保存于工作区外层 `tmp/booking-baseline-20261022`。原SQLite数据目录没有迁移、覆盖或删除。
+2026-10-22 的历史开发起点为 `c1e3779`，当时的开发分支为 `feat/postgres-booking-20261022`；这不是当前分支或当前 HEAD 的声明。开始时工作区干净，HEAD/status/diff与旧server/public/test/tools哈希保存于工作区外层 `tmp/booking-baseline-20261022`。原SQLite数据目录没有迁移、覆盖或删除。当前实现和证据见[设计与开发核对](design-implementation-status.md)。
 
 需求为正式300页PDF中的UC-01～07及第7～9章，本次仅实现预约业务。设计原始案例和目标方案的关系不由旧程序反推；新旧差异见设计审查与legacy审查。
 
