@@ -70,6 +70,8 @@ npm run test:persistence:after
 
 ## 证据与限制
 
+以下历史验收记录保留当时的文件名与散列；设计文档现统一为 `docs/design/1602240215.pdf`，历史路径不代表当前仍有同名文件。
+
 - `qa/api-integration.json`：43项真实PG/API，包含旧种子升级、幂等增量、权限、深度回滚及锁等待验证。
 - `qa/collaboration-api.json/.tap`：本轮45项真实PG/API测试，独立随机测试库、执行时间和源码哈希。
 - `qa/collaboration-admin.json/.tap`：14项受控异步客户端测试，验证刷新暂停/恢复、卸载清理、迟到响应、详情切换和编辑保护；不冒称浏览器测试。

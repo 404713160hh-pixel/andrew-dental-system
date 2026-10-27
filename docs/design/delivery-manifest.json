@@ -1,37 +1,23 @@
 {
-  "revisedAt": "2026-10-20",
+  "revisedAt": "2026-10-27",
   "file": "1602240215.pdf",
-  "sha256": "45c5057ebb79ada5b7acfcebf658260d901228de99533125bccd4dedc8c6465b",
-  "pages": 585,
-  "figures": 192,
-  "numberedTables": 285,
-  "useCases": 48,
-  "businessProcesses": 27,
-  "sequenceMessages": 502,
-  "manuallyPerformedMessages": 70,
+  "sha256": "096bd52dcafed8f3a797318ac3d3e696650f86a384a2e40c3d296346d855f34b",
+  "pages": 305,
+  "figures": 104,
+  "numberedTables": 272,
+  "systemUseCases": 24,
+  "businessProcesses": 12,
   "database": {
-    "tables": 114,
-    "fields": 1570,
-    "logicalForeignKeys": 407,
-    "selfReferences": 25,
-    "physicalErFigures": 73
+    "documentedTables": 61,
+    "documentedFields": 844
   },
-  "skills": [
-    "csu-academic-report",
-    "lieflat-less-ai-tone"
-  ],
   "verification": {
     "allPagesRendered": true,
     "pageSize": "A4 portrait",
     "missingGlyphs": false,
     "unresolvedReferences": false,
     "overfullLines": false,
-    "coverValueCenterOffsetPt": {
-      "1602242015": -0.002,
-      "张云福": -0.002,
-      "商学院": -0.002,
-      "毕文杰": -0.002
-    }
+    "outsideText": false
   },
-  "scope": "This is the revised target-system design document. It does not claim application implementation, production deployment, or live clinical/payment integration."
+  "source": "source-current/main.tex"
 }

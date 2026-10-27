@@ -1,1 +1,7 @@
-{"pdf":"安德鲁牙科系统设计文档.pdf","pages":300,"sha256":"22483aee6c2ca681937bb667868e25c85f97f85dbc8e11f5dd6da3d6ce2ee3eb","implementationScope":"UC01-07 booking core; architecture/database/quality chapters 7-9","supersedesForImplementation":"1602240215.pdf"}
+{
+  "pdf": "1602240215.pdf",
+  "revisedAt": "2026-10-27",
+  "pages": 305,
+  "sha256": "096bd52dcafed8f3a797318ac3d3e696650f86a384a2e40c3d296346d855f34b",
+  "implementationScope": "UC01-07 booking core; architecture/database/quality chapters 7-9"
+}

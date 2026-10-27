@@ -4,7 +4,7 @@
 
 2026-10-25 界面优化：小程序接入 Vant 日历与分时段号源，网站增加日期导航、医生分组日程、本人视角和紧凑/手机布局；[参考与改动对照](docs/implementation/reference-ui-20261025.md)列出 DentalPin、Open Dental 和 Vant 的实际参考范围及测试记录。
 
-设计依据为 [305页设计文档](docs/design/安德鲁牙科系统设计文档.pdf)，SHA-256 `096bd52dcafed8f3a797318ac3d3e696650f86a384a2e40c3d296346d855f34b`。本次实现 UC-01～07 的预约核心，不声称已实现全部24个用例。当前实现、未完成项与测试证据见[设计与开发核对](docs/implementation/design-implementation-status.md)，历史分析见[设计审查](docs/implementation/design-review.md)。
+设计依据为 [305页设计文档](docs/design/1602240215.pdf)，SHA-256 `096bd52dcafed8f3a797318ac3d3e696650f86a384a2e40c3d296346d855f34b`。本次实现 UC-01～07 的预约核心，不声称已实现全部24个用例。当前实现、未完成项与测试证据见[设计与开发核对](docs/implementation/design-implementation-status.md)，历史分析见[设计审查](docs/implementation/design-review.md)。
 
 ## 本地运行
 
