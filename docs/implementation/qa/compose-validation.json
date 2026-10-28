@@ -2,7 +2,7 @@
   "status": "passed",
   "validation": "Official Compose JSON schema, without format assertions, and explicit deployment boundary assertions; not a container execution",
   "composeSha256": "401e96cc26506e8343f011fc171a4c1bbd7d8d903ffbc22b0441cef721628736",
-  "previewComposeSha256": "386a88a96d187a1acd750443c2b959cc51d20f3782f22c613bc53fa5518b091a",
+  "previewComposeSha256": "125f9010552fd7724cf4fc4e3bc59f047163aba9deb1023ed1d11a4b6271da37",
   "services": [
     "postgres",
     "migrate",

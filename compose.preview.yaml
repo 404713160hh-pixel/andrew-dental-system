@@ -1,6 +1,7 @@
 services:
   seed:
     extends:
+      file: compose.yaml
       service: api
     profiles: [preview]
     restart: "no"

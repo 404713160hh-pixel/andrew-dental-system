@@ -13,6 +13,7 @@ assert.ok(validator(preview),JSON.stringify(validator.errors));
 assert.ok(!document.services.seed,'Default Compose configuration must not include synthetic seed service');
 assert.equal(document.services.api.environment.NODE_ENV,'production','Default API must remain in production mode');
 assert.equal(preview.services.seed.extends.service,'api','Preview seed must extend the production API service configuration');
+assert.equal(preview.services.seed.extends.file,'compose.yaml','Preview seed must resolve its base API from the base Compose file');
 assert.ok(preview.services.seed.profiles.includes('preview'),'Synthetic seed must be isolated behind the preview profile');
 assert.equal(preview.services.seed.environment.NODE_ENV,'development','Preview seed must not change default API runtime mode');
 assert.ok(preview.services.seed.command.includes('seed'),'Preview seed must invoke only the explicit seed command by default');
