@@ -5,6 +5,9 @@ services:
     profiles: [preview]
     restart: "no"
     command: [node, booking-api/dist/booking-api/src/cli.js, seed]
+    depends_on:
+      provision:
+        condition: service_completed_successfully
     environment:
       NODE_ENV: development
       SEED_PASSWORD: ${SEED_PASSWORD:?Set SEED_PASSWORD}

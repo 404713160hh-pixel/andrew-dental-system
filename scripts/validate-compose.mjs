@@ -16,6 +16,7 @@ assert.equal(preview.services.seed.extends.service,'api','Preview seed must exte
 assert.ok(preview.services.seed.profiles.includes('preview'),'Synthetic seed must be isolated behind the preview profile');
 assert.equal(preview.services.seed.environment.NODE_ENV,'development','Preview seed must not change default API runtime mode');
 assert.ok(preview.services.seed.command.includes('seed'),'Preview seed must invoke only the explicit seed command by default');
+assert.equal(preview.services.seed.depends_on.provision.condition,'service_completed_successfully','Preview seed must wait for runtime-role provisioning and its migration dependencies');
 assert.ok(!document.services.postgres.ports,'PostgreSQL must not have host ports');
 assert.ok(!document.services.api.ports,'API must stay behind the same-origin gateway');
 assert.equal(document.services.api.depends_on.provision.condition,'service_completed_successfully');
