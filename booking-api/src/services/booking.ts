@@ -6,6 +6,8 @@ import type { Config } from '../config.js';
 import { one,transaction,iso } from '../db.js';
 import { AppError,requireThat } from '../errors.js';
 import { audit,clinicAccess } from '../auth.js';
+import { requirePatientInClinic } from '../patient-access.js';
+import { PRIVACY_VERSION } from '../privacy.js';
 import { holdInput,confirmInput,changeInput } from '../validation.js';
 import { querySlots } from '../repositories/booking.js';
 import { getPatient,getAppointment } from '../repositories/catalog.js';
@@ -54,6 +56,15 @@ export async function createHold(pool:pg.Pool,config:Config,user:Principal,raw:u
  if(!user.patientId)clinicAccess(user,input.clinicId,['hq','manager','front']);
  return transaction(pool,async db=>{
   await lockPeopleAndChair(db,patientId,[input.doctorId],[input.chairId]);await expire(db);
+  if(!user.patientId){
+   await requirePatientInClinic(db,user,patientId,input.clinicId);
+   // An existing appointment may still be cancelled after withdrawal, but
+   // it does not authorize the creation of new reservations.
+   const consent=await one<{has_any:boolean;has_active:boolean}>(db,`SELECT
+    EXISTS(SELECT 1 FROM patient_privacy_consents WHERE patient_id=$1) AS has_any,
+    EXISTS(SELECT 1 FROM patient_privacy_consents WHERE patient_id=$1 AND policy_version=$2 AND revoked_at IS NULL) AS has_active`,[patientId,PRIVACY_VERSION]);
+   requireThat(consent?.has_active || (config.NODE_ENV!=='production'&&!consent?.has_any),403,'PRIVACY_CONSENT_REQUIRED','患者已撤回同意或尚未完成告知，请先完成隐私确认');
+  }
   // Serialize catalog edits against final validation, not just browser queries.
   await db.query('SELECT id FROM clinics WHERE id=$1 FOR SHARE',[input.clinicId]);
   await db.query('SELECT id FROM services WHERE id=$1 FOR SHARE',[input.serviceId]);

@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "startedAt": "2026-10-27T16:02:23.779Z",
+  "execution": "Real Chrome and Vue against an isolated PostgreSQL test database",
+  "checks": [
+    "HQ uses the Vue dialog to update the doctor profile",
+    "Database and public doctor API return the updated non-sensitive data"
+  ],
+  "screenshots": [
+    "screenshots/booking/doctor-profile-mvqvj7qw"
+  ],
+  "limitations": [],
+  "finishedAt": "2026-10-27T16:02:28.952Z"
+}

@@ -1,4 +1,4 @@
-import type { Doctor, TreatmentReference } from '../types';
+import type { PublicDoctor as Doctor, TreatmentReference } from '../types';
 import { dateText } from './format';
 
 /** API money is integer cents; always round its decimal presentation to cents. */

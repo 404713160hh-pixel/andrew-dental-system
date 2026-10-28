@@ -2,15 +2,17 @@
 export type Role = 'patient' | 'front' | 'doctor' | 'manager' | 'hq';
 export type AllergyStatus = 'unknown' | 'none_reported' | 'known';
 export interface Assignment { role: Exclude<Role, 'patient'>; clinicId: string | null }
-export interface Principal { id: string; username: string; displayName: string; patientId: string | null; staffId: string | null; roles: Role[]; assignments: Assignment[] }
+export interface Principal { id: string; username: string; displayName: string; patientId: string | null; staffId: string | null; roles: Role[]; assignments: Assignment[]; mustChangePassword?: boolean }
 export interface LoginResult { token: string; expiresAt: string; user: Principal }
 export interface AuthConfig { demoLoginEnabled: boolean; demoAccounts: {username: string; displayName: string; portal: 'patient' | 'staff'}[]; wechatLoginEnabled: boolean }
 export interface Patient { id: string; name: string; birthDate: string; phone: string; email: string | null; billingAddress: string; emergencyName: string; emergencyPhone: string; allergyStatus: AllergyStatus; allergies: string[]; rowVersion: number; isDemo?: boolean }
 export type PatientInput = Omit<Patient, 'id' | 'rowVersion' | 'isDemo'>;
+export interface PatientCandidate { id:string; name:string; phone:string; birthYear:string; hasAccount:boolean; isDemo?:boolean }
 export interface Clinic { id: string; name: string; address: string; phone: string; email: string; timezone: 'Asia/Shanghai'; active: boolean; rowVersion: number }
 export interface Qualification { id: string; name: string; active: boolean; rowVersion: number }
 export interface DentistQualification { qualificationId: string; qualificationName?: string; validFrom: string; validUntil: string | null }
 export interface Doctor { id: string; employeeNo: string; name: string; phone: string; specialty: string; active: boolean; rowVersion: number; qualifications: DentistQualification[]; serviceIds: string[]; isDemo?: boolean; bio?: string; focusAreas?: string[]; clinicIds?: string[] }
+export type PublicDoctor = Omit<Doctor, 'employeeNo' | 'phone'>;
 /** User-supplied, unverified treatment-price reference; never an appointment or treatment quote. */
 export interface TreatmentReference { id: string; category: string; name: string; priceMinCents: number; priceMaxCents: number; unit: string; referenceYear: number; sourceLabel: string; description: string; bookingServiceId: string | null }
 export interface Service { id: string; name: string; description: string; durationMinutes: number; bufferMinutes: number; priceCents: number; unit: string; active: boolean; clinicIds: string[]; qualificationIds: string[]; rowVersion: number }

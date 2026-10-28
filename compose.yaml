@@ -1,5 +1,6 @@
 name: andrew-booking
 x-api: &api
+  image: andrew-booking-api:local
   build:
     context: .
     dockerfile: deploy/booking/api.Dockerfile
@@ -10,6 +11,10 @@ x-api: &api
     BOOKING_HOST: 0.0.0.0
     BOOKING_PORT: "3310"
     ALLOW_DEMO_LOGIN: "false"
+    TRUSTED_PROXY_IPS: ${BOOKING_WEB_IP:-172.30.87.10}
+    PRIVACY_CONTROLLER_NAME: ${PRIVACY_CONTROLLER_NAME:-}
+    PRIVACY_CONTACT: ${PRIVACY_CONTACT:-}
+    PRIVACY_RETENTION: ${PRIVACY_RETENTION:-}
     CORS_ORIGINS: ${CORS_ORIGINS:-http://127.0.0.1:8080}
     HOLD_SECONDS: ${HOLD_SECONDS:-300}
     CANCELLATION_NOTICE_MINUTES: ${CANCELLATION_NOTICE_MINUTES:-120}
@@ -39,35 +44,48 @@ services:
   api:
     <<: *api
     restart: unless-stopped
+    environment:
+      <<: *api-env
+      DATABASE_URL: postgresql://${POSTGRES_APP_USER:-andrew_app}:${POSTGRES_APP_PASSWORD:?Set POSTGRES_APP_PASSWORD}@postgres:5432/${POSTGRES_DB:-andrew_booking}
     depends_on:
-      migrate:
+      provision:
         condition: service_completed_successfully
     healthcheck:
       test: [CMD, node, -e, "fetch('http://127.0.0.1:3310/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 10s
       timeout: 5s
       retries: 10
+  provision:
+    image: postgres:17.10-bookworm
+    environment:
+      PGHOST: postgres
+      PGUSER: ${POSTGRES_USER:-andrew}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB:-andrew_booking}
+      POSTGRES_APP_USER: ${POSTGRES_APP_USER:-andrew_app}
+      POSTGRES_APP_PASSWORD: ${POSTGRES_APP_PASSWORD:?Set POSTGRES_APP_PASSWORD}
+    volumes:
+      - ./deploy/booking/provision-runtime.sql:/provision-runtime.sql:ro
+    command: [psql, -X, -v, ON_ERROR_STOP=1, -f, /provision-runtime.sql]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
   web:
     build:
       context: .
       dockerfile: deploy/booking/web.Dockerfile
     restart: unless-stopped
+    environment:
+      TRUSTED_EDGE_IP: ${BOOKING_HTTPS_IP:-172.30.87.11}
+      NGINX_ENVSUBST_FILTER: TRUSTED_EDGE_IP
+    networks:
+      default:
+        ipv4_address: ${BOOKING_WEB_IP:-172.30.87.10}
     ports:
       - "127.0.0.1:${ADMIN_PORT:-8080}:80"
     depends_on:
       api:
         condition: service_healthy
-  seed:
-    <<: *api
-    profiles: [demo]
-    command: [node, booking-api/dist/booking-api/src/cli.js, seed]
-    environment:
-      <<: *api-env
-      NODE_ENV: development
-      SEED_PASSWORD: ${SEED_PASSWORD:-}
-    depends_on:
-      migrate:
-        condition: service_completed_successfully
   https:
     image: nginx:1.28-alpine
     profiles: [https]
@@ -76,9 +94,17 @@ services:
       SERVER_NAME: ${SERVER_NAME:-localhost}
       NGINX_ENVSUBST_FILTER: SERVER_NAME
     ports: ["80:80", "443:443"]
+    networks:
+      default:
+        ipv4_address: ${BOOKING_HTTPS_IP:-172.30.87.11}
     volumes:
       - ./deploy/booking/nginx.https.conf:/etc/nginx/templates/default.conf.template:ro
       - ${TLS_CERT_DIR:-./deploy/certs}:/etc/nginx/certs:ro
     depends_on: [web]
 volumes:
   booking-postgres:
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: ${BOOKING_DOCKER_SUBNET:-172.30.87.0/24}

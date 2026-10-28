@@ -69,9 +69,10 @@ try {
   const day = new Date(Date.now() + 7 * 86400000 + 8 * 3600000).toISOString().slice(0, 10);
   shift = await staff.api('/staff/shifts', 'POST', { clinicId: clinic.id, doctorId: doctor.id, startsAt: day + 'T09:00:00+08:00', endsAt: day + 'T14:00:00+08:00', serviceIds: [service.id] });
   resources.push({ clinicId: clinic.id, doctorId: doctor.id, serviceId: service.id, chairId: chair.id, qualificationId: qualification.id, shiftId: shift.id });
+  const notice = await staff.api('/privacy/notice');
   for (const index of [1, 2]) {
     const client = runtime();
-    const result = await client.api('/auth/register', 'POST', { username: namespace.toLowerCase() + '-' + index, password: 'SyntheticOnly-' + randomUUID(), profile: { name: namespace + '患者' + index, birthDate: '1998-01-01', phone: '13800001234', email: null, billingAddress: '课程合成地址', emergencyName: '合成联系人', emergencyPhone: '13800001235', allergyStatus: index === 1 ? 'unknown' : 'none_reported', allergies: [] } });
+    const result = await client.api('/auth/register', 'POST', { username: namespace.toLowerCase() + '-' + index, password: 'SyntheticOnly-' + randomUUID(), consent: { policyVersion: notice.policyVersion, noticeAccepted: true, sensitiveAccepted: true, guardian: null }, profile: { name: namespace + '患者' + index, birthDate: '1998-01-01', phone: '13800001234', email: null, billingAddress: '课程合成地址', emergencyName: '合成联系人', emergencyPhone: '13800001235', allergyStatus: index === 1 ? 'unknown' : 'none_reported', allergies: [] } });
     client.auth.setSession(result); clients.push(client);
   }
   const [a, b] = clients;

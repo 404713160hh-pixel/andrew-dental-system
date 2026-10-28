@@ -31,7 +31,8 @@ assert.ok(!['', '/', '/postgres', '/template0', '/template1'].includes(databaseU
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 const namespace = `XCLIENT${Date.now().toString(36)}${randomBytes(3).toString('hex')}`;
 const date = new Date(Date.now() + (16 * 24 + 8) * 3600000).toISOString().slice(0, 10);
-const output = resolve(root, 'docs/implementation/qa/cross-client.json');
+const output = resolve(root, process.env.CROSS_CLIENT_REPORT_PATH || 'docs/implementation/qa/cross-client.json');
+assert.ok(output.startsWith(resolve(root, 'docs/implementation/qa') + sep), 'Acceptance report must stay in docs/implementation/qa');
 const screenshotDirectory = resolve(root, 'screenshots/booking', namespace);
 mkdirSync(dirname(output), { recursive: true });
 mkdirSync(screenshotDirectory, { recursive: true });
@@ -542,9 +543,12 @@ try {
     const login = native.mount('login');
     const username = namespace.toLowerCase() + '.patient';
     await native.act('login input/profileChange/submit register', async () => {
+      login.onLoad();
+      await until(() => !login.data.loading && !!login.data.notice, 'Native privacy notice timed out');
       login.mode({ currentTarget: { dataset: { mode: 'register' } } });
       for (const [field, value] of Object.entries({ username, password: 'SyntheticOnly-' + randomUUID() })) login.input({ currentTarget: { dataset: { field } }, detail: { value } });
       login.profileChange({ detail: { name: namespace + '虚构患者', birthDate: '1998-08-08', phone: '19900001111', email: null, billingAddress: '跨端自动验收合成地址', emergencyName: '合成联系人', emergencyPhone: '19900002222', allergyStatus: 'unknown', allergies: [] } });
+      login.consentChange({ detail: { value: ['notice', 'sensitive'] } });
       await login.submit();
     });
     noNativeError(login, 'registration');
@@ -685,5 +689,5 @@ try {
   for (const key of ['clinic', 'qualification', 'doctor', 'service', 'chair', 'shift', 'patient']) if (fixture[key]?.id) report.fixture[key + 'Id'] = fixture[key].id;
   report.fixture.date = date;
   report.finishedAt = new Date().toISOString(); writeFileSync(output, JSON.stringify(report, null, 2) + '\n');
-  console.log(JSON.stringify({ status: report.status, checks: report.checks.length, namespace, report: 'docs/implementation/qa/cross-client.json' }));
+  console.log(JSON.stringify({ status: report.status, checks: report.checks.length, namespace, report: relative(root, output).replaceAll('\\', '/') }));
 }

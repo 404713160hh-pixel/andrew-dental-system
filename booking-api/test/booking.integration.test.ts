@@ -8,10 +8,12 @@ import { createApp } from '../src/app.js';
 import { loadConfig } from '../src/config.js';
 import { migrate, poolFor } from '../src/db.js';
 import { seed } from '../src/seed.js';
+import { PRIVACY_VERSION } from '../src/privacy.js';
 
 // Integration tests create a new random database. Never truncate/drop a developer database.
 const databaseName = `andrew_test_${randomBytes(10).toString('hex')}`;
 const password = `Course-${randomBytes(16).toString('base64url')}!`;
+const consent = { policyVersion: PRIVACY_VERSION, noticeAccepted: true, sensitiveAccepted: true, guardian: null };
 let admin: Pool | undefined;
 let db: Pool;
 let app: FastifyInstance;
@@ -150,7 +152,7 @@ test('authentication is on the server, demo login is gated, logout revokes its s
   rejected(await request('POST', '/auth/login', undefined, { username: 'patient.a', password: 'wrong-password', portal: 'patient' }), [401]);
   rejected(await request('POST', '/auth/demo', undefined, { username: 'patient.a', portal: 'patient' }), [403, 404]);
   const username = `integration.${randomBytes(5).toString('hex')}`;
-  const login = data<LoginResult>(await request('POST', '/auth/register', undefined, { username, password, profile: profile() }));
+  const login = data<LoginResult>(await request('POST', '/auth/register', undefined, { username, password, profile: profile(), consent }));
   identities[username] = login;
   assert.equal(data<LoginResult['user']>(await request('GET', '/me', username)).id, login.user.id);
   data(await request('POST', '/auth/logout', username));
@@ -161,7 +163,7 @@ test('patient identity is not a unique phone number and registration has real Po
   const registered: LoginResult[] = [];
   for (const name of ['合成家庭成员甲', '合成家庭成员乙']) {
     registered.push(data<LoginResult>(await request('POST', '/auth/register', undefined,
-      { username: `family.${randomBytes(5).toString('hex')}`, password, profile: profile({ name }) })));
+      { username: `family.${randomBytes(5).toString('hex')}`, password, profile: profile({ name }), consent })));
   }
   assert.notEqual(registered[0]!.user.patientId, registered[1]!.user.patientId);
   const rows = (await db.query('SELECT id FROM patients WHERE phone=$1', ['13800009999'])).rows;

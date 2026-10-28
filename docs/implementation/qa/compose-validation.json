@@ -1,14 +1,22 @@
 {
   "status": "passed",
   "validation": "Official Compose JSON schema, without format assertions, and explicit deployment boundary assertions; not a container execution",
-  "composeSha256": "aa331027c437d46cf12ce356d7aced98e3e0d0401ef52b9ae897a0c06d3747c6",
+  "composeSha256": "401e96cc26506e8343f011fc171a4c1bbd7d8d903ffbc22b0441cef721628736",
+  "previewComposeSha256": "f605f2adf176ef6a76a730c844cc2bee365a82ff34d0067b129efa67d564ac1b",
   "services": [
     "postgres",
     "migrate",
     "api",
+    "provision",
     "web",
-    "seed",
     "https"
+  ],
+  "previewServices": [
+    "seed"
+  ],
+  "defaultHasSeed": false,
+  "previewSeedProfile": [
+    "preview"
   ],
   "databaseHostPorts": false,
   "apiHostPorts": false,

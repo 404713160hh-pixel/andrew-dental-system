@@ -16,12 +16,16 @@ import { querySlots } from './repositories/booking.js';
 import { bookingPolicy,createHold,confirmAppointment,changeAppointment,appointmentAccess } from './services/booking.js';
 import { saveResource,publishShift,cancelShift } from './services/resources.js';
 import { isQueryDateAllowed,queryWindow,QUERY_MAX_DAYS } from './query-window.js';
+import { registerStaffAccountRoutes } from './staff-accounts.js';
+import { registerPatientInviteRoutes } from './patient-invites.js';
+import { registerDoctorProfileRoutes } from './doctor-profile.js';
+import { PRIVACY_VERSION,privacyInput,recordConsent,hasCurrentConsent } from './privacy.js';
 type Shape={Params:Record<string,string>;Querystring:Record<string,string>;Body:unknown};
 type Request=FastifyRequest<Shape>;
 type Handler=(request:Request,user:Principal|undefined)=>Promise<unknown>;
 const id=(req:Request)=>uuid.parse(req.params.id);
 export async function createApp(config:Config,pool:pg.Pool,logging=false){
- const app=Fastify({logger:logging?{redact:['req.headers.authorization','password','password_hash','token']}:false,bodyLimit:131072,requestTimeout:30000,connectionTimeout:10000,genReqId:()=>randomUUID(),trustProxy:false});
+ const app=Fastify({logger:logging?{redact:['req.headers.authorization','req.url','password','password_hash','token']}:false,bodyLimit:131072,requestTimeout:30000,connectionTimeout:10000,genReqId:()=>randomUUID(),trustProxy:config.TRUSTED_PROXY_IPS.trim()?config.TRUSTED_PROXY_IPS.split(',').map(ip=>ip.trim()):false});
  await app.register(cors,{origin:config.CORS_ORIGINS.split(',').map(s=>s.trim()),methods:['GET','POST','PUT','OPTIONS'],allowedHeaders:['Content-Type','Authorization','Idempotency-Key']});
  await app.register(rateLimit,{max:300,timeWindow:'1 minute',errorResponseBuilder:request=>({error:{code:'RATE_LIMITED',message:'操作频繁，请稍后重试'},requestId:request.id})});
  app.setErrorHandler((error,req,reply)=>{
@@ -35,10 +39,20 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
  app.setNotFoundHandler((req,reply)=>reply.code(404).send({error:{code:'NOT_FOUND',message:'接口不存在'},requestId:req.id}));
  function route(method:HTTPMethods,path:string,auth:'none'|'required'|'optional',handler:Handler){
   app.route<Shape>({method,url:'/api/v1'+path,config:path.startsWith('/auth/')?{rateLimit:{max:config.NODE_ENV==='test'?1000:30,timeWindow:'1 minute'}}:{},handler:async req=>{
-   const user=auth==='required'||auth==='optional'&&req.headers.authorization?await authenticate(pool,req.headers.authorization):undefined;
+   let user=auth==='required'||auth==='optional'&&req.headers.authorization?await authenticate(pool,req.headers.authorization):undefined;
+   requireThat(!user?.mustChangePassword || ['/me','/auth/change-password','/auth/logout'].includes(path),403,'PASSWORD_CHANGE_REQUIRED','请先修改临时密码');
+   const demoPatient=config.NODE_ENV!=='production'&&demoUsers.some(([name,,portal])=>portal==='patient'&&name===user?.username);
+   if(user?.patientId && !demoPatient && !['/me','/auth/logout','/privacy/status','/privacy/consent','/privacy/withdraw'].includes(path)) {
+    const consented=await hasCurrentConsent(pool,user.patientId,user.id);
+    if(!consented && auth==='optional') user=undefined;
+    else requireThat(consented,403,'PRIVACY_CONSENT_REQUIRED','请先阅读隐私告知并确认同意');
+   }
    const data=await handler(req,user);return {data,requestId:req.id};
   }});
  }
+ registerStaffAccountRoutes(route,pool);
+ registerPatientInviteRoutes(route,pool,config);
+ registerDoctorProfileRoutes(route,pool);
  route('GET','/health','none',async()=>{await pool.query('SELECT 1');return {status:'ok',database:'postgresql'};});
  route('GET','/auth/config','none',async()=>{
   const enabled=config.NODE_ENV!=='production'&&config.ALLOW_DEMO_LOGIN==='true';
@@ -58,15 +72,28 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
   return transaction(pool,async db=>{const result=await login(db,config,input,true);await audit(db,result.user.id,'auth.demo',result.user.id,req.id);return result;});
  });
  route('POST','/auth/register','none',async req=>{
-  const input=z.object({username:z.string().trim().regex(/^[a-zA-Z0-9._-]{3,80}$/),password:z.string().min(12).max(128),profile}).strict().parse(req.body);
+  const input=z.object({username:z.string().trim().regex(/^[a-zA-Z0-9._-]{3,80}$/),password:z.string().min(12).max(128),profile,consent:privacyInput}).strict().parse(req.body);
   const hashed=await hashPassword(input.password);
   return transaction(pool,async db=>{
    const user=await one<{id:string}>(db,'INSERT INTO users(username,password_hash,display_name)VALUES($1,$2,$3)RETURNING id',[input.username.toLowerCase(),hashed,input.profile.name]);
-   await insertPatient(db,input.profile,user!.id);await audit(db,user!.id,'patient.registered',user!.id,req.id);
+   const patient=await insertPatient(db,input.profile,user!.id);await recordConsent(db,user!.id,patient.id,input.profile.birthDate,input.consent,req.id);await audit(db,user!.id,'patient.registered',user!.id,req.id);
    return login(db,config,{username:input.username,password:input.password,portal:'patient'});
   });
  });
  route('POST','/auth/wechat','none',async()=>{throw new AppError(501,'WECHAT_NOT_CONFIGURED','微信授权登录尚未配置，请使用账号登录');});
+ route('GET','/privacy/notice','none',async()=>({policyVersion:PRIVACY_VERSION,controller:config.PRIVACY_CONTROLLER_NAME||'演示环境（非真实机构）',contact:config.PRIVACY_CONTACT||'演示环境无正式联系方式',retention:config.PRIVACY_RETENTION||'演示数据仅供本地测试，由演示环境管理者清理'}));
+ route('GET','/privacy/status','required',async(_req,user)=>{requireThat(user!.patientId,403,'PATIENT_ONLY','此入口仅用于患者');
+  const patient=await one<{minor:boolean}>(pool,"SELECT (birth_date + interval '14 years') > (clock_timestamp() AT TIME ZONE 'Asia/Shanghai')::date AS minor FROM patients WHERE id=$1",[user!.patientId]);
+  return {policyVersion:PRIVACY_VERSION,accepted:await hasCurrentConsent(pool,user!.patientId!,user!.id),minor:!!patient?.minor};});
+ route('POST','/privacy/consent','required',async(req,user)=>{
+  requireThat(user!.patientId,403,'PATIENT_ONLY','此入口仅用于患者');const consent=privacyInput.parse(req.body);
+  return transaction(pool,async db=>{const patient=await getPatient(db,user!.patientId!);requireThat(patient,404,'NOT_FOUND','患者不存在');await recordConsent(db,user!.id,patient!.id,patient!.birthDate,consent,req.id);return {accepted:true,policyVersion:PRIVACY_VERSION};});
+ });
+ route('POST','/privacy/withdraw','required',async(req,user)=>{
+  requireThat(user!.patientId,403,'PATIENT_ONLY','此入口仅用于患者');z.object({confirm:z.literal(true)}).strict().parse(req.body);
+  return transaction(pool,async db=>{await db.query('UPDATE patient_privacy_consents SET revoked_at=clock_timestamp() WHERE patient_id=$1 AND revoked_at IS NULL',[user!.patientId]);
+   await audit(db,user!.id,'patient.privacy.withdrawn',user!.patientId,req.id);return {withdrawn:true};});
+ });
  route('GET','/me','required',async(_req,user)=>user);
  route('POST','/auth/logout','required',async(req,user)=>transaction(pool,async db=>{
   await db.query('DELETE FROM sessions WHERE token_hash=$1',[tokenHash(req.headers.authorization!.slice(7))]);await audit(db,user!.id,'auth.logout',user!.id,req.id);return {loggedOut:true};
@@ -84,6 +111,7 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
  });
  route('GET','/booking-policy','none',async()=>({...bookingPolicy(config),queryWindow:queryWindow()}));
  route('GET','/treatment-references','none',async()=>{
+  if(config.NODE_ENV==='production')return [];
   // This public projection contains no patient/account data. A consultation fee
   // remains in services.price_cents; treatment ranges never price a booking.
   return (await pool.query<TreatmentReference>(`SELECT tr.id,tr.category,tr.name,tr.price_min_cents AS "priceMinCents",
@@ -107,9 +135,11 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
  route('GET','/doctors','optional',async(req,user)=>{
   const inactive=req.query.includeInactive==='true';if(inactive){requireThat(user,401,'UNAUTHENTICATED','请先登录');staffOnly(user);}
   const clinic=req.query.clinicId?uuid.parse(req.query.clinicId):null;const service=req.query.serviceId?uuid.parse(req.query.serviceId):null;const scopes=inactive?scopeIds(user!):null;
-  return (await pool.query<Doctor>(doctorSelect+` WHERE s.is_dentist AND ($1::boolean OR s.active) AND ($2::uuid IS NULL OR EXISTS(SELECT 1 FROM doctor_shifts ds JOIN clinics c ON c.id=ds.clinic_id AND c.active WHERE ds.doctor_id=s.id AND ds.clinic_id=$2 AND ds.status='published' AND ds.ends_at>clock_timestamp()))
+  const doctors=(await pool.query<Doctor>(doctorSelect+` WHERE s.is_dentist AND ($1::boolean OR s.active) AND ($2::uuid IS NULL OR EXISTS(SELECT 1 FROM doctor_shifts ds JOIN clinics c ON c.id=ds.clinic_id AND c.active WHERE ds.doctor_id=s.id AND ds.clinic_id=$2 AND ds.status='published' AND ds.ends_at>clock_timestamp()))
    AND ($3::uuid IS NULL OR NOT EXISTS(SELECT 1 FROM service_qualifications sq WHERE sq.service_id=$3 AND NOT EXISTS(SELECT 1 FROM dentist_qualifications dq JOIN qualifications q ON q.id=dq.qualification_id WHERE dq.dentist_id=s.id AND dq.qualification_id=sq.qualification_id AND q.active AND dq.valid_from<=now() AND (dq.valid_until IS NULL OR dq.valid_until>now()))))
    AND ($4::uuid[] IS NULL OR s.active OR EXISTS(SELECT 1 FROM doctor_shifts ds WHERE ds.doctor_id=s.id AND ds.clinic_id=ANY($4))) ORDER BY s.name`,[inactive,clinic,service,scopes])).rows;
+  if(user&&isHq(user))return doctors;
+  return doctors.map(({employeeNo:_employeeNo,phone:_phone,...visible})=>visible);
  });
  route('GET','/qualifications','optional',async(req,user)=>{
   const inactive=req.query.includeInactive==='true';if(inactive){requireThat(user,401,'UNAUTHENTICATED','请先登录');staffOnly(user);}
@@ -148,14 +178,23 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
   const {page,pageSize}=pageInput.parse(req.query);const q=z.string().trim().max(100).parse(req.query.q??'');
   // First-visit contact lookup is explicit; ordinary staff cannot enumerate the chain.
   requireThat(isHq(user!)||q.length>=2,400,'PATIENT_SEARCH_REQUIRED','请输入至少两个字的姓名或联系电话核对患者');
-  const match='%'+q.replace(/[\\%_]/g,'\\$&')+'%';
-  const total=Number((await one<{n:string}>(pool,"SELECT count(*) AS n FROM patients WHERE ($2::boolean AND (name ILIKE $1 ESCAPE '\\' OR phone ILIKE $1 ESCAPE '\\')) OR (NOT $2::boolean AND (name=$3 OR phone=$3))",[match,isHq(user!),q]))!.n);
-  const items=(await pool.query<Patient>(patientSelect+" WHERE ($2::boolean AND (p.name ILIKE $1 ESCAPE '\\' OR p.phone ILIKE $1 ESCAPE '\\')) OR (NOT $2::boolean AND (p.name=$3 OR p.phone=$3)) ORDER BY p.created_at DESC LIMIT $4 OFFSET $5",[match,isHq(user!),q,pageSize,(page-1)*pageSize])).rows;
-  return {items,total,page,pageSize};
+  const match='%'+q.replace(/[\\%_]/g,'\\$&')+'%';const hq=isHq(user!);const scopes=scopeIds(user!,['hq','manager','front']);
+  const where=` WHERE (($2::boolean AND (p.name ILIKE $1 ESCAPE '\\' OR p.phone ILIKE $1 ESCAPE '\\')) OR (NOT $2::boolean AND (p.name=$3 OR p.phone=$3)))
+   AND ($2::boolean OR EXISTS(SELECT 1 FROM patient_clinic_access x WHERE x.patient_id=p.id AND x.clinic_id=ANY($4::uuid[]))
+    OR EXISTS(SELECT 1 FROM appointments a JOIN resource_reservations r ON r.id=a.reservation_id WHERE a.patient_id=p.id AND r.clinic_id=ANY($4::uuid[])))`;
+  return transaction(pool,async db=>{
+   const values=[match,hq,q,scopes];const total=Number((await one<{n:string}>(db,'SELECT count(*) AS n FROM patients p'+where,values))!.n);
+   const items=(await db.query(`SELECT p.id,p.name,CASE WHEN length(p.phone)>7 THEN left(p.phone,3)||'****'||right(p.phone,4) ELSE '***' END AS phone,
+    to_char(p.birth_date,'YYYY') AS "birthYear",(p.user_id IS NOT NULL) AS "hasAccount",p.is_demo AS "isDemo" FROM patients p`+where+' ORDER BY p.created_at DESC LIMIT $5 OFFSET $6',[...values,pageSize,(page-1)*pageSize])).rows;
+   await audit(db,user!.id,'patient.search',null,req.id,{returned:items.length});return {items,total,page,pageSize};
+  });
  });
  route('POST','/staff/patients','required',async(req,user)=>{
   staffOnly(user!);requireThat(user!.roles.some(r=>['hq','manager','front'].includes(r)),403,'FORBIDDEN','该岗位没有患者建档权限');
-  const input=profile.parse(req.body);return transaction(pool,async db=>{const p=await insertPatient(db,input);await audit(db,user!.id,'patient.created',p.id,req.id);return p;});
+  const raw=z.record(z.string(),z.unknown()).parse(req.body);const {clinicId:clinicRaw,consent:consentRaw,...rest}=raw;
+  const clinicId=uuid.parse(clinicRaw);clinicAccess(user!,clinicId,['hq','manager','front']);const input=profile.parse(rest);const consent=privacyInput.parse(consentRaw);
+  return transaction(pool,async db=>{const p=await insertPatient(db,input);await db.query('INSERT INTO patient_clinic_access(patient_id,clinic_id,created_by) VALUES($1,$2,$3)',[p.id,clinicId,user!.id]);
+   await recordConsent(db,user!.id,p.id,input.birthDate,consent,req.id);await audit(db,user!.id,'patient.created',p.id,req.id,{clinicId});return p;});
  });
  route('GET','/booking-slots','optional',async(req,user)=>{
   const input=z.object({clinicId:uuid,serviceId:uuid,date,doctorId:uuid.optional()}).parse(req.query);

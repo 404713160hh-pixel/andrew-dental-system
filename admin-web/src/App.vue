@@ -71,6 +71,8 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
       >
       <div class="nav-label">工作空间</div>
       <nav aria-label="主导航">
+        <router-link v-if="auth.isHq" to="/staff/accounts"><el-icon><User /></el-icon>员工账号</router-link>
+        <router-link to="/change-password"><el-icon><Setting /></el-icon>修改密码</router-link>
         <router-link to="/appointments"
           ><el-icon><Calendar /></el-icon>{{ doctorView ? '我的预约' : '预约总览' }}</router-link
         >

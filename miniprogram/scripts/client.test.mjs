@@ -26,6 +26,32 @@ function runtime() {
 const login = id => ({ token: 'test-token-' + id, expiresAt: new Date(Date.now() + 3600000).toISOString(), user: { id, username: id, patientId: 'patient-' + id, staffId: null, displayName: id, roles: ['patient'], assignments: [] } });
 const body = { holdId: 'hold-fixture', holdVersion: 1, patientConfirmed: true, rulesAccepted: true };
 const queryPolicyFixture = () => ({ holdSeconds: 300, cancellationNoticeMinutes: 120, transferBufferMinutes: 30, slotStepMinutes: 15, timezone: 'Asia/Shanghai', queryWindow: { fromDate: '2000-01-01', toDate: '2099-12-31' } });
+function loginPage(r) {
+  r.load('pages/login/index'); const options = r.pages.at(-1);
+  return { ...options, data: structuredClone(options.data), setData(update) { Object.assign(this.data, update); } };
+}
+test('linked registration refuses minor consent without a guardian and makes no request', async () => {
+  const r = runtime(), page = loginPage(r);
+  Object.assign(page.data, { mode: 'linked', username: 'patient.one', password: 'LongSyntheticPassword', code: 'one-time-code', linkedBirthDate: '2022-01-01', minor: true, notice: { policyVersion: 'v1' }, acceptedNotice: true, acceptedSensitive: true });
+  await page.submit(); assert.match(page.data.error, /监护人/); assert.equal(r.requests.length, 0); assert.equal(r.navigations.length, 0);
+});
+test('linked registration sends verified consent and only binds an existing patient', async () => {
+  const r = runtime(), page = loginPage(r);
+  Object.assign(page.data, { mode: 'linked', username: 'patient.one', password: 'LongSyntheticPassword', code: ' one-time-code ', linkedBirthDate: '1990-01-01', notice: { policyVersion: 'v1' }, acceptedNotice: true, acceptedSensitive: true });
+  r.respond(options => options.success({ statusCode: 200, data: { data: options.url.endsWith('/privacy/status') ? { accepted: true, minor: false, policyVersion: 'v1' } : login('one') } }));
+  await page.submit(); assert.match(r.requests[0].url, /\/auth\/register-linked$/); assert.equal(r.requests[0].data.code, 'one-time-code');
+  assert.equal(r.requests[0].data.birthDate, '1990-01-01'); assert.equal(r.requests[0].data.consent.policyVersion, 'v1'); assert.equal(r.requests[0].data.consent.guardian, null);
+  assert.equal(Object.hasOwn(r.requests[0].data, 'profile'), false); assert.equal(r.load('utils/session').session().user.id, 'one'); assert.equal(r.navigations.at(-1).url, '/pages/home/index');
+});
+test('existing account must accept privacy notice before entering patient pages', async () => {
+  const r = runtime(), page = loginPage(r);
+  Object.assign(page.data, { username: 'patient.one', password: 'LongSyntheticPassword', notice: { policyVersion: 'v1' } });
+  r.respond(options => options.success({ statusCode: 200, data: { data: options.url.endsWith('/auth/login') ? login('one') : options.url.endsWith('/privacy/status') ? { accepted: false, minor: false, policyVersion: 'v1' } : {} } }));
+  await page.submit(); assert.equal(page.data.mode, 'consent'); assert.equal(r.navigations.length, 0);
+  await page.submit(); assert.match(page.data.error, /隐私告知/); assert.equal(r.requests.length, 2);
+  Object.assign(page.data, { acceptedNotice: true, acceptedSensitive: true }); await page.submit();
+  assert.match(r.requests.at(-1).url, /\/privacy\/consent$/); assert.equal(r.requests.at(-1).data.policyVersion, 'v1'); assert.equal(r.navigations.at(-1).url, '/pages/home/index');
+});
 test('native build includes all configured pages, assets and callable WXML handlers', () => {
   const app = JSON.parse(readFileSync(join(root, 'dist/app.json'), 'utf8'));
   assert.deepEqual([...app.pages].sort(), ['home', 'login', 'booking', 'confirm', 'appointments', 'detail', 'profile', 'doctors', 'doctor-detail', 'prices'].map(name => 'pages/' + name + '/index').sort());

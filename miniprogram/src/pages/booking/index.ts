@@ -1,4 +1,4 @@
-import type { BookingQueryPolicy, BookingSlot, Clinic, Doctor, Hold, Patient, Service } from '../../types';
+import type { BookingQueryPolicy, BookingSlot, Clinic, PublicDoctor as Doctor, Hold, Patient, Service } from '../../types';
 import { api, errorMessage, query, RequestError } from '../../utils/api';
 import { dateToday, profileError, slotSelection, slotView, price } from '../../utils/format';
 import { doctorView } from '../../utils/catalog';

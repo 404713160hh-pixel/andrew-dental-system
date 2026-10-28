@@ -1,0 +1,10 @@
+services:
+  seed:
+    extends:
+      service: api
+    profiles: [preview]
+    restart: "no"
+    command: [node, booking-api/dist/booking-api/src/cli.js, seed]
+    environment:
+      NODE_ENV: development
+      SEED_PASSWORD: ${SEED_PASSWORD:?Set SEED_PASSWORD}

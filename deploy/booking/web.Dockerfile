@@ -11,5 +11,5 @@ COPY admin-web admin-web
 RUN npm run build -w @andrew/admin-web
 FROM nginx:1.28-alpine
 COPY --from=build /app/admin-web/dist /usr/share/nginx/html
-COPY deploy/booking/nginx.local.conf /etc/nginx/conf.d/default.conf
+COPY deploy/booking/nginx.local.conf /etc/nginx/templates/default.conf.template
 EXPOSE 80

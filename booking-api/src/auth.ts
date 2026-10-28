@@ -11,13 +11,13 @@ export async function hashPassword(password:string):Promise<string>{
  const salt=randomBytes(24).toString('hex');const hash=await scrypt(password,salt,64) as Buffer;
  return `scrypt:${salt}:${hash.toString('hex')}`;
 }
-async function verifyPassword(password:string,hash:string):Promise<boolean>{
+export async function verifyPassword(password:string,hash:string):Promise<boolean>{
  const [,salt,stored]=hash.split(':');if(!salt||!stored)return false;
  const actual=await scrypt(password,salt,64) as Buffer;const expected=Buffer.from(stored,'hex');
  return expected.length===actual.length&&timingSafeEqual(actual,expected);
 }
 export async function principal(db:Db,userId:string):Promise<Principal|undefined>{
- const user=await one<Principal>(db,`SELECT u.id,u.username,u.display_name AS "displayName",p.id AS "patientId",s.id AS "staffId",
+ const user=await one<Principal>(db,`SELECT u.id,u.username,u.display_name AS "displayName",u.must_change_password AS "mustChangePassword",p.id AS "patientId",s.id AS "staffId",
  coalesce((SELECT jsonb_agg(jsonb_build_object('role',ra.role,'clinicId',ra.clinic_id)) FROM role_assignments ra WHERE ra.user_id=u.id),'[]') AS assignments
  FROM users u LEFT JOIN patients p ON p.user_id=u.id LEFT JOIN staff s ON s.user_id=u.id WHERE u.id=$1 AND u.active`,[userId]);
  if(!user)return undefined;
@@ -30,7 +30,7 @@ export async function authenticate(db:Db,authorization:string|undefined):Promise
  const user=session&&await principal(db,session.user_id);requireThat(user,401,'SESSION_EXPIRED','登录已失效，请重新登录');return user;
 }
 export async function login(db:Db,config:Config,input:{username:string;password?:string;portal:'patient'|'staff'},demo=false):Promise<LoginResult>{
- const record=await one<{id:string;password_hash:string}>(db,'SELECT id,password_hash FROM users WHERE username=$1 AND active',[input.username.toLowerCase()]);
+ const record=await one<{id:string;password_hash:string}>(db,'SELECT id,password_hash FROM users WHERE username=$1 AND active FOR SHARE',[input.username.toLowerCase()]);
  // A non-existent account still pays the hashing cost, avoiding a cheap timing oracle.
  const valid=demo||await verifyPassword(input.password??'',record?.password_hash??'scrypt:unavailable:'+ '00'.repeat(64));
  requireThat(record&&valid,401,'INVALID_CREDENTIALS','账号或密码不正确');

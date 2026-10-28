@@ -35,9 +35,11 @@ PatientInput：name、birthDate(YYYY-MM-DD)、phone、email(可null/空)、billi
 
 公开数组接口：`GET /clinics`、`GET /services?clinicId`、`GET /doctors?clinicId&serviceId`、`GET /qualifications`、`GET /chairs?clinicId`。默认仅活动资源；`includeInactive=true`要求员工会话并按授权管理范围处理。目录不等于可预约承诺，最终号源接口检查资格有效期和全部资源。
 
-医生只读展示扩展为 `isDemo`、`bio`、`focusAreas`、`clinicIds`。`clinicIds` 来自已发布班次涉及的活动门诊。演示资格不是实际执照核验。原有医生维护输入保持原契约，不接受通过普通资料更新改写演示来源。
+医生只读展示扩展为 `isDemo`、`bio`、`focusAreas`、`clinicIds`。`clinicIds` 来自已发布班次涉及的活动门诊。患者及匿名目录不返回员工工号或联系电话；总部管理视图可读取完整信息。演示资格不是实际执照核验。原有医生维护输入保持原契约，不接受通过普通资料更新改写演示来源。
 
-`GET /treatment-references` 公开返回 `TreatmentReference[]`：`id`、`category`、`name`、`priceMinCents`、`priceMaxCents`、`unit`、`referenceYear`、`sourceLabel`、`description`、`bookingServiceId`。价格为非负整数分、上限不小于下限；年份与来源随资料保存，本轮来源明确为用户提供且未独立核验。`bookingServiceId` 可以为空，非空时只是关联评估/咨询的导航，不赋予额外诊疗能力；是否可约仍由号源与资格校验决定。资料价格不写入 Service.priceCents、hold 或预约费用。
+总部可通过 `PUT /staff/doctors/{id}/profile` 编辑患者可见的简介与擅长方向，提交 `{expectedVersion,bio,focusAreas}`；字段要求简介不超过 2000 字、方向不超过 20 项且不重复。服务端重新核对总部授权、行版本并记录审计，已有预约不会阻止只修改公开资料；资格或其他资源变更仍遵守原有业务限制。机构须对公开资料真实性负责。
+
+`GET /treatment-references` 在开发与测试环境公开返回 `TreatmentReference[]`：`id`、`category`、`name`、`priceMinCents`、`priceMaxCents`、`unit`、`referenceYear`、`sourceLabel`、`description`、`bookingServiceId`。价格为非负整数分、上限不小于下限；年份与来源随资料保存，本轮来源明确为用户提供且未独立核验。`bookingServiceId` 可以为空，非空时只是关联评估/咨询的导航，不赋予额外诊疗能力；是否可约仍由号源与资格校验决定。资料价格不写入 Service.priceCents、hold 或预约费用。生产配置下该接口统一返回空列表，直到正式价格的维护、审核和发布机制完成；预约服务目录仍由门诊维护。
 
 `GET /shifts?clinicId&date`为员工接口，返回Shift数组。医生仅本人，前台/店长仅授权门诊，总部全链。GET只读，时间查询不创建hold。
 

@@ -16,6 +16,7 @@ import { useAuth } from '../stores/auth';
 import { useCatalog } from '../stores/catalog';
 import { instant, money, today } from '../utils';
 import { createLatestRequest } from '../visible-refresh';
+import DoctorProfileEditor from '../components/DoctorProfileEditor.vue';
 type Kind = 'clinics' | 'doctors' | 'services' | 'chairs' | 'qualifications';
 type Resource = Clinic | Doctor | Service | Chair | Qualification;
 interface ResourceForm {
@@ -468,11 +469,12 @@ onUnmounted(() => {
         ></el-table-column
       ><el-table-column label="版本" width="75" prop="rowVersion" /><el-table-column
         label="操作"
-        width="110"
+        width="180"
         fixed="right"
         ><template #default="{ row }"
           ><el-button v-if="canEdit(row)" type="primary" text @click="open(row)">编辑</el-button
-          ><span v-else class="muted small">只读</span></template
+          ><DoctorProfileEditor v-if="kind === 'doctors' && auth.isHq" :doctor="row" @saved="load()" />
+          <span v-if="!canEdit(row)" class="muted small">只读</span></template
         ></el-table-column
       ></el-table
     >

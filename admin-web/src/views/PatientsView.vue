@@ -2,21 +2,28 @@
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { Search, Plus } from '@element-plus/icons-vue';
-import type { Page, Patient } from '@andrew/shared';
+import type { Page, Patient, PatientCandidate } from '@andrew/shared';
 import { api, errorText, query } from '../api';
 import { useBooking } from '../stores/booking';
 import { useAuth } from '../stores/auth';
+import { useCatalog } from '../stores/catalog';
 import PatientEditor from '../components/PatientEditor.vue';
+import PatientInvite from '../components/PatientInvite.vue';
 const router = useRouter();
 const booking = useBooking();
 const auth = useAuth();
+const catalog = useCatalog();
 const q = ref('');
-const rows = ref<Patient[]>([]);
+const rows = ref<PatientCandidate[]>([]);
 const total = ref(0);
 const page = ref(1);
 const loading = ref(false);
 const error = ref('');
 const createDialog = ref(false);
+async function loadCatalog() {
+  try { if (!catalog.loaded) await catalog.load(); }
+  catch (e) { error.value = errorText(e); }
+}
 async function load() {
   if (!auth.isHq && q.value.trim().length < 2) {
     rows.value = [];
@@ -27,7 +34,7 @@ async function load() {
   loading.value = true;
   error.value = '';
   try {
-    const result = await api<Page<Patient>>(
+    const result = await api<Page<PatientCandidate>>(
       `/staff/patients${query({ q: q.value.trim(), page: page.value, pageSize: 20 })}`,
     );
     rows.value = result.items;
@@ -42,14 +49,17 @@ async function search() {
   page.value = 1;
   await load();
 }
-function reserve(patient: Patient) {
+function reserve(patient: PatientCandidate) {
   booking.patient = patient;
   void router.push({ path: '/booking', query: { patientId: patient.id } });
 }
 function created(patient: Patient) {
-  reserve(patient);
+  reserve({id:patient.id,name:patient.name,phone:patient.phone.length>7?patient.phone.slice(0,3)+'****'+patient.phone.slice(-4):'***',birthYear:patient.birthDate.slice(0,4),hasAccount:false,isDemo:patient.isDemo});
 }
-onMounted(() => { if (auth.isHq) void load(); });
+onMounted(async () => {
+  await loadCatalog();
+  if (auth.isHq) await load();
+});
 </script>
 <template>
   <section class="page-heading">
@@ -58,14 +68,15 @@ onMounted(() => { if (auth.isHq) void load(); });
       <h1>患者档案</h1>
       <p>先核对患者身份，再为患者安排合适的预约。</p>
     </div>
-    <el-button type="primary" :icon="Plus" @click="createDialog = true">建立档案</el-button>
+    <el-button type="primary" :icon="Plus" :disabled="!catalog.loaded" @click="createDialog = true">建立档案</el-button>
   </section>
   <el-alert v-if="error" :title="error" type="error" :closable="false" show-icon class="mb-24" />
+  <el-button v-if="!catalog.loaded && !catalog.loading" @click="loadCatalog">重新加载门诊资料</el-button>
   <section class="panel">
     <div class="panel-heading">
       <div>
         <h2>查找患者</h2>
-        <p>按姓名或联系电话检索，敏感信息仅用于诊所服务。</p>
+        <p>按完整姓名或联系电话查找授权范围内的档案，结果仅显示身份核对所需信息。</p>
       </div>
     </div>
     <el-form class="filter-bar" inline @submit.prevent="search"
@@ -93,39 +104,12 @@ onMounted(() => { if (auth.isHq) void load(); });
           ></template
         ></el-table-column
       ><el-table-column prop="phone" label="联系电话" min-width="145" /><el-table-column
-        prop="birthDate"
-        label="出生日期"
+        prop="birthYear"
+        label="出生年份"
         width="135"
-      /><el-table-column label="过敏史" min-width="170"
+      /><el-table-column label="操作" width="210" fixed="right"
         ><template #default="{ row }"
-          ><el-tag
-            :type="
-              row.allergyStatus === 'known'
-                ? 'warning'
-                : row.allergyStatus === 'unknown'
-                  ? 'info'
-                  : 'success'
-            "
-            >{{
-              row.allergyStatus === 'known'
-                ? '已知过敏'
-                : row.allergyStatus === 'unknown'
-                  ? '待核实'
-                  : '未报告过敏'
-            }}</el-tag
-          >
-          <div v-if="row.allergies.length" class="table-sub">
-            {{ row.allergies.join('、') }}
-          </div></template
-        ></el-table-column
-      ><el-table-column label="紧急联系人" min-width="150"
-        ><template #default="{ row }"
-          >{{ row.emergencyName }}
-          <div class="table-sub">{{ row.emergencyPhone }}</div></template
-        ></el-table-column
-      ><el-table-column label="操作" width="130" fixed="right"
-        ><template #default="{ row }"
-          ><el-button type="primary" text @click="reserve(row)">为其预约</el-button></template
+          ><el-button type="primary" text @click="reserve(row)">为其预约</el-button><PatientInvite :patient-id="row.id" :patient-name="row.name" :linked="row.hasAccount" /></template
         ></el-table-column
       ></el-table
     >

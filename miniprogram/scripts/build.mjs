@@ -1,12 +1,19 @@
 import { spawnSync } from 'node:child_process';
-import { cpSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, existsSync } from 'node:fs';
+import { cpSync, mkdirSync, readdirSync, readFileSync, writeFileSync, rmSync, statSync, existsSync } from 'node:fs';
 import { dirname, resolve, extname, join, sep } from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { miniBuildConfig, developmentApiUrl } from './build-config.mjs';
 import './sync-contracts.mjs';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const buildConfig = miniBuildConfig();
 const result = spawnSync(process.execPath, [resolve(root, '../node_modules/typescript/bin/tsc'), '-p', resolve(root, 'tsconfig.json')], { stdio: 'inherit' });
 if (result.status !== 0) process.exit(result.status ?? 1);
+const configTarget = resolve(root, 'dist/config.js');
+const compiledConfig = readFileSync(configTarget, 'utf8');
+const defaultLiteral = `'${developmentApiUrl}'`;
+if (compiledConfig.split(defaultLiteral).length !== 2) throw new Error('小程序编译配置格式发生变化，请检查 API 地址注入。');
+if (buildConfig.apiUrl !== developmentApiUrl) writeFileSync(configTarget, compiledConfig.replace(defaultLiteral, JSON.stringify(buildConfig.apiUrl)));
 function copyAssets(relative = '') {
   for (const entry of readdirSync(resolve(root, 'src', relative), { withFileTypes: true })) {
     const item = resolve(root, 'src', relative, entry.name);

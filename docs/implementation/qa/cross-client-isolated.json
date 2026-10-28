@@ -1,0 +1,454 @@
+{
+  "namespace": "XCLIENTmvqvcc4b7c01e9",
+  "startedAt": "2026-10-27T15:57:06.780Z",
+  "status": "passed",
+  "mode": "compiled-native",
+  "execution": "Real Vue browser + compiled-native-modules with wx.request-to-fetch HTTP adapter + real shared PostgreSQL; NOT WeChat rendering, DevTools or device execution",
+  "environment": {
+    "api": "http://127.0.0.1:57296/api/v1",
+    "admin": "http://127.0.0.1:57297",
+    "browser": "chrome",
+    "postgresqlVersion": "17.10",
+    "browserVersion": "155.0.8059.85"
+  },
+  "nativeArtifactSha256": "ca70ee8bb30ddd096875524ea8efc5161170cc49b5319fa4493f58c5c81bc579",
+  "checks": [
+    {
+      "name": "显式允许的本机专用环境、真实PostgreSQL与唯一命名夹具",
+      "status": "passed"
+    },
+    {
+      "name": "实际编译原生登录Page完成本人注册并保存真实会话",
+      "status": "passed",
+      "patientId": "a6d1f103-0ab6-4931-be48-a5a17dad5b1d"
+    },
+    {
+      "name": "Vue真实页面发布班次，SQL确认相同班次ID/医生/门诊",
+      "status": "passed",
+      "shiftId": "5c563dc4-cf2d-4d44-82b7-79636285c0d2"
+    },
+    {
+      "name": "原生预约/确认/详情Page完成真实占位与双确认预约，SQL同ID已占用",
+      "status": "passed",
+      "appointmentId": "aa1d4c81-0bc7-492e-a14d-3b79044285b9",
+      "appointmentNo": "AD20261027B5D17CEBEB"
+    },
+    {
+      "name": "Vue真实页面看到原生Page创建的同一预约编号和已确认状态",
+      "status": "passed",
+      "appointmentNo": "AD20261027B5D17CEBEB"
+    },
+    {
+      "name": "原生详情改期入口和预约确认Page完成原子改期，SQL替代链一致且旧资源释放",
+      "status": "passed",
+      "oldId": "aa1d4c81-0bc7-492e-a14d-3b79044285b9",
+      "newId": "25f20b51-d3d3-43dc-84d0-6b4900bdbfee",
+      "newAppointmentNo": "AD2026102740C4411F1B"
+    },
+    {
+      "name": "已打开的Vue页面自动轮询收到小程序改期状态，无手动刷新或导航",
+      "status": "passed"
+    },
+    {
+      "name": "Vue真实清单及详情同时显示旧预约已改期、新预约已确认",
+      "status": "passed"
+    },
+    {
+      "name": "原生详情Page实际取消预约，SQL保留同ID并释放新资源",
+      "status": "passed",
+      "appointmentId": "25f20b51-d3d3-43dc-84d0-6b4900bdbfee"
+    },
+    {
+      "name": "已打开的Vue页面自动轮询收到小程序取消状态，无手动刷新或导航",
+      "status": "passed"
+    },
+    {
+      "name": "Vue真实页面显示同一替代预约编号已取消",
+      "status": "passed",
+      "appointmentNo": "AD2026102740C4411F1B"
+    },
+    {
+      "name": "原生Page重新查询同时看到原时段及改期时段，SQL确认无残留活动占位",
+      "status": "passed"
+    },
+    {
+      "name": "SQL确认三次原生写命令独立幂等回执，Vue无未捕获异常且编译产物稳定",
+      "status": "passed"
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "screenshots/booking/XCLIENTmvqvcc4b7c01e9/01-vue-publish-shift.png",
+      "surface": "Real Vue browser only; no mini-program rendering"
+    },
+    {
+      "path": "screenshots/booking/XCLIENTmvqvcc4b7c01e9/02-vue-native-confirmed.png",
+      "surface": "Real Vue browser only; no mini-program rendering"
+    },
+    {
+      "path": "screenshots/booking/XCLIENTmvqvcc4b7c01e9/03-vue-old-rescheduled.png",
+      "surface": "Real Vue browser only; no mini-program rendering"
+    },
+    {
+      "path": "screenshots/booking/XCLIENTmvqvcc4b7c01e9/04-vue-replacement-confirmed.png",
+      "surface": "Real Vue browser only; no mini-program rendering"
+    },
+    {
+      "path": "screenshots/booking/XCLIENTmvqvcc4b7c01e9/05-vue-native-cancelled.png",
+      "surface": "Real Vue browser only; no mini-program rendering"
+    }
+  ],
+  "fixture": {
+    "clinicId": "793d495c-f016-484e-901f-bbe51ad710c2",
+    "qualificationId": "12547653-d57c-477f-8abd-9043da3bc7db",
+    "doctorId": "a6b5dd35-3e41-4ddd-8a78-c387c896db42",
+    "serviceId": "8b9e62f5-5608-43eb-9e7e-41432cc127a3",
+    "chairId": "a8abbe67-e62a-4a7e-8345-0c1e57459eb4",
+    "shiftId": "5c563dc4-cf2d-4d44-82b7-79636285c0d2",
+    "patientId": "a6d1f103-0ab6-4931-be48-a5a17dad5b1d",
+    "userId": "8097a5f5-59d4-4841-a37c-386e84965b17",
+    "existingFictionalPatientReused": false,
+    "date": "2026-11-12",
+    "originalAppointmentId": "aa1d4c81-0bc7-492e-a14d-3b79044285b9",
+    "originalAppointmentNo": "AD20261027B5D17CEBEB",
+    "replacementAppointmentId": "25f20b51-d3d3-43dc-84d0-6b4900bdbfee",
+    "replacementAppointmentNo": "AD2026102740C4411F1B"
+  },
+  "cleanup": {
+    "additionalAppointmentsCancelled": 0,
+    "unconsumedSyntheticHoldsExpired": 0,
+    "shiftCancelled": true,
+    "serviceInactive": true,
+    "doctorInactive": true,
+    "chairInactive": true,
+    "qualificationInactive": true,
+    "syntheticAccountInactive": true,
+    "existingClinicUnmodified": true,
+    "auditableSyntheticHistoryRetained": true,
+    "errors": []
+  },
+  "nativeRequests": [
+    {
+      "action": "login input/profileChange/submit register",
+      "path": "/auth/config",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "login input/profileChange/submit register",
+      "path": "/privacy/notice",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "login input/profileChange/submit register",
+      "path": "/auth/register",
+      "method": "POST",
+      "statusCode": 200
+    },
+    {
+      "action": "login input/profileChange/submit register",
+      "path": "/privacy/status",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "login input/profileChange/submit register",
+      "path": "/patients/me",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking.onLoad/load",
+      "path": "/clinics",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking.onLoad/load",
+      "path": "/booking-policy",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking.onLoad/load",
+      "path": "/services?clinicId=793d495c-f016-484e-901f-bbe51ad710c2",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking.onLoad/load",
+      "path": "/doctors?clinicId=793d495c-f016-484e-901f-bbe51ad710c2&serviceId=8b9e62f5-5608-43eb-9e7e-41432cc127a3",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking.dateChange/search",
+      "path": "/booking-slots?clinicId=793d495c-f016-484e-901f-bbe51ad710c2&serviceId=8b9e62f5-5608-43eb-9e7e-41432cc127a3&date=2026-11-12&doctorId=a6b5dd35-3e41-4ddd-8a78-c387c896db42",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking.choose",
+      "path": "/patients/me",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking.choose",
+      "path": "/booking-holds",
+      "method": "POST",
+      "statusCode": 200
+    },
+    {
+      "action": "confirm.onShow/loadPatient",
+      "path": "/patients/me",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "confirm.checks/reasonInput/submit",
+      "path": "/appointments/confirm",
+      "method": "POST",
+      "key": "04aecedc-d925-4ae2-b038-57745f91387b",
+      "statusCode": 200
+    },
+    {
+      "action": "detail.onLoad/onShow",
+      "path": "/appointments/aa1d4c81-0bc7-492e-a14d-3b79044285b9",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking.onLoad/load",
+      "path": "/clinics",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking.onLoad/load",
+      "path": "/booking-policy",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking.onLoad/load",
+      "path": "/services?clinicId=793d495c-f016-484e-901f-bbe51ad710c2",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking.onLoad/load",
+      "path": "/doctors?clinicId=793d495c-f016-484e-901f-bbe51ad710c2&serviceId=8b9e62f5-5608-43eb-9e7e-41432cc127a3",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking.dateChange/search",
+      "path": "/booking-slots?clinicId=793d495c-f016-484e-901f-bbe51ad710c2&serviceId=8b9e62f5-5608-43eb-9e7e-41432cc127a3&date=2026-11-12&doctorId=a6b5dd35-3e41-4ddd-8a78-c387c896db42",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking.choose",
+      "path": "/patients/me",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking.choose",
+      "path": "/booking-holds",
+      "method": "POST",
+      "statusCode": 200
+    },
+    {
+      "action": "confirm.onShow/loadPatient",
+      "path": "/patients/me",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "confirm.checks/reasonInput/submit",
+      "path": "/appointments/aa1d4c81-0bc7-492e-a14d-3b79044285b9/changes",
+      "method": "POST",
+      "key": "0eb6b21a-e7e9-4bde-8828-faa1d36cb67e",
+      "statusCode": 200
+    },
+    {
+      "action": "detail.onLoad/onShow",
+      "path": "/appointments/25f20b51-d3d3-43dc-84d0-6b4900bdbfee",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "detail.toggleCancel/reasonInput/cancel",
+      "path": "/appointments/25f20b51-d3d3-43dc-84d0-6b4900bdbfee/changes",
+      "method": "POST",
+      "key": "4ad903ca-0d43-4cd3-904d-0fd22fbca8d3",
+      "statusCode": 200
+    },
+    {
+      "action": "detail.toggleCancel/reasonInput/cancel",
+      "path": "/appointments/25f20b51-d3d3-43dc-84d0-6b4900bdbfee",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking after cancel resource query",
+      "path": "/clinics",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking after cancel resource query",
+      "path": "/booking-policy",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking after cancel resource query",
+      "path": "/services?clinicId=793d495c-f016-484e-901f-bbe51ad710c2",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking after cancel resource query",
+      "path": "/doctors?clinicId=793d495c-f016-484e-901f-bbe51ad710c2&serviceId=8b9e62f5-5608-43eb-9e7e-41432cc127a3",
+      "method": "GET",
+      "statusCode": 200
+    },
+    {
+      "action": "booking after cancel resource query",
+      "path": "/booking-slots?clinicId=793d495c-f016-484e-901f-bbe51ad710c2&serviceId=8b9e62f5-5608-43eb-9e7e-41432cc127a3&date=2026-11-12&doctorId=a6b5dd35-3e41-4ddd-8a78-c387c896db42",
+      "method": "GET",
+      "statusCode": 200
+    }
+  ],
+  "vueListResponses": [
+    {
+      "source": "initial-date-filter",
+      "receivedAt": "2026-10-27T15:57:16.180Z",
+      "query": {
+        "date": "2026-11-12",
+        "page": "1",
+        "pageSize": "20"
+      },
+      "total": 1,
+      "page": 1,
+      "pageSize": 20,
+      "syntheticAppointments": [
+        {
+          "id": "aa1d4c81-0bc7-492e-a14d-3b79044285b9",
+          "appointmentNo": "AD20261027B5D17CEBEB",
+          "status": "confirmed",
+          "rowVersion": 1
+        }
+      ]
+    },
+    {
+      "source": "automatic-reschedule",
+      "receivedAt": "2026-10-27T15:57:21.118Z",
+      "query": {
+        "date": "2026-11-12",
+        "page": "1",
+        "pageSize": "20"
+      },
+      "total": 2,
+      "page": 1,
+      "pageSize": 20,
+      "syntheticAppointments": [
+        {
+          "id": "25f20b51-d3d3-43dc-84d0-6b4900bdbfee",
+          "appointmentNo": "AD2026102740C4411F1B",
+          "status": "confirmed",
+          "rowVersion": 1
+        },
+        {
+          "id": "aa1d4c81-0bc7-492e-a14d-3b79044285b9",
+          "appointmentNo": "AD20261027B5D17CEBEB",
+          "status": "rescheduled",
+          "rowVersion": 2
+        }
+      ]
+    },
+    {
+      "source": "automatic-cancel",
+      "receivedAt": "2026-10-27T15:57:26.215Z",
+      "query": {
+        "date": "2026-11-12",
+        "page": "1",
+        "pageSize": "20"
+      },
+      "total": 2,
+      "page": 1,
+      "pageSize": 20,
+      "syntheticAppointments": [
+        {
+          "id": "25f20b51-d3d3-43dc-84d0-6b4900bdbfee",
+          "appointmentNo": "AD2026102740C4411F1B",
+          "status": "cancelled",
+          "rowVersion": 2
+        },
+        {
+          "id": "aa1d4c81-0bc7-492e-a14d-3b79044285b9",
+          "appointmentNo": "AD20261027B5D17CEBEB",
+          "status": "rescheduled",
+          "rowVersion": 2
+        }
+      ]
+    }
+  ],
+  "automaticVueSync": [
+    {
+      "operation": "reschedule",
+      "startedAt": "2026-10-27T15:57:17.236Z",
+      "observedAt": "2026-10-27T15:57:21.118Z",
+      "query": {
+        "date": "2026-11-12",
+        "page": "1",
+        "pageSize": "20"
+      },
+      "expectedStates": {
+        "aa1d4c81-0bc7-492e-a14d-3b79044285b9": "rescheduled",
+        "25f20b51-d3d3-43dc-84d0-6b4900bdbfee": "confirmed"
+      },
+      "observedMatchingResponses": 1,
+      "noManualNavigation": true,
+      "noManualRefresh": true
+    },
+    {
+      "operation": "cancel",
+      "startedAt": "2026-10-27T15:57:22.684Z",
+      "observedAt": "2026-10-27T15:57:26.215Z",
+      "query": {
+        "date": "2026-11-12",
+        "page": "1",
+        "pageSize": "20"
+      },
+      "expectedStates": {
+        "25f20b51-d3d3-43dc-84d0-6b4900bdbfee": "cancelled"
+      },
+      "observedMatchingResponses": 1,
+      "noManualNavigation": true,
+      "noManualRefresh": true
+    }
+  ],
+  "commandReceipts": [
+    {
+      "command_key": "04aecedc-d925-4ae2-b038-57745f91387b",
+      "appointment_id": "aa1d4c81-0bc7-492e-a14d-3b79044285b9",
+      "status": "confirmed"
+    },
+    {
+      "command_key": "0eb6b21a-e7e9-4bde-8828-faa1d36cb67e",
+      "appointment_id": "25f20b51-d3d3-43dc-84d0-6b4900bdbfee",
+      "status": "confirmed"
+    },
+    {
+      "command_key": "4ad903ca-0d43-4cd3-904d-0fd22fbca8d3",
+      "appointment_id": "25f20b51-d3d3-43dc-84d0-6b4900bdbfee",
+      "status": "cancelled"
+    }
+  ],
+  "finishedAt": "2026-10-27T15:57:29.145Z"
+}

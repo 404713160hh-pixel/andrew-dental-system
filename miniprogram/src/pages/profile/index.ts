@@ -1,10 +1,10 @@
 import type { Patient, PatientInput, Principal } from '../../types';
-import { api, errorMessage } from '../../utils/api';
+import { api, errorMessage, RequestError } from '../../utils/api';
 import { emptyProfile, profileError } from '../../utils/format';
 import { clearSession, session } from '../../utils/session';
 import { getHold, pendingCommand } from '../../utils/booking';
 Page({
-  data: { ownerId: '', signedIn: false, loading: false, busy: false, error: '', saved: false, displayName: '', patientId: '', profile: emptyProfile(), rowVersion: 0, hasHold: false, isDemo: false },
+  data: { ownerId: '', signedIn: false, loading: false, busy: false, error: '', saved: false, displayName: '', patientId: '', profile: emptyProfile(), rowVersion: 0, hasHold: false, isDemo: false,needsConsent:false,privacyContact:'' },
   onShow() {
     const ownerId = session()?.user.id ?? '';
     if (this.data.ownerId !== ownerId) this.setData({ ownerId, profile: emptyProfile(), patientId: '', rowVersion: 0, isDemo: false, error: '', loading: false, busy: false });
@@ -15,7 +15,7 @@ Page({
     const ownerId = session()?.user.id; if (!ownerId) return;
     this.setData({ loading: true, error: '' });
     try { const [principal, patient] = await Promise.all([api<Principal>('/me'), api<Patient>('/patients/me')]); if (session()?.user.id !== ownerId || this.data.ownerId !== ownerId) return; const { id, rowVersion, isDemo = false, ...profile } = patient; if (principal.patientId !== id) throw new Error('就诊人身份与登录账号不一致，请重新登录。'); this.setData({ profile, rowVersion, isDemo, patientId: id, displayName: patient.name }); }
-    catch (error) { if (this.data.ownerId === ownerId && (!session() || session()?.user.id === ownerId)) this.setData({ error: errorMessage(error), signedIn: Boolean(session()), ...(!session() ? { profile: emptyProfile(), patientId: '', rowVersion: 0, isDemo: false } : {}) }); }
+    catch (error) { if (this.data.ownerId === ownerId && (!session() || session()?.user.id === ownerId)) this.setData({ error: errorMessage(error),needsConsent:error instanceof RequestError&&error.code==='PRIVACY_CONSENT_REQUIRED', signedIn: Boolean(session()), ...(!session() ? { profile: emptyProfile(), patientId: '', rowVersion: 0, isDemo: false } : {}) }); }
     finally { if (this.data.ownerId === ownerId) this.setData({ loading: false }); }
   },
   change(event: WechatMiniprogram.CustomEvent<PatientInput>) { this.setData({ profile: event.detail, saved: false }); },
@@ -29,6 +29,14 @@ Page({
     finally { if (this.data.ownerId === ownerId) this.setData({ busy: false }); }
   },
   login() { wx.navigateTo({ url: '/pages/login/index' }); },
+  async withdrawConsent() {
+    if(this.data.busy)return;
+    const choice=await wx.showModal({title:'撤回隐私同意',content:'撤回后将暂时无法在线查看或管理预约；已有预约请联系门诊处理。历史资料是否删除及保存期限以机构告知和适用规定为准。'});
+    if(!choice.confirm)return;
+    this.setData({busy:true,error:''});
+    try {await api('/privacy/withdraw','POST',{confirm:true});this.setData({profile:emptyProfile(),patientId:'',rowVersion:0,needsConsent:true,error:'已撤回同意。重新使用前请阅读并确认最新隐私告知。'});}
+    catch(error){this.setData({error:errorMessage(error)});}finally{this.setData({busy:false});}
+  },
   async logout() {
     if (this.data.busy) return;
     const ownerId = session()?.user.id; if (!ownerId) return;

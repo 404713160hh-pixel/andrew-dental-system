@@ -1,12 +1,20 @@
 <view class="page">
   <view class="login-intro"><view class="eyebrow">ANDREW'S DENTAL</view><view class="title"><view>你好，欢迎来到</view><view>你的微笑照护空间。</view></view><view class="muted">登录后为本人预约，安排更从容。</view></view>
-  <view class="card"><view class="login-tabs"><view class="{{mode === 'login' ? 'active' : ''}}" data-mode="login" bindtap="mode">账号登录</view><view class="{{mode === 'register' ? 'active' : ''}}" data-mode="register" bindtap="mode">建立账号</view></view>
-    <text class="label">账号</text><input class="input" value="{{username}}" data-field="username" bindinput="input" placeholder="输入登录账号" maxlength="80" disabled="{{busy}}" />
-    <text class="label">密码</text><input class="input" value="{{password}}" data-field="password" bindinput="input" password placeholder="输入账号密码" maxlength="128" disabled="{{busy}}" />
-    <block wx:if="{{mode === 'register'}}"><view class="muted space">账号支持字母、数字、点、下划线与短横线，3 至 80 位；密码至少 12 位。联系电话可供家庭成员共用，不能据此认领他人档案。</view><patient-form value="{{profile}}" disabled="{{busy}}" bindchange="profileChange" /></block>
-    <view wx:if="{{error}}" class="error space">{{error}}</view><button class="primary space" loading="{{busy}}" disabled="{{busy}}" bindtap="submit">{{mode === 'login' ? '登录账号' : '注册并登录'}}</button>
+  <view class="card">
+    <view wx:if="{{mode !== 'consent'}}" class="login-tabs"><view class="{{mode === 'login' ? 'active' : ''}}" data-mode="login" bindtap="mode">账号登录</view><view class="{{mode === 'register' ? 'active' : ''}}" data-mode="register" bindtap="mode">建立账号</view><view class="{{mode === 'linked' ? 'active' : ''}}" data-mode="linked" bindtap="mode">关联已有档案</view></view>
+    <block wx:if="{{mode !== 'consent'}}"><text class="label">账号</text><input class="input" value="{{username}}" data-field="username" bindinput="input" placeholder="输入登录账号" maxlength="80" disabled="{{busy}}" /><text class="label">密码</text><input class="input" value="{{password}}" data-field="password" bindinput="input" password placeholder="输入账号密码" maxlength="128" disabled="{{busy}}" /></block>
+    <block wx:if="{{mode === 'register'}}"><view class="muted space">账号支持字母、数字、点、下划线与短横线，3至80位；密码至少12位。请仅填写本人资料。</view><patient-form value="{{profile}}" disabled="{{busy}}" bindchange="profileChange" /></block>
+    <block wx:if="{{mode === 'linked'}}"><view class="muted space">如前台已建立档案，请当面核对身份并获取一次性凭证。</view><text class="label">一次性凭证</text><input class="input" value="{{code}}" data-field="code" bindinput="input" placeholder="输入前台提供的凭证" maxlength="24" disabled="{{busy}}" /><text class="label">档案出生日期</text><picker mode="date" value="{{linkedBirthDate}}" bindchange="linkedDate" disabled="{{busy}}"><view class="picker">{{linkedBirthDate || '选择出生日期'}} ▾</view></picker></block>
+    <block wx:if="{{mode === 'register' || mode === 'linked' || mode === 'consent'}}">
+      <view class="section-title space">隐私告知与授权</view>
+      <view wx:if="{{notice}}" class="privacy-note">信息处理方：{{notice.controller}}；联系方式：{{notice.contact}}。为预约及就诊协调处理姓名、出生日期、联系方式、地址及紧急联系人；过敏等健康信息用于诊疗风险核对，仅授权员工依职责访问。保存期限：{{notice.retention}}。您可联系信息处理方咨询、更正、撤回同意或申请删除，依法应保存的信息按规定处理。</view>
+      <view wx:else class="error">隐私告知加载失败，请检查网络并返回重试。</view>
+      <checkbox-group bindchange="consentChange"><label class="consent-option"><checkbox value="notice" checked="{{acceptedNotice}}" />我已阅读告知，同意处理预约所需个人信息</label><label class="consent-option"><checkbox value="sensitive" checked="{{acceptedSensitive}}" />我单独同意处理过敏等健康信息</label>
+      <block wx:if="{{minor}}"><view class="muted space">未满14周岁须由父母或其他监护人填写并同意。此处记录填写信息，线下还需按机构流程核验监护关系。</view><input class="input" value="{{guardianName}}" data-field="guardianName" bindinput="input" placeholder="监护人姓名" /><input class="input" value="{{guardianRelationship}}" data-field="guardianRelationship" bindinput="input" placeholder="与患者的关系" /><label class="consent-option"><checkbox value="guardian" checked="{{guardianAccepted}}" />我是父母或其他监护人，同意处理该患者的信息</label></block></checkbox-group>
+    </block>
+    <view wx:if="{{error}}" class="error space">{{error}}</view><button class="primary space" loading="{{busy}}" disabled="{{busy || loading}}" bindtap="submit">{{mode === 'login' ? '登录账号' : mode === 'consent' ? '确认并继续' : '注册并登录'}}</button>
   </view>
   <view wx:if="{{loading}}" class="loading">正在准备登录…</view>
-  <view wx:if="{{config.demoLoginEnabled}}" class="card"><view class="section-title">演示体验账号</view><view class="muted">以下为虚构患者的演示账号，仅供体验预约流程。请勿输入真实医疗信息。</view><block wx:for="{{config.demoAccounts}}" wx:key="username"><button wx:if="{{item.portal === 'patient'}}" class="secondary space" data-username="{{item.username}}" bindtap="demo" disabled="{{busy}}">{{item.displayName}} · 演示登录</button></block></view>
+  <view wx:if="{{config.demoLoginEnabled && mode === 'login'}}" class="card"><view class="section-title">演示体验账号</view><view class="muted">以下为虚构患者的演示账号，仅供体验预约流程。请勿输入真实医疗信息。</view><block wx:for="{{config.demoAccounts}}" wx:key="username"><button wx:if="{{item.portal === 'patient'}}" class="secondary space" data-username="{{item.username}}" bindtap="demo" disabled="{{busy}}">{{item.displayName}} · 演示登录</button></block></view>
   <view class="footer-note">请妥善保管账号信息，预约记录仅本人可查看。</view>
 </view>

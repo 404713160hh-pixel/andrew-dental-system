@@ -10,6 +10,7 @@ import { createApp } from '../src/app.js';
 import { loadConfig } from '../src/config.js';
 import { migrate, poolFor } from '../src/db.js';
 import { seed } from '../src/seed.js';
+import { PRIVACY_VERSION } from '../src/privacy.js';
 import { enrichDemoData } from '../src/demo.js';
 
 // Every mutation in this file is confined to a database this fixture created.
@@ -95,7 +96,7 @@ before(async () => {
 
   // Ordinary same-name/contact records must never be adopted as synthetic data.
   const ordinary = data<LoginResult>(await request('POST', '/auth/register', undefined, { username: 'ordinary.' + randomBytes(5).toString('hex'), password,
-    profile: { name: '林晓（虚构患者）', birthDate: '2002-03-16', phone: '00000001001', email: 'ordinary@example.invalid', billingAddress: '普通测试记录，不得被演示脚本修改', emergencyName: '普通联系人', emergencyPhone: '00000001999', allergyStatus: 'none_reported', allergies: [] } }));
+    profile: { name: '林晓（虚构患者）', birthDate: '2002-03-16', phone: '00000001001', email: 'ordinary@example.invalid', billingAddress: '普通测试记录，不得被演示脚本修改', emergencyName: '普通联系人', emergencyPhone: '00000001999', allergyStatus: 'none_reported', allergies: [] }, consent:{policyVersion:PRIVACY_VERSION,noticeAccepted:true,sensitiveAccepted:true,guardian:null} }));
   ordinaryPatientId = ordinary.user.patientId!;
   ordinaryDoctorId = (await db.query("INSERT INTO staff(employee_no,name,phone,specialty)VALUES($1,'陈知远（虚构医生）','00000002001','普通档案，禁止认领')RETURNING id", ['ORDINARY-' + randomBytes(5).toString('hex')])).rows[0].id;
   ordinaryServiceId = (await db.query("INSERT INTO services(name,description,duration_minutes,buffer_minutes,price_cents)VALUES('儿童口腔咨询（演示）','普通项目，不属于演示脚本',25,5,12345)RETURNING id")).rows[0].id;

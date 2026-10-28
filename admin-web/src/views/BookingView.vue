@@ -3,7 +3,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Search, Clock, Location, User, ArrowRight, Refresh } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
-import type { Appointment, BookingPolicy, BookingSlot, Hold, Page, Patient } from '@andrew/shared';
+import type { Appointment, BookingPolicy, BookingSlot, Hold, Page, Patient, PatientCandidate } from '@andrew/shared';
 import {
   api,
   ApiError,
@@ -24,7 +24,7 @@ const catalog = useCatalog();
 const booking = useBooking();
 const original = ref<Appointment | null>(null);
 const q = ref('');
-const patients = ref<Patient[]>([]);
+const patients = ref<PatientCandidate[]>([]);
 const patientSearchBusy = ref(false);
 const patientTotal = ref(0);
 const patientPage = ref(1);
@@ -104,7 +104,7 @@ async function searchPatients(reset = true) {
   patientSearchBusy.value = true;
   error.value = '';
   try {
-    const result = await api<Page<Patient>>(
+    const result = await api<Page<PatientCandidate>>(
       `/staff/patients${query({ q: q.value.trim(), page: patientPage.value, pageSize: 8 })}`,
     );
     patients.value = result.items;
@@ -115,10 +115,13 @@ async function searchPatients(reset = true) {
     patientSearchBusy.value = false;
   }
 }
-function choosePatient(patient: Patient) {
+function choosePatient(patient: PatientCandidate) {
   booking.patient = patient;
   patients.value = [];
   q.value = '';
+}
+function patientCreated(patient: Patient) {
+  choosePatient({id:patient.id,name:patient.name,phone:patient.phone.length>7?patient.phone.slice(0,3)+'****'+patient.phone.slice(-4):'***',birthYear:patient.birthDate.slice(0,4),hasAccount:false,isDemo:patient.isDemo});
 }
 async function searchSlots() {
   error.value = '';
@@ -304,7 +307,7 @@ onMounted(async () => {
             <span class="step-number">01</span>
             <div>
               <h2>核对患者</h2>
-              <p>确认患者姓名、联系方式与过敏史。</p>
+              <p>确认患者姓名及联系方式；诊疗风险由医务人员另行核实。</p>
             </div>
           </div>
           <el-button v-if="!isReschedule" @click="createDialog = true">建立新档案</el-button>
@@ -315,22 +318,11 @@ onMounted(async () => {
             <div>
               <h3>{{ patientName }}</h3>
               <p v-if="!original">
-                {{ booking.patient?.phone }} · {{ booking.patient?.birthDate }}
+                {{ booking.patient?.phone }} · {{ booking.patient?.birthYear }} 年出生
               </p>
               <p v-else>
                 原预约：{{ original.appointmentNo }} · {{ time(original.startsAt, true) }}
               </p>
-              <el-tag
-                v-if="booking.patient && !original"
-                :type="booking.patient.allergyStatus === 'known' ? 'warning' : 'info'"
-                >{{
-                  booking.patient.allergyStatus === 'known'
-                    ? `过敏提醒：${booking.patient.allergies.join('、')}`
-                    : booking.patient.allergyStatus === 'unknown'
-                      ? '过敏史待医生核实'
-                      : '患者未报告过敏'
-                }}</el-tag
-              >
             </div>
             <el-button v-if="!isReschedule" text type="primary" @click="booking.patient = null"
               >更换患者</el-button
@@ -358,7 +350,7 @@ onMounted(async () => {
               >
                 <span
                   ><strong>{{ patient.name }}</strong
-                  ><small>{{ patient.phone }} · {{ patient.birthDate }}</small></span
+                  ><small>{{ patient.phone }} · {{ patient.birthYear }} 年出生</small></span
                 ><el-icon><ArrowRight /></el-icon></button
               ><el-pagination
                 v-if="patientTotal > 8"
@@ -563,5 +555,5 @@ onMounted(async () => {
       </div>
     </aside>
   </div>
-  <PatientEditor v-model="createDialog" @created="choosePatient" />
+  <PatientEditor v-model="createDialog" @created="patientCreated" />
 </template>

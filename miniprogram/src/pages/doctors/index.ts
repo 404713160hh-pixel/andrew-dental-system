@@ -1,4 +1,4 @@
-import type { Clinic, Doctor } from '../../types';
+import type { Clinic, PublicDoctor as Doctor } from '../../types';
 import { api, errorMessage, query } from '../../utils/api';
 import { doctorView } from '../../utils/catalog';
 

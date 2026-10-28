@@ -1,4 +1,4 @@
-import type { AuthConfig, Clinic, Doctor, Service, TreatmentReference } from '../../types';
+import type { AuthConfig, Clinic, PublicDoctor as Doctor, Service, TreatmentReference } from '../../types';
 import { api, errorMessage } from '../../utils/api';
 import { doctorView } from '../../utils/catalog';
 import { price } from '../../utils/format';

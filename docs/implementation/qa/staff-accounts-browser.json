@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "startedAt": "2026-10-27T15:52:06.900Z",
+  "execution": "Real Chrome and Vue against isolated PostgreSQL and API on local ephemeral ports",
+  "checks": [
+    "HQ creates a scoped employee account",
+    "employee must change temporary password before entering workbench",
+    "role change revokes the existing employee session",
+    "disabled employee cannot log in",
+    "mutations use the isolated backend and are audited"
+  ],
+  "screenshots": [
+    "screenshots/booking/staff-accounts-mvqv5wqb/01-created.png",
+    "screenshots/booking/staff-accounts-mvqv5wqb/02-forced-password.png",
+    "screenshots/booking/staff-accounts-mvqv5wqb/03-role-changed.png",
+    "screenshots/booking/staff-accounts-mvqv5wqb/04-disabled.png"
+  ],
+  "limitations": [],
+  "finishedAt": "2026-10-27T15:52:21.049Z"
+}

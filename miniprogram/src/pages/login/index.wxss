@@ -1,1 +1,2 @@
 .login-intro{padding:32rpx 8rpx 38rpx}.login-tabs{display:flex;gap:36rpx;border-bottom:1rpx solid #edf1f3}.login-tabs view{padding:8rpx 0 20rpx;color:#8a9ba6}.login-tabs .active{color:#087d87;font-weight:700;border-bottom:5rpx solid #0b858d}
+.privacy-note{font-size:25rpx;line-height:1.7;color:#516878;background:#f3f7f8;border-radius:14rpx;padding:20rpx;margin:18rpx 0}.consent-option{display:flex;align-items:flex-start;gap:10rpx;font-size:25rpx;line-height:1.6;margin:18rpx 0}.login-tabs{flex-wrap:wrap}
