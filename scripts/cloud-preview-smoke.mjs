@@ -164,6 +164,15 @@ async function main() {
   });
   assert.equal(appointment.status, 'confirmed', 'Patient confirmation did not create a confirmed appointment');
 
+  const staffPath = `/staff/appointments?${new URLSearchParams({
+    clinicId: newShift.clinicId,
+    date: shanghaiDate(newShift.startsAt),
+    pageSize: '100',
+  })}`;
+  const staffAfterBooking = await request(staffPath, { token: hqToken });
+  assert.ok(staffAfterBooking.items.some(item => item.id === appointment.id && item.status === 'confirmed'),
+    'HQ schedule did not show the initial appointment as confirmed');
+
   const rescheduleSlot = (await slotsForShift(newShift, serviceId, patientToken))
     .find(slot => slot.startsAt !== initialSlot.startsAt && Date.parse(slot.startsAt) >= earliestAllowed);
   assert.ok(rescheduleSlot, 'New synthetic shift has no second available time for rescheduling');
@@ -183,11 +192,6 @@ async function main() {
   assert.equal(replacement.status, 'confirmed', 'Patient rescheduling did not create a confirmed replacement');
   assert.equal(replacement.supersedesAppointmentId, appointment.id, 'Replacement does not link to the old appointment');
 
-  const staffPath = `/staff/appointments?${new URLSearchParams({
-    clinicId: newShift.clinicId,
-    date: shanghaiDate(newShift.startsAt),
-    pageSize: '100',
-  })}`;
   const staffAfterReschedule = await request(staffPath, { token: hqToken });
   assert.ok(staffAfterReschedule.items.some(item => item.id === appointment.id && item.status === 'rescheduled'),
     'HQ schedule did not show the old appointment as rescheduled');
@@ -213,7 +217,7 @@ async function main() {
 
   console.log(JSON.stringify({
     status: 'passed',
-    checks: ['hq-shifts', 'hq-publishes-conflict-free-shift', 'patient-privacy-consent', 'patient-books-new-shift', 'patient-reschedules-to-second-slot', 'hq-sees-old-and-new-status', 'patient-cancels-replacement', 'hq-sees-final-status'],
+    checks: ['hq-shifts', 'hq-publishes-conflict-free-shift', 'patient-privacy-consent', 'patient-books-new-shift', 'hq-sees-initial-confirmed-appointment', 'patient-reschedules-to-second-slot', 'hq-sees-old-and-new-status', 'patient-cancels-replacement', 'hq-sees-final-status'],
     syntheticShiftDate: shanghaiDate(newShift.startsAt),
     oldAppointmentStatus: 'rescheduled',
     replacementAppointmentStatus: cancelled.status,
