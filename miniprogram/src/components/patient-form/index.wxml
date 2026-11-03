@@ -1,5 +1,5 @@
 <view class="profile-form">
-  <view class="notice">当前仅支持账号本人就诊。联系电话用于联系，不作为患者唯一身份标识。</view>
+  <view class="notice">请填写本人就诊资料。</view>
   <text class="label">实际就诊人姓名 *</text><input class="input" value="{{value.name}}" data-field="name" bindinput="input" placeholder="请填写本人姓名" maxlength="60" disabled="{{disabled}}" />
   <text class="label">出生日期 *</text><picker mode="date" end="{{maxDate}}" value="{{value.birthDate}}" bindchange="input" data-field="birthDate" disabled="{{disabled}}"><view class="picker">{{value.birthDate || '请选择出生日期'}}</view></picker>
   <text class="label">联系电话 *</text><input class="input" value="{{value.phone}}" data-field="phone" bindinput="input" type="text" placeholder="可联系到本人的电话" maxlength="30" disabled="{{disabled}}" />
@@ -8,6 +8,6 @@
   <text class="label">紧急联系人 *</text><input class="input" value="{{value.emergencyName}}" data-field="emergencyName" bindinput="input" placeholder="联系人姓名" maxlength="60" disabled="{{disabled}}" />
   <text class="label">紧急联系电话 *</text><input class="input" value="{{value.emergencyPhone}}" data-field="emergencyPhone" bindinput="input" placeholder="紧急情况下的联系电话" maxlength="30" disabled="{{disabled}}" />
   <text class="label">过敏声明 *</text><picker range="{{allergyNames}}" value="{{allergyIndex}}" bindchange="allergy" disabled="{{disabled}}"><view class="picker">{{allergyNames[allergyIndex]}} ▾</view></picker>
-  <view wx:if="{{value.allergyStatus === 'unknown'}}" class="muted space">未知不等于无过敏。预约时会保留待核实提示，到诊后请与医务人员确认。</view>
+  <view wx:if="{{value.allergyStatus === 'unknown'}}" class="muted space">过敏情况未知，请到诊后与医务人员确认。</view>
   <block wx:if="{{value.allergyStatus === 'known'}}"><text class="label">已知过敏项 *</text><textarea class="textarea" value="{{allergyText}}" bindinput="allergies" maxlength="1500" placeholder="每行填写一个过敏项" disabled="{{disabled}}" /></block>
 </view>

@@ -15,7 +15,7 @@ Page({
     steps: [{ text: '选择时段', desc: '门诊 · 医生 · 日期' }, { text: '核对确认', desc: '核对就诊人与规则' }, { text: '预约完成', desc: '获取预约编号' }],
     slots: [] as (ReturnType<typeof slotView> & { doctorIsDemo: boolean })[], policy: null as BookingQueryPolicy | null,
     oldAppointmentId: '', oldVersion: 0, preferredClinicId: '', preferredServiceId: '', preferredDoctorId: '',
-    serviceUnavailable: false, doctorUnavailable: false, pending: false,
+    serviceUnavailable: false, doctorUnavailable: false, pending: false, signedIn: false,
   },
   onLoad(options: Record<string, string | undefined>) {
     this.setData({ oldAppointmentId: options.appointmentId ?? '', oldVersion: Number(options.version ?? 0),
@@ -23,7 +23,7 @@ Page({
     void this.load();
   },
   onShow() {
-    this.setData({ pending: Boolean(pendingCommand()) });
+    this.setData({ signedIn: Boolean(session()), pending: Boolean(pendingCommand()) });
     if (this.data.policy && this.data.minDate < dateToday() && !this.data.loading && !this.data.holding) void this.load();
   },
   onUnload() { this.setData({ requestVersion: this.data.requestVersion + 1 }); },
@@ -169,4 +169,5 @@ Page({
     finally { if (this.data.requestVersion === version) this.setData({ holding: false }); }
   },
   pendingPage() { wx.switchTab({ url: '/pages/appointments/index' }); },
+  login() { wx.navigateTo({ url: '/pages/login/index' }); },
 });

@@ -372,7 +372,7 @@ async function staffPage(account) {
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, locale: 'zh-CN', timezoneId: 'Asia/Shanghai' });
   const page = await context.newPage(); page.on('pageerror', error => browserErrors.push(error.message));
   await page.goto(admin + '/login');
-  await expect(page.getByRole('heading', { name: '登录预约工作台' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '欢迎回来' })).toBeVisible();
   await page.locator('.demo-login .el-select').click();
   await page.getByRole('option', { name: `${account.displayName} · ${account.username}`, exact: true }).click();
   await page.getByRole('button', { name: '进入开发工作台', exact: true }).click();

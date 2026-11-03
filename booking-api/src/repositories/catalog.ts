@@ -5,7 +5,7 @@ export const patientSelect=`SELECT p.id,p.name,to_char(p.birth_date,'YYYY-MM-DD'
  p.billing_address AS "billingAddress",p.emergency_name AS "emergencyName",p.emergency_phone AS "emergencyPhone",
  p.allergy_status AS "allergyStatus",p.row_version AS "rowVersion",p.is_demo AS "isDemo",
  ARRAY(SELECT substance FROM patient_allergies a WHERE a.patient_id=p.id ORDER BY substance) AS allergies FROM patients p`;
-export const clinicSelect=`SELECT id,name,address,phone,email,timezone,active,row_version AS "rowVersion" FROM clinics`;
+export const clinicSelect=`SELECT id,name,address,phone,email,timezone,active,row_version AS "rowVersion",description,opening_hours AS "openingHours" FROM clinics`;
 export const chairSelect=`SELECT id,clinic_id AS "clinicId",name,active,row_version AS "rowVersion" FROM chairs`;
 export const qualificationSelect=`SELECT id,name,active,row_version AS "rowVersion" FROM qualifications`;
 export const doctorSelect=`SELECT s.id,s.employee_no AS "employeeNo",s.name,s.phone,s.specialty,s.active,s.row_version AS "rowVersion",

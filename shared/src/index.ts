@@ -8,7 +8,7 @@ export interface AuthConfig { demoLoginEnabled: boolean; demoAccounts: {username
 export interface Patient { id: string; name: string; birthDate: string; phone: string; email: string | null; billingAddress: string; emergencyName: string; emergencyPhone: string; allergyStatus: AllergyStatus; allergies: string[]; rowVersion: number; isDemo?: boolean }
 export type PatientInput = Omit<Patient, 'id' | 'rowVersion' | 'isDemo'>;
 export interface PatientCandidate { id:string; name:string; phone:string; birthYear:string; hasAccount:boolean; isDemo?:boolean }
-export interface Clinic { id: string; name: string; address: string; phone: string; email: string; timezone: 'Asia/Shanghai'; active: boolean; rowVersion: number }
+export interface Clinic { id: string; name: string; address: string; phone: string; email: string; timezone: 'Asia/Shanghai'; active: boolean; rowVersion: number; description?: string | null; openingHours?: string | null }
 export interface Qualification { id: string; name: string; active: boolean; rowVersion: number }
 export interface DentistQualification { qualificationId: string; qualificationName?: string; validFrom: string; validUntil: string | null }
 export interface Doctor { id: string; employeeNo: string; name: string; phone: string; specialty: string; active: boolean; rowVersion: number; qualifications: DentistQualification[]; serviceIds: string[]; isDemo?: boolean; bio?: string; focusAreas?: string[]; clinicIds?: string[] }

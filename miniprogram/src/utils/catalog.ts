@@ -13,9 +13,18 @@ export function referenceView(item: TreatmentReference) {
 }
 
 export function doctorView(item: Doctor) {
+  // The sprite contains fictional portraits only; never attach them to ordinary records.
+  const portraitPositions: Record<string, [number, number]> = {
+    '李若宁（虚构医生）': [0, 0], '陈知远（虚构医生）': [1, 0],
+    '苏予安（虚构医生）': [2, 0], '顾清和（虚构医生）': [3, 0],
+    '许知夏（虚构医生）': [0, 1], '周沐辰（虚构医生）': [1, 1],
+    '唐书禾（虚构医生）': [2, 1], '林亦岚（虚构医生）': [3, 1],
+  };
+  const portrait = item.isDemo ? portraitPositions[item.name] : undefined;
   return {
     ...item,
     isDemo: Boolean(item.isDemo),
+    hasPortrait: Boolean(portrait), portraitCol: portrait?.[0] ?? 0, portraitRow: portrait?.[1] ?? 0,
     initial: item.name.slice(0, 1),
     bioLabel: item.bio?.trim() || item.specialty,
     focusLabels: item.focusAreas?.length ? item.focusAreas : item.specialty ? [item.specialty] : [],
@@ -28,4 +37,13 @@ export function doctorView(item: Doctor) {
         : (qualification.validUntil ? '有效至 ' + dateText(qualification.validUntil).slice(0, 10) : '未设置失效日期'),
     })),
   };
+}
+
+/** Images depict fictional demo clinics; unmatched clinics get no invented photo. */
+export function clinicView<T extends { name: string }>(item: T) {
+  const images: Record<string, string> = {
+    '安德鲁牙科·越秀门诊': '/assets/clinic-yuexiu.jpg',
+    '安德鲁牙科·天河门诊': '/assets/clinic-tianhe.jpg',
+  };
+  return { ...item, demoImage: images[item.name] || '' };
 }

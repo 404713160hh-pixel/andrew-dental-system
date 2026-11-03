@@ -53,35 +53,23 @@ async function login(demo = false) {
         <div class="eyebrow">BETTER CARE, TOGETHER</div>
         <h1>把每一次预约，<br />安排得更从容。</h1>
         <p>连接门诊、医生与患者，<br />让优质的口腔服务，从有序的预约开始。</p>
-        <div class="orbit-art" aria-hidden="true">
-          <div class="orbit orbit-one"></div>
-          <div class="orbit orbit-two"></div>
-          <div class="tooth-art">
-            <svg viewBox="0 0 180 200">
-              <path
-                d="M90 35C55 5 13 31 28 78c12 35 12 93 33 95 14 1 13-51 29-51s15 52 29 51c21-2 21-60 33-95C167 31 125 5 90 35Z"
-                fill="white"
-              />
-              <path
-                d="M62 47c10-5 18-1 28 5"
-                fill="none"
-                stroke="#bce5df"
-                stroke-width="8"
-                stroke-linecap="round"
-              />
-            </svg>
+        <div class="clinic-visual" role="img" aria-label="诊所空间宣传示意图">
+          <div class="clinic-visual-caption">
+            <span class="caption-line"></span>
+            <div><strong>好的照护，从有序开始</strong><small>诊所空间示意图</small></div>
           </div>
-          <div class="floating-card fc-one"><span class="live-dot"></span>门诊资源实时协同</div>
-          <div class="floating-card fc-two">✓ 预约冲突自动校验</div>
+        </div>
+        <div class="story-features" aria-label="工作台功能">
+          <span><i></i> 预约协同</span><span><i></i> 排班管理</span><span><i></i> 患者服务</span>
         </div>
       </div>
       <div class="login-foot">ANDREW DENTAL <span>工作人员入口</span></div>
     </section>
     <section class="login-form-section">
       <div class="login-form-wrap">
-        <span class="overline">欢迎回来</span>
-        <h2>登录预约工作台</h2>
-        <p class="muted">使用您的工作人员账号，进入所属门诊工作空间。</p>
+        <span class="overline">STAFF WORKSPACE <span> / </span> 工作人员入口</span>
+        <h2>欢迎回来</h2>
+        <p class="muted">登录预约工作台，开始今天的门诊协作。</p>
         <el-alert
           v-if="error"
           :title="error"

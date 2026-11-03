@@ -2,13 +2,22 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { useAuth } from './stores/auth';
 export const router = createRouter({
   history: createWebHistory(),
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) return savedPosition;
+    if (to.hash) {
+      const target = document.getElementById(to.hash.slice(1));
+      return target ? { el: target, top: 100 } : { top: 0 };
+    }
+    return to.path !== from.path ? { top: 0 } : false;
+  },
   routes: [
     {
       path: '/login',
       component: () => import('./views/LoginView.vue'),
       meta: { public: true, title: '工作人员登录' },
     },
-    { path: '/', redirect: '/appointments' },
+    { path: '/', component: () => import('./views/PublicView.vue'), meta: { public: true, title: '安德鲁牙科' } },
+    { path: '/explore/:section(services|doctors|clinics)/:id?', component: () => import('./views/PublicView.vue'), meta: { public: true, title: '了解安德鲁牙科' } },
     { path: '/change-password', component: () => import('./views/ChangePasswordView.vue'), meta: { title: '修改密码' } },
     { path: '/staff/accounts', component: () => import('./views/StaffAccountsView.vue'), meta: { title: '员工账号', hq: true } },
     {

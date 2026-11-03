@@ -26,6 +26,47 @@ function runtime() {
 const login = id => ({ token: 'test-token-' + id, expiresAt: new Date(Date.now() + 3600000).toISOString(), user: { id, username: id, patientId: 'patient-' + id, staffId: null, displayName: id, roles: ['patient'], assignments: [] } });
 const body = { holdId: 'hold-fixture', holdVersion: 1, patientConfirmed: true, rulesAccepted: true };
 const queryPolicyFixture = () => ({ holdSeconds: 300, cancellationNoticeMinutes: 120, transferBufferMinutes: 30, slotStepMinutes: 15, timezone: 'Asia/Shanghai', queryWindow: { fromDate: '2000-01-01', toDate: '2099-12-31' } });
+function patientPage(r, name) {
+  r.load('pages/' + name + '/index'); const options = r.pages.at(-1);
+  return { ...options, data: structuredClone(options.data), setData(update) { Object.assign(this.data, update); } };
+}
+test('expired in-memory session is removed even when the app never restarted', () => {
+  const r = runtime(), auth = r.load('utils/session');
+  auth.setSession({ ...login('one'), expiresAt: new Date(Date.now() - 1000).toISOString() });
+  assert.equal(auth.session(), null); assert.equal(r.storage.has('andrew.session.v1'), false);
+});
+test('logout immediately clears patient state, preserves pending operation and reports unconfirmed revocation', async () => {
+  const r = runtime(), auth = r.load('utils/session'), booking = r.load('utils/booking'); auth.setSession(login('one'));
+  const pending = booking.newCommand('/appointments/confirm', body); await assert.rejects(booking.sendCommand(pending));
+  const page = patientPage(r, 'profile'); Object.assign(page.data, { ownerId: 'one', signedIn: true, displayName: 'fictional patient', profile: { name: 'fictional patient' }, patientId: 'patient-one', rowVersion: 1, isDemo: true, hasHold: true });
+  let revoke; r.respond(options => { revoke = options; });
+  const promise = page.logout(); await new Promise(resolve => setImmediate(resolve));
+  assert.ok(revoke); assert.equal(revoke.header.Authorization, 'Bearer test-token-one');
+  assert.equal(auth.session(), null); assert.equal(page.data.signedIn, false); assert.equal(page.data.displayName, ''); assert.equal(page.data.profile.name, ''); assert.equal(page.data.patientId, ''); assert.equal(page.data.hasHold, false);
+  revoke.fail({ errMsg: 'request:fail offline' }); await promise;
+  assert.match(page.data.logoutNotice, /撤销未确认/); auth.setSession(login('one')); assert.equal(booking.pendingCommand().key, pending.key);
+});
+test('late logout response cannot clear a newer session even for the same user', async () => {
+  const r = runtime(), auth = r.load('utils/session'); auth.setSession(login('one'));
+  const page = patientPage(r, 'profile'); Object.assign(page.data, { ownerId: 'one', signedIn: true, displayName: 'old' });
+  let revoke; r.respond(options => { revoke = options; }); const promise = page.logout(); await new Promise(resolve => setImmediate(resolve));
+  auth.setSession({ ...login('one'), token: 'new-token' }); Object.assign(page.data, { ownerId: 'one', signedIn: true, displayName: 'new' });
+  revoke.success({ statusCode: 401, data: { error: { code: 'SESSION_EXPIRED' } } }); await promise;
+  assert.equal(auth.session().token, 'new-token'); assert.equal(page.data.signedIn, true); assert.equal(page.data.displayName, 'new');
+});
+test('booking page permits anonymous catalog browsing but refuses to create a hold', async () => {
+  const r = runtime(), page = patientPage(r, 'booking');
+  page.onShow(); assert.equal(page.data.signedIn, false);
+  page.data.slots = [{ startsAt: '2099-01-01T00:00:00Z' }];
+  await page.choose({ currentTarget: { dataset: { index: 0 } } });
+  assert.equal(r.requests.length, 0); assert.equal(r.navigations.at(-1).url, '/pages/login/index');
+});
+test('expired patient profile session clears displayed name and sensitive details after 401', async () => {
+  const r = runtime(), auth = r.load('utils/session'); auth.setSession(login('one'));
+  const page = patientPage(r, 'profile'); Object.assign(page.data, { ownerId: 'one', signedIn: true, displayName: 'old patient', profile: { name: 'old patient' }, patientId: 'patient-one', rowVersion: 1, isDemo: true, hasHold: true });
+  r.respond(options => options.success({ statusCode: 401, data: { error: { code: 'SESSION_EXPIRED', message: '请重新登录' } } }));
+  await page.load(); assert.equal(auth.session(), null); assert.equal(page.data.signedIn, false); assert.equal(page.data.displayName, ''); assert.equal(page.data.profile.name, ''); assert.equal(page.data.patientId, ''); assert.equal(page.data.hasHold, false);
+});
 function loginPage(r) {
   r.load('pages/login/index'); const options = r.pages.at(-1);
   return { ...options, data: structuredClone(options.data), setData(update) { Object.assign(this.data, update); } };
@@ -645,4 +686,17 @@ test('missing or invalid server query window stays a retryable catalog failure a
   assert.equal(r.requests.filter(request => new URL(request.url).pathname.endsWith('/booking-slots')).length, 0);
   const dates = r.load('utils/availability');
   for (const window of [null, {}, {fromDate:'2026-02-30',toDate:'2026-03-31'}, {fromDate:'2026-10-05',toDate:'2026-10-01'}]) assert.throws(() => dates.queryWindowLimits(window,'2026-10-01'),/日期范围/);
+});
+
+test('fictional portrait positions are distinct and unknown or real doctors do not receive a fake portrait', () => {
+  const { doctorView, clinicView } = runtime().load('utils/catalog');
+  const names=['李若宁','陈知远','苏予安','顾清和','许知夏','周沐辰','唐书禾','林亦岚'];
+  const base={specialty:'演示',qualifications:[],serviceIds:[]};
+  const people=names.map(name=>doctorView({...base,isDemo:true,name:name+'（虚构医生）'}));
+  assert.equal(people.filter(x=>x.hasPortrait).length,8);
+  assert.equal(new Set(people.map(x=>x.portraitCol+','+x.portraitRow)).size,8);
+  assert.equal(doctorView({...base,isDemo:false,name:'李若宁（虚构医生）'}).hasPortrait,false);
+  assert.equal(doctorView({...base,isDemo:true,name:'其他演示医生'}).hasPortrait,false);
+  assert.notEqual(clinicView({name:'安德鲁牙科·越秀门诊'}).demoImage,clinicView({name:'安德鲁牙科·天河门诊'}).demoImage);
+  assert.equal(clinicView({name:'其他门诊'}).demoImage,'');
 });

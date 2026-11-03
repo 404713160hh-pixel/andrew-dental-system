@@ -19,7 +19,7 @@ function copyAssets(relative = '') {
     const item = resolve(root, 'src', relative, entry.name);
     const target = resolve(root, 'dist', relative, entry.name);
     if (entry.isDirectory()) copyAssets(join(relative, entry.name));
-    else if (['.json', '.wxml', '.wxss', '.svg', '.png'].includes(extname(entry.name))) {
+    else if (['.json', '.wxml', '.wxss', '.svg', '.png', '.jpg'].includes(extname(entry.name))) {
       mkdirSync(dirname(target), { recursive: true }); cpSync(item, target);
     }
   }
@@ -43,6 +43,13 @@ function verifyOutput(directory) {
     if (entry.isDirectory()) verifyOutput(path);
     else {
       outputBytes += statSync(path).size;
+      if (path.endsWith('.wxml')) {
+        const markup = readFileSync(path, 'utf8');
+        for (const match of markup.matchAll(/\bsrc=["'](\/assets\/[^"'{}]+)["']/g)) {
+          const asset = resolve(outputRoot, '.' + match[1]);
+          if (!asset.startsWith(outputRoot + sep) || !existsSync(asset)) throw new Error('小程序引用的本地图片缺失：' + match[1]);
+        }
+      }
       if (!path.endsWith('.json')) continue;
       const config = JSON.parse(readFileSync(path, 'utf8'));
       for (const component of Object.values(config.usingComponents ?? {})) {

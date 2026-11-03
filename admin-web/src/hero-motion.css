@@ -1,0 +1,63 @@
+/* A full-bleed moving introduction; the underlying still is also the playback fallback. */
+.public-site .public-header { max-width:none; width:100%; }
+.public-site .public-header.is-home:not(.is-scrolled) { color:#fff; background:transparent; border-color:rgba(255,255,255,.2); }
+.public-site .public-header.is-home:not(.is-scrolled) .public-brand small,
+.public-site .public-header.is-home:not(.is-scrolled) .public-nav-login { color:rgba(255,255,255,.85)!important; }
+.public-site .public-header.is-home:not(.is-scrolled) .public-nav .public-button-dark { color:#252522!important; background:#f6f4ed!important; }
+.public-site .public-hero-motion { width:100%; max-width:none; min-height:min(830px,calc(100svh - 32px)); margin:-84px 0 0; padding:180px max(56px,calc((100vw - 1280px)/2)) 100px; display:flex; align-items:flex-end; position:relative; isolation:isolate; overflow:hidden; }
+.public-site .public-hero-motion .public-hero-copy { max-width:760px; position:relative; z-index:2; color:#fff; padding:0; }
+.public-site .public-hero-motion .public-eyebrow { color:#efe8d9; }
+.public-site .public-hero-motion h1 { color:#fff; text-shadow:0 2px 22px rgba(0,0,0,.25); }
+.public-site .public-hero-motion h1 em { color:#f3ede2; }
+.public-site .public-hero-motion .public-lead { color:#fff; max-width:540px; text-shadow:0 1px 8px rgba(0,0,0,.5); }
+.public-site .public-hero-motion .public-button-dark { background:#f8f5ed!important; color:#262725!important; }
+.public-site .public-hero-motion .public-button-outline { color:#fff; border-color:rgba(255,255,255,.8); background:rgba(24,24,22,.12); }
+.public-site .public-hero-motion .public-button-outline:hover { background:rgba(255,255,255,.18); }
+.public-site .public-hero-motion .public-hero-image { position:absolute; inset:0; height:100%; width:100%; margin:0; z-index:0; animation:none; }
+.public-site .public-hero-motion .public-hero-image img,.public-site .public-hero-motion video { position:absolute; inset:0; width:100%; height:100%; display:block; object-fit:cover; object-position:center; animation:none; }
+.public-site .public-hero-motion video { opacity:0; transition:opacity .6s ease; }
+.public-site .public-hero-motion video.playing { opacity:1; }
+.public-site .public-hero-motion .public-hero-image::after { content:''; position:absolute; inset:0; pointer-events:none; background:linear-gradient(180deg,rgba(19,23,22,.55),rgba(22,24,22,.16) 35%,rgba(19,21,20,.72)); }
+.public-site .public-hero-motion .public-hero-image figcaption { z-index:2; color:#fff; background:rgba(15,18,17,.6); bottom:18px; right:24px; }
+@media(max-width:800px) {
+ .public-site .public-header.is-home:not(.is-scrolled) .public-menu-button { color:#fff; border-color:rgba(255,255,255,.7); background:rgba(25,25,25,.25); }
+ .public-site .public-header.is-home:not(.is-scrolled) .public-nav.open { color:#252522; }
+ .public-site .public-header.is-home:not(.is-scrolled) .public-nav.open .public-nav-login { color:#625f59!important; }
+ .public-site .public-hero-motion { min-height:720px; min-height:calc(100svh - 32px); margin-top:-72px; padding:135px 32px 92px; }
+ .public-site .public-hero-motion .public-hero-copy { max-width:620px; }
+}
+@media(max-width:480px) {
+ .public-site .public-hero-motion { padding:125px 20px 85px; min-height:650px; min-height:max(650px,calc(100svh - 32px)); }
+ .public-site .public-hero-motion h1 { font-size:38px; }
+ .public-site .public-hero-motion .public-lead { font-size:14px; }
+ .public-site .public-hero-motion .public-actions { gap:10px; }
+ .public-site .public-hero-motion .public-button { padding:0 16px; }
+}
+@media(prefers-reduced-motion:reduce) { .public-site .public-hero-motion video { display:none; } }
+
+/* A continuous warm-neutral canvas keeps neighboring sections connected. */
+.public-site {
+  --wash: #f1efe7;
+  --warm: #ebe9de;
+  --line: #dedbd0;
+  background: #f1efe7;
+}
+.public-site main:has(.public-hero-motion) {
+  background: linear-gradient(180deg, #edeae1 0%, #f4f2eb 28%, #f6f5ef 53%, #eeece3 77%, #f4f2eb 100%);
+}
+.public-site .public-notice { background: #eae8dd; color: #5c5a50; }
+.public-site .public-header { transition: background-color .4s ease, color .4s ease, box-shadow .4s ease, border-color .4s ease; }
+.public-site .public-header.is-scrolled { background: rgba(241,239,231,.97); border-color: #dedbd0; }
+.public-site .public-hero-motion .public-hero-image::after {
+  background: linear-gradient(180deg, rgba(19,23,22,.55) 0%, rgba(22,24,22,.16) 35%, rgba(19,21,20,.72) 84%, #edeae1 100%);
+}
+.public-site .public-values { border-color: #dcd8cd; }
+.public-site .public-about { background: transparent; }
+.public-site .public-gallery-section {
+  background: linear-gradient(180deg, transparent, rgba(225,221,208,.32) 22%, rgba(225,221,208,.32) 78%, transparent);
+}
+.public-site .public-steps {
+  background: linear-gradient(180deg, transparent, rgba(219,215,201,.38) 24%, rgba(219,215,201,.38) 76%, transparent);
+}
+.public-site .public-footer { background: #eae8de; }
+.public-site .public-rail-controls button { background: #f4f2eb; }

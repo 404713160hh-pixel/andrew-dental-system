@@ -22,6 +22,7 @@ type Resource = Clinic | Doctor | Service | Chair | Qualification;
 interface ResourceForm {
   name: string;
   address: string;
+  openingHours: string;
   phone: string;
   email: string;
   active: boolean;
@@ -107,6 +108,7 @@ function canEdit(row: Resource) {
 const defaults = (): ResourceForm => ({
   name: '',
   address: '',
+  openingHours: '',
   phone: '',
   email: '',
   active: true,
@@ -166,6 +168,8 @@ function open(row: Resource | null = null) {
       form.address = row.address;
       form.phone = row.phone;
       form.email = row.email;
+      form.description = row.description || '';
+      form.openingHours = row.openingHours || '';
     }
     if ('employeeNo' in row) {
       form.employeeNo = row.employeeNo;
@@ -230,6 +234,8 @@ async function save() {
       phone: form.phone.trim(),
       email: form.email.trim(),
       timezone: 'Asia/Shanghai',
+      description: form.description.trim() || null,
+      openingHours: form.openingHours.trim() || null,
     };
   }
   if (kind.value === 'doctors') {
@@ -505,7 +511,9 @@ onUnmounted(() => {
           ><el-form-item label="电子邮件" required
             ><el-input v-model="form.email" type="email" maxlength="180"
           /></el-form-item>
-          <p class="muted small span-two">门诊时区：中国标准时间（Asia/Shanghai）。</p></template
+          <el-form-item label="门诊简介" class="span-two"><el-input v-model="form.description" type="textarea" :rows="3" maxlength="2000" show-word-limit placeholder="可选，将显示在公开门诊详情" /></el-form-item>
+          <el-form-item label="营业时间" class="span-two"><el-input v-model="form.openingHours" maxlength="300" placeholder="可选，例如：周一至周六 09:00–18:00" /></el-form-item>
+          <p class="muted small span-two">门诊时区：中国标准时间（Asia/Shanghai）。简介与营业时间会公开展示，留空可清除。</p></template
         ><template v-if="kind === 'doctors'"
           ><el-form-item label="员工编号" required
             ><el-input v-model="form.employeeNo" maxlength="40" /></el-form-item

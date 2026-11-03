@@ -75,18 +75,30 @@ async function recogniseOriginalSeed(db:PoolClient){
 }
 
 const doctorProfiles=[
- {key:'seed:doctor:a',employeeNo:'D001',name:'陈知远（虚构医生）',bio:'在演示场景中侧重初诊信息核对，协助整理就诊问题与需要向面诊医生说明的情况。',focus:['初诊检查','口腔咨询'],services:['initial','consultation']},
- {key:'seed:doctor:b',employeeNo:'D002',name:'李若宁（虚构医生）',bio:'在演示场景中围绕清洁方式与预防面诊事项沟通，帮助就诊人列出需要现场确认的问题。',focus:['洁牙前评估','预防咨询'],services:['initial','consultation']},
- {key:'demo:doctor:c',employeeNo:'DEMO-ADC-2026-D03',name:'苏予安（虚构医生）',bio:'在演示场景中用易懂的语言向家庭说明儿童口腔评估环节，整理家长关注的预约与沟通事项。',focus:['儿童口腔咨询','家庭护理沟通'],services:['initial','consultation','child']},
- {key:'demo:doctor:d',employeeNo:'DEMO-ADC-2026-D04',name:'顾清和（虚构医生）',bio:'在演示场景中围绕根管后修复与材料选择的面诊沟通，整理方案范围和分项费用需要核对的内容。',focus:['修复治疗评估','根管与牙冠咨询'],services:['initial','consultation','restoration']},
- {key:'demo:doctor:e',employeeNo:'DEMO-ADC-2026-D05',name:'周沐辰（虚构医生）',bio:'在演示场景中整理缺牙修复评估时的沟通问题，提醒就诊人向面诊医生逐项核对检查安排与费用清单。',focus:['缺牙修复评估','种植方案咨询'],services:['initial','consultation','implant']},
- {key:'demo:doctor:f',employeeNo:'DEMO-ADC-2026-D06',name:'许知夏（虚构医生）',bio:'在演示场景中围绕矫治评估与复诊安排沟通，帮助就诊人整理方案解释、时间安排及费用范围的问题。',focus:['正畸初筛','矫治方案咨询'],services:['initial','consultation','orthodontic']},
+ {key:'seed:doctor:a',employeeNo:'D001',name:'陈知远（虚构医生）',bio:'侧重成人初诊与口腔健康评估。接诊时先了解主诉、既往情况和日常护理习惯，再说明基础检查流程与后续面诊安排；对紧张的初诊者，会预留时间回答问题。',focus:['初诊检查','口腔咨询'],services:['initial','consultation']},
+ {key:'seed:doctor:b',employeeNo:'D002',name:'李若宁（虚构医生）',bio:'关注日常口腔预防与清洁。会先了解牙龈敏感、清洁习惯和近期不适，再解释洁牙前评估流程，协助就诊人整理面诊时需要确认的问题。',focus:['洁牙前评估','预防咨询'],services:['initial','consultation']},
+ {key:'demo:doctor:c',employeeNo:'DEMO-ADC-2026-D03',name:'苏予安（虚构医生）',bio:'关注儿童初次就诊体验。倾向用容易理解的语言向孩子和家长介绍检查环节，并结合家庭关注的问题沟通口腔清洁、复查时间和预约准备。',focus:['儿童口腔咨询','家庭护理沟通'],services:['initial','consultation','child']},
+ {key:'demo:doctor:d',employeeNo:'DEMO-ADC-2026-D04',name:'顾清和（虚构医生）',bio:'侧重牙体修复相关咨询。会了解就诊人对牙齿缺损、根管后保护及美观的关切，协助整理材料、治疗步骤与分项费用需要面诊核对的内容。',focus:['修复治疗评估','根管与牙冠咨询'],services:['initial','consultation','restoration']},
+ {key:'demo:doctor:e',employeeNo:'DEMO-ADC-2026-D05',name:'周沐辰（虚构医生）',bio:'关注缺牙修复与种植评估沟通。接诊时会先了解缺牙情况和就诊目标，再说明检查安排及方案讨论的先后顺序，提醒核对费用明细与复诊安排。',focus:['缺牙修复评估','种植方案咨询'],services:['initial','consultation','implant']},
+ {key:'demo:doctor:f',employeeNo:'DEMO-ADC-2026-D06',name:'许知夏（虚构医生）',bio:'关注牙列与咬合方面的初步咨询。会了解就诊人对外观、清洁及时间安排的关注点，介绍正畸评估过程，并协助整理方案解释、复诊频率和费用范围。',focus:['正畸初筛','矫治方案咨询'],services:['initial','consultation','orthodontic']},
+ {key:'demo:doctor:g',employeeNo:'DEMO-ADC-2026-D07',name:'唐书禾（虚构医生）',bio:'关注儿童与家庭口腔护理。沟通时会先了解孩子的就诊经历和家长关心的问题，逐步介绍口腔检查、日常清洁和定期复查的安排。',focus:['儿童口腔咨询','家庭护理沟通'],services:['initial','consultation','child']},
+ {key:'demo:doctor:h',employeeNo:'DEMO-ADC-2026-D08',name:'林亦岚（虚构医生）',bio:'关注牙体修复与长期口腔维护。会围绕患者的主要困扰整理检查重点，说明修复评估的步骤，并协助梳理材料选择和后续复诊问题。',focus:['修复治疗评估','口腔维护咨询'],services:['initial','consultation','restoration']},
 ] as const;
+// Only upgrade the exact text produced by the previous demo seed. An edited
+// biography never matches this fingerprint and is left untouched.
+const previousDoctorBios:Record<string,string>={
+ 'seed:doctor:a':'在演示场景中侧重初诊信息核对，协助整理就诊问题与需要向面诊医生说明的情况。',
+ 'seed:doctor:b':'在演示场景中围绕清洁方式与预防面诊事项沟通，帮助就诊人列出需要现场确认的问题。',
+ 'demo:doctor:c':'在演示场景中用易懂的语言向家庭说明儿童口腔评估环节，整理家长关注的预约与沟通事项。',
+ 'demo:doctor:d':'在演示场景中围绕根管后修复与材料选择的面诊沟通，整理方案范围和分项费用需要核对的内容。',
+ 'demo:doctor:e':'在演示场景中整理缺牙修复评估时的沟通问题，提醒就诊人向面诊医生逐项核对检查安排与费用清单。',
+ 'demo:doctor:f':'在演示场景中围绕矫治评估与复诊安排沟通，帮助就诊人整理方案解释、时间安排及费用范围的问题。',
+};
 const newServiceProfiles=[
- {key:'child',name:'儿童口腔咨询（演示）',duration:30,price:5000},
- {key:'restoration',name:'修复治疗评估（演示）',duration:40,price:6000},
- {key:'implant',name:'种植方案咨询（演示）',duration:45,price:8000},
- {key:'orthodontic',name:'正畸方案咨询（演示）',duration:45,price:8000},
+ {key:'child',name:'儿童口腔咨询（演示）',duration:30,price:5000,description:'了解儿童口腔发育与日常清洁情况，沟通检查及家庭护理安排。'},
+ {key:'restoration',name:'修复治疗评估（演示）',duration:40,price:6000,description:'了解牙体缺损或修复需求，沟通检查步骤、材料选择和后续复诊问题。'},
+ {key:'implant',name:'种植方案咨询（演示）',duration:45,price:8000,description:'了解缺牙情况，沟通种植评估、检查项目及方案费用的确认方式。'},
+ {key:'orthodontic',name:'正畸方案咨询（演示）',duration:45,price:8000,description:'了解牙列和咬合方面的困扰，沟通正畸评估、复诊与方案选择。'},
 ] as const;
 const patientNames=['林晓','周宁','叶知秋','沈星禾','温予宁','宋晚晴','陆时安','江清越'];
 function patientProfile(index:number):PatientInput{
@@ -106,6 +118,13 @@ export async function enrichDemoData(pool:pg.Pool,environment:'development'|'tes
   await recogniseOriginalSeed(db);
   const get=async(key:string,kind:Kind)=>{const row=await marker(db,key,kind);ensure(row,'Required original demo provenance is missing');return row.record_id;};
   const clinicIds=[await get('seed:clinic:a','clinic'),await get('seed:clinic:b','clinic')];
+  // Only fill absent fields on identified demo clinics; edits remain intact.
+  const clinicProfiles=[
+   {description:'演示门诊：位于越秀区，提供初诊、儿童口腔与修复咨询的预约演示，设有接待区和独立诊疗空间。地址与联系方式均为虚构。',openingHours:'周一至周六 09:00–18:00；周日休息（虚构演示）'},
+   {description:'演示门诊：位于天河区，提供初诊、种植与正畸咨询的预约演示，展示候诊与诊疗协作流程。地址与联系方式均为虚构。',openingHours:'周二至周日 09:30–18:30；周一休息（虚构演示）'},
+  ];
+  for(let i=0;i<clinicIds.length;i++)await db.query(`UPDATE clinics SET description=coalesce(description,$2),opening_hours=coalesce(opening_hours,$3),row_version=row_version+1
+   WHERE id=$1 AND (description IS NULL OR opening_hours IS NULL)`,[clinicIds[i],clinicProfiles[i]!.description,clinicProfiles[i]!.openingHours]);
   const qualificationId=await get('seed:qualification','qualification');
   const hq=await one<{id:string}>(db,"SELECT id FROM users WHERE username='hq'");ensure(hq,'Synthetic headquarters account is missing');
   const serviceIds:Record<string,string>={initial:await get('seed:service:initial','service'),consultation:await get('seed:service:consultation','service')};
@@ -115,8 +134,10 @@ export async function enrichDemoData(pool:pg.Pool,environment:'development'|'tes
     const row=await one<{id:string}>(db,'INSERT INTO qualifications(name)VALUES($1)RETURNING id',[entry.name.replace('（演示）','')+'能力（虚构演示，不作真实执业资质）']);return row!.id;
    });
    serviceIds[entry.key]=await obtain(db,'demo:service:'+entry.key,'service',async()=>{
-    const row=await one<{id:string}>(db,'INSERT INTO services(name,description,duration_minutes,buffer_minutes,price_cents)VALUES($1,$2,$3,10,$4)RETURNING id',[entry.name,consultationNote,entry.duration,entry.price]);return row!.id;
+    const row=await one<{id:string}>(db,'INSERT INTO services(name,description,duration_minutes,buffer_minutes,price_cents)VALUES($1,$2,$3,10,$4)RETURNING id',[entry.name,entry.description+' '+consultationNote,entry.duration,entry.price]);return row!.id;
    });
+   await db.query('UPDATE services SET description=$2,row_version=row_version+1 WHERE id=$1 AND name=$3 AND description=$4',
+    [serviceIds[entry.key],entry.description+' '+consultationNote,entry.name,consultationNote]);
    for(const clinic of clinicIds)await db.query('INSERT INTO clinic_services(clinic_id,service_id)VALUES($1,$2)ON CONFLICT DO NOTHING',[clinic,serviceIds[entry.key]]);
    await db.query('INSERT INTO service_qualifications(service_id,qualification_id)VALUES($1,$2)ON CONFLICT DO NOTHING',[serviceIds[entry.key],qualificationId]);
    await db.query('INSERT INTO service_qualifications(service_id,qualification_id)VALUES($1,$2)ON CONFLICT DO NOTHING',[serviceIds[entry.key],specializationIds[entry.key]]);
@@ -139,9 +160,12 @@ export async function enrichDemoData(pool:pg.Pool,environment:'development'|'tes
      [row.record_id,profile.name,'0000000200'+(i+1),profile.focus.join('、'),biography,[...profile.focus]]);
     await db.query('UPDATE demo_seed_records SET enriched_at=clock_timestamp()WHERE record_key=$1',[profile.key]);
    }
+   const previousBio=previousDoctorBios[profile.key];
+   if(previousBio){const suffix=` ${profile.name}是课程演示中的虚构人物，以上内容不代表真实执照、学历、任职或治疗履历，也不构成具体诊疗建议。`;
+    await db.query('UPDATE staff SET bio=$2,row_version=row_version+1 WHERE id=$1 AND is_demo AND name=$3 AND bio=$4',[row.record_id,biography,profile.name,previousBio+suffix]);}
    doctorIds.push(row.record_id);
    await db.query('INSERT INTO dentist_qualifications(dentist_id,qualification_id,valid_from)VALUES($1,$2,date_trunc(\'day\',clock_timestamp())-interval \'1 day\')ON CONFLICT DO NOTHING',[row.record_id,qualificationId]);
-   if(i>=2)await db.query('INSERT INTO dentist_qualifications(dentist_id,qualification_id,valid_from)VALUES($1,$2,date_trunc(\'day\',clock_timestamp())-interval \'1 day\')ON CONFLICT DO NOTHING',[row.record_id,specializationIds[newServiceProfiles[i-2]!.key]]);
+   for(const service of profile.services){const qualification=specializationIds[service];if(qualification)await db.query('INSERT INTO dentist_qualifications(dentist_id,qualification_id,valid_from)VALUES($1,$2,date_trunc(\'day\',clock_timestamp())-interval \'1 day\')ON CONFLICT DO NOTHING',[row.record_id,qualification]);}
   }
   const patientIds:string[]=[];
   for(let i=0;i<8;i++){

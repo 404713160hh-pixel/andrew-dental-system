@@ -105,7 +105,7 @@ async function pageFor(account) {
   const page = await context.newPage();
   page.on('pageerror', (error) => pageErrors.push(error.message));
   await page.goto(admin + '/login');
-  await expect(page.getByRole('heading', { name: '登录预约工作台' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '欢迎回来' })).toBeVisible();
   await page.locator('.demo-login .el-select').click();
   await page
     .getByRole('option', { name: `${account.displayName} · ${account.username}`, exact: true })

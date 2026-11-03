@@ -42,6 +42,7 @@ Page({
   reasonInput(event: WechatMiniprogram.CustomEvent<{ value: string }>) { this.setData({ reason: event.detail.value }); },
   toggleCancel() { this.setData({ cancelling: !this.data.cancelling, reason: '', error: '' }); },
   async cancel() {
+    if (!requireLogin()) { this.setData({ ownerId: '', appointment: null, events: [], success: false, successTitle: '', successMessage: '', changeAllowed: false }); return; }
     const item = this.data.appointment; if (!item || this.data.loading || this.data.busy || this.data.pending || !this.data.changeAllowed) return;
     if (!this.data.reason.trim()) { this.setData({ error: '请填写取消原因，原预约记录会保留。' }); return; }
     this.setData({ busy: true, error: '', success: false, successTitle: '', successMessage: '' });
@@ -49,6 +50,7 @@ Page({
     catch (error) { this.setData({ error: errorMessage(error) }); } finally { this.setData({ busy: false, pending: Boolean(pendingCommand()) }); }
   },
   reschedule() {
+    if (!requireLogin()) { this.setData({ ownerId: '', appointment: null, events: [], success: false, successTitle: '', successMessage: '', changeAllowed: false }); return; }
     const item = this.data.appointment; if (!item || this.data.loading || this.data.pending || !this.data.changeAllowed) return;
     wx.navigateTo({ url: '/pages/booking/index?appointmentId=' + encodeURIComponent(item.id) + '&version=' + item.rowVersion + '&clinicId=' + encodeURIComponent(item.clinicId) + '&serviceId=' + encodeURIComponent(item.serviceId) + '&doctorId=' + encodeURIComponent(item.doctorId) });
   },

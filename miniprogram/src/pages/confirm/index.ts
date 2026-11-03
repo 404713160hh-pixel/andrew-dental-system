@@ -24,13 +24,14 @@ Page({
     const ownerId = session()?.user.id; if (!ownerId) return;
     this.setData({ loading: true, error: '' });
     try { const patient = await api<Patient>('/patients/me'); if (session()?.user.id === ownerId && this.data.ownerId === ownerId) this.setData({ patient, allergyLabel: allergyLabels[patient.allergyStatus] }); }
-    catch (error) { if (this.data.ownerId === ownerId) this.setData({ error: errorMessage(error), patient: null }); }
+    catch (error) { if (this.data.ownerId === ownerId) this.setData({ error: errorMessage(error), patient: null, ...(!session() ? { ownerId: '', context: null, patientConfirmed: false, rulesAccepted: false, reason: '', loading: false, busy: false, pending: false } : {}) }); }
     finally { if (this.data.ownerId === ownerId) this.setData({ loading: false }); }
   },
   checks(event: WechatMiniprogram.CustomEvent<{ value: string[] }>) { this.setData({ patientConfirmed: event.detail.value.includes('patient'), rulesAccepted: event.detail.value.includes('rules') }); },
   reasonInput(event: WechatMiniprogram.CustomEvent<{ value: string }>) { this.setData({ reason: event.detail.value }); },
   async submit() {
     if (this.data.busy || this.data.pending) return;
+    if (!requireLogin()) { this.setData({ ownerId: '', patient: null, context: null, patientConfirmed: false, rulesAccepted: false, reason: '' }); return; }
     const context = getHold(); if (!context || Date.parse(context.hold.expiresAt) <= Date.now()) { this.setData({ expired: true, error: '短时占位已到期，请返回重新查询时段。' }); return; }
     if (!this.data.patient) { this.setData({ error: '请先读取本人资料。' }); return; }
     const validation = profileError(this.data.patient); if (validation) { this.setData({ error: validation }); return; }

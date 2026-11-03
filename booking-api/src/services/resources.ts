@@ -14,7 +14,7 @@ const schemas={clinics:clinicInput,doctors:doctorInput,services:serviceInput,cha
 const tables={clinics:'clinics',doctors:'staff',services:'services',chairs:'chairs',qualifications:'qualifications'};
 const reads={clinics:clinicSelect,doctors:doctorSelect,services:serviceSelect,chairs:chairSelect,qualifications:qualificationSelect};
 const fields:Record<Resource,Record<string,string>>={
- clinics:{name:'name',address:'address',phone:'phone',email:'email',active:'active',timezone:'timezone'},
+ clinics:{name:'name',address:'address',phone:'phone',email:'email',active:'active',timezone:'timezone',description:'description',openingHours:'opening_hours'},
  doctors:{employeeNo:'employee_no',name:'name',phone:'phone',specialty:'specialty',active:'active'},
  services:{name:'name',description:'description',durationMinutes:'duration_minutes',bufferMinutes:'buffer_minutes',priceCents:'price_cents',unit:'unit',active:'active'},
  chairs:{clinicId:'clinic_id',name:'name',active:'active'},qualifications:{name:'name',active:'active'}
@@ -40,7 +40,8 @@ export async function saveResource(pool:pg.Pool,user:Principal,kind:Resource,raw
    const structural=kind!=='clinics'||data.active===false;
    requireThat(!structural||!await futureUse(db,kind,id),409,'FUTURE_BOOKINGS_EXIST','已有有效预约或占位，请先处理后再调整该资源');
   }
-  const entries=Object.entries(fields[kind]);const values=entries.map(([key])=>data[key]);
+  // Old clients omit these optional fields; do not erase values they cannot edit.
+  const entries=Object.entries(fields[kind]).filter(([key])=>kind!=='clinics'||!['description','openingHours'].includes(key)||data[key]!==undefined);const values=entries.map(([key])=>data[key]);
   let result:{id:string}|undefined;
   if(id){values.push(id);result=await one(db,`UPDATE ${table} SET ${entries.map(([,column],i)=>`${column}=$${i+1}`).join(',')},row_version=row_version+1 WHERE id=$${values.length} RETURNING id`,values);}
   else result=await one(db,`INSERT INTO ${table}(${entries.map(([,column])=>column).join(',')}) VALUES(${values.map((_,i)=>'$'+(i+1)).join(',')}) RETURNING id`,values);

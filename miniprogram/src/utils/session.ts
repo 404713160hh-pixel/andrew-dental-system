@@ -7,7 +7,10 @@ export function restoreSession(): LoginResult | null {
   if (!current) wx.removeStorageSync(key);
   return current;
 }
-export function session(): LoginResult | null { return current ?? restoreSession(); }
+export function session(): LoginResult | null {
+  if (current && !(Date.parse(current.expiresAt) > Date.now())) clearSession();
+  return current ?? restoreSession();
+}
 export function setSession(value: LoginResult): void { current = value; wx.setStorageSync(key, value); }
 export function clearSession(): void { current = null; wx.removeStorageSync(key); }
 export function requireLogin(): boolean {

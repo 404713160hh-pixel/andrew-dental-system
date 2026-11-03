@@ -1,0 +1,139 @@
+/* Andrew Dental: warm-neutral brand tokens, shared by all staff views. */
+:root {
+  --brand-ink: #252522; --brand-dark: #292d30; --brand-muted: #77746f;
+  --brand-line: #eae7e1; --brand-paper: #ffffff; --brand-soft: #fcfbf9;
+  --brand-tint: #f7f5f1; --brand-gold: #b79a6b; --brand-gold-hover: #9e8257;
+  --brand-gold-light: #f6f0e6; --brand-radius: 7px;
+  --el-color-primary: #292d30; --el-color-primary-light-3: #686a69;
+  --el-color-primary-light-5: #989896; --el-color-primary-light-7: #c8c7c3;
+  --el-color-primary-light-8: #deddd9; --el-color-primary-light-9: #f5f4f1;
+  --el-color-primary-dark-2: #41464a;
+  --el-color-success: #8c7859; --el-color-success-light-9: #f6f0e6;
+  --el-color-warning: #a6844f; --el-color-warning-light-9: #faf5ea;
+  --el-color-info: #85817b; --el-color-info-light-9: #f3f2ef;
+  --el-color-danger: #ab6861; --el-color-danger-light-9: #faf1ef;
+  --el-text-color-primary: #252522; --el-text-color-regular: #625f5a;
+  --el-border-color: #eae7e1; --el-fill-color-light: #f7f5f1;
+  --el-table-header-bg-color: #fcfbf9; --el-border-radius-base: 7px;
+  font-family: Inter, 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  background: var(--brand-paper); color: var(--brand-ink);
+}
+body { color: var(--brand-ink); background: var(--brand-paper); }
+::selection { background: #eee3d1; }
+button:focus-visible, a:focus-visible { outline-color: var(--brand-gold); }
+.login-page { grid-template-columns: minmax(0, 1.1fr) minmax(420px, .9fr); background: #fff; }
+.login-story { min-height: 100vh; padding: 45px clamp(32px, 5vw, 78px) 30px; background: #fcfbf9; color: var(--brand-ink); }
+.login-story::after { display: none; }
+.brand { font-family: Georgia, 'Times New Roman', 'Noto Serif SC', serif; letter-spacing: 2.5px; }
+.brand-mark, .sidebar .brand-mark, .login-story .brand-mark { color: #fff; background: var(--brand-dark); border-radius: 5px; box-shadow: none; font-family: Georgia, serif; }
+.brand-mark > span, .login-story .brand-mark > span { color: #d8c09b; }
+.brand-sub, .login-story .brand-sub { color: var(--brand-muted); font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif; letter-spacing: .08em; }
+.login-story-content { justify-content: center; margin-top: 40px; max-width: 680px; }
+.login-story .eyebrow { color: var(--brand-gold-hover); letter-spacing: 2.4px; margin-bottom: 16px; }
+.login-story h1 { color: var(--brand-ink); font-family: 'Noto Serif SC', 'Songti SC', SimSun, serif; font-size: clamp(32px, 3vw, 46px); line-height: 1.5; font-weight: 500; letter-spacing: .02em; }
+.login-story-content > p { color: var(--brand-muted); font-size: 14px; line-height: 1.95; margin-top: 15px; }
+.clinic-visual { position: relative; min-height: 250px; height: clamp(250px, 31vh, 340px); margin-top: 30px; border-radius: 4px; overflow: hidden; background: url('./assets/clinic-hero.jpg') center 52% / cover no-repeat, #f7f5f1; }
+.clinic-visual-caption { position: absolute; bottom: 0; right: 0; display: flex; gap: 12px; align-items: center; padding: 14px 18px; background: #fffffff2; color: var(--brand-ink); }
+.caption-line { display: block; width: 24px; height: 1px; background: var(--brand-gold); }
+.clinic-visual-caption strong, .clinic-visual-caption small { display: block; }
+.clinic-visual-caption strong { font-size: 12px; font-weight: 500; }
+.clinic-visual-caption small { margin-top: 4px; font-size: 10px; color: var(--brand-muted); }
+.story-features { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 21px; color: var(--brand-muted); font-size: 11px; }
+.story-features i { display: inline-block; width: 5px; height: 5px; margin: 0 5px 2px 0; border-radius: 50%; background: var(--brand-gold); }
+.login-foot { color: #96918a; }
+.login-form-section { background: #fff; padding: 60px; }
+.login-form-wrap { max-width: 405px; padding: 12px 0; }
+.login-form-wrap .overline { font-size: 10px; letter-spacing: 1.6px; color: var(--brand-gold-hover); }
+.login-form-wrap .overline span { color: #bbb4aa; }
+.login-form-wrap h2 { color: var(--brand-ink); font-family: 'Noto Serif SC', 'Songti SC', SimSun, serif; font-size: 32px; font-weight: 500; margin: 16px 0 8px; }
+.login-form-wrap > .muted { color: var(--brand-muted); font-size: 13px; margin-bottom: 32px; }
+.login-form-wrap .el-form-item__label { color: #504e49; font-weight: 500; }
+.login-form-wrap .el-input__wrapper { min-height: 50px; background: #fff; border-radius: var(--brand-radius); box-shadow: 0 0 0 1px #dedbd5 inset; }
+.login-form-wrap .el-input__wrapper.is-focus { box-shadow: 0 0 0 2px var(--brand-gold) inset; }
+.login-form-wrap .el-button--large { height: 52px; font-size: 14px; font-weight: 500; border-radius: var(--brand-radius); }
+.demo-login { background: var(--brand-soft); border-color: var(--brand-line); border-radius: var(--brand-radius); }
+.login-security { color: #89857e; font-size: 11px; }
+.app-shell { background: var(--brand-soft); }
+.sidebar { background: #fff; border-color: var(--brand-line); box-shadow: none; }
+.sidebar nav > a { border-radius: 6px; color: #716e69; transition: background .2s, color .2s, transform .2s; }
+.sidebar nav > a:hover { background: var(--brand-soft); color: var(--brand-ink); transform: translateX(2px); }
+.sidebar nav > a.router-link-active { color: var(--brand-ink); background: var(--brand-gold-light); }
+.sidebar nav > a.router-link-active::before { background: var(--brand-gold); }
+.account { border: 1px solid var(--brand-line); background: var(--brand-soft); border-radius: 7px; transition: background .2s; }
+.account:hover { background: var(--brand-tint); }
+.avatar, .mini-avatar, .patient-avatar { background: var(--brand-tint); color: #756e63; }
+.live-dot { background: var(--brand-gold); box-shadow: 0 0 0 4px #b79a6b1a; }
+.topbar { background: #fff; border-color: var(--brand-line); }
+.role-pill { padding: 7px 12px; color: #746552; background: var(--brand-gold-light); border-radius: 5px; }
+.page-heading .eyebrow { color: var(--brand-gold-hover); }
+.page-heading h1 { color: var(--brand-ink); font-family: 'Noto Serif SC', 'Songti SC', SimSun, serif; font-weight: 600; }
+.page-heading h1 + p { color: var(--brand-muted); }
+.panel, .schedule-navigation { border-color: var(--brand-line); box-shadow: none; border-radius: 8px; }
+.stat-card { position: relative; overflow: hidden; background: #fff; border-color: var(--brand-line); border-radius: 8px; box-shadow: none; }
+.stat-card > span, .stat-card > p { color: var(--brand-muted); }
+.stat-card > strong { color: var(--brand-ink); }
+.stat-note { background: var(--brand-soft); }
+.stat-note > .el-icon { background: var(--brand-gold-light); color: var(--brand-gold-hover); border-radius: 6px; }
+.stat-note strong { color: #57534b; }
+.stat-note p { color: var(--brand-muted); }
+.el-table th.el-table__cell { background: var(--brand-soft); color: #77746f; font-weight: 600; }
+.el-table .el-table__row { transition: background-color .2s; }
+.el-button { transition: background-color .18s, border-color .18s, color .18s, transform .18s; }
+.el-button:not(.is-disabled):active { transform: translateY(1px) scale(.99); }
+.el-button--primary:not(.is-disabled):hover { box-shadow: none; }
+.schedule-date-button { border-radius: 6px; border-color: var(--brand-line); background: #fff; color: var(--brand-muted); }
+.schedule-date-button strong { color: var(--brand-ink); }
+.schedule-date-button:hover { background: var(--brand-soft); border-color: #cfc3b0; }
+.schedule-date-button.is-selected { background: var(--brand-dark); border-color: var(--brand-dark); color: #f3eee6; box-shadow: none; }
+.schedule-date-button.is-selected strong { color: #fff; }
+.schedule-date-button.is-today:not(.is-selected) { border-color: var(--brand-gold); }
+.schedule-filter-summary, .resource-filter-summary { background: var(--brand-soft); border-color: var(--brand-line); color: #746f67; border-radius: 6px; }
+.schedule-scope-badge, .summary-status.ready { color: #826b4c; background: var(--brand-gold-light); }
+.schedule-agenda-group, .schedule-shift-card { border-color: var(--brand-line); border-radius: 7px; box-shadow: none; }
+.schedule-agenda-header { background: var(--brand-soft); border-color: var(--brand-line); color: var(--brand-ink); }
+.schedule-agenda-item { color: #57534b; transition: border-color .2s, background-color .2s, transform .2s; }
+button.schedule-agenda-item:hover { background: var(--brand-soft); transform: translateX(2px); }
+.schedule-agenda-time, .schedule-agenda-content strong, .schedule-shift-card h3 { color: var(--brand-ink); }
+.schedule-agenda-content { border-left-color: var(--brand-gold); }
+.is-cancelled .schedule-agenda-content { border-left-color: #c8c4bd; }
+.is-rescheduled .schedule-agenda-content { border-left-color: #a99a83; }
+.step-number { background: var(--brand-gold-light); color: #846d4f; border-radius: 6px; }
+.selected-patient, .countdown { background: var(--brand-soft); border-color: var(--brand-line); color: #786a54; }
+.slot-button { border-color: var(--brand-line); color: var(--brand-muted); border-radius: 6px; }
+.slot-button > strong { color: var(--brand-ink); }
+.slot-button:hover, .slot-button.is-selected { background: var(--brand-gold-light); border-color: var(--brand-gold); box-shadow: 0 0 0 1px var(--brand-gold); }
+.page > * { animation: workspace-enter .22s ease-out both; }
+@keyframes workspace-enter { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 980px) {
+  .login-page { grid-template-columns: 1fr 1fr; }
+  .login-story { padding: 34px 30px; }
+  .login-form-section { padding: 40px; }
+  .login-story h1 { font-size: 29px; }
+}
+@media (max-width: 720px) {
+  .login-page { display: block; }
+  .login-story { height: auto; min-height: 0; padding: 25px 25px 22px; }
+  .login-story-content { margin: 32px 0 0; }
+  .login-story h1 { font-size: 26px; }
+  .login-story-content > p { font-size: 12px; }
+  .clinic-visual { height: 150px; min-height: 150px; margin-top: 20px; }
+  .clinic-visual-caption { padding: 10px 12px; }
+  .story-features { gap: 9px 15px; margin-top: 15px; font-size: 10px; }
+  .login-form-section { padding: 32px 25px 45px; }
+  .login-form-wrap h2 { font-size: 27px; }
+  .login-form-wrap > .muted { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page > * { animation: none; }
+  .sidebar nav > a, .el-button, .schedule-agenda-item { transition: none; }
+}
+/* Keep supporting information and state tags readable in the neutral palette. */
+:root {
+  --el-color-success-light-3: #a6987f;
+  --el-color-success-light-5: #c4b9a5;
+  --el-color-success-light-7: #e4dbcc;
+  --el-color-success-light-8: #eee8dd;
+  --el-color-info-light-8: #e8e6e2;
+}
+.muted, .panel-heading p, .schedule-query-note, .stat-card > span, .stat-card > p { color: #77746f; }
+.sidebar-note > p, .sidebar-note > small, .brand-sub, .sidebar .nav-label { color: #85817a; }

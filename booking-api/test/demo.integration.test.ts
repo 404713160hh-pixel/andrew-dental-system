@@ -132,15 +132,17 @@ test('demo migration creates schema only and production command cannot populate 
   assert.deepEqual(await counts(), before);
 });
 
-test('development enrichment creates six fictional doctors and eight fictional patients without adopting ordinary names', async () => {
+test('development enrichment creates eight fictional doctors and eight fictional patients without adopting ordinary names', async () => {
   firstResult = await enrichDemoData(db, 'test');
-  assert.equal(firstResult.fictional, true); assert.equal(firstResult.doctors, 6); assert.equal(firstResult.patients, 8);
+  assert.equal(firstResult.fictional, true); assert.equal(firstResult.doctors, 8); assert.equal(firstResult.patients, 8);
   assert.equal(firstResult.consultationServices, 6); assert.equal(firstResult.treatmentReferences, 24); assert.equal(firstResult.referencesAdded, 24);
   assert.equal(firstResult.referenceYear, 2026); assert.equal(firstResult.sourceLabel, sourceLabel);
   const doctors = (await db.query('SELECT * FROM staff WHERE is_demo ORDER BY id')).rows;
   const patients = (await db.query('SELECT * FROM patients WHERE is_demo ORDER BY id')).rows;
-  assert.equal(doctors.length, 6); assert.equal(patients.length, 8);
+  assert.equal(doctors.length, 8); assert.equal(patients.length, 8);
   assert.ok(doctors.every(item => item.name.includes('虚构医生') && item.bio.includes('虚构') && item.focus_areas.length));
+  assert.equal(new Set(doctors.map(item => item.name)).size, 8);
+  assert.ok(doctors.every(item => item.bio.length >= 70));
   assert.ok(patients.every(item => item.name.includes('虚构患者') && item.email.endsWith('@example.invalid')));
   assert.deepEqual(await ordinarySnapshot(), ordinaryBefore);
   assert.equal(Number((await db.query('SELECT count(*) AS n FROM demo_seed_records WHERE record_id=ANY($1::uuid[])', [[ordinaryPatientId, ordinaryDoctorId, ordinaryServiceId]])).rows[0].n), 0);
@@ -237,16 +239,20 @@ test('an explicitly cancelled demo shift is not recreated or reactivated by repe
   assert.deepEqual(overlapping, [{ id: shift.id, status: 'cancelled' }]);
 });
 
-test('manual edits to enriched demo doctors and services are preserved on rerun', async () => {
+test('manual edits to demo doctors, services and clinics are preserved on rerun', async () => {
   const doctor = (await db.query("SELECT record_id FROM demo_seed_records WHERE record_key='demo:doctor:d'")).rows[0].record_id;
   const service = (await db.query("SELECT record_id FROM demo_seed_records WHERE record_key='demo:service:restoration'")).rows[0].record_id;
+  const clinic = (await db.query("SELECT record_id FROM demo_seed_records WHERE record_key='seed:clinic:a'")).rows[0].record_id;
   await db.query("UPDATE staff SET bio='人工调整的演示简介',row_version=row_version+1 WHERE id=$1", [doctor]);
   await db.query('UPDATE services SET price_cents=7654,row_version=row_version+1 WHERE id=$1', [service]);
+  await db.query("UPDATE clinics SET description='人工调整的门诊简介',opening_hours='人工调整的营业时间',row_version=row_version+1 WHERE id=$1", [clinic]);
   const beforeDoctor = (await db.query('SELECT to_jsonb(s) AS row FROM staff s WHERE id=$1', [doctor])).rows[0].row;
   const beforeService = (await db.query('SELECT to_jsonb(s) AS row FROM services s WHERE id=$1', [service])).rows[0].row;
+  const beforeClinic = (await db.query('SELECT to_jsonb(c) AS row FROM clinics c WHERE id=$1', [clinic])).rows[0].row;
   await enrichDemoData(db, 'test');
   assert.deepEqual((await db.query('SELECT to_jsonb(s) AS row FROM staff s WHERE id=$1', [doctor])).rows[0].row, beforeDoctor);
   assert.deepEqual((await db.query('SELECT to_jsonb(s) AS row FROM services s WHERE id=$1', [service])).rows[0].row, beforeService);
+  assert.deepEqual((await db.query('SELECT to_jsonb(c) AS row FROM clinics c WHERE id=$1', [clinic])).rows[0].row, beforeClinic);
   assert.deepEqual(await appointmentSnapshot(), appointmentBefore);
 });
 
@@ -255,7 +261,7 @@ test('pre-003 synthetic seed without provenance is recognised by its complete re
     assert.equal(Number((await legacy.query('SELECT count(*) AS n FROM demo_seed_records')).rows[0].n), 0);
     const originalPatients = (await legacy.query('SELECT id FROM patients ORDER BY id')).rows.map(row => row.id);
     const result = await enrichDemoData(legacy, 'test');
-    assert.equal(result.doctors, 6); assert.equal(result.patients, 8); assert.equal(result.referencesAdded, 24);
+    assert.equal(result.doctors, 8); assert.equal(result.patients, 8); assert.equal(result.referencesAdded, 24);
     assert.equal(Number((await legacy.query("SELECT count(*) AS n FROM demo_seed_records WHERE record_key LIKE 'seed:%'")).rows[0].n), 9);
     for (const id of originalPatients) assert.equal((await legacy.query('SELECT is_demo FROM patients WHERE id=$1', [id])).rows[0].is_demo, true);
     const second = await enrichDemoData(legacy, 'test'); assert.equal(second.referencesAdded, 0); assert.equal(second.addedShifts, 0);

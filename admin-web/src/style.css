@@ -1,24 +1,24 @@
 :root {
   font-family: Inter, 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
-  color: #203c4a;
-  background: #f4f7fb;
+  color: #292d30;
+  background: #f7f5f1;
   font-synthesis: none;
-  --el-color-primary: #157d8c;
-  --el-color-primary-light-3: #56a4ae;
-  --el-color-primary-light-5: #8bc3c9;
-  --el-color-primary-light-7: #bfdee2;
-  --el-color-primary-light-8: #d5ebee;
-  --el-color-primary-light-9: #edf7f8;
-  --el-color-primary-dark-2: #106672;
-  --el-color-success: #369a7a;
-  --el-color-success-light-9: #edf8f3;
+  --el-color-primary: #494743;
+  --el-color-primary-light-3: #77716a;
+  --el-color-primary-light-5: #9b9388;
+  --el-color-primary-light-7: #e4ded4;
+  --el-color-primary-light-8: #e4ded4;
+  --el-color-primary-light-9: #f7f5f1;
+  --el-color-primary-dark-2: #494743;
+  --el-color-success: #77716a;
+  --el-color-success-light-9: #f7f5f1;
   --el-border-radius-base: 8px;
-  --el-text-color-primary: #203c4a;
-  --el-text-color-regular: #526875;
-  --el-border-color: #dce6eb;
-  --el-fill-color-light: #f5f8fa;
+  --el-text-color-primary: #292d30;
+  --el-text-color-regular: #77716a;
+  --el-border-color: #e4ded4;
+  --el-fill-color-light: #f7f5f1;
   --el-font-size-base: 14px;
-  --el-table-header-bg-color: #f6f9fb;
+  --el-table-header-bg-color: #f7f5f1;
 }
 * {
   box-sizing: border-box;
@@ -66,14 +66,14 @@ p {
 }
 button:focus-visible,
 a:focus-visible {
-  outline: 3px solid #64bdc9;
+  outline: 3px solid #9b9388;
   outline-offset: 3px;
 }
 ::selection {
-  background: #bce6e8;
+  background: #e4ded4;
 }
 .muted {
-  color: #7b8d98;
+  color: #9b9388;
 }
 .small {
   font-size: 12px;
@@ -106,13 +106,13 @@ a:focus-visible {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 2px;
-  color: #7d939e;
+  color: #9b9388;
   margin-bottom: 7px;
 }
 .overline {
   font-size: 13px;
   letter-spacing: 2px;
-  color: #168493;
+  color: #494743;
   font-weight: 600;
 }
 .button-row {
@@ -128,7 +128,7 @@ a:focus-visible {
 }
 .el-input__wrapper,
 .el-select__wrapper {
-  box-shadow: 0 0 0 1px #dce6eb inset;
+  box-shadow: 0 0 0 1px #e4ded4 inset;
 }
 .el-form-item__label {
   font-size: 13px;
@@ -154,12 +154,12 @@ a:focus-visible {
   line-height: 1.8;
 }
 .el-table {
-  --el-table-border-color: #edf1f4;
+  --el-table-border-color: #f7f5f1;
   font-size: 13px;
 }
 .el-table th.el-table__cell {
-  background: #f7fafb;
-  color: #7c8f99;
+  background: #f7f5f1;
+  color: #9b9388;
   font-size: 12px;
   font-weight: 500;
   height: 48px;
@@ -220,7 +220,7 @@ a:focus-visible {
   position: fixed;
   inset: 0 auto 0 0;
   background: #fff;
-  border-right: 1px solid #e6edf1;
+  border-right: 1px solid #f7f5f1;
   padding: 28px 20px 16px;
   display: flex;
   flex-direction: column;
@@ -243,7 +243,7 @@ a:focus-visible {
   justify-content: center;
   font-size: 27px;
   color: #fff;
-  background: #157d8c;
+  background: #494743;
   border-radius: 13px 13px 13px 4px;
   position: relative;
   letter-spacing: -2px;
@@ -253,7 +253,7 @@ a:focus-visible {
   font-size: 15px;
   right: 4px;
   top: 2px;
-  color: #8cdbc8;
+  color: #c8bfb1;
   line-height: 1;
 }
 .brand-sub {
@@ -261,11 +261,11 @@ a:focus-visible {
   font-size: 9px;
   font-weight: 500;
   letter-spacing: 1px;
-  color: #7c929d;
+  color: #9b9388;
   margin-top: 5px;
 }
 .nav-label {
-  color: #9aa9b2;
+  color: #9b9388;
   font-size: 10px;
   letter-spacing: 1px;
   padding: 30px 14px 10px;
@@ -280,7 +280,7 @@ a:focus-visible {
   align-items: center;
   gap: 13px;
   padding: 13px 15px;
-  color: #667f8b;
+  color: #77716a;
   border-radius: 8px;
   font-size: 13px;
   transition:
@@ -291,12 +291,12 @@ a:focus-visible {
   font-size: 18px;
 }
 .sidebar nav > a:hover {
-  background: #f3f8f9;
-  color: #157d8c;
+  background: #f7f5f1;
+  color: #494743;
 }
 .sidebar nav > a.router-link-active {
-  background: #eaf5f5;
-  color: #157d8c;
+  background: #f7f5f1;
+  color: #494743;
   font-weight: 650;
   position: relative;
 }
@@ -306,7 +306,7 @@ a:focus-visible {
   width: 3px;
   height: 20px;
   left: -20px;
-  background: #218b96;
+  background: #494743;
   border-radius: 0 4px 4px 0;
 }
 .sidebar nav .nav-label {
@@ -316,17 +316,17 @@ a:focus-visible {
   margin-top: auto;
   padding: 28px 12px 22px;
   font-size: 11px;
-  color: #647f8c;
+  color: #77716a;
   line-height: 1.8;
 }
 .sidebar-note > p {
   font-size: 10px;
-  color: #9cabb3;
+  color: #9b9388;
   margin: 7px 0;
 }
 .sidebar-note > small {
   font-size: 10px;
-  color: #9cabb3;
+  color: #9b9388;
   display: block;
   line-height: 1.9;
 }
@@ -334,10 +334,10 @@ a:focus-visible {
   display: inline-block;
   width: 7px;
   height: 7px;
-  background: #40b48b;
+  background: #77716a;
   border-radius: 50%;
   margin-right: 7px;
-  box-shadow: 0 0 0 4px #40b48b12;
+  box-shadow: 0 0 0 4px #77716a12;
 }
 .account {
   display: flex;
@@ -345,10 +345,10 @@ a:focus-visible {
   text-align: left;
   gap: 10px;
   border: 0;
-  background: #f6f9fa;
+  background: #f7f5f1;
   border-radius: 10px;
   padding: 12px;
-  color: #3d5968;
+  color: #494743;
   flex-shrink: 0;
   width: 100%;
   font-size: 12px;
@@ -359,21 +359,21 @@ a:focus-visible {
   justify-content: center;
   min-width: 34px;
   height: 34px;
-  background: #e1edf1;
+  background: #f7f5f1;
   border-radius: 10px;
-  color: #527b8e;
+  color: #77716a;
   font-size: 12px;
   font-weight: 600;
 }
 .account small {
   display: block;
   font-size: 9px;
-  color: #91a3ae;
+  color: #9b9388;
   margin-top: 4px;
 }
 .account > .el-icon {
   margin-left: auto;
-  color: #a3b2ba;
+  color: #c8bfb1;
 }
 .workspace {
   margin-left: 238px;
@@ -383,7 +383,7 @@ a:focus-visible {
 .topbar {
   height: 72px;
   padding: 0 36px;
-  border-bottom: 1px solid #e7eef1;
+  border-bottom: 1px solid #f7f5f1;
   background: #fff;
   display: flex;
   align-items: center;
@@ -395,15 +395,15 @@ a:focus-visible {
   align-items: center;
   gap: 13px;
   font-size: 12px;
-  color: #9baab3;
+  color: #9b9388;
 }
 .breadcrumb strong {
-  color: #506d7b;
+  color: #77716a;
   font-weight: 500;
 }
 .breadcrumb > .el-icon {
   font-size: 10px;
-  color: #c4cfd5;
+  color: #e4ded4;
 }
 .topbar-right {
   display: flex;
@@ -414,15 +414,15 @@ a:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  border: 1px solid #dce6eb;
+  border: 1px solid #e4ded4;
   border-radius: 9px;
   padding: 8px 11px;
   background: #fff;
-  color: #587481;
+  color: #77716a;
   font-size: 12px;
   white-space: nowrap;
 }
-.density-toggle:hover, .density-toggle[aria-pressed="true"] { background: #edf6f8; color: #157d8c; border-color: #b3d5da; }
+.density-toggle:hover, .density-toggle[aria-pressed="true"] { background: #f7f5f1; color: #494743; border-color: #c8bfb1; }
 .density-icon { font-size: 18px; line-height: 1; }
 .mobile-menu, .navigation-backdrop { display: none; }
 .is-compact .el-table td.el-table__cell { height: 48px; }
@@ -430,7 +430,7 @@ a:focus-visible {
 .is-compact .schedule-agenda-item { padding-top: 12px; padding-bottom: 12px; }
 .role-pill {
   font-size: 11px;
-  color: #718895;
+  color: #77716a;
   white-space: nowrap;
 }
 .topbar .el-button {
@@ -451,7 +451,7 @@ a:focus-visible {
   margin-bottom: 25px;
 }
 .page-heading h1 + p {
-  color: #6b8190;
+  color: #77716a;
   font-size: 13px;
   margin-top: 8px;
 }
@@ -460,10 +460,10 @@ a:focus-visible {
 }
 .panel {
   background: #fff;
-  border: 1px solid #e4ecf0;
+  border: 1px solid #f7f5f1;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 3px 9px #103b4a02;
+  box-shadow: 0 3px 9px #292d3002;
 }
 .panel-heading {
   padding: 22px 24px;
@@ -474,7 +474,7 @@ a:focus-visible {
 }
 .panel-heading p {
   font-size: 12px;
-  color: #6e8794;
+  color: #77716a;
   margin-top: 4px;
 }
 .panel-heading .el-button {
@@ -495,7 +495,7 @@ a:focus-visible {
 }
 .filter-bar .el-form-item__label {
   font-size: 12px;
-  color: #6c8492;
+  color: #77716a;
   padding-right: 10px;
 }
 .pagination {
@@ -503,16 +503,16 @@ a:focus-visible {
   align-items: center;
   justify-content: space-between;
   padding: 22px 24px;
-  border-top: 1px solid #edf1f4;
+  border-top: 1px solid #f7f5f1;
   gap: 10px;
 }
 .pagination > span {
   font-size: 11px;
-  color: #8da0aa;
+  color: #9b9388;
 }
 .table-sub {
   font-size: 12px;
-  color: #7c919d;
+  color: #9b9388;
   margin-top: 5px;
   line-height: 1.8;
 }
@@ -525,8 +525,8 @@ a:focus-visible {
   width: 29px;
   height: 29px;
   border-radius: 9px;
-  background: #edf4f6;
-  color: #79939f;
+  background: #f7f5f1;
+  color: #9b9388;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -557,7 +557,7 @@ a:focus-visible {
   align-items: center;
   margin-bottom: 12px;
   font-size: 12px;
-  color: #93a3ad;
+  color: #9b9388;
 }
 .detail-actions {
   display: flex;
@@ -566,7 +566,7 @@ a:focus-visible {
 }
 footer {
   padding: 0 36px 22px;
-  color: #a4b2ba;
+  color: #c8bfb1;
   font-size: 9px;
   letter-spacing: 2px;
   display: flex;
@@ -584,19 +584,19 @@ footer span {
 }
 .stat-card {
   background: #fff;
-  border: 1px solid #e3ebf0;
+  border: 1px solid #f7f5f1;
   border-radius: 11px;
   padding: 20px 22px;
   min-height: 104px;
 }
 .stat-card > span {
   font-size: 11px;
-  color: #7e949f;
+  color: #9b9388;
 }
 .stat-card > strong {
   font-size: 29px;
   font-weight: 600;
-  color: #315867;
+  color: #494743;
   display: block;
   line-height: 1.5;
 }
@@ -604,23 +604,23 @@ footer span {
   font-size: 10px;
   margin-left: 8px;
   font-weight: 400;
-  color: #a3b0b8;
+  color: #c8bfb1;
 }
 .stat-card > p {
   font-size: 9px;
-  color: #a4b2ba;
+  color: #c8bfb1;
   margin-top: 3px;
 }
 .stat-note {
   display: flex;
   gap: 14px;
   align-items: center;
-  background: #f8fbfc;
+  background: #f7f5f1;
 }
 .stat-note > .el-icon {
   font-size: 24px;
-  background: #eaf3f5;
-  color: #72a0ad;
+  background: #f7f5f1;
+  color: #9b9388;
   padding: 12px;
   box-sizing: content-box;
   border-radius: 12px;
@@ -629,11 +629,11 @@ footer span {
 .stat-note strong {
   font-size: 12px;
   font-weight: 600;
-  color: #607f8d;
+  color: #77716a;
 }
 .stat-note p {
   font-size: 10px;
-  color: #91a5af;
+  color: #9b9388;
   margin-top: 7px;
 }
 .booking-layout {
@@ -658,13 +658,13 @@ footer span {
 .summary-status {
   font-size: 9px;
   padding: 5px 8px;
-  background: #f2f6f8;
-  color: #91a2ad;
+  background: #f7f5f1;
+  color: #9b9388;
   border-radius: 20px;
 }
 .summary-status.ready {
-  background: #eaf7f0;
-  color: #469779;
+  background: #f7f5f1;
+  color: #77716a;
 }
 .step-heading {
   display: flex;
@@ -678,14 +678,14 @@ footer span {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: #eaf5f6;
-  color: #2b8d98;
+  background: #f7f5f1;
+  color: #77716a;
   font-size: 11px;
   font-weight: 600;
 }
 .selected-patient {
-  background: #f5f9fa;
-  border: 1px solid #e4eef1;
+  background: #f7f5f1;
+  border: 1px solid #f7f5f1;
   border-radius: 10px;
   display: flex;
   gap: 15px;
@@ -697,7 +697,7 @@ footer span {
 }
 .selected-patient p {
   font-size: 11px;
-  color: #8b9eaa;
+  color: #9b9388;
   margin-top: 5px;
 }
 .selected-patient .el-tag {
@@ -712,8 +712,8 @@ footer span {
   width: 43px;
   height: 43px;
   border-radius: 13px;
-  background: #e0edf0;
-  color: #6b939f;
+  background: #f7f5f1;
+  color: #77716a;
   font-size: 15px;
 }
 .patient-search .el-form-item {
@@ -727,26 +727,26 @@ footer span {
   width: 100%;
   text-align: left;
   border: 0;
-  border-top: 1px solid #edf2f4;
+  border-top: 1px solid #f7f5f1;
   background: white;
   padding: 15px 9px;
-  color: #4b6e7d;
+  color: #77716a;
   transition: background 0.18s;
 }
 .patient-result:hover {
-  background: #f2f8f9;
+  background: #f7f5f1;
 }
 .patient-result strong {
   font-size: 12px;
 }
 .patient-result small {
   display: block;
-  color: #94a6b0;
+  color: #9b9388;
   font-size: 10px;
   margin-top: 6px;
 }
 .slot-section {
-  border-top: 1px solid #eaf0f3;
+  border-top: 1px solid #f7f5f1;
   margin-top: 24px;
   padding-top: 18px;
 }
@@ -761,7 +761,7 @@ footer span {
 }
 .slot-section-heading h3 > span {
   font-size: 10px;
-  color: #a6b6be;
+  color: #c8bfb1;
   font-weight: 400;
   margin-left: 5px;
 }
@@ -771,7 +771,7 @@ footer span {
   gap: 10px;
 }
 .slot-button {
-  border: 1px solid #e3edf1;
+  border: 1px solid #f7f5f1;
   background: white;
   text-align: left;
   padding: 14px 15px;
@@ -779,14 +779,14 @@ footer span {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  color: #6a8997;
+  color: #77716a;
   transition: all 0.16s;
 }
 .slot-button:hover,
 .slot-button.is-selected {
-  background: #edf8f7;
-  border-color: #68b3b6;
-  box-shadow: 0 0 0 1px #68b3b6;
+  background: #f7f5f1;
+  border-color: #9b9388;
+  box-shadow: 0 0 0 1px #9b9388;
 }
 .slot-button:disabled {
   cursor: wait;
@@ -794,7 +794,7 @@ footer span {
 }
 .slot-button > strong {
   font-size: 12px;
-  color: #315e6c;
+  color: #494743;
   font-weight: 600;
 }
 .slot-button > span {
@@ -802,28 +802,28 @@ footer span {
 }
 .slot-button > small {
   font-size: 9px;
-  color: #9aaeb7;
+  color: #9b9388;
 }
 .summary-patient {
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 13px;
-  color: #5d7e8a;
-  border-bottom: 1px solid #edf1f3;
+  color: #77716a;
+  border-bottom: 1px solid #f7f5f1;
   padding-bottom: 18px;
 }
 .summary-patient .el-icon {
-  color: #91adb8;
+  color: #9b9388;
 }
 .countdown {
   display: flex;
   gap: 8px;
   align-items: center;
-  background: #eaf7f2;
-  border: 1px solid #d5eae1;
+  background: #f7f5f1;
+  border: 1px solid #e4ded4;
   border-radius: 7px;
-  color: #5f9b81;
+  color: #77716a;
   font-size: 10px;
   padding: 10px;
   margin: 18px 0;
@@ -841,11 +841,11 @@ footer span {
 }
 .summary-service h3 {
   font-size: 15px;
-  color: #3c6471;
+  color: #494743;
 }
 .summary-service > strong {
   font-size: 18px;
-  color: #237b86;
+  color: #494743;
   white-space: nowrap;
 }
 .summary-service > strong > small {
@@ -853,7 +853,7 @@ footer span {
   font-size: 8px;
   font-weight: 400;
   text-align: right;
-  color: #a0b1ba;
+  color: #9b9388;
   margin-top: 4px;
 }
 .summary-facts {
@@ -867,7 +867,7 @@ footer span {
 .summary-facts li {
   display: flex;
   gap: 12px;
-  color: #7995a3;
+  color: #9b9388;
   font-size: 11px;
   line-height: 1.8;
 }
@@ -878,14 +878,14 @@ footer span {
 }
 .summary-facts small {
   display: block;
-  color: #9aafb9;
+  color: #9b9388;
   font-size: 9px;
   margin-top: 4px;
 }
 .confirmation-checks {
   display: flex;
   flex-direction: column;
-  border-top: 1px dashed #e1eaf0;
+  border-top: 1px dashed #f7f5f1;
   padding-top: 15px;
   margin-bottom: 12px;
 }
@@ -898,23 +898,23 @@ footer span {
 .empty-summary {
   text-align: center;
   padding: 42px 0 24px;
-  color: #a1b1ba;
+  color: #c8bfb1;
   font-size: 11px;
 }
 .empty-summary p + p {
   margin-top: 20px;
-  color: #b2bfc6;
+  color: #c8bfb1;
   font-size: 10px;
 }
 .empty-calendar {
   width: 66px;
   height: 66px;
   border-radius: 19px;
-  background: #f1f7f8;
+  background: #f7f5f1;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #a8c2ca;
+  color: #c8bfb1;
   font-size: 30px;
   margin: 0 auto 18px;
 }
@@ -923,12 +923,12 @@ footer span {
   align-items: center;
   gap: 12px;
   margin: -4px 0 24px;
-  color: #93a6b0;
+  color: #9b9388;
   font-size: 11px;
 }
 .resource-count > strong {
   font-size: 27px;
-  color: #356473;
+  color: #494743;
 }
 .resource-count > .el-tag {
   font-size: 10px;
@@ -967,7 +967,7 @@ footer span {
   background: #fff;
 }
 .login-story {
-  background: #113e4c;
+  background: #292d30;
   color: #fff;
   padding: 42px 54px 25px;
   display: flex;
@@ -985,14 +985,14 @@ footer span {
   left: -250px;
   opacity: 0.15;
   border-radius: 50%;
-  background: radial-gradient(circle, #60c8a5, transparent 70%);
+  background: radial-gradient(circle, #9b9388, transparent 70%);
   pointer-events: none;
 }
 .login-story .brand-sub {
-  color: #91b4bf;
+  color: #9b9388;
 }
 .login-story .brand-mark {
-  background: #2a7884;
+  background: #494743;
 }
 .login-story-content {
   flex: 1;
@@ -1004,7 +1004,7 @@ footer span {
 .login-story .eyebrow {
   font-size: 10px;
   letter-spacing: 2px;
-  color: #8eb8bd;
+  color: #9b9388;
   margin-bottom: 19px;
 }
 .login-story h1 {
@@ -1012,11 +1012,11 @@ footer span {
   font-weight: 550;
   line-height: 1.7;
   letter-spacing: 1px;
-  color: #f2fafb;
+  color: #f7f5f1;
 }
 .login-story-content > p {
   font-size: 13px;
-  color: #9abcc5;
+  color: #c8bfb1;
   margin-top: 20px;
   line-height: 2;
 }
@@ -1044,7 +1044,7 @@ footer span {
   height: 180px;
   left: calc(50% - 80px);
   top: 40px;
-  filter: drop-shadow(0 15px 22px #001e2c33);
+  filter: drop-shadow(0 15px 22px #292d3033);
   transform: rotate(-8deg);
   animation: float 7s ease-in-out infinite;
 }
@@ -1055,9 +1055,9 @@ footer span {
   border: 1px solid #ffffff15;
   border-radius: 10px;
   font-size: 10px;
-  color: #c4dde0;
+  color: #e4ded4;
   backdrop-filter: blur(12px);
-  box-shadow: 0 8px 20px #07303b20;
+  box-shadow: 0 8px 20px #292d3020;
 }
 .fc-one {
   right: 0;
@@ -1071,7 +1071,7 @@ footer span {
 }
 .login-foot {
   font-size: 9px;
-  color: #7c9da9;
+  color: #9b9388;
   letter-spacing: 2px;
   margin-top: 25px;
   display: flex;
@@ -1108,7 +1108,7 @@ footer span {
   padding: 3px 14px;
 }
 .login-form-wrap .el-input__prefix {
-  color: #adbdc5;
+  color: #c8bfb1;
   margin-right: 6px;
 }
 .login-form-wrap .el-button--large {
@@ -1118,14 +1118,14 @@ footer span {
 .demo-login {
   margin-top: 26px;
   padding: 20px;
-  background: #f6fafb;
-  border: 1px solid #e8eff2;
+  background: #f7f5f1;
+  border: 1px solid #f7f5f1;
   border-radius: 10px;
 }
 .section-kicker {
   font-size: 11px;
   font-weight: 600;
-  color: #6a8996;
+  color: #77716a;
 }
 .demo-login > p {
   font-size: 10px;
@@ -1136,12 +1136,12 @@ footer span {
 }
 .login-security {
   font-size: 10px;
-  color: #a5b5be;
+  color: #c8bfb1;
   margin-top: 26px;
   text-align: center;
   line-height: 1.9;
 }
-.schedule-navigation { background: #fff; border: 1px solid #dfe9ee; border-radius: 15px; margin-bottom: 22px; box-shadow: 0 3px 10px #25485503; }
+.schedule-navigation { background: #fff; border: 1px solid #f7f5f1; border-radius: 15px; margin-bottom: 22px; box-shadow: 0 3px 10px #292d3003; }
 .schedule-toolbar {
   display: flex;
   align-items: center;
@@ -1164,18 +1164,18 @@ footer span {
   align-items: center;
   gap: 5px;
   padding: 12px 8px;
-  border: 1px solid #e4edf1;
+  border: 1px solid #f7f5f1;
   border-radius: 12px;
-  background: #f8fafc;
-  color: #657e8d;
+  background: #f7f5f1;
+  color: #77716a;
   font-size: 12px;
   transition: background .16s, border-color .16s, transform .16s;
 }
-.schedule-date-button strong { color: #2d5265; font-size: 18px; }
-.schedule-date-button:hover { background: #edf6f8; border-color: #accfd7; }
-.schedule-date-button.is-selected { background: #167e8e; border-color: #167e8e; color: #e7f6f8; box-shadow: 0 5px 12px #167e8e1c; }
+.schedule-date-button strong { color: #494743; font-size: 18px; }
+.schedule-date-button:hover { background: #f7f5f1; border-color: #c8bfb1; }
+.schedule-date-button.is-selected { background: #494743; border-color: #494743; color: #f7f5f1; box-shadow: 0 5px 12px #4947431c; }
 .schedule-date-button.is-selected strong { color: #fff; }
-.schedule-date-button.is-today:not(.is-selected) { border-color: #81b8c3; }
+.schedule-date-button.is-today:not(.is-selected) { border-color: #9b9388; }
 .schedule-filter-summary {
   display: flex;
   align-items: center;
@@ -1183,41 +1183,41 @@ footer span {
   gap: 9px;
   margin: 0 24px 16px;
   padding: 11px 14px;
-  border: 1px solid #e1ebef;
+  border: 1px solid #f7f5f1;
   border-radius: 10px;
-  background: #f7fafc;
-  color: #597586;
+  background: #f7f5f1;
+  color: #77716a;
   font-size: 12px;
   line-height: 1.7;
 }
-.schedule-scope-badge { color: #277695; background: #e7f2fa; border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 600; }
-.schedule-query-note { color: #738b98; font-size: 12px; line-height: 1.8; padding: 0 24px 18px; }
+.schedule-scope-badge { color: #494743; background: #f7f5f1; border-radius: 6px; padding: 3px 8px; font-size: 11px; font-weight: 600; }
+.schedule-query-note { color: #77716a; font-size: 12px; line-height: 1.8; padding: 0 24px 18px; }
 .schedule-agenda { padding: 2px 24px 24px; display: grid; gap: 20px; }
-.schedule-agenda-group { min-width: 0; border: 1px solid #e1ebf0; border-radius: 13px; overflow: hidden; }
-.schedule-agenda-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #f2f7fa; border-bottom: 1px solid #e1ebf0; padding: 15px 18px; color: #31586b; }
+.schedule-agenda-group { min-width: 0; border: 1px solid #f7f5f1; border-radius: 13px; overflow: hidden; }
+.schedule-agenda-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #f7f5f1; border-bottom: 1px solid #f7f5f1; padding: 15px 18px; color: #494743; }
 .schedule-agenda-header h3 { font-size: 15px; }
-.schedule-agenda-header small { color: #7b929e; font-size: 12px; }
-.schedule-agenda-item { display: flex; align-items: flex-start; gap: 18px; width: 100%; padding: 17px 18px; text-align: left; background: #fff; color: #426175; border: 0; border-bottom: 1px solid #edf1f4; position: relative; }
+.schedule-agenda-header small { color: #9b9388; font-size: 12px; }
+.schedule-agenda-item { display: flex; align-items: flex-start; gap: 18px; width: 100%; padding: 17px 18px; text-align: left; background: #fff; color: #494743; border: 0; border-bottom: 1px solid #f7f5f1; position: relative; }
 .schedule-agenda-item:last-child { border-bottom: 0; }
-button.schedule-agenda-item:hover { background: #f3fafb; }
-.schedule-agenda-time { flex-shrink: 0; min-width: 70px; color: #26788e; font-weight: 650; font-size: 15px; line-height: 1.6; }
-.schedule-agenda-time small { display: block; color: #8b9fa9; font-size: 11px; font-weight: 400; }
-.schedule-agenda-content { min-width: 0; flex: 1; border-left: 3px solid #8bcac7; padding-left: 15px; }
-.is-cancelled .schedule-agenda-content { border-left-color: #c3cdd5; }
-.is-rescheduled .schedule-agenda-content { border-left-color: #a3b9dc; }
-.schedule-agenda-content strong { display: block; font-size: 14px; line-height: 1.6; color: #35586b; overflow-wrap: anywhere; }
-.schedule-agenda-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; color: #7d929e; font-size: 12px; margin-top: 5px; }
+button.schedule-agenda-item:hover { background: #f7f5f1; }
+.schedule-agenda-time { flex-shrink: 0; min-width: 70px; color: #494743; font-weight: 650; font-size: 15px; line-height: 1.6; }
+.schedule-agenda-time small { display: block; color: #9b9388; font-size: 11px; font-weight: 400; }
+.schedule-agenda-content { min-width: 0; flex: 1; border-left: 3px solid #9b9388; padding-left: 15px; }
+.is-cancelled .schedule-agenda-content { border-left-color: #e4ded4; }
+.is-rescheduled .schedule-agenda-content { border-left-color: #c8bfb1; }
+.schedule-agenda-content strong { display: block; font-size: 14px; line-height: 1.6; color: #494743; overflow-wrap: anywhere; }
+.schedule-agenda-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; color: #9b9388; font-size: 12px; margin-top: 5px; }
 .schedule-shift-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 16px; padding: 2px 24px 24px; }
-.schedule-shift-card { border: 1px solid #dfe9ee; border-radius: 13px; padding: 20px; background: #fff; box-shadow: 0 4px 12px #25485504; }
-.schedule-shift-card h3 { font-size: 16px; color: #365d6e; }
-.schedule-shift-card p { color: #7b919f; font-size: 12px; margin-top: 7px; }
+.schedule-shift-card { border: 1px solid #f7f5f1; border-radius: 13px; padding: 20px; background: #fff; box-shadow: 0 4px 12px #292d3004; }
+.schedule-shift-card h3 { font-size: 16px; color: #494743; }
+.schedule-shift-card p { color: #9b9388; font-size: 12px; margin-top: 7px; }
 .schedule-shift-card .tag-list { margin: 16px 0; }
-.resource-filter-summary { display: flex; gap: 10px; flex-wrap: wrap; padding: 12px 20px; margin-bottom: 20px; background: #edf5f8; border: 1px solid #dce8ee; border-radius: 11px; color: #577987; font-size: 13px; }
+.resource-filter-summary { display: flex; gap: 10px; flex-wrap: wrap; padding: 12px 20px; margin-bottom: 20px; background: #f7f5f1; border: 1px solid #e4ded4; border-radius: 11px; color: #77716a; font-size: 13px; }
 .qualification-summary { display: grid; gap: 12px; padding: 5px 0; }
 .qualification-item > div:first-child { display: flex; gap: 9px; flex-wrap: wrap; align-items: center; }
 .qualification-item strong { font-size: 12px; font-weight: 600; }
 .qualification-period { margin-top: 5px; font-size: 12px; line-height: 1.8; }
-p.qualification-validity { padding: 0 24px 18px; font-size: 12px; color: #7a909a; line-height: 1.8; }
+p.qualification-validity { padding: 0 24px 18px; font-size: 12px; color: #9b9388; line-height: 1.8; }
 @keyframes float {
   0%,
   100% {
@@ -1406,7 +1406,7 @@ p.qualification-validity { padding: 0 24px 18px; font-size: 12px; color: #7a909a
     height: 100dvh;
     inset: 0 auto 0 0;
     padding: 28px 20px 20px;
-    border-right: 1px solid #e5edf1;
+    border-right: 1px solid #f7f5f1;
     overflow: auto;
     transform: translateX(-102%);
     visibility: hidden;
@@ -1414,9 +1414,9 @@ p.qualification-validity { padding: 0 24px 18px; font-size: 12px; color: #7a909a
     transition: transform .2s, visibility .2s;
   }
   .sidebar.is-open { transform: translateX(0); visibility: visible; }
-  .navigation-backdrop { display: block; position: fixed; inset: 0; z-index: 25; background: #18354966; border: 0; width: 100%; height: 100%; }
-  .mobile-menu { display: flex; flex-direction: column; justify-content: center; gap: 4px; border: 1px solid #dce6eb; border-radius: 9px; background: #fff; padding: 10px; width: 36px; height: 36px; flex-shrink: 0; }
-  .mobile-menu span { display: block; background: #597d8f; height: 2px; width: 15px; }
+  .navigation-backdrop { display: block; position: fixed; inset: 0; z-index: 25; background: #292d3066; border: 0; width: 100%; height: 100%; }
+  .mobile-menu { display: flex; flex-direction: column; justify-content: center; gap: 4px; border: 1px solid #e4ded4; border-radius: 9px; background: #fff; padding: 10px; width: 36px; height: 36px; flex-shrink: 0; }
+  .mobile-menu span { display: block; background: #77716a; height: 2px; width: 15px; }
   .sidebar > .brand {
     font-size: 17px;
   }
@@ -1445,7 +1445,7 @@ p.qualification-validity { padding: 0 24px 18px; font-size: 12px; color: #7a909a
     margin-top: auto;
     width: 100%;
     padding: 12px;
-    background: #f6f9fa;
+    background: #f7f5f1;
     gap: 7px;
   }
   .account > span:not(.avatar) {
@@ -1630,7 +1630,7 @@ p.qualification-validity { padding: 0 24px 18px; font-size: 12px; color: #7a909a
   .qualification-row {
     grid-template-columns: 1fr 1fr;
     gap: 8px;
-    border: 1px solid #e5edf1;
+    border: 1px solid #f7f5f1;
     padding: 10px;
     border-radius: 8px;
   }

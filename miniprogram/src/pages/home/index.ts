@@ -1,12 +1,12 @@
 import type { AuthConfig, Clinic, PublicDoctor as Doctor, Service, TreatmentReference } from '../../types';
 import { api, errorMessage } from '../../utils/api';
-import { doctorView } from '../../utils/catalog';
+import { clinicView, doctorView } from '../../utils/catalog';
 import { price } from '../../utils/format';
 import { session } from '../../utils/session';
 Page({
   requestSequence: 0,
   data: {
-    loading: false, error: '', clinics: [] as Clinic[], services: [] as (Service & { priceLabel: string })[],
+    loading: false, error: '', clinics: [] as (Clinic & { demoImage: string })[], services: [] as (Service & { priceLabel: string })[],
     doctorsPreview: [] as ReturnType<typeof doctorView>[], doctorCount: 0, referenceCount: 0, referenceYearLabel: '',
     signedIn: false, displayName: '', demoEnabled: false,
   },
@@ -22,7 +22,7 @@ Page({
         api<Doctor[]>('/doctors'), api<TreatmentReference[]>('/treatment-references'),
       ]);
       if (request !== this.requestSequence) return;
-      this.setData({ clinics, services: services.map(item => ({ ...item, priceLabel: price(item.priceCents) })),
+      this.setData({ clinics: clinics.map(clinicView), services: services.map(item => ({ ...item, priceLabel: price(item.priceCents) })),
         doctorsPreview: doctors.slice(0, 3).map(doctorView), doctorCount: doctors.length, referenceCount: references.length,
         referenceYearLabel: [...new Set(references.map(item => item.referenceYear))].join(' / '), demoEnabled: config.demoLoginEnabled });
     } catch (error) { if (request === this.requestSequence) this.setData({ error: errorMessage(error) }); }
