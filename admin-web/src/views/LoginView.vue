@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import SiteIcp from '../components/SiteIcp.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Lock, User, ArrowRight } from '@element-plus/icons-vue';
 import { useAuth } from '../stores/auth';
@@ -122,6 +123,7 @@ async function login(demo = false) {
           >
         </div>
         <p class="login-security">账号权限由所属机构与岗位确定。顾客请使用预约小程序。</p>
+        <SiteIcp />
       </div>
     </section>
   </div>

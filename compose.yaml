@@ -74,6 +74,8 @@ services:
     build:
       context: .
       dockerfile: deploy/booking/web.Dockerfile
+      args:
+        VITE_ICP_RECORD: ${ICP_RECORD:-}
     restart: unless-stopped
     environment:
       TRUSTED_EDGE_IP: ${BOOKING_HTTPS_IP:-172.30.87.11}
@@ -100,6 +102,7 @@ services:
     volumes:
       - ./deploy/booking/nginx.https.conf:/etc/nginx/templates/default.conf.template:ro
       - ${TLS_CERT_DIR:-./deploy/certs}:/etc/nginx/certs:ro
+      - ${ACME_WEBROOT:-./deploy/acme}:/var/www/acme:ro
     depends_on: [web]
 volumes:
   booking-postgres:

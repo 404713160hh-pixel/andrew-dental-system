@@ -8,6 +8,8 @@ COPY miniprogram/package.json miniprogram/package.json
 RUN npm ci --ignore-scripts
 COPY shared shared
 COPY admin-web admin-web
+ARG VITE_ICP_RECORD=""
+ENV VITE_ICP_RECORD=${VITE_ICP_RECORD}
 RUN npm run build -w @andrew/admin-web
 FROM nginx:1.28-alpine
 COPY --from=build /app/admin-web/dist /usr/share/nginx/html

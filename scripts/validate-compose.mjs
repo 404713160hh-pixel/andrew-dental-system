@@ -7,9 +7,16 @@ const response=await fetch('https://raw.githubusercontent.com/compose-spec/compo
 assert.ok(response.ok,'Official Compose schema could not be loaded');const schema=await response.json();
 const text=readFileSync('compose.yaml','utf8');const document=parse(text,{merge:true});
 const previewText=readFileSync('compose.preview.yaml','utf8');const preview=parse(previewText,{merge:true});
+const acmeText=readFileSync('compose.acme.yaml','utf8');const acme=parse(acmeText,{merge:true});
 const validator=new Ajv2020({strict:false,validateFormats:false}).compile(schema);
 assert.ok(validator(document),JSON.stringify(validator.errors));
 assert.ok(validator(preview),JSON.stringify(validator.errors));
+assert.ok(validator(acme),JSON.stringify(validator.errors));
+assert.ok(acme.services['acme-bootstrap'].profiles.includes('acme'));
+assert.deepEqual(acme.services['acme-bootstrap'].ports,['80:80']);
+assert.ok(!acme.services['acme-bootstrap'].depends_on,'Certificate bootstrap must not start the application or database');
+assert.ok(document.services.https.volumes.some(value=>value.includes('ACME_WEBROOT')),'HTTPS gateway must keep HTTP-01 renewal reachable');
+assert.ok(document.services.web.build.args.VITE_ICP_RECORD.includes('ICP_RECORD'),'Public registration footer must be a deployment build setting');
 assert.ok(!document.services.seed,'Default Compose configuration must not include synthetic seed service');
 assert.equal(document.services.api.environment.NODE_ENV,'production','Default API must remain in production mode');
 assert.equal(preview.services.seed.extends.service,'api','Preview seed must extend the production API service configuration');

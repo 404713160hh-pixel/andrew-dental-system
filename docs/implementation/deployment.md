@@ -62,6 +62,36 @@ docker compose --env-file .env.compose --profile https up --no-build -d
 
 额外HTTPS边缘Nginx只发布80/443，80跳转HTTPS；443代理Web再转发API。模板仅替换SERVER_NAME，保留Nginx的$host等原生变量。私钥只读挂载，不能提交到Git。小程序配置有效HTTPS request合法域名，恢复证书和域名检查。未提供域名或AppID时不声称这一步已联调。
 
+### 根域、备案页脚与首次证书
+
+同一站点可使用根域 `https://andrewdental.top`，API 对应 `https://andrewdental.top/api/v1`。先核对该域名备案已通过，再将 A 记录指向实例公网地址，开放 80/443；不要开放 PostgreSQL 或 API 内部端口。只有确实配置了 IPv6 入站和服务监听时才添加 AAAA 记录。
+
+在服务器私有环境文件中设置 `SERVER_NAME=andrewdental.top`、`CORS_ORIGINS=https://andrewdental.top` 和该网站的实际 `ICP_RECORD`。备案号属于公开标识，Web 镜像构建时通过 `VITE_ICP_RECORD` 写入；更改后须重新构建 Web。公共页面、员工登录页及工作台页脚统一链接工信部备案网站；本地未配置时不显示号码。源码仓库不预填实际备案号。
+
+`TLS_CERT_DIR` 与 `ACME_WEBROOT` 均建议使用服务器上的固定绝对路径，分别保存容器实际读取的证书副本和 HTTP-01 令牌。固定路径可在多个发布目录之间复用。将私钥权限限制为 root 可读；不要只挂载 Certbot 的 `live/<域名>` 符号链接目录，因为其目标通常位于容器挂载范围之外。
+
+首次尚无证书时，以下示例使用已有 Compose 项目名 `andrew-preview` 和 `.env.preview`（若实际项目不同，统一替换），在项目根目录执行。`ACME_WEBROOT` 的实际目录必须先创建。主 Web/API 可继续运行，bootstrap 仅监听 80 并提供校验文件，不依赖应用或数据库：
+
+```bash
+docker compose -p andrew-preview -f compose.yaml -f compose.acme.yaml --env-file .env.preview --profile acme up -d acme-bootstrap
+certbot certonly --webroot -w /absolute/acme-webroot --cert-name andrewdental.top -d andrewdental.top
+```
+
+签发前用外部网络确认 `http://andrewdental.top/.well-known/acme-challenge/<临时令牌>` 能读取测试文件。Certbot 的协议及联系邮箱按管理员真实选择填写。首次安装证书时，设置 Certbot 实际 lineage（并非复制私钥文本），调用下列脚本；脚本核对证书有效性及公私钥匹配，将文件复制到只读挂载目录。初次尚未启动 HTTPS 时只安装文件：
+
+```bash
+RENEWED_LINEAGE=/etc/letsencrypt/live/andrewdental.top sh deploy/booking/install-renewed-certificate.sh /absolute/tls-certs /absolute/project .env.preview andrew-preview
+docker compose -p andrew-preview -f compose.yaml -f compose.acme.yaml --env-file .env.preview --profile acme stop acme-bootstrap
+docker compose -p andrew-preview --env-file .env.preview --profile https up --no-build -d
+docker compose -p andrew-preview --env-file .env.preview --profile https exec -T https nginx -t
+```
+
+### 证书续期与正式小程序
+
+HTTPS 启动后，80 端口仍为 HTTP-01 令牌提供例外路径，其余请求跳转 HTTPS。保留 `ACME_WEBROOT` 的同一挂载，配置 Certbot 的自动续期服务，并为本证书设置 deploy hook 调用 `install-renewed-certificate.sh` 的绝对路径和上述四个参数。脚本只在实际续期后由 Certbot 执行：复制新证书、测试 Nginx 配置后 reload；失败时保留现有进程并回退原证书副本。按 [Certbot 续期说明](https://eff-certbot.readthedocs.io/en/stable/using.html#renewing-certificates)，先执行 `certbot renew --cert-name andrewdental.top --dry-run`，然后核对系统续期定时器和 deploy hook，不能只验证首次签发。
+
+在开发机设置 `ANDREW_MINI_BUILD=production`、`ANDREW_MINI_API_URL=https://andrewdental.top/api/v1` 后执行 `npm run build -w @andrew/miniprogram`。构建拒绝 HTTP、IP、本机地址和带凭据的接口地址。将同一域名配置为微信公众平台 request 合法域名，开启开发者工具的域名/HTTPS 校验，检查开发者工具及体验版真机能够读取服务器门诊、医生和号源，再执行预约、改期和取消验收。接口可达和合法域名配置本身不等于小程序已经审核或发布。
+
 ## 备份、升级和恢复
 
 PG数据保存在命名卷booking-postgres。停止/重启容器不会清空卷；不要使用`down -v`删除业务数据。

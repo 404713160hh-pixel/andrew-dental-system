@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch, type Directive } from 'vue';
 import { useRoute } from 'vue-router';
+import SiteIcp from '../components/SiteIcp.vue';
 import type { Clinic, PublicDoctor, Service } from '@andrew/shared';
 import hero from '../assets/clinic-light-v2.jpg';
 import clinicMotion from '../assets/clinic-motion.mp4';
@@ -193,6 +194,6 @@ watch([services, section, selectedId, loading], () => { void nextTick(updateRail
         <div v-if="section === 'clinics'" class="public-directory"><router-link v-for="item in clinics" :key="item.id" :to="'/explore/clinics/' + item.id" class="public-directory-item"><figure v-if="clinicImage(item.name)" class="public-clinic-photo"><img :src="clinicImage(item.name)" alt="门诊环境 AI 生成示意图" loading="lazy"><figcaption>门诊环境 · AI 生成示意图</figcaption></figure><p class="public-eyebrow">OUR CLINICS</p><h2>{{ item.name }}</h2><p>{{ item.address || '地址待完善' }}</p><span class="public-text-link">查看详情 ↗</span></router-link><p v-if="!clinics.length">暂无公开的门诊资料。</p></div>
       </template>
     </main>
-    <footer class="public-footer"><div class="public-container public-footer-inner"><div><router-link to="/" class="public-brand">ANDREW <span>DENTAL</span><small>安德鲁牙科</small></router-link><p>让每一次就诊，从容一点。</p><small>课程演示项目 · 图片为场景示意</small></div><div><strong>探索</strong><router-link to="/explore/services">诊疗服务</router-link><router-link to="/explore/doctors">医生团队</router-link><router-link to="/explore/clinics">门诊信息</router-link></div><div><strong>预约与协作</strong><a href="/#booking">患者小程序预约</a><router-link to="/login">员工工作台</router-link></div></div><div class="public-container public-copyright">© ANDREW DENTAL · 课程演示</div></footer>
+    <footer class="public-footer"><div class="public-container public-footer-inner"><div><router-link to="/" class="public-brand">ANDREW <span>DENTAL</span><small>安德鲁牙科</small></router-link><p>让每一次就诊，从容一点。</p><small>课程演示项目 · 图片为场景示意</small></div><div><strong>探索</strong><router-link to="/explore/services">诊疗服务</router-link><router-link to="/explore/doctors">医生团队</router-link><router-link to="/explore/clinics">门诊信息</router-link></div><div><strong>预约与协作</strong><a href="/#booking">患者小程序预约</a><router-link to="/login">员工工作台</router-link></div></div><div class="public-container public-copyright">© ANDREW DENTAL · 课程演示 <SiteIcp /></div></footer>
   </div>
 </template>

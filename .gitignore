@@ -25,6 +25,7 @@ miniprogram/dist/
 !.env.booking.example
 !.env.compose.example
 deploy/certs/
+deploy/acme/
 .lot
 *.aux
 *.toc

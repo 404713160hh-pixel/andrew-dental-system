@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import SiteIcp from './components/SiteIcp.vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
   Calendar,
@@ -135,7 +136,7 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
         </div>
       </header>
       <main class="page"><router-view :key="route.fullPath" /></main>
-      <footer>ANDREW DENTAL <span>预约 · 资源 · 协作</span></footer>
+      <footer>ANDREW DENTAL <span>预约 · 资源 · 协作</span><SiteIcp /></footer>
     </div>
   </div>
 </template>

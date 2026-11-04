@@ -16,5 +16,6 @@ booking-api/dist
 admin-web/dist
 miniprogram/dist
 deploy/certs
+deploy/acme
 docs/design
 docs/legacy

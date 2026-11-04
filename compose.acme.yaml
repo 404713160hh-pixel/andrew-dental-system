@@ -1,0 +1,14 @@
+# Combine with compose.yaml. Start only acme-bootstrap until the certificate exists.
+services:
+  acme-bootstrap:
+    image: nginx:1.28-alpine
+    profiles: [acme]
+    restart: unless-stopped
+    environment:
+      SERVER_NAME: ${SERVER_NAME:?Set SERVER_NAME to the certificate domain}
+      NGINX_ENVSUBST_FILTER: SERVER_NAME
+    ports:
+      - "80:80"
+    volumes:
+      - ./deploy/booking/nginx.acme.conf:/etc/nginx/templates/default.conf.template:ro
+      - ${ACME_WEBROOT:-./deploy/acme}:/var/www/acme:ro
