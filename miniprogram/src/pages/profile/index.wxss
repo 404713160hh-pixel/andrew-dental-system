@@ -1,1 +1,14 @@
- .profile-hero{display:flex;align-items:center;gap:25rpx;padding:28rpx 0 32rpx;border-bottom:1rpx solid #eae7e1;margin-bottom:25rpx}.profile-hero .title{font-size:36rpx;margin:0 0 8rpx}.avatar{width:100rpx;height:100rpx;background:#f7f5f1;color:#9e8257;font-size:55rpx;text-align:center;line-height:100rpx;flex-shrink:0}
+.profile-hero{display:flex;align-items:center;gap:24rpx;padding:20rpx 0 36rpx;border-bottom:1rpx solid #e5e1d8;margin-bottom:32rpx}
+.profile-identity{flex:1;min-width:0}
+.profile-hero .title{font-size:34rpx;line-height:1.5;margin:0 0 10rpx}
+.profile-hero .muted{font-size:24rpx;line-height:1.75}
+.avatar{width:88rpx;height:88rpx;border-radius:50%;border:1rpx solid #e6dfd3;background:#faf8f3;color:#9e8257;font-size:48rpx;text-align:center;line-height:86rpx;flex-shrink:0}
+.profile-guest{padding:36rpx}
+.profile-guest .section-title{font-size:32rpx;line-height:1.5;margin:0 0 16rpx}
+.profile-guest .muted{line-height:1.8}
+.profile-guest .primary{margin-top:32rpx;width:100%}
+.profile-page .nav-card{align-items:center;padding:30rpx 32rpx}
+.profile-page .nav-card .section-title{margin:0 0 8rpx}
+.profile-page .nav-card .link{font-size:34rpx;flex-shrink:0}
+.profile-page>.secondary{margin-top:24rpx}
+@media(max-width:350px){.profile-hero{gap:18rpx}.profile-hero .title{font-size:31rpx}.profile-guest{padding:30rpx}.avatar{width:78rpx;height:78rpx;line-height:76rpx;font-size:44rpx}}

@@ -52,6 +52,15 @@ function verifyOutput(directory) {
       }
       if (!path.endsWith('.json')) continue;
       const config = JSON.parse(readFileSync(path, 'utf8'));
+      if (path === resolve(outputRoot, 'app.json')) {
+        for (const item of config.tabBar?.list ?? []) {
+          for (const key of ['iconPath', 'selectedIconPath']) {
+            if (!item[key]) continue;
+            const icon = resolve(outputRoot, item[key]);
+            if (!icon.startsWith(outputRoot + sep) || !existsSync(icon)) throw new Error('底部导航图标缺失：' + item[key]);
+          }
+        }
+      }
       for (const component of Object.values(config.usingComponents ?? {})) {
         if (/^(?:plugin|wx):\/\//.test(component)) continue;
         const target = component.startsWith('/') ? resolve(outputRoot, '.' + component) : resolve(dirname(path), component);

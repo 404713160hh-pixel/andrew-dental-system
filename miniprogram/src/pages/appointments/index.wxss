@@ -1,1 +1,17 @@
- .intro{margin-bottom:32rpx}.list-tools{margin-bottom:24rpx;border-top:1rpx solid #eae7e1;padding-top:22rpx}.appointment-card{position:relative;transition:transform .2s,opacity .2s}.clinic-name{font-size:27rpx;font-weight:600}.time-label{font-family:Georgia,"Songti SC",serif;font-size:35rpx;font-weight:600;margin:26rpx 0 17rpx;color:#252522}.time-label text{font-family:-apple-system,sans-serif;font-size:24rpx;color:#77746f;font-weight:400}.service-name{font-size:29rpx;font-weight:600;margin-bottom:5rpx}.list-tools .pill{background:#fcfbf9;border:1rpx solid #eae7e1;color:#625d55}
+.appointment-heading{margin-bottom:32rpx}
+.appointment-heading .row{align-items:center;gap:20rpx}
+.appointment-heading .title{margin:12rpx 0 16rpx}
+.appointment-heading .inline-button{flex-shrink:0;min-height:66rpx;padding:12rpx 18rpx;font-size:23rpx}
+.intro{margin-bottom:32rpx}.appointment-heading .intro{margin-bottom:0}
+.appointments-guest{padding:44rpx 36rpx;text-align:left;background:#fff}
+.empty-title{font-size:30rpx;font-weight:600;color:#292d30;line-height:1.5;margin-bottom:14rpx}
+.empty-copy{font-size:25rpx;line-height:1.8}
+.appointments-guest .primary{margin-top:32rpx;width:100%}
+.list-tools{margin-bottom:24rpx;border-top:1rpx solid #eae7e1;padding-top:22rpx}
+.appointment-card{position:relative;transition:transform .2s,opacity .2s}
+.clinic-name{font-size:27rpx;font-weight:600;min-width:0;flex:1;line-height:1.6}
+.time-label{font-family:Georgia,"Songti SC",serif;font-size:33rpx;font-weight:600;margin:26rpx 0 17rpx;color:#252522;line-height:1.6}
+.time-label text{font-family:-apple-system,sans-serif;font-size:24rpx;color:#77746f;font-weight:400}
+.service-name{font-size:29rpx;font-weight:600;margin-bottom:8rpx;line-height:1.6}
+.list-tools .pill{background:#fcfbf9;border:1rpx solid #eae7e1;color:#625d55}
+@media(max-width:350px){.appointments-guest{padding:36rpx 30rpx}.appointment-heading .title{font-size:40rpx}.appointment-heading .inline-button{font-size:22rpx;padding:10rpx 14rpx}.time-label{font-size:30rpx}}

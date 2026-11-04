@@ -1,20 +1,22 @@
 /* Andrew Dental mobile design tokens and shared controls. */
 page{--ink:#252522;--muted:#77746f;--line:#eae7e1;--paper:#f5f3ed;--warm:#f4f2eb;--surface:#ebe9de;--accent:#b79a6b;--dark:#292d30;background:#f1efe7;color:#252522;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans SC","PingFang SC",sans-serif;font-size:28rpx;line-height:1.6}
 view,text,input,textarea,button{box-sizing:border-box}
-.page{padding:36rpx 32rpx calc(48rpx + env(safe-area-inset-bottom))}
-.card{background:#fff;border:1rpx solid #eae7e1;border-radius:10rpx;padding:30rpx;margin-bottom:24rpx}
+.page{padding:40rpx 32rpx 56rpx;padding-bottom:calc(56rpx + env(safe-area-inset-bottom))}
+.card{background:#fff;border:1rpx solid #eae7e1;border-radius:16rpx;padding:32rpx;margin-bottom:28rpx}
 .eyebrow{font-size:20rpx;letter-spacing:3rpx;color:#8b7352;font-weight:600}
 .title{font-family:"Noto Serif SC","Songti SC",serif;font-size:45rpx;font-weight:600;line-height:1.4;margin:12rpx 0 18rpx;color:#252522}
 .section-title{font-family:"Noto Serif SC","Songti SC",serif;font-size:32rpx;font-weight:600;margin:8rpx 0 18rpx;color:#252522}
-.muted{color:#77746f;font-size:25rpx}.small{font-size:23rpx}
+.muted{color:#716e68;font-size:25rpx;line-height:1.8}.small{font-size:23rpx}
 .row{display:flex;align-items:center;justify-content:space-between;gap:18rpx}.stack{display:flex;flex-direction:column;gap:8rpx}.grow{flex:1;min-width:0}.space{margin-top:24rpx}
 .primary,.secondary,.danger{border-radius:8rpx;font-size:28rpx;font-weight:600;line-height:1.5;padding:22rpx 24rpx;margin:0;transition:opacity .2s ease,transform .2s ease}
 .primary{background:#292d30;color:#fff}.secondary{background:#f7f5f1;color:#383734;border:1rpx solid #e4dfd7}.danger{background:#f8f1ef;color:#8d4b43;border:1rpx solid #eadad6}
+.primary.space,.secondary.space,.danger.space{margin-top:24rpx}
+.card>.section-title:first-child{margin-top:0}.card>.muted+.primary{margin-top:28rpx}
 .primary::after,.secondary::after,.danger::after{border:0}button.button-hover{opacity:.78;transform:scale(.985)}button[disabled]{background:#eeece9!important;color:#a49f98!important;box-shadow:none!important}
 .link{color:#826a48;font-weight:600}.label{font-size:25rpx;font-weight:600;display:block;margin:22rpx 0 10rpx}
 .input,.picker,.textarea{background:#fff;border:1rpx solid #dedbd4;border-radius:8rpx;padding:19rpx 22rpx;width:100%;font-size:27rpx;min-height:82rpx;color:#252522}.input:focus,.textarea:focus{border-color:#b79a6b}.textarea{height:156rpx}
 .error,.notice,.success{border-radius:8rpx;padding:22rpx 24rpx;margin-bottom:24rpx;font-size:25rpx;line-height:1.8}.error{background:#fbf2f0;color:#8d4b43}.notice{background:#f7f5f1;color:#605d57}.success{background:#f5f2ea;color:#635b4d}
-.empty{text-align:center;padding:70rpx 25rpx;background:#fcfbf9;border:1rpx solid #eae7e1;border-radius:10rpx;color:#77746f;line-height:1.8}
+.empty{text-align:center;padding:52rpx 32rpx;background:#fcfbf9;border:1rpx solid #eae7e1;border-radius:16rpx;color:#716e68;line-height:1.8}
 .badge{display:inline-block;border-radius:6rpx;padding:5rpx 14rpx;background:#f6f0e6;color:#786548;font-size:22rpx;white-space:nowrap}.badge.cancelled{background:#efeeec;color:#74716c}.badge.rescheduled{background:#f3f1ed;color:#716d65}
 .divider{height:1rpx;background:#eae7e1;margin:22rpx 0}.detail-label{color:#77746f;font-size:24rpx}.detail-value{font-size:28rpx;margin-top:5rpx;word-break:break-all}
 .buttons{display:flex;gap:16rpx}.buttons button{flex:1;min-width:0}.loading{padding:32rpx;text-align:center;color:#77746f}.step{display:flex;gap:12rpx;color:#918d86;font-size:23rpx;margin-bottom:24rpx}.step .active{color:#292d30;font-weight:650}.checkline{display:flex;align-items:flex-start;gap:12rpx;font-size:25rpx;margin:22rpx 0}.checkline checkbox{transform:scale(.8);margin-left:-7rpx}

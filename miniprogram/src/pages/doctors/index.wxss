@@ -1,4 +1,36 @@
- .doctors-page>.title{font-size:48rpx;line-height:1.45;margin-bottom:18rpx}.page-intro{margin-bottom:30rpx;line-height:1.9}.doctor-filter{display:flex;align-items:center;justify-content:space-between;padding:22rpx 0;gap:20rpx;border:0;border-top:1rpx solid #eae7e1;border-bottom:1rpx solid #eae7e1}.doctor-filter .section-title{font-size:27rpx;margin:0 0 3rpx}.filter-choice{display:flex;align-items:center;gap:15rpx;background:#fcfbf9;border:1rpx solid #eae7e1;border-radius:6rpx;padding:14rpx 18rpx;font-size:24rpx;max-width:380rpx;overflow:hidden}.filter-choice text{color:#9e8257}
-.team-card{padding:28rpx 0;border:0;border-bottom:1rpx solid #eae7e1;border-radius:0}.team-top{display:flex;align-items:center;gap:23rpx}.doctor-avatar{width:180rpx;height:205rpx;flex-shrink:0;position:relative;overflow:hidden;background:#fcfbf9}.doctor-avatar image{width:100%;height:100%;display:block}.doctor-avatar>text{position:absolute;bottom:7rpx;right:7rpx;color:#625b50;font-size:18rpx;background:#fff;padding:3rpx 7rpx}.name-line{display:flex;align-items:center;gap:10rpx;flex-wrap:wrap}.doctor-name{font-family:"Noto Serif SC","Songti SC",serif;font-size:32rpx;font-weight:600;line-height:1.45;word-break:break-all}.doctor-specialty{font-size:24rpx;color:#625d55;margin-top:10rpx;line-height:1.7}.doctor-location{font-size:22rpx;color:#77746f;margin-top:11rpx;line-height:1.8}.focus-tags{display:flex;gap:10rpx;flex-wrap:wrap;margin-top:24rpx}.focus-tags text{font-size:21rpx;border-radius:4rpx;background:#f7f5f1;color:#625d55;padding:6rpx 13rpx}.doctor-bio{font-size:24rpx;color:#77746f;line-height:1.9;margin-top:19rpx;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}.demo-inline{font-size:21rpx;color:#786548;line-height:1.7;background:#fcfbf9;padding:12rpx 15rpx;margin-top:19rpx}.team-footer{display:flex;align-items:center;justify-content:space-between;gap:12rpx;padding-top:20rpx;margin-top:22rpx;border-top:1rpx solid #eae7e1}.team-footer .link{font-size:24rpx}.team-footer .small{font-size:20rpx}
-
-.doctor-avatar image.doctor-sprite{position:absolute;width:400%;height:200%;max-width:none}
+.doctors-page { padding-top: 44rpx; }
+.doctors-page > .eyebrow { font-size: 19rpx; letter-spacing: 2rpx; margin-bottom: 16rpx; }
+.doctors-page > .title { font-size: 42rpx; line-height: 1.5; margin: 0 0 18rpx; }
+.page-intro { margin-bottom: 36rpx; font-size: 25rpx; line-height: 1.8; }
+.doctor-filter { display: flex; align-items: center; justify-content: space-between; padding: 26rpx 28rpx; gap: 24rpx; border: 1rpx solid #e6e2d9; border-radius: 16rpx; margin-bottom: 28rpx; }
+.filter-summary { flex: 1; min-width: 0; }
+.doctor-filter .section-title { font-size: 28rpx; line-height: 1.5; margin: 0 0 6rpx; }
+.doctor-filter .small { font-size: 22rpx; }
+.doctor-filter picker { max-width: 58%; min-width: 0; }
+.filter-choice { display: flex; align-items: center; gap: 14rpx; min-height: 76rpx; background: #f7f5ef; border: 1rpx solid #e6e1d8; border-radius: 10rpx; padding: 16rpx 20rpx; font-size: 24rpx; }
+.filter-value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.filter-arrow { flex-shrink: 0; color: #8a704e; }
+.team-card { padding: 30rpx; margin-bottom: 28rpx; border: 1rpx solid #e6e2d9; border-radius: 18rpx; }
+.team-top { display: flex; align-items: flex-start; gap: 24rpx; }
+.doctor-avatar { width: 144rpx; height: 144rpx; flex-shrink: 0; position: relative; overflow: hidden; border-radius: 12rpx; background: #f4f0e8; }
+.doctor-avatar image { width: 100%; height: 100%; display: block; }
+.doctor-avatar > text { position: absolute; bottom: 6rpx; right: 5rpx; left: 5rpx; text-align: center; color: #625b50; font-size: 17rpx; line-height: 1.6; background: rgba(255,255,255,.93); padding: 3rpx 4rpx; border-radius: 4rpx; }
+.doctor-avatar image.doctor-sprite { position: absolute; width: 400%; height: 200%; max-width: none; }
+.name-line { line-height: 1.5; }
+.doctor-name { font-family: "Noto Serif SC","Songti SC",serif; font-size: 31rpx; font-weight: 600; line-height: 1.5; word-break: break-all; }
+.doctor-specialty { font-size: 24rpx; color: #625d55; margin-top: 12rpx; line-height: 1.8; word-break: break-all; }
+.team-demo { margin-top: 14rpx; font-size: 18rpx; padding: 3rpx 9rpx; }
+.doctor-location { margin-top: 26rpx; padding: 18rpx 20rpx; border-radius: 10rpx; background: #f7f5f0; font-size: 23rpx; color: #625d55; line-height: 1.8; word-break: break-all; }
+.location-label { font-size: 20rpx; color: #8a8175; margin-bottom: 5rpx; }
+.focus-tags { display: flex; gap: 10rpx; flex-wrap: wrap; margin-top: 20rpx; }
+.focus-tags text { font-size: 21rpx; line-height: 1.6; border: 1rpx solid #e9e4db; border-radius: 6rpx; color: #716553; padding: 7rpx 13rpx; }
+.team-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12rpx 18rpx; padding-top: 24rpx; margin-top: 24rpx; border-top: 1rpx solid #ece8e0; }
+.team-footer .link { font-size: 24rpx; line-height: 1.7; }
+.team-footer .small { font-size: 21rpx; line-height: 1.7; }
+@media (max-width: 350px) {
+  .team-card { padding: 26rpx; }
+  .team-top { gap: 20rpx; }
+  .doctor-avatar { width: 132rpx; height: 132rpx; }
+  .doctor-name { font-size: 30rpx; }
+  .doctor-filter { padding: 24rpx 26rpx; gap: 18rpx; }
+}

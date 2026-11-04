@@ -1,4 +1,4 @@
-<view class="page"><view class="step"><text>01 选择时段</text><text>—</text><text class="active">02 核对确认</text><text>—</text><text>03 预约完成</text></view>
+<view class="page confirm-page"><view class="step"><text>01 选择时段</text><text>—</text><text class="active">02 核对确认</text><text>—</text><text>03 预约完成</text></view>
   <view class="title">{{context.oldAppointmentId ? '核对新的就诊安排' : '确认前，再核对一下'}}</view>
   <view wx:if="{{context}}" class="hold-banner {{expired ? 'expired' : ''}}"><view><view class="small">{{pending ? '提交结果待确认' : expired ? '短时占位已到期' : '正在为你短时保留'}}</view><view wx:if="{{!pending}}" class="countdown">{{remaining}}</view></view><view class="hold-note">{{pending ? '请先核对原操作结果' : expired ? '请返回重新查询时段' : '请在倒计时内确认预约'}}</view></view>
   <view wx:if="{{!context && !pending}}" class="empty">没有待确认的时段，请先选择一个可预约时段。<button class="primary space" bindtap="chooseAgain">返回选择</button></view>

@@ -1,4 +1,4 @@
-<view class="page">
+<view class="page booking-page">
   <van-steps custom-class="booking-steps" steps="{{steps}}" active="{{0}}" active-color="#9e8257" inactive-color="#91a4ad" />
   <view class="title">{{oldAppointmentId ? '换一个合适的时间' : '选择你的就诊安排'}}</view><view class="muted intro">{{oldAppointmentId ? '选择新时段，确认后替换原预约。' : '选择时段后将短时保留，请及时确认。'}}</view>
   <view wx:if="{{pending}}" class="notice">有一笔预约操作结果待确认。<view class="link space" bindtap="pendingPage">去核对原操作 →</view></view>
