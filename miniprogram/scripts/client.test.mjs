@@ -72,6 +72,13 @@ function loginPage(r) {
   return { ...options, data: structuredClone(options.data), setData(update) { Object.assign(this.data, update); } };
 }
 
+test('patient demo password is disclosed once inside the login-only account presets', () => {
+  const template=readFileSync(join(root,'src/pages/login/index.wxml'),'utf8');
+  const presets=template.match(/<view wx:if="\{\{mode === 'login'\}\}" class="patient-account-presets">[\s\S]*?<view class="preset-help">([\s\S]*?)<\/view>/)?.[1];
+  assert.ok(presets);assert.match(presets,/演示密码：admin123/);assert.match(presets,/手动输入密码/);
+  assert.equal(template.match(/演示密码：admin123/g)?.length,1);
+});
+
 test('patient account presets fill only a known patient username and never authenticate by themselves', () => {
   const r=runtime(), page=loginPage(r), pick=username=>page.selectPatient({currentTarget:{dataset:{username}}});
   assert.deepEqual(Array.from(page.data.patientAccounts,item=>item.username),['patient.a','patient.b']);
@@ -95,10 +102,10 @@ test('patient presets follow manual account entry and cannot populate a registra
 
 test('patient preset sign-in still submits an ordinary patient password login with demo login disabled', async () => {
   const r=runtime(),page=loginPage(r);page.data.config={demoLoginEnabled:false,demoAccounts:[],wechatLoginEnabled:false};
-  page.selectPatient({currentTarget:{dataset:{username:'patient.a'}}});page.data.password='synthetic-fixture-password';
+  page.selectPatient({currentTarget:{dataset:{username:'patient.a'}}});page.data.password='admin123';
   r.respond(options=>options.success({statusCode:200,data:{data:options.url.endsWith('/auth/login')?login('patient.a'):{accepted:true,minor:false,policyVersion:'v1'}}}));
   await page.submit();assert.match(r.requests[0].url,/\/auth\/login$/);assert.equal(r.requests[0].data.username,'patient.a');assert.equal(r.requests[0].data.portal,'patient');
-  assert.equal(r.requests[0].data.password,'synthetic-fixture-password');assert.ok(r.requests.every(request=>!request.url.endsWith('/auth/demo')));
+  assert.equal(r.requests[0].data.password,'admin123');assert.ok(r.requests.every(request=>!request.url.endsWith('/auth/demo')));
 });
 test('linked registration refuses minor consent without a guardian and makes no request', async () => {
   const r = runtime(), page = loginPage(r);

@@ -8,3 +8,4 @@
 .patient-account-label{font-size:27rpx;font-weight:600}
 .patient-account-name{font-size:23rpx;font-family:ui-monospace,Consolas,monospace;color:#77746f;word-break:break-all}
 .preset-help{font-size:22rpx;line-height:1.7;color:#89857e;margin-top:14rpx}
+.preset-password{display:block;font-weight:600;color:#504e49}

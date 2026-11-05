@@ -17,6 +17,13 @@ function fixture(){
  return {page:exports,requests,navigation};
 }
 
+test('staff demo password is disclosed once beside the role presets',()=>{
+ const source=readFileSync(new URL('../src/views/LoginView.vue',import.meta.url),'utf8');
+ const presets=source.match(/<fieldset class="role-presets"[\s\S]*?<\/fieldset>/)?.[0];
+ assert.ok(presets);assert.match(presets,/演示密码：admin123/);assert.match(presets,/仍需手动输入密码/);
+ assert.equal(source.match(/演示密码：admin123/g)?.length,1);
+});
+
 test('staff role presets fill accounts without submitting and clear stale passwords only when switching identity',()=>{
  const {page,requests}=fixture();
  assert.deepEqual(Array.from(page.roleAccounts,item=>item.username),['hq','manager.a','front.a','doctor.a']);
@@ -31,6 +38,6 @@ test('staff role presets fill accounts without submitting and clear stale passwo
 test('staff presets retain normal password login and cannot submit an empty password',async()=>{
  const {page,requests,navigation}=fixture();page.selectAccount('front.a');
  await page.login();assert.equal(requests.length,0);assert.ok(page.error.value);
- page.password.value='synthetic-fixture-password';await page.login();
- assert.deepEqual(requests,[['front.a','synthetic-fixture-password',false]]);assert.deepEqual(navigation,['/appointments']);
+ page.password.value='admin123';await page.login();
+ assert.deepEqual(requests,[['front.a','admin123',false]]);assert.deepEqual(navigation,['/appointments']);
 });

@@ -106,7 +106,9 @@ async function login(demo = false) {
               <span class="role-preset-account">{{ account.username }}</span>
             </button>
           </div>
-          <p class="role-preset-help">选择后填入账号，仍需输入密码。</p>
+          <p class="role-preset-help">
+            <strong>演示密码：admin123</strong><br />选择后填入账号，仍需手动输入密码。
+          </p>
         </fieldset>
         <el-alert
           v-if="error"
@@ -235,6 +237,10 @@ async function login(demo = false) {
   color: #89857e;
   font-size: 12px;
   line-height: 1.6;
+}
+.role-preset-help strong {
+  color: #504e49;
+  font-weight: 600;
 }
 @media (max-width: 350px) {
   .role-preset { padding: 12px; }
