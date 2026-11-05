@@ -15,4 +15,10 @@
 - 微信开发者工具 390px 原生页面验证患者A/B点击填入、切换清空旧密码、手动输入清除选中态；没有提交真实登录或修改原有会话。
 - 小程序生产构建使用 `https://andrewdental.top/api/v1`，同步到 `D:\AndrewDentalMiniProgram` 时保留 AppID 与合法域名校验配置。
 
-本机截图和检查结果位于忽略目录 `.booking-data/login-roles-20261105/`。云端网页部署与开发版本 `1.2.1` 上传结果待核对。
+发布验证：
+
+- 网站登录页 `https://andrewdental.top/login` 已更新，源码提交为 `ac0bbc7`。线上页面实际选择“店长”后填入 `manager.a`，备案链接正常显示，API 健康检查返回 `ok`，数据库为 PostgreSQL。
+- 仅重新构建并替换网站容器，API 与数据库容器未变更。部署目录为 `/opt/andrew-login-ac0bbc7`；上一版网站镜像保留为 `andrew-preview-web:pre-roles-20261105-150226`。
+- 2026-11-05 15:05（北京时间），微信开发者工具 CLI 上传开发版本 `1.2.1` 成功，命令退出码为 0，上传回执包体积为 1,253,481 字节。此为开发版上传，尚未提交审核或正式发布。
+
+本机截图和界面检查结果位于忽略目录 `.booking-data/login-roles-20261105/`，上传回执为 `.booking-data/wechat-upload-1.2.1-20261105.json`。本次核对覆盖账号选择和登录请求行为，未开展真机回归。
