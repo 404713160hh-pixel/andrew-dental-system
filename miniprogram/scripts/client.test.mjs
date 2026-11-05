@@ -71,6 +71,35 @@ function loginPage(r) {
   r.load('pages/login/index'); const options = r.pages.at(-1);
   return { ...options, data: structuredClone(options.data), setData(update) { Object.assign(this.data, update); } };
 }
+
+test('patient account presets fill only a known patient username and never authenticate by themselves', () => {
+  const r=runtime(), page=loginPage(r), pick=username=>page.selectPatient({currentTarget:{dataset:{username}}});
+  assert.deepEqual(Array.from(page.data.patientAccounts,item=>item.username),['patient.a','patient.b']);
+  Object.assign(page.data,{password:'old-account-password',error:'old error'});
+  pick('patient.a');assert.equal(page.data.username,'patient.a');assert.equal(page.data.password,'');assert.equal(page.data.error,'');
+  page.data.password='same-account-password';pick('patient.a');assert.equal(page.data.password,'same-account-password');
+  pick('patient.b');assert.equal(page.data.username,'patient.b');assert.equal(page.data.password,'');
+  pick('hq');assert.equal(page.data.username,'patient.b');
+  page.data.busy=true;pick('patient.a');assert.equal(page.data.username,'patient.b');
+  assert.equal(r.requests.length,0);assert.equal(r.load('utils/session').session(),null);
+});
+
+test('patient presets follow manual account entry and cannot populate a registration mode', () => {
+  const r=runtime(),page=loginPage(r);
+  page.selectPatient({currentTarget:{dataset:{username:'patient.a'}}});
+  page.input({currentTarget:{dataset:{field:'username'}},detail:{value:'my.patient'}});assert.equal(page.data.selectedPatientAccount,'');
+  page.input({currentTarget:{dataset:{field:'username'}},detail:{value:'patient.b'}});assert.equal(page.data.selectedPatientAccount,'patient.b');
+  page.mode({currentTarget:{dataset:{mode:'register'}}});assert.equal(page.data.username,'');assert.equal(page.data.selectedPatientAccount,'');
+  page.selectPatient({currentTarget:{dataset:{username:'patient.a'}}});assert.equal(page.data.username,'');assert.equal(r.requests.length,0);
+});
+
+test('patient preset sign-in still submits an ordinary patient password login with demo login disabled', async () => {
+  const r=runtime(),page=loginPage(r);page.data.config={demoLoginEnabled:false,demoAccounts:[],wechatLoginEnabled:false};
+  page.selectPatient({currentTarget:{dataset:{username:'patient.a'}}});page.data.password='synthetic-fixture-password';
+  r.respond(options=>options.success({statusCode:200,data:{data:options.url.endsWith('/auth/login')?login('patient.a'):{accepted:true,minor:false,policyVersion:'v1'}}}));
+  await page.submit();assert.match(r.requests[0].url,/\/auth\/login$/);assert.equal(r.requests[0].data.username,'patient.a');assert.equal(r.requests[0].data.portal,'patient');
+  assert.equal(r.requests[0].data.password,'synthetic-fixture-password');assert.ok(r.requests.every(request=>!request.url.endsWith('/auth/demo')));
+});
 test('linked registration refuses minor consent without a guardian and makes no request', async () => {
   const r = runtime(), page = loginPage(r);
   Object.assign(page.data, { mode: 'linked', username: 'patient.one', password: 'LongSyntheticPassword', code: 'one-time-code', linkedBirthDate: '2022-01-01', minor: true, notice: { policyVersion: 'v1' }, acceptedNotice: true, acceptedSensitive: true });

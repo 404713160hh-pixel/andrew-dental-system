@@ -5,6 +5,8 @@ import { setSession, session } from '../../utils/session';
 
 type Notice = {policyVersion:string;controller:string;contact:string;retention:string};
 type Status = {accepted:boolean;minor:boolean;policyVersion:string};
+const patientAccounts=[{label:'患者A',username:'patient.a'},{label:'患者B',username:'patient.b'}];
+const selectedPatient=(username:string)=>patientAccounts.find(account=>account.username===username.trim())?.username||'';
 function isMinor(birthDate:string) {
   if (!birthDate) return false;
   const birth=new Date(birthDate+'T00:00:00+08:00');
@@ -12,7 +14,7 @@ function isMinor(birthDate:string) {
   return Date.now()<anniversary.getTime();
 }
 Page({
-  data: { mode:'login',username:'',password:'',code:'',linkedBirthDate:'',profile:emptyProfile(),busy:false,loading:false,error:'',config:null as AuthConfig|null,notice:null as Notice|null,acceptedNotice:false,acceptedSensitive:false,guardianName:'',guardianRelationship:'',guardianAccepted:false,minor:false },
+  data: { mode:'login',username:'',password:'',patientAccounts,selectedPatientAccount:'',code:'',linkedBirthDate:'',profile:emptyProfile(),busy:false,loading:false,error:'',config:null as AuthConfig|null,notice:null as Notice|null,acceptedNotice:false,acceptedSensitive:false,guardianName:'',guardianRelationship:'',guardianAccepted:false,minor:false },
   onLoad() { void this.load(); },
   async load() {
     this.setData({loading:true,error:''});
@@ -27,8 +29,23 @@ Page({
     } catch(error) { this.setData({error:errorMessage(error)}); }
     finally { this.setData({loading:false}); }
   },
-  mode(event:WechatMiniprogram.BaseEvent) { if(!this.data.busy)this.setData({mode:String(event.currentTarget.dataset.mode),error:'',minor:false,acceptedNotice:false,acceptedSensitive:false,guardianAccepted:false}); },
-  input(event:WechatMiniprogram.CustomEvent<{value:string}>) { this.setData({[String(event.currentTarget.dataset.field)]:event.detail.value}); },
+  mode(event:WechatMiniprogram.BaseEvent) {
+    if(this.data.busy)return;
+    const mode=String(event.currentTarget.dataset.mode);
+    if(!['login','register','linked'].includes(mode))return;
+    const username=mode!=='login'&&selectedPatient(this.data.username)?'':this.data.username;
+    this.setData({mode,username,password:'',selectedPatientAccount:mode==='login'?selectedPatient(username):'',error:'',minor:false,acceptedNotice:false,acceptedSensitive:false,guardianAccepted:false});
+  },
+  input(event:WechatMiniprogram.CustomEvent<{value:string}>) {
+    const field=String(event.currentTarget.dataset.field),value=event.detail.value;
+    this.setData({[field]:value,...(field==='username'?{selectedPatientAccount:selectedPatient(value)}:{})});
+  },
+  selectPatient(event:WechatMiniprogram.BaseEvent) {
+    if(this.data.busy||this.data.loading||this.data.mode!=='login')return;
+    const username=String(event.currentTarget.dataset.username);
+    if(!patientAccounts.some(account=>account.username===username))return;
+    this.setData({username,selectedPatientAccount:username,error:'',...(this.data.username!==username?{password:''}:{})});
+  },
   linkedDate(event:WechatMiniprogram.CustomEvent<{value:string}>) { this.setData({linkedBirthDate:event.detail.value,minor:isMinor(event.detail.value)}); },
   profileChange(event:WechatMiniprogram.CustomEvent<PatientInput>) { this.setData({profile:event.detail,minor:isMinor(event.detail.birthDate)}); },
   consentChange(event:WechatMiniprogram.CustomEvent<{value:string[]}>) { const selected=event.detail.value;this.setData({acceptedNotice:selected.includes('notice'),acceptedSensitive:selected.includes('sensitive'),guardianAccepted:selected.includes('guardian')}); },

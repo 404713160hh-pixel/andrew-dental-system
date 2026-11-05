@@ -1,1 +1,10 @@
  .login-intro{padding:8rpx 0 28rpx}.login-intro .title{font-size:38rpx;line-height:1.45;margin:0}.login-tabs{display:flex;gap:28rpx;flex-wrap:wrap;border-bottom:1rpx solid #eae7e1}.login-tabs view{padding:8rpx 0 20rpx;color:#77746f}.login-tabs .active{color:#252522;font-weight:600;border-bottom:3rpx solid #b79a6b}.privacy-note{font-size:25rpx;line-height:1.7;color:#625d55;background:#fcfbf9;padding:20rpx;margin:18rpx 0}.consent-option{display:flex;align-items:flex-start;gap:10rpx;font-size:25rpx;line-height:1.6;margin:18rpx 0}
+.patient-account-presets{padding-top:26rpx}
+.preset-heading{font-size:24rpx;font-weight:600;margin-bottom:16rpx;color:#504e49}
+.patient-account-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18rpx}
+.patient-account{display:flex;flex-direction:column;align-items:flex-start;gap:8rpx;min-width:0;margin:0;padding:24rpx;border:1rpx solid #e4dfd7;border-radius:12rpx;background:#fcfbf8;text-align:left;line-height:1.5;color:#383734}
+.patient-account::after{border:0}
+.patient-account.active{border-color:#9e8257;background:#f6f0e5;box-shadow:inset 0 0 0 1rpx #9e8257}
+.patient-account-label{font-size:27rpx;font-weight:600}
+.patient-account-name{font-size:23rpx;font-family:ui-monospace,Consolas,monospace;color:#77746f;word-break:break-all}
+.preset-help{font-size:22rpx;line-height:1.7;color:#89857e;margin-top:14rpx}
