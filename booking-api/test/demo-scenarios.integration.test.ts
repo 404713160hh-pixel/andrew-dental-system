@@ -16,6 +16,7 @@ import { insertPatient } from '../src/repositories/catalog.js';
 import { querySlots } from '../src/repositories/booking.js';
 import { bookingPolicy, confirmAppointment, createHold } from '../src/services/booking.js';
 import { cancelShift } from '../src/services/resources.js';
+import { PRIVACY_VERSION } from '../src/privacy.js';
 
 const databaseName = 'andrew_test_' + randomBytes(10).toString('hex');
 const password = 'Synthetic-scenarios-' + randomBytes(18).toString('base64url');
@@ -144,4 +145,16 @@ test('a withdrawn synthetic consent is never reaccepted and ordinary same-name r
   assert.ok(rerun.blockedPatients.includes('seed:patient:a')); assert.equal(rerun.syntheticConsentsAdded, 0); assert.equal(rerun.appointmentsAdded, 0);
   assert.deepEqual((await db.query('SELECT * FROM patient_privacy_consents WHERE patient_id=$1 ORDER BY id', [patientId])).rows, before);
   assert.deepEqual(await ordinarySnapshot(), ordinaryBefore);
+});
+
+test('another actors consent does not unlock a linked patient account', async () => {
+  const patientId = (await db.query("SELECT record_id FROM demo_seed_records WHERE record_key='seed:patient:b'")).rows[0].record_id;
+  const actorId = (await db.query("SELECT id FROM users WHERE username='hq'")).rows[0].id;
+  await db.query('UPDATE patient_privacy_consents SET revoked_at=clock_timestamp() WHERE patient_id=$1', [patientId]);
+  await db.query(`INSERT INTO patient_privacy_consents(patient_id,actor_id,policy_version,notice_accepted,sensitive_accepted,guardian_accepted)
+    VALUES($1,$2,$3,true,true,false)`,[patientId,actorId,PRIVACY_VERSION]);
+  const before = (await db.query('SELECT * FROM patient_privacy_consents WHERE patient_id=$1 ORDER BY id', [patientId])).rows;
+  const rerun = await prepareDemoScenarios(db, config, {enabled:true});
+  assert.ok(rerun.blockedPatients.includes('seed:patient:b')); assert.equal(rerun.syntheticConsentsAdded,0);
+  assert.deepEqual((await db.query('SELECT * FROM patient_privacy_consents WHERE patient_id=$1 ORDER BY id', [patientId])).rows,before);
 });

@@ -91,7 +91,8 @@ export async function prepareDemoScenarios(pool: pg.Pool, config: Config, option
         }
         const consent = await one<{ any: boolean; active: boolean }>(db, `SELECT
           EXISTS(SELECT 1 FROM patient_privacy_consents WHERE patient_id=$1) AS any,
-          EXISTS(SELECT 1 FROM patient_privacy_consents WHERE patient_id=$1 AND policy_version=$2 AND revoked_at IS NULL) AS active`, [patient.id, PRIVACY_VERSION]);
+          EXISTS(SELECT 1 FROM patient_privacy_consents WHERE patient_id=$1 AND policy_version=$2 AND revoked_at IS NULL
+            AND ($3::uuid IS NULL OR actor_id=$3)) AS active`, [patient.id, PRIVACY_VERSION, patient.user_id]);
         if (consent?.active) enabledPatients.add(patient.id);
         else if (!consent?.any) {
           const actorId = patient.user_id || dataset.actor.id;

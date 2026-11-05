@@ -24,7 +24,7 @@ try {
   const hq=await login('hq','staff'), front=await login('front.a','staff');
   const patients=await request('/staff/patients?pageSize=100',hq);
   assert.ok(patients.items.filter(item=>item.isDemo).length>=8);
-  const staffAppointments=await request('/appointments?pageSize=100',hq);
+  const staffAppointments=await request('/staff/appointments?pageSize=100',hq);
   const patientChecks=[];
   for(const username of ['patient.a','patient.b']) {
     const token=await login(username,'patient');
@@ -34,7 +34,7 @@ try {
     assert.ok(list.items.every(item=>item.patientId===chart.id),'Patient received another chart');
     assert.ok(list.items.some(item=>item.status==='confirmed'&&Date.parse(item.startsAt)>Date.now()),username+' has no upcoming appointment');
     for(const appointment of list.items) {
-      const same=staffAppointments.items.find(item=>item.id===appointment.id);
+      const same=await request('/appointments/'+encodeURIComponent(appointment.id),hq);
       assert.ok(same,'Staff view cannot see the same appointment');assert.equal(same.status,appointment.status);
     }
     patientChecks.push({username,fictional:true,ownChartOnly:true,appointments:list.items.length,upcoming:list.items.filter(item=>item.status==='confirmed'&&Date.parse(item.startsAt)>Date.now()).length});
