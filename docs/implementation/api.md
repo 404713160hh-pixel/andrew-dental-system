@@ -104,4 +104,10 @@ qualifications项为 `{qualificationId,validFrom,validUntil:null|ISO时间}`；�
 
 401：UNAUTHENTICATED、SESSION_EXPIRED、INVALID_CREDENTIALS；403：FORBIDDEN、CLINIC_SCOPE_DENIED、DEMO_LOGIN_DISABLED、WRONG_PORTAL；404：NOT_FOUND、HOLD_NOT_FOUND；409：RESOURCE_CONFLICT、SLOT_UNAVAILABLE、HOLD_EXPIRED、VERSION_CONFLICT、REQUEST_KEY_REUSED、FUTURE_BOOKINGS_EXIST、SHIFT_CONFLICT、CANCELLATION_WINDOW_CLOSED。输入错误400，未配置微信501，内部错误500只给通用消息及requestId。数据库异常不会被吞掉或转成成功。
 
-本次没有微信支付、资金、病历、到诊登记或治疗完成接口。接口测试不证明微信授权、生产TLS或医疗运营能力已验收。
+患者微信支付、病历、到诊登记和治疗完成尚无业务接口。员工激励发放登记使用独立的核算额度与凭据，不调用患者支付接口。
+
+## 员工档案、季度业绩与激励
+
+完整请求、字段和状态转换见[薪酬与激励契约](compensation-contract-20261105.md)，共享 DTO 定义在 `shared/src/compensation.ts`。金额统一为整数分；所有写操作经现有会话、岗位、数据范围和版本校验。
+
+`/staff/profiles` 提供总部员工档案管理。`/compensation/months` 提供门诊月度财务底稿与独立关闭；`/compensation/quarters` 提供完整季度来源快照、10%基金、跨店分配和批准；`/compensation/allocations/:id/payments` 与 `/compensation/payments/:id/resolve` 提供待确认发放及结果登记；`/compensation/me` 只返回当前员工本人已批准份额与发放。患者不能调用这些员工接口。

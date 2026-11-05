@@ -15,7 +15,7 @@ const tables={clinics:'clinics',doctors:'staff',services:'services',chairs:'chai
 const reads={clinics:clinicSelect,doctors:doctorSelect,services:serviceSelect,chairs:chairSelect,qualifications:qualificationSelect};
 const fields:Record<Resource,Record<string,string>>={
  clinics:{name:'name',address:'address',phone:'phone',email:'email',active:'active',timezone:'timezone',description:'description',openingHours:'opening_hours'},
- doctors:{employeeNo:'employee_no',name:'name',phone:'phone',specialty:'specialty',active:'active'},
+ doctors:{employeeNo:'employee_no',name:'name',phone:'phone',birthDate:'birth_date',homeAddress:'home_address',email:'email',specialty:'specialty',active:'active'},
  services:{name:'name',description:'description',durationMinutes:'duration_minutes',bufferMinutes:'buffer_minutes',priceCents:'price_cents',unit:'unit',active:'active'},
  chairs:{clinicId:'clinic_id',name:'name',active:'active'},qualifications:{name:'name',active:'active'}
 };
@@ -31,17 +31,24 @@ export async function saveResource(pool:pg.Pool,user:Principal,kind:Resource,raw
  else hqOnly(user);
  return transaction(pool,async db=>{
   const table=tables[kind];
+  let qualificationsChanged=true;
   if(id){
    const old=await one<{row_version:number;clinic_id?:string}>(db,`SELECT * FROM ${table} WHERE id=$1 FOR UPDATE`,[id]);
    requireThat(old,404,'NOT_FOUND','资料不存在');
    if(kind==='chairs')clinicAccess(user,old.clinic_id!,['hq','manager']);
    requireThat(data.expectedVersion===old.row_version,409,'VERSION_CONFLICT','资料已变更，请刷新后重试');
    // Published bookings keep the exact service, skill and resource conditions.
-   const structural=kind!=='clinics'||data.active===false;
+   if(kind==='doctors'){
+    const incoming=(data.qualifications as z.infer<typeof doctorInput>['qualifications']).map(q=>[q.qualificationId,Date.parse(q.validFrom),q.validUntil===null?null:Date.parse(q.validUntil)]).sort((a,b)=>String(a[0]).localeCompare(String(b[0])));
+    const existing=(await db.query<{qualification_id:string;valid_from:Date;valid_until:Date|null}>('SELECT qualification_id,valid_from,valid_until FROM dentist_qualifications WHERE dentist_id=$1 ORDER BY qualification_id',[id])).rows.map(q=>[q.qualification_id,new Date(q.valid_from).getTime(),q.valid_until===null?null:new Date(q.valid_until).getTime()]);
+    qualificationsChanged=JSON.stringify(incoming)!==JSON.stringify(existing);
+   }
+   const structural=kind==='clinics'?data.active===false:kind==='doctors'?data.active===false||qualificationsChanged:true;
    requireThat(!structural||!await futureUse(db,kind,id),409,'FUTURE_BOOKINGS_EXIST','已有有效预约或占位，请先处理后再调整该资源');
   }
   // Old clients omit these optional fields; do not erase values they cannot edit.
-  const entries=Object.entries(fields[kind]).filter(([key])=>kind!=='clinics'||!['description','openingHours'].includes(key)||data[key]!==undefined);const values=entries.map(([key])=>data[key]);
+  const optionalFields=kind==='clinics'?['description','openingHours']:kind==='doctors'?['birthDate','homeAddress','email']:[];
+  const entries=Object.entries(fields[kind]).filter(([key])=>!optionalFields.includes(key)||data[key]!==undefined);const values=entries.map(([key])=>data[key]);
   let result:{id:string}|undefined;
   if(id){values.push(id);result=await one(db,`UPDATE ${table} SET ${entries.map(([,column],i)=>`${column}=$${i+1}`).join(',')},row_version=row_version+1 WHERE id=$${values.length} RETURNING id`,values);}
   else result=await one(db,`INSERT INTO ${table}(${entries.map(([,column])=>column).join(',')}) VALUES(${values.map((_,i)=>'$'+(i+1)).join(',')}) RETURNING id`,values);
@@ -49,8 +56,10 @@ export async function saveResource(pool:pg.Pool,user:Principal,kind:Resource,raw
   if(kind==='doctors'){
    const qualifications=(data.qualifications as z.infer<typeof doctorInput>['qualifications']);
    requireThat(new Set(qualifications.map(x=>x.qualificationId)).size===qualifications.length,400,'DUPLICATE_QUALIFICATION','专业资格不能重复');
-   await db.query('DELETE FROM dentist_qualifications WHERE dentist_id=$1',[savedId]);
-   for(const q of qualifications)await db.query('INSERT INTO dentist_qualifications(dentist_id,qualification_id,valid_from,valid_until)VALUES($1,$2,$3,$4)',[savedId,q.qualificationId,q.validFrom,q.validUntil]);
+   if(qualificationsChanged){
+    await db.query('DELETE FROM dentist_qualifications WHERE dentist_id=$1',[savedId]);
+    for(const q of qualifications)await db.query('INSERT INTO dentist_qualifications(dentist_id,qualification_id,valid_from,valid_until)VALUES($1,$2,$3,$4)',[savedId,q.qualificationId,q.validFrom,q.validUntil]);
+   }
   }
   if(kind==='services'){
    const v=data as unknown as z.infer<typeof serviceInput>;

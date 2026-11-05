@@ -152,7 +152,7 @@
 \tableofcontents
 \clearpage
 \ifShowFigureList
-\listoffigures
+{\linespread{1.25}\selectfont\listoffigures}
 \clearpage
 \fi
 \renewcommand{\listtablename}{表\quad 录}
@@ -163,7 +163,7 @@
 \begin{center}{\sffamily\bfseries\fontsize{18pt}{26pt}\selectfont 安德鲁牙科系统设计文档\par}\end{center}
 \begin{center}{\sffamily\bfseries\large 摘\quad 要}\end{center}
 \noindent\hspace*{2em}安德鲁牙科连锁在广东经营15家门诊，计划三年内将门诊数量翻一番。各门诊相对独立，总部依靠人工监督；患者通过电话预约，医生又需要根据技能需求跨店服务。规模扩大后，患者资料如何连续使用、治疗计价能否统一、取消率如何比较，以及每位医生创造了多少经营价值，成为需要共同解决的问题。\par
-目标系统增加小程序自助预约，并让电话代约与线上入口使用相同的医生班次和门诊容量。患者主档逐项记录过敏，治疗计划经确认后进入实际执行，医生记录标准单位数量与适用价格，每次就诊形成一张可追溯的结算单。总部按医生跨店归集季度收入、医疗用品成本及运营费用，计算净利润，并按10\%提取激励基金。文档依次给出业务现状与改进蓝图、系统用例规约、内部分析模型、关系数据库及界面和服务设计，同时定义并发、异常、权限与验收条件，为预约小程序和员工后台开发提供一致的业务依据。\par
+目标系统增加小程序自助预约，并让电话代约与线上入口使用相同的医生班次和门诊容量。患者主档逐项记录过敏，治疗计划经确认后进入实际执行，医生记录标准单位数量与适用价格，每次就诊形成一张可追溯的结算单。总部以独立复核关闭的月度账证汇总为来源，按医生跨店归集季度收入、医疗用品成本及运营费用，计算净利润，并按10\%提取激励基金。文档依次给出业务现状与改进蓝图、系统用例规约、内部分析模型、关系数据库及界面和服务设计，同时定义并发、异常、权限与验收条件，为预约小程序和员工后台开发提供一致的业务依据。\par
 关键词：牙科连锁；业务用例；跨店预约；单位计价；季度业绩；激励基金\par
 \Needspace{459pt}
 \section*{术语与业务对象}
@@ -440,10 +440,10 @@ Andrew Chen兼任首席执行官与首席牙医。公司已有15家门诊，扩�
 \Cell{\mbox{UC-16}} & \Cell{确认收款并分配到应收} & \Cell{前台、顾客}\\[1pt]
 \Cell{\mbox{UC-17}} & \Cell{审批费用更正并办理退款} & \Cell{前台、医生、店长、总部}\\[1pt]
 \Cell{\mbox{UC-18}} & \Cell{完成门诊日结及跨店代收核对} & \Cell{前台、店长、总部}\\[1pt]
-\Cell{\mbox{UC-19}} & \Cell{归集医疗用品成本和医生运营费用} & \Cell{店长、总部}\\[1pt]
-\Cell{\mbox{UC-20}} & \Cell{复核经营期间并关账} & \Cell{总部、店长}\\[1pt]
-\Cell{\mbox{UC-21}} & \Cell{计算医生季度业绩及10\%激励基金} & \Cell{总部}\\[1pt]
-\Cell{\mbox{UC-22}} & \Cell{复核激励分配并登记发放} & \Cell{总部}\\[1pt]
+\Cell{\mbox{UC-19}} & \Cell{GET/\allowbreak{}POST /\allowbreak{}compensation/\allowbreak{}months；PUT /\allowbreak{}compensation/\allowbreak{}months/\allowbreak{}\{id\}。}\\[1pt]
+\Cell{\mbox{UC-20}} & \Cell{POST /\allowbreak{}compensation/\allowbreak{}months/\allowbreak{}\{id\}/\allowbreak{}close；POST /\allowbreak{}compensation/\allowbreak{}months/\allowbreak{}\{id\}/\allowbreak{}reopen。}\\[1pt]
+\Cell{\mbox{UC-21}} & \Cell{GET/\allowbreak{}POST /\allowbreak{}compensation/\allowbreak{}quarters；GET /\allowbreak{}compensation/\allowbreak{}quarters/\allowbreak{}\{id\}。}\\[1pt]
+\Cell{\mbox{UC-22}} & \Cell{POST /\allowbreak{}compensation/\allowbreak{}quarters/\allowbreak{}\{id\}/\allowbreak{}submit、/\allowbreak{}approve、/\allowbreak{}void；POST /\allowbreak{}compensation/\allowbreak{}allocations/\allowbreak{}\{id\}/\allowbreak{}payments；POST /\allowbreak{}compensation/\allowbreak{}payments/\allowbreak{}\{id\}/\allowbreak{}resolve；GET /\allowbreak{}compensation/\allowbreak{}me。}\\[1pt]
 \Cell{\mbox{UC-23}} & \Cell{分析取消率与技能供需} & \Cell{店长、总部}\\[1pt]
 \Cell{\mbox{UC-24}} & \Cell{维护门诊组织和岗位授权} & \Cell{总部、店长}\\[1pt]
 \end{longtable}
@@ -556,7 +556,7 @@ Andrew Chen兼任首席执行官与首席牙医。公司已有15家门诊，扩�
 \toprule
 \bfseries \Cell{类别} & \bfseries \Cell{约定}\\\midrule
 \Cell{业务规则} & \Cell{1.\allowbreak{} 员工号不因跨店出诊改变。\\2.\allowbreak{} 牙医与专业资格为多对多关系，不能只存一个职称字符串。\\3.\allowbreak{} 项目能力授权依赖有效资格；运营管理身份不授予诊疗签署权。}\\[1pt]
-\Cell{质量要求} & \Cell{1.\allowbreak{} 验收将一项资格置为失效后，所有新号源查询均排除不合资格的安排。\\2.\allowbreak{} 普通预约查询只展示姓名、专长和可出诊信息，不返回住址与出生日期。}\\[1pt]
+\Cell{质量要求} & \Cell{1.\allowbreak{} 验收将一项资格置为失效后，所有新号源查询均排除不合资格的安排。\\2.\allowbreak{} 普通预约查询只展示姓名、专长和可出诊信息，不返回员工号、电话、出生日期、家庭住址和电子邮箱。}\\[1pt]
 \Cell{设计约束} & \Cell{1.\allowbreak{} 证书有效期依核验资料录入，无明确截止日时保留其依据，不虚构到期日。\\2.\allowbreak{} 人事档案变更、资格核验及项目授权分别留操作记录。}\\[1pt]
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
@@ -1463,232 +1463,276 @@ Andrew Chen兼任首席执行官与首席牙医。公司已有15家门诊，扩�
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
 \Needspace{320pt}
-\subsection{UC-19 归集医疗用品成本和医生运营费用}
-\par\noindent\begin{minipage}{\textwidth}
+\subsection{UC-19 登记医生月度账证汇总}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-19用例约定}\label{tab169}
-\begin{tabular}{@{}p{2.440cm}@{\hspace{0.16cm}}p{12.840cm}@{}}
+\begin{longtable}{@{}p{2.4cm}@{\hspace{0.16cm}}p{12.7cm}@{}}
+\caption{UC-19用例约定}\label{comp_uc19_spec}\\
 \toprule
 \bfseries \Cell{项目} & \bfseries \Cell{内容}\\\midrule
-\Cell{执行者} & \Cell{店长、总部}\\[1pt]
-\Cell{触发} & \Cell{店长整理经营期间的医疗用品耗用和运营费用，提交总部核算。}\\[1pt]
-\Cell{涉众利益} & \Cell{医生：成本归属有凭据，跨店不漏算或重复承担\\店长：本店耗用与共同费用可复核\\总部：季度净利润有完整且守恒的成本依据}\\[1pt]
-\Cell{前置条件} & \Cell{1.\allowbreak{} 费用具有来源凭据、发生日期及所属门诊。\\2.\allowbreak{} 直接归属医生或共同分摊的分类依据已明确；分摊动因能核对。}\\[1pt]
-\Cell{成功后置条件} & \Cell{1.\allowbreak{} 直接费用落到对应医生，共同费用形成可复算的分摊明细。\\2.\allowbreak{} 同一来源费用不重复入账，分摊合计等于原费用金额。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
-{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-19基本与扩展流程}\label{tab170}
-\begin{tabular}{@{}p{1.440cm}@{\hspace{0.16cm}}p{13.840cm}@{}}
-\toprule
-\bfseries \Cell{步骤} & \bfseries \Cell{事件、响应及分支}\\\midrule
-\Cell{1} & \Cell{店长登记医疗用品实际耗用成本及运营费用，附来源、日期、门诊和费用类别。}\\[1pt]
-\Cell{2} & \Cell{系统检查来源重复、金额和期间，区分直接归属与共同费用。}\\[1pt]
-\Cell{3} & \Cell{可直接归属的费用由店长说明医生及依据，系统保存归属明细。}\\[1pt]
-\Cell{4} & \Cell{共同运营费用默认采用经核验的医生工作时长，导入本期各医生数值及来源；改变动因必须先批准新的制度版本。}\\[1pt]
-\Cell{5} & \Cell{系统显示原费用、动因总量、各医生比例及舍入差额分配，形成试算。}\\[1pt]
-\Cell{6} & \Cell{店长核对本店资料，总部复核动因及异常后确认分摊版本。}\\[1pt]
-\Cell{7} & \Cell{系统保存费用与医生分摊明细，供跨店季度合并核算追溯。}\\[1pt]
-\Cell{4a} & \Cell{[动因总量为零、缺少医生工时或来源不可信] 暂停该费用分摊，列出缺项交店长补证；不平均填数掩盖缺失。}\\[1pt]
-\Cell{6b} & \Cell{[分摊后发现费用重复或凭据金额更正] 未关账时建立新分摊版本；已关账时追加引用原记录的调整，不覆盖已采用明细。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
-{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-19关键字段}\label{tab171}
-\begin{tabular}{@{}p{3.640cm}@{\hspace{0.16cm}}p{5.140cm}@{\hspace{0.16cm}}p{6.340cm}@{}}
-\toprule
-\bfseries \Cell{字段} & \bfseries \Cell{类型与限制} & \bfseries \Cell{业务含义}\\\midrule
-\Cell{费用来源号} & \Cell{字符串，同一来源与行号唯一} & \Cell{识别原始成本}\\[1pt]
-\Cell{费用类别} & \Cell{医疗用品/\allowbreak{}医生运营费用} & \Cell{对应净利润扣减项目}\\[1pt]
-\Cell{归属方式} & \Cell{直接/\allowbreak{}共同} & \Cell{决定是否需要分摊}\\[1pt]
-\Cell{医生工时动因} & \Cell{非负定点小时，注明期间、门诊与复核来源} & \Cell{默认共同运营费用的统一分摊依据}\\[1pt]
-\Cell{分摊金额} & \Cell{整数分，合计守恒} & \Cell{纳入各医生期间成本}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
-{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-19规则与质量约束}\label{tab172}
-\begin{tabular}{@{}p{2.440cm}@{\hspace{0.16cm}}p{12.840cm}@{}}
-\toprule
-\bfseries \Cell{类别} & \bfseries \Cell{约定}\\\midrule
-\Cell{业务规则} & \Cell{1.\allowbreak{} 耗用成本与采购付款不同，未耗用用品不因已付款就全部摊给本期医生。\\2.\allowbreak{} 直接可归属费用不得为方便而再次纳入共同分摊；医生跨店费用先保留来源门诊，再按医生合并。\\3.\allowbreak{} 共同费用先计算精确份额，再按小数余数从大到小分配余分，同余时按医生编号稳定排序。\\4.\allowbreak{} 共同运营费用默认统一按经核验医生工时分摊；其他动因须有新制度版本、适用范围和独立复核，不为单次奖金结果临时切换。}\\[1pt]
-\Cell{质量要求} & \Cell{1.\allowbreak{} 每笔成本能展开到来源凭据和归属依据。\\2.\allowbreak{} 任意分摊版本的明细总额严格等于该版本原费用；相同输入重复试算结果一致。}\\[1pt]
-\Cell{设计约束} & \Cell{1.\allowbreak{} 本用例只登记核算所需成本及分摊，不扩展为采购、库存或预算系统。\\2.\allowbreak{} 分摊动因与口径在总部确认后固定，不能为改变奖金结果临时更换。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\Needspace{372pt}
-\subsection{UC-20 复核经营期间并关账}
-\par\noindent\begin{minipage}{\textwidth}
-{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-20用例约定}\label{tab174}
-\begin{tabular}{@{}p{2.440cm}@{\hspace{0.16cm}}p{12.840cm}@{}}
+\endfirsthead
 \toprule
 \bfseries \Cell{项目} & \bfseries \Cell{内容}\\\midrule
-\Cell{执行者} & \Cell{总部、店长}\\[1pt]
-\Cell{触发} & \Cell{经营期间结束，总部制表人员发起关账检查。}\\[1pt]
-\Cell{涉众利益} & \Cell{总部：确认收入、成本和往来口径一致后固定核算期间\\店长：明确本店尚未补齐的资料\\医生：季度计算采用稳定、可追溯数据}\\[1pt]
-\Cell{前置条件} & \Cell{1.\allowbreak{} 月度期间起止、纳入门诊及组织有效期明确，拟关月份已经结束。\\2.\allowbreak{} 签署执行、结算、日结、成本及往来可查询；正式关账必须消除资金未知与未解释差异。}\\[1pt]
-\Cell{成功后置条件} & \Cell{1.\allowbreak{} 只有执行签署和必要账单齐全、收退款结果明确、资金差异已处理且成本完整的月份，才形成固定关账快照。\\2.\allowbreak{} 应收未收和已确认未划转往来作为明确余额保留；关账后不直接倒填或覆盖原期间。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
+\endhead
+\bottomrule\endlastfoot
+\Cell{执行者} & \Cell{总部、所属门诊店长}\\[2pt]
+\Cell{触发} & \Cell{月份结束，制表人员整理已核对的医生收入、用品成本和运营费用。}\\[2pt]
+\Cell{前置条件} & \Cell{经办人具备有效员工档案和门诊授权；月份已经结束，三类金额均有账证依据。}\\[2pt]
+\Cell{成功后置条件} & \Cell{生成或更新仅属于本门诊本月份的草稿，逐医生保留三类金额及来源；修订保留旧行历史。}\\[2pt]
+\end{longtable}
+}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-20基本与扩展流程}\label{tab175}
-\begin{tabular}{@{}p{1.440cm}@{\hspace{0.16cm}}p{13.840cm}@{}}
+\begin{longtable}{@{}p{1.4cm}@{\hspace{0.16cm}}p{13.7cm}@{}}
+\caption{UC-19基本与扩展流程}\label{comp_uc19_steps}\\
 \toprule
 \bfseries \Cell{步骤} & \bfseries \Cell{事件、响应及分支}\\\midrule
-\Cell{1} & \Cell{总部制表人员选择月份和纳入门诊，系统检查各店执行签署、必要结算单、日结和成本资料完整性。}\\[1pt]
-\Cell{2} & \Cell{系统按服务日及获准调整归集已签署且已出具账单的收入，分别显示应收、实收和预收；账单未收清不是缺收入。}\\[1pt]
-\Cell{3} & \Cell{系统检查未知收退款、未解释资金或代收差异、未复核日结、缺价执行和未分摊费用，逐项形成关账阻断。}\\[1pt]
-\Cell{4} & \Cell{店长补齐资料，总部查清资金结果并处理差异；阻断清零后制表人员提交关账包，不能用查证计划代替查清。}\\[1pt]
-\Cell{5} & \Cell{另一名总部复核人员核对全部门诊来源、截止日期、口径及阻断清零证据，批准或退回。}\\[1pt]
-\Cell{6} & \Cell{系统重新比较来源版本和阻断状态，全部有效才保存月度快照并锁定期间。}\\[1pt]
-\Cell{7} & \Cell{系统发布关闭结果；正常未收应收、已确认未划转余额及非资金通知待办继续跟踪，不夹带未知资金结果。}\\[1pt]
-\Cell{3a} & \Cell{[存在未签执行、缺少必要账单、未知收退款、未解释差异或成本缺项] 阻止关账，列明门诊、责任人和证据；全部查清补齐并重新复核后才能关闭。}\\[1pt]
-\Cell{6b} & \Cell{[复核后来源数据发生变化，或制表人与复核人为同一人] 拒绝关账，保留审批意见并要求重新生成核对包；不锁定不一致快照。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
+\endfirsthead
+\toprule
+\bfseries \Cell{步骤} & \bfseries \Cell{事件、响应及分支}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{1} & \Cell{选择门诊和自然月，填写汇总账证编号或核对说明。}\\[2pt]
+\Cell{2} & \Cell{逐医生录入服务收入净额、医疗用品成本、运营费用及各自来源编号。}\\[2pt]
+\Cell{3} & \Cell{系统检查门诊范围、医生身份、金额精度及来源必填项。预约标价和预约数量不作为收入凭据。}\\[2pt]
+\Cell{4} & \Cell{如确实无业务，明确选择无业务并填写依据，系统继续核对当月医生覆盖。}\\[2pt]
+\Cell{5} & \Cell{系统以版本校验保存草稿与来源修订，页面显示已保存版本、合计和待补项。}\\[2pt]
+\Cell{3a} & \Cell{[来源缺失、门诊越权、医生无效或版本冲突] 拒绝保存，保留输入并说明具体缺项。}\\[2pt]
+\Cell{5a} & \Cell{[月份已关闭或草稿不属于本人] 禁止直接覆盖；由总部按重开规则处理。}\\[2pt]
+\end{longtable}
+}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-20关键字段}\label{tab176}
-\begin{tabular}{@{}p{3.640cm}@{\hspace{0.16cm}}p{5.140cm}@{\hspace{0.16cm}}p{6.340cm}@{}}
+\begin{longtable}{@{}p{3.5cm}@{\hspace{0.16cm}}p{5.0cm}@{\hspace{0.16cm}}p{6.4cm}@{}}
+\caption{UC-19关键字段}\label{comp_uc19_fields}\\
 \toprule
 \bfseries \Cell{字段} & \bfseries \Cell{类型与限制} & \bfseries \Cell{业务含义}\\\midrule
-\Cell{月度经营期间} & \Cell{自然月起止及纳入门诊；同范围有效期间不重叠} & \Cell{形成季度必需的每月关闭来源}\\[1pt]
-\Cell{检查项} & \Cell{事项、状态、责任人及证据} & \Cell{定位阻断与待跟踪事项}\\[1pt]
-\Cell{来源摘要} & \Cell{固定摘要及各来源版本} & \Cell{发现复核期间的数据变化}\\[1pt]
-\Cell{制表与复核人} & \Cell{两个不同自然人账号} & \Cell{落实总部内部职责分离}\\[1pt]
-\Cell{关账快照号} & \Cell{唯一字符串及锁定时间} & \Cell{供季度结果稳定引用}\\[1pt]
-\Cell{关账阻断项数} & \Cell{非负整数，必须为0才能关闭} & \Cell{未知资金、未解释差异与来源缺项均计入}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
+\endfirsthead
+\toprule
+\bfseries \Cell{字段} & \bfseries \Cell{类型与限制} & \bfseries \Cell{业务含义}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{门诊、自然月} & \Cell{UUID、YYYY-MM；同组合唯一} & \Cell{确定月度核算范围}\\[2pt]
+\Cell{账证依据、无业务声明} & \Cell{必填编号或说明；无业务仍需明确依据} & \Cell{区分已核验零业务和未填报}\\[2pt]
+\Cell{医生财务行} & \Cell{医生ID、三类整数分金额及三类来源} & \Cell{跨店采用稳定员工身份}\\[2pt]
+\Cell{expectedVersion} & \Cell{正整数；创建之外的修改必填} & \Cell{防止旧页面覆盖新底稿}\\[2pt]
+\end{longtable}
+}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-20规则与质量约束}\label{tab177}
-\begin{tabular}{@{}p{2.440cm}@{\hspace{0.16cm}}p{12.840cm}@{}}
+\begin{longtable}{@{}p{2.4cm}@{\hspace{0.16cm}}p{12.7cm}@{}}
+\caption{UC-19业务规则与质量}\label{comp_uc19_rules}\\
 \toprule
 \bfseries \Cell{类别} & \bfseries \Cell{约定}\\\midrule
-\Cell{业务规则} & \Cell{1.\allowbreak{} 期间关账不要求所有患者欠款收清，应收和预收作为余额分别带入以后期间。\\2.\allowbreak{} 未知收退款结果和未解释资金差异均阻止正式关账；可追踪、有责任人或已写说明都不能替代核实结案。\\3.\allowbreak{} 已关期间原则上追加开放期调整；确需重开时总部授权、记录原因并使引用旧快照的结果失效待复核。\\4.\allowbreak{} 收入采用已签署执行及已出具账单，不要求已收清；正常欠款和已确认未划转往来与未知资金差异分别列示。}\\[1pt]
-\Cell{质量要求} & \Cell{1.\allowbreak{} 关账快照可复算并与来源版本一致。\\2.\allowbreak{} 同一来源版本重复关账返回原快照；期间锁定后禁止未经授权的倒填。}\\[1pt]
-\Cell{设计约束} & \Cell{1.\allowbreak{} 服务收入按已执行项目事实确认，不以收钱日期替代。\\2.\allowbreak{} 关账责任在总部，店长仅补齐和确认授权门诊资料。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\Needspace{389pt}
+\endfirsthead
+\toprule
+\bfseries \Cell{类别} & \bfseries \Cell{约定}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{业务规则} & \Cell{收入按已提供服务及有效费用调整确认，付款和预收与收入区分；用品成本按实际耗用，运营费用按已核对归属金额录入。共同费用先在账证底稿中按固定制度分摊，保留动因依据，不在季度页面临时改变权重。}\\[2pt]
+\Cell{质量与权限} & \Cell{仅总部和所属门诊店长可制表；草稿由原制表人修订。金额使用整数分，负数调整附原来源与调整依据；每次保存写审计并保留行修订。}\\[2pt]
+\end{longtable}
+}
+\subsection{UC-20 独立复核月度底稿并关闭}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{2.4cm}@{\hspace{0.16cm}}p{12.7cm}@{}}
+\caption{UC-20用例约定}\label{comp_uc20_spec}\\
+\toprule
+\bfseries \Cell{项目} & \bfseries \Cell{内容}\\\midrule
+\endfirsthead
+\toprule
+\bfseries \Cell{项目} & \bfseries \Cell{内容}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{执行者} & \Cell{总部、所属门诊店长}\\[2pt]
+\Cell{触发} & \Cell{另一名具备该门诊权限的人员完成账证复核，申请关闭月度底稿。}\\[2pt]
+\Cell{前置条件} & \Cell{月度底稿为草稿且版本匹配；制表人与复核人的账号ID、员工ID均不同，双方员工档案有效。}\\[2pt]
+\Cell{成功后置条件} & \Cell{关闭版本固定制表、复核身份及医生来源；有效季度引用期间保持锁定。}\\[2pt]
+\end{longtable}
+}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{1.4cm}@{\hspace{0.16cm}}p{13.7cm}@{}}
+\caption{UC-20基本与扩展流程}\label{comp_uc20_steps}\\
+\toprule
+\bfseries \Cell{步骤} & \bfseries \Cell{事件、响应及分支}\\\midrule
+\endfirsthead
+\toprule
+\bfseries \Cell{步骤} & \bfseries \Cell{事件、响应及分支}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{1} & \Cell{复核人查看月份、总依据、各医生三类金额及来源，核对当月已发布出诊医生。}\\[2pt]
+\Cell{2} & \Cell{系统检查资料完整、医生覆盖及复核岗位；无业务也必须有明确依据。}\\[2pt]
+\Cell{3} & \Cell{复核人提交关闭及期望版本，系统锁定底稿并再次校验全部条件。}\\[2pt]
+\Cell{4} & \Cell{通过后保存closed、复核员工及关闭时间，记录审计。}\\[2pt]
+\Cell{5} & \Cell{需要更正时，由总部填写原因请求重开；系统检查是否被有效季度快照引用。}\\[2pt]
+\Cell{6} & \Cell{无有效季度引用才恢复草稿；之后重新保存、独立复核并关闭。}\\[2pt]
+\Cell{2a} & \Cell{[缺来源、漏出诊医生、制表复核身份相同或版本冲突] 拒绝关闭并给出原因。}\\[2pt]
+\Cell{5a} & \Cell{[已被有效季度引用] 拒绝重开；未批准季度可先作废，再按关闭规则修订和重新生成。}\\[2pt]
+\end{longtable}
+}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{3.5cm}@{\hspace{0.16cm}}p{5.0cm}@{\hspace{0.16cm}}p{6.4cm}@{}}
+\caption{UC-20关键字段}\label{comp_uc20_fields}\\
+\toprule
+\bfseries \Cell{字段} & \bfseries \Cell{类型与限制} & \bfseries \Cell{业务含义}\\\midrule
+\endfirsthead
+\toprule
+\bfseries \Cell{字段} & \bfseries \Cell{类型与限制} & \bfseries \Cell{业务含义}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{月度底稿号、状态} & \Cell{UUID；draft/\allowbreak{}closed} & \Cell{关闭的具体对象}\\[2pt]
+\Cell{制表与复核身份} & \Cell{各自账号ID和员工ID} & \Cell{同账号或同员工不能自审}\\[2pt]
+\Cell{医生覆盖} & \Cell{该月发布出诊医生与来源行集合} & \Cell{防止遗漏医生后仍关闭}\\[2pt]
+\Cell{重开原因与引用检查} & \Cell{总部填写原因；检查有效季度来源} & \Cell{保持季度快照稳定}\\[2pt]
+\end{longtable}
+}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{2.4cm}@{\hspace{0.16cm}}p{12.7cm}@{}}
+\caption{UC-20业务规则与质量}\label{comp_uc20_rules}\\
+\toprule
+\bfseries \Cell{类别} & \bfseries \Cell{约定}\\\midrule
+\endfirsthead
+\toprule
+\bfseries \Cell{类别} & \bfseries \Cell{约定}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{业务规则} & \Cell{正式关闭采用已经核对的收入成本账证，未收清应收不等同缺收入。草稿、关闭和重开均校验版本；关闭后不允许覆盖来源。}\\[2pt]
+\Cell{权限与恢复} & \Cell{总部或所属店长可独立关闭，重开仅限总部。已批准季度的来源锁定；待核实发放不因页面刷新被当作失败。}\\[2pt]
+\end{longtable}
+}
 \subsection{UC-21 计算医生季度业绩及10\%激励基金}
-\par\noindent\begin{minipage}{\textwidth}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-21用例约定}\label{tab179}
-\begin{tabular}{@{}p{2.440cm}@{\hspace{0.16cm}}p{12.840cm}@{}}
+\begin{longtable}{@{}p{2.4cm}@{\hspace{0.16cm}}p{12.7cm}@{}}
+\caption{UC-21用例约定}\label{comp_uc21_spec}\\
 \toprule
 \bfseries \Cell{项目} & \bfseries \Cell{内容}\\\midrule
-\Cell{执行者} & \Cell{总部}\\[1pt]
-\Cell{触发} & \Cell{季度结束，三个自然月及全部应纳入门诊均已关账，总部制表人员发起季度试算。}\\[1pt]
-\Cell{涉众利益} & \Cell{医生：跨店贡献合并，收入与成本依据透明\\总部：基金按统一公式计算且不被股权比例混淆\\店长：能核对本店来源对医生汇总的影响}\\[1pt]
-\Cell{前置条件} & \Cell{1.\allowbreak{} 先按季度起止和组织有效期列全三个自然月及每月应纳入门诊；全部组合均有当前有效关闭快照，不允许只提交部分月份或门诊。\\2.\allowbreak{} 医生跨店身份一致；收入来源为已签署执行和已出具账单，正常未收欠款不阻止收入归属；两类成本与规则版本已复核。}\\[1pt]
-\Cell{成功后置条件} & \Cell{1.\allowbreak{} 每名医生形成覆盖整个季度应纳入月份和门诊的收入、用品成本、运营费用及净利润明细；收入不以收清为条件。\\2.\allowbreak{} 基金按全体医生净利润合计的正值部分乘10\%计算，保留试算来源。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
-{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-21基本与扩展流程}\label{tab180}
-\begin{tabular}{@{}p{1.440cm}@{\hspace{0.16cm}}p{13.840cm}@{}}
-\toprule
-\bfseries \Cell{步骤} & \bfseries \Cell{事件、响应及分支}\\\midrule
-\Cell{1} & \Cell{总部选择季度和规则，系统独立构造三个自然月与有效经营门诊的完整范围，逐一验证当前关闭快照和版本，不以调用者传入子集代替。}\\[1pt]
-\Cell{2} & \Cell{系统只采用已签署执行且已出具账单的服务收入及有效调整，按统一医生身份跨店合并；未收清金额仍保留为收入与应收。}\\[1pt]
-\Cell{3} & \Cell{系统汇总直接及共同分摊的医疗用品成本、医生运营费用，逐医生计算净利润。}\\[1pt]
-\Cell{4} & \Cell{系统先合计所有医生净利润，包含亏损医生，再计算激励基金。}\\[1pt]
-\Cell{5} & \Cell{总部展开各医生及门诊明细，检查重复项目、遗漏成本与期间调整。}\\[1pt]
-\Cell{6} & \Cell{系统输出试算表、合计校验和来源版本；保存为待复核结果，不直接发放。}\\[1pt]
-\Cell{1a} & \Cell{[任一应纳入月份或门诊缺快照、未关闭或引用因重开失效] 停止正式季度试算，显示完整覆盖矩阵与缺项；补齐关账后产生新季度版本，不把缺来源当零收入或零成本。}\\[1pt]
-\Cell{4b} & \Cell{[全体净利润合计小于或等于零] 基金记零，仍保留每名医生正负贡献与成本明细，不制造可分配金额。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
-{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-21关键字段}\label{tab181}
-\begin{tabular}{@{}p{3.640cm}@{\hspace{0.16cm}}p{5.140cm}@{\hspace{0.16cm}}p{6.340cm}@{}}
-\toprule
-\bfseries \Cell{字段} & \bfseries \Cell{类型与限制} & \bfseries \Cell{业务含义}\\\midrule
-\Cell{季度号} & \Cell{年份+\allowbreak{}季度，起止日期固定} & \Cell{确定计算范围}\\[1pt]
-\Cell{医生身份号} & \Cell{全连锁唯一引用} & \Cell{合并跨店贡献}\\[1pt]
-\Cell{净利润} & \Cell{整数分，可为负} & \Cell{服务收入减两类成本}\\[1pt]
-\Cell{基金金额} & \Cell{整数分，非负} & \Cell{合计净利润正值的10\%}\\[1pt]
-\Cell{完整来源与规则版本} & \Cell{三个自然月×各月有效门诊的当前关闭快照及规则引用} & \Cell{核验全季度覆盖，拒绝部分来源集}\\[1pt]
-\Cell{应纳入/\allowbreak{}已关闭覆盖集合} & \Cell{按季度及组织有效期生成，两个集合必须相等} & \Cell{防止漏月份、漏门诊后仍生成正式结果}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
-{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-21规则与质量约束}\label{tab182}
-\begin{tabular}{@{}p{2.440cm}@{\hspace{0.16cm}}p{12.840cm}@{}}
-\toprule
-\bfseries \Cell{类别} & \bfseries \Cell{约定}\\\midrule
-\Cell{业务规则} & \Cell{1.\allowbreak{} 医生净利润=\allowbreak{}服务收入－医疗用品成本－医生运营费用；收入来自已签署且已出具账单的实际执行及有效调整，不以收清、收款人或开单人归属。\\2.\allowbreak{} 激励基金=\allowbreak{}round(\allowbreak{}max(\allowbreak{}0,\allowbreak{}Σ医生净利润)\allowbreak{}×10\%)\allowbreak{}；必须先合计含负数的净利润，不逐医生截负后再算基金。\\3.\allowbreak{} 同一季度按四舍五入至分固定舍入规则；60\%/\allowbreak{}40\%股权比例不参与激励计算。\\4.\allowbreak{} 本轮激励发放不再计入同轮公式的医生运营费用，避免循环扣减。\\5.\allowbreak{} 正式季度计算必须覆盖三个自然月及各月全部应纳入门诊的有效关闭来源；组织有效期外门诊须有明确排除依据，不把缺快照视为零。}\\[1pt]
-\Cell{质量要求} & \Cell{1.\allowbreak{} 季度汇总可逐级回溯至门诊、执行明细和成本分摊。\\2.\allowbreak{} 相同来源及规则版本重复计算得到相同金额与来源摘要。}\\[1pt]
-\Cell{设计约束} & \Cell{1.\allowbreak{} 试算结果不等于已批准分配，也不等于实际发放。\\2.\allowbreak{} 负贡献医生的亏损保留在合计中，不因无分配权重而被删去。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\Needspace{303pt}
-\subsection{UC-22 复核激励分配并登记发放}
-\par\noindent\begin{minipage}{\textwidth}
-{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-22用例约定}\label{tab184}
-\begin{tabular}{@{}p{2.440cm}@{\hspace{0.16cm}}p{12.840cm}@{}}
+\endfirsthead
 \toprule
 \bfseries \Cell{项目} & \bfseries \Cell{内容}\\\midrule
-\Cell{执行者} & \Cell{总部}\\[1pt]
-\Cell{触发} & \Cell{季度业绩试算已形成，总部制表人员申请分配与发放。}\\[1pt]
-\Cell{涉众利益} & \Cell{医生：分配依据可解释，批准金额与实际收到金额可核对\\总部：分配总额守恒且未经复核不得发放}\\[1pt]
-\Cell{前置条件} & \Cell{1.\allowbreak{} 采用的季度来源及规则版本有效，试算可以展开核对。\\2.\allowbreak{} 总部制表、复核及发放权限已分配给不同责任人员。}\\[1pt]
-\Cell{成功后置条件} & \Cell{1.\allowbreak{} 批准分配固定医生份额、依据、复核人和版本。\\2.\allowbreak{} 成功发放有凭证，未发、在途及失败余额分别保留，不超发基金。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
+\endhead
+\bottomrule\endlastfoot
+\Cell{执行者} & \Cell{总部}\\[2pt]
+\Cell{触发} & \Cell{自然季度已经结束，全部登记门诊的三个自然月底稿均已关闭。}\\[2pt]
+\Cell{前置条件} & \Cell{总部制表人有有效员工档案；服务端确定完整门诊与月份集合，不接受调用者选择部分来源。}\\[2pt]
+\Cell{成功后置条件} & \Cell{同事务固化季度、月度来源及关闭版本、医生门诊业绩和跨店个人份额，形成可复算草稿。}\\[2pt]
+\end{longtable}
+}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-22基本与扩展流程}\label{tab185}
-\begin{tabular}{@{}p{1.440cm}@{\hspace{0.16cm}}p{13.840cm}@{}}
+\begin{longtable}{@{}p{1.4cm}@{\hspace{0.16cm}}p{13.7cm}@{}}
+\caption{UC-21基本与扩展流程}\label{comp_uc21_steps}\\
 \toprule
 \bfseries \Cell{步骤} & \bfseries \Cell{事件、响应及分支}\\\midrule
-\Cell{1} & \Cell{总部制表人员打开季度试算，系统展示正负净贡献和激励基金。}\\[1pt]
-\Cell{2} & \Cell{系统按正净贡献比例试分配；净贡献非正的医生权重为零，亏损仍保留在基金合计基础中。}\\[1pt]
-\Cell{3} & \Cell{系统按固定舍入规则处理到分的余差，使所有医生份额合计等于基金。}\\[1pt]
-\Cell{4} & \Cell{另一名总部复核人员检查来源、公式、权重和余差，作出通过或退回结论。}\\[1pt]
-\Cell{5} & \Cell{通过后系统固定分配版本；发放办理人员选择医生及批准份额，核对收款信息。}\\[1pt]
-\Cell{6} & \Cell{总部办理人员登记已核实的银行发放凭证或在途状态，系统防止重复和超额。}\\[1pt]
-\Cell{7} & \Cell{系统展示批准、已成功发放、在途及剩余金额，保存医生可查的个人分配说明。}\\[1pt]
-\Cell{2a} & \Cell{[没有正净贡献基数或基金为零] 记录无可分配金额，停止生成付款任务；保留季度结果，不人为设置最低奖金。}\\[1pt]
-\Cell{4b} & \Cell{[复核人等于制表人、来源已失效或擅自更改权重] 拒绝通过并列出原因；回到相应季度试算或规则审批环节重算。}\\[1pt]
-\Cell{6c} & \Cell{[发放结果未知] 保持在途，查询原付款凭证；未明确失败前不另起同额付款。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
+\endfirsthead
+\toprule
+\bfseries \Cell{步骤} & \bfseries \Cell{事件、响应及分支}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{1} & \Cell{总部选择YYYY-Q1至YYYY-Q4季度并填写核算依据。}\\[2pt]
+\Cell{2} & \Cell{系统列出全部登记门诊与三个自然月；停用门诊也必须明确提交有依据的零业务或实际业务底稿。}\\[2pt]
+\Cell{3} & \Cell{逐一锁定并核验关闭来源，任何缺失或未关闭均停止生成。}\\[2pt]
+\Cell{4} & \Cell{按医生和门诊固化收入、用品成本、运营费用与净利润，再按同一员工身份跨店合并。}\\[2pt]
+\Cell{5} & \Cell{先合计全体医生的正负净利润，以合计正部的10\%四舍五入至分形成基金。}\\[2pt]
+\Cell{6} & \Cell{按跨店后正净贡献比例分配基金，使用最大余数法补齐余分；同余按员工编号、医生ID稳定排序。}\\[2pt]
+\Cell{7} & \Cell{核对个人份额合计等于基金后，原子保存来源、门诊明细、份额和规则版本。}\\[2pt]
+\Cell{3a} & \Cell{[任一门诊月份缺失、未关闭、版本无效] 不生成部分季度，显示需补齐组合。}\\[2pt]
+\Cell{5a} & \Cell{[全体净利润合计不大于零] 基金为零，保留亏损明细与零份额，不生成付款。}\\[2pt]
+\end{longtable}
+}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-22关键字段}\label{tab186}
-\begin{tabular}{@{}p{3.640cm}@{\hspace{0.16cm}}p{5.140cm}@{\hspace{0.16cm}}p{6.340cm}@{}}
+\begin{longtable}{@{}p{3.5cm}@{\hspace{0.16cm}}p{5.0cm}@{\hspace{0.16cm}}p{6.4cm}@{}}
+\caption{UC-21关键字段}\label{comp_uc21_fields}\\
 \toprule
 \bfseries \Cell{字段} & \bfseries \Cell{类型与限制} & \bfseries \Cell{业务含义}\\\midrule
-\Cell{分配版本} & \Cell{季度+\allowbreak{}版本，唯一} & \Cell{固定采用的基金和规则}\\[1pt]
-\Cell{正净贡献权重} & \Cell{非负精确比例，合计为1或无基数} & \Cell{构成分配依据}\\[1pt]
-\Cell{批准金额} & \Cell{非负整数分} & \Cell{每名医生可发上限}\\[1pt]
-\Cell{发放凭证号} & \Cell{渠道内唯一，引用批准份额} & \Cell{防止同笔重复登记}\\[1pt]
-\Cell{发放状态} & \Cell{未发/\allowbreak{}在途/\allowbreak{}成功/\allowbreak{}失败} & \Cell{区分计划与实际资金支出}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
+\endfirsthead
+\toprule
+\bfseries \Cell{字段} & \bfseries \Cell{类型与限制} & \bfseries \Cell{业务含义}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{季度、核算依据} & \Cell{YYYY-Qn及必填来源说明} & \Cell{固定完整自然季度}\\[2pt]
+\Cell{月度来源集合} & \Cell{全部登记门诊×三个自然月及关闭版本} & \Cell{无业务必须明确确认}\\[2pt]
+\Cell{医生门诊业绩} & \Cell{三类金额及有符号净利润；整数分} & \Cell{追溯跨店贡献及亏损}\\[2pt]
+\Cell{基金、个人份额} & \Cell{非负整数分、规则版本及余数顺位} & \Cell{10\%提取与分配守恒}\\[2pt]
+\end{longtable}
+}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-22规则与质量约束}\label{tab187}
-\begin{tabular}{@{}p{2.440cm}@{\hspace{0.16cm}}p{12.840cm}@{}}
+\begin{longtable}{@{}p{2.4cm}@{\hspace{0.16cm}}p{12.7cm}@{}}
+\caption{UC-21业务规则与质量}\label{comp_uc21_rules}\\
 \toprule
 \bfseries \Cell{类别} & \bfseries \Cell{约定}\\\midrule
-\Cell{业务规则} & \Cell{1.\allowbreak{} 正净贡献比例是本设计采用的激励制度：权重=\allowbreak{}max(\allowbreak{}医生净利润,\allowbreak{}0)\allowbreak{}/\allowbreak{}Σmax(\allowbreak{}医生净利润,\allowbreak{}0)\allowbreak{}。\\2.\allowbreak{} 分配先取整数分，再按小数余数和医生编号补齐余分；总额不得超过或少于已批准基金。\\3.\allowbreak{} 股权60\%/\allowbreak{}40\%只表示所有权，不作激励权重；审批不允许以股权替换医生贡献。}\\[1pt]
-\Cell{质量要求} & \Cell{1.\allowbreak{} 批准分配合计严格等于基金；成功与在途占用合计不超过批准金额。\\2.\allowbreak{} 每笔发放均可追到医生、季度、批准版本、办理人及凭证。}\\[1pt]
-\Cell{设计约束} & \Cell{1.\allowbreak{} 同一自然人不得同时制表与复核；权限均在总部角色内部细分。\\2.\allowbreak{} 本用例记录激励发放，不扩展工资、税务或银行代发系统。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\Needspace{355pt}
+\endfirsthead
+\toprule
+\bfseries \Cell{类别} & \bfseries \Cell{约定}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{业务规则} & \Cell{净利润=收入净额-用品成本-运营费用。基金=四舍五入到分[max(0,全部医生净利润合计)×10\%]；不能先把每位医生亏损截为零。股权60\%/\allowbreak{}40\%不参与激励分配。}\\[2pt]
+\Cell{事务与质量} & \Cell{来源、医生门诊结果及个人份额一次提交。金额使用BigInt计算，跨店后正贡献作为个人权重。零业务也必须已核对关闭，缺失不视为零。}\\[2pt]
+\end{longtable}
+}
+\subsection{UC-22 审批激励、登记发放及本人查询}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{2.4cm}@{\hspace{0.16cm}}p{12.7cm}@{}}
+\caption{UC-22用例约定}\label{comp_uc22_spec}\\
+\toprule
+\bfseries \Cell{项目} & \bfseries \Cell{内容}\\\midrule
+\endfirsthead
+\toprule
+\bfseries \Cell{项目} & \bfseries \Cell{内容}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{执行者} & \Cell{总部；员工查看本人已批准份额}\\[2pt]
+\Cell{触发} & \Cell{总部提交季度草稿申请批准，或登记已批准份额的发放及核实结果。}\\[2pt]
+\Cell{前置条件} & \Cell{季度来源有效，草稿和提交状态符合操作；批准者有有效总部岗位，且账号ID和员工ID均不同于制表者。}\\[2pt]
+\Cell{成功后置条件} & \Cell{批准固定个人额度；每笔发放保留待核实、成功或失败及凭证，成功与待核实占用合计不超批准份额；本人查询不返回其他员工数据。}\\[2pt]
+\end{longtable}
+}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{1.4cm}@{\hspace{0.16cm}}p{13.7cm}@{}}
+\caption{UC-22基本与扩展流程}\label{comp_uc22_steps}\\
+\toprule
+\bfseries \Cell{步骤} & \bfseries \Cell{事件、响应及分支}\\\midrule
+\endfirsthead
+\toprule
+\bfseries \Cell{步骤} & \bfseries \Cell{事件、响应及分支}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{1} & \Cell{制表人核对季度草稿并提交，系统固定submitted版本。}\\[2pt]
+\Cell{2} & \Cell{另一名总部人员逐项核对月度来源、负贡献、基金公式及个人份额后请求批准。}\\[2pt]
+\Cell{3} & \Cell{系统检查岗位、不同账号和员工身份、版本与来源；通过才保存approved及批准员工。}\\[2pt]
+\Cell{4} & \Cell{总部选择获批个人份额，录入金额与全局唯一付款凭证，系统锁定份额后检查剩余额度。}\\[2pt]
+\Cell{5} & \Cell{系统登记pending，金额立即占用可发额度；这一登记不表示银行已经支付成功。}\\[2pt]
+\Cell{6} & \Cell{经办人员核实实际银行凭据后，登记succeeded或failed；未知结果保持pending并继续查原凭证。}\\[2pt]
+\Cell{7} & \Cell{员工在本人页面查看已批准份额、成功与待核实金额、失败记录和剩余额度。}\\[2pt]
+\Cell{2a} & \Cell{[复核不同意或来源有误] 不批准；总部作废尚未批准的快照后重新生成，旧版本保留。}\\[2pt]
+\Cell{4a} & \Cell{[重复凭证、额度不足、季度未批准或版本冲突] 拒绝登记，不留部分额度占用。}\\[2pt]
+\Cell{7a} & \Cell{[账号未关联员工档案或本人没有获批份额] 返回空列表及关联说明，不按姓名推测身份。}\\[2pt]
+\end{longtable}
+}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{3.5cm}@{\hspace{0.16cm}}p{5.0cm}@{\hspace{0.16cm}}p{6.4cm}@{}}
+\caption{UC-22关键字段}\label{comp_uc22_fields}\\
+\toprule
+\bfseries \Cell{字段} & \bfseries \Cell{类型与限制} & \bfseries \Cell{业务含义}\\\midrule
+\endfirsthead
+\toprule
+\bfseries \Cell{字段} & \bfseries \Cell{类型与限制} & \bfseries \Cell{业务含义}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{季度状态} & \Cell{draft/\allowbreak{}submitted/\allowbreak{}approved/\allowbreak{}voided} & \Cell{区分生成、送审、批准与作废}\\[2pt]
+\Cell{批准身份} & \Cell{有效总部账号及员工ID} & \Cell{按不同账号和员工阻止自审}\\[2pt]
+\Cell{发放金额、凭证} & \Cell{正整数分、全局唯一凭证} & \Cell{控制重复登记与可发余额}\\[2pt]
+\Cell{发放状态} & \Cell{pending/\allowbreak{}succeeded/\allowbreak{}failed、版本} & \Cell{未知保持pending；明确失败才释放占用}\\[2pt]
+\end{longtable}
+}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{2.4cm}@{\hspace{0.16cm}}p{12.7cm}@{}}
+\caption{UC-22业务规则与质量}\label{comp_uc22_rules}\\
+\toprule
+\bfseries \Cell{类别} & \bfseries \Cell{约定}\\\midrule
+\endfirsthead
+\toprule
+\bfseries \Cell{类别} & \bfseries \Cell{约定}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{业务规则} & \Cell{个人份额在生成季度时按统一规则固定，复核页不能改权重。仅approved可登记发放；成功与pending金额合计不得超过批准额度。外部银行付款由经办人员核实后记录，系统保存凭据和状态。}\\[2pt]
+\Cell{查询与隐私} & \Cell{总部查看授权核算资料，店长限所属门诊月报，普通员工仅查询本人已批准份额及发放。财务来源和金额不进入公开医生资料接口。}\\[2pt]
+\end{longtable}
+}
 \subsection{UC-23 分析取消率与技能供需}
 \par\noindent\begin{minipage}{\textwidth}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
@@ -1795,7 +1839,7 @@ Andrew Chen兼任首席执行官与首席牙医。公司已有15家门诊，扩�
 \begin{tabular}{@{}p{2.440cm}@{\hspace{0.16cm}}p{12.840cm}@{}}
 \toprule
 \bfseries \Cell{类别} & \bfseries \Cell{约定}\\\midrule
-\Cell{业务规则} & \Cell{1.\allowbreak{} 岗位权限和数据范围同时满足才可操作；顾客仅限本人及有效代办关系。\\2.\allowbreak{} 店长按授权门诊管理，总部跨店范围仍受职责控制；总部制表与复核不能由同一自然人完成同一事项。\\3.\allowbreak{} 停用账号不删除历史关联；医生身份、技能和签署资格分别校验，授予医生岗位不凭空产生技能。}\\[1pt]
+\Cell{业务规则} & \Cell{1.\allowbreak{} 岗位权限和数据范围同时满足才可操作；顾客仅限本人及有效代办关系。\\2.\allowbreak{} 店长按授权门诊管理，总部跨店范围仍受职责控制；总部制表与复核由不同责任人员承担，系统同时比较账号ID与员工ID。\\3.\allowbreak{} 停用账号不删除历史关联；医生身份、技能和签署资格分别校验，授予医生岗位不凭空产生技能。}\\[1pt]
 \Cell{质量要求} & \Cell{1.\allowbreak{} 权限撤销后下一次受保护操作被拒绝，旧会话不能继续使用旧授权。\\2.\allowbreak{} 任一授权变更可查变更前后范围、理由、办理人及生效时间。}\\[1pt]
 \Cell{设计约束} & \Cell{1.\allowbreak{} 只保留五类登录岗位，专业分工通过动作和有效任职表达，不增加外部协作方登录角色。\\2.\allowbreak{} 权限变更不直接转移已签病历责任，历史快照不随姓名或任职改变。}\\[1pt]
 \bottomrule\end{tabular}
@@ -1893,21 +1937,25 @@ Andrew Chen兼任首席执行官与首席牙医。公司已有15家门诊，扩�
 \Cell{3} & \Cell{退款待核实→确认退款失败} & \Cell{查证退款失败 /\allowbreak{} 释放冻结并保留重办依据}\\[1pt]
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/st_quarter.pdf}
-\caption{季度激励基金状态机}\label{st_quarter}\end{figure}
-\par\noindent\begin{minipage}{\textwidth}
+\begin{figure}[H]\centering\includegraphics[width=\textwidth,height=.83\textheight,keepaspectratio]{figures/st_quarter.pdf}
+\caption{月度账证、季度基金与发放状态}\label{st_quarter}\end{figure}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{季度激励基金状态机转换约定}\label{tab215}
-\begin{tabular}{@{}p{1.140cm}@{\hspace{0.16cm}}p{4.840cm}@{\hspace{0.16cm}}p{9.140cm}@{}}
+\begin{longtable}{@{}p{2.5cm}@{\hspace{0.16cm}}p{4.2cm}@{\hspace{0.16cm}}p{8.2cm}@{}}
+\caption{激励核算状态与转移约定}\label{comp_state}\\
 \toprule
-\bfseries \Cell{编号} & \bfseries \Cell{源状态→目标状态} & \bfseries \Cell{事件、条件与动作}\\\midrule
-\Cell{1} & \Cell{基金及分配草稿→待独立复核} & \Cell{经营月份关闭且来源和分配完整 /\allowbreak{} 固定送审版本}\\[1pt]
-\Cell{2} & \Cell{待独立复核→基金及分配草稿} & \Cell{独立复核退回 /\allowbreak{} 保留原因并修订草稿}\\[1pt]
-\Cell{3} & \Cell{待独立复核→已批准} & \Cell{独立批准 /\allowbreak{} 固定基金和个人额度，未等同实际发放}\\[1pt]
-\Cell{4} & \Cell{基金及分配草稿→被新版本替代} & \Cell{来源变化 /\allowbreak{} 新建版本并保留原草稿}\\[1pt]
-\Cell{5} & \Cell{已批准→被新版本替代} & \Cell{获准重开来源期间 /\allowbreak{} 新版重新复核，已有发放记录保留}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
+\bfseries \Cell{对象} & \bfseries \Cell{状态转移} & \bfseries \Cell{事件、条件与动作}\\\midrule
+\endfirsthead
+\toprule
+\bfseries \Cell{对象} & \bfseries \Cell{状态转移} & \bfseries \Cell{事件、条件与动作}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{月度底稿} & \Cell{draft→\allowbreak{}closed} & \Cell{来源与出诊医生覆盖完整，独立复核通过；版本不符或自审拒绝。}\\[2pt]
+\Cell{月度底稿} & \Cell{closed→\allowbreak{}draft} & \Cell{总部附原因重开，且没有有效季度引用。}\\[2pt]
+\Cell{季度基金} & \Cell{draft→\allowbreak{}submitted→\allowbreak{}approved} & \Cell{完整来源生成草稿，提交后由不同账号及不同员工的总部人员批准。}\\[2pt]
+\Cell{季度基金} & \Cell{draft/\allowbreak{}submitted→\allowbreak{}voided} & \Cell{未批准快照可作废并留原因，随后重新生成；已批准不允许作废或重开来源。}\\[2pt]
+\Cell{发放记录} & \Cell{pending→\allowbreak{}succeeded/\allowbreak{}failed} & \Cell{依据实际核实结果登记；未知继续pending，占用额度；明确失败才释放。}\\[2pt]
+\end{longtable}
+}
 \subsection{内部协作与操作契约}
 每个用例采用边界—控制—实体的内部分析序列。边界处理交互及输入格式，控制类组织权限、仓储和事务，实体维护自身状态与业务不变量。分析序列中的实体操作由仓储加载后的领域对象承担；数据库查询及提交由应用服务调用数据映射器完成，不能把数据库当作替代业务判断的执行者。\par
 类图展示关键属性与操作，连线标明业务关系和多重性，实心菱形表示组合；完整字段见用例规约及字典。内部序列用实线实心箭头表示调用、虚线开放箭头表示返回，alt分支需互斥，opt分支只在条件满足时发生。\par
@@ -2624,190 +2672,107 @@ Andrew Chen兼任首席执行官与首席牙医。公司已有15家门诊，扩�
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
 \Needspace{497pt}
-\subsubsection{UC-19 归集医疗用品成本和医生运营费用}
-边界：成本归集分摊页；控制：成本归集控制。\par
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/class_UC_19.pdf}
+\subsubsection{UC-19 登记医生月度账证汇总}
+边界负责呈现与输入；薪酬应用服务检查会话、门诊范围、版本并组织事务，实体维护月份、季度、份额和发放状态。\par
+\begin{figure}[H]\centering\includegraphics[width=\textwidth,height=.83\textheight,keepaspectratio]{figures/class_UC_19.pdf}
 \caption{UC-19 分析实体类图}\label{class_UC_19}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/seq_UC_19.pdf}
+\begin{figure}[H]\centering\includegraphics[width=\textwidth,height=.83\textheight,keepaspectratio]{figures/seq_UC_19.pdf}
 \caption{UC-19 内部分析序列}\label{seq_UC_19}\end{figure}
-\par\noindent\begin{minipage}{\textwidth}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-19操作契约 1}\label{tab339}
-\begin{tabular}{@{}p{2.640cm}@{\hspace{0.16cm}}p{12.640cm}@{}}
+\begin{longtable}{@{}p{2.4cm}@{\hspace{0.16cm}}p{12.7cm}@{}}
+\caption{UC-19详细操作与表示设计}\label{comp_uc19_detail}\\
 \toprule
 \bfseries \Cell{项目} & \bfseries \Cell{详细设计}\\\midrule
-\Cell{签名} & \Cell{record\allowbreak{}Period\allowbreak{}Cost(\allowbreak{}source\allowbreak{}Id,\allowbreak{} cost\allowbreak{}Line,\allowbreak{} request\allowbreak{}Id)\allowbreak{}:\allowbreak{} Cost}\\[1pt]
-\Cell{输入} & \Cell{类别、金额、耗用或费用凭据、门诊及日期}\\[1pt]
-\Cell{执行前检查} & \Cell{凭据有效，期间开放，直接归属有依据}\\[1pt]
-\Cell{成功结果} & \Cell{来源唯一的成本记录建立}\\[1pt]
-\Cell{领域算法} & \Cell{以来源及行号查重；核对耗用而非付款日期口径，分开医疗用品与运营费用；直接归属记录医生，共同费用标待分摊。}\\[1pt]
-\Cell{数据访问} & \Cell{成本仓储保存原金额与来源摘要；医生归属仓储保存直接费用明细。}\\[1pt]
-\Cell{事务与并发} & \Cell{成本及直接归属原子保存；重复来源返回既有记录，凭据更正形成新版本或调整。}\\[1pt]
-\Cell{失败及恢复} & \Cell{期间关闭转调整申请；来源不全退回补证；不生成无凭据成本。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
-{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-19操作契约 2}\label{tab340}
-\begin{tabular}{@{}p{2.640cm}@{\hspace{0.16cm}}p{12.640cm}@{}}
+\endfirsthead
 \toprule
 \bfseries \Cell{项目} & \bfseries \Cell{详细设计}\\\midrule
-\Cell{签名} & \Cell{allocate\allowbreak{}Common\allowbreak{}Cost(\allowbreak{}cost\allowbreak{}Id,\allowbreak{} driver\allowbreak{}Version,\allowbreak{} expected\allowbreak{}Cost\allowbreak{}Version)\allowbreak{}:\allowbreak{} Allocation}\\[1pt]
-\Cell{输入} & \Cell{共同运营费用、经复核医生工时及适用制度版本}\\[1pt]
-\Cell{执行前检查} & \Cell{默认工时动因非负且总量大于零；改用动因已有新制度批准}\\[1pt]
-\Cell{成功结果} & \Cell{分摊守恒且可复算}\\[1pt]
-\Cell{领域算法} & \Cell{按制度版本读取经复核医生工时，逐医生工时除以总量求精确份额；先取整数分，再按最大余数及稳定编号分配余分；核对守恒并固定工时来源及制度版本。}\\[1pt]
-\Cell{数据访问} & \Cell{动因仓储读取来源快照；分摊仓储保存每名医生的比例、金额及版本。}\\[1pt]
-\Cell{事务与并发} & \Cell{锁定成本版本，整组分摊和采用标记一次提交；不允许半组结果被季度读取。}\\[1pt]
-\Cell{失败及恢复} & \Cell{工时缺失或总量为零停止；未批准的新动因不得采用；版本变化重算，失败保留原已确认版本。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
-{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-19表示与验收}\label{tab341}
-\begin{tabular}{@{}p{2.640cm}@{\hspace{0.16cm}}p{12.640cm}@{}}
-\toprule
-\bfseries \Cell{项目} & \bfseries \Cell{设计}\\\midrule
-\Cell{界面} & \Cell{每笔费用可展开凭据、直接医生或分摊动因，显示合计差额与待补证项。}\\[1pt]
-\Cell{接口} & \Cell{POST /\allowbreak{}period-\allowbreak{}costs；POST /\allowbreak{}period-\allowbreak{}costs/\allowbreak{}\{id\}/\allowbreak{}allocations；POST /\allowbreak{}cost-\allowbreak{}allocations/\allowbreak{}\{id\}/\allowbreak{}review。}\\[1pt]
-\Cell{验收场景} & \Cell{1.\allowbreak{} 共同费用100分由三名等工时医生承担→34、33、33分且规则稳定。\\2.\allowbreak{} 同一来源重复登记→不重复扣成本。\\3.\allowbreak{} 动因为零→不产生随意均摊结果。\\4.\allowbreak{} 试算时擅自把工时改为收入权重→拒绝，须先批准新制度版本。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\Needspace{497pt}
-\subsubsection{UC-20 复核经营期间并关账}
-边界：经营期间关账页；控制：期间关账控制。\par
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/class_UC_20.pdf}
+\endhead
+\bottomrule\endlastfoot
+\Cell{操作} & \Cell{saveMonth(input, expectedVersion)：创建或保存本人月度草稿}\\[2pt]
+\Cell{输入与校验} & \Cell{clinicId、month、reference、noActivity、医生三类金额及三类来源；服务端校验月份已结束、岗位门诊范围、医生身份和整数分。}\\[2pt]
+\Cell{数据与事务} & \Cell{锁定同门诊月份底稿；新增或修订doctor\_\allowbreak{}financial\_\allowbreak{}sources并保留旧修订，更新版本和审计；关闭状态禁止保存。}\\[2pt]
+\Cell{失败处理} & \Cell{来源不足、越权、非本人草稿、版本冲突均整体回滚。}\\[2pt]
+\Cell{界面与接口} & \Cell{月度账证页提供逐医生三类金额、依据、无业务声明及合计。GET/\allowbreak{}POST /\allowbreak{}compensation/\allowbreak{}months；PUT /\allowbreak{}compensation/\allowbreak{}months/\allowbreak{}\{id\}。}\\[2pt]
+\Cell{验收} & \Cell{同一医生跨两店保留两店来源；引用预约标价不得伪装实际收入；两人同时编辑旧版本，仅有效版本保存。}\\[2pt]
+\end{longtable}
+}
+\subsubsection{UC-20 独立复核月度底稿并关闭}
+边界负责呈现与输入；薪酬应用服务检查会话、门诊范围、版本并组织事务，实体维护月份、季度、份额和发放状态。\par
+\begin{figure}[H]\centering\includegraphics[width=\textwidth,height=.83\textheight,keepaspectratio]{figures/class_UC_20.pdf}
 \caption{UC-20 分析实体类图}\label{class_UC_20}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/seq_UC_20.pdf}
-\caption{UC-20 内部分析序列}\label{seq_UC_20}\end{figure}
-\par\noindent\begin{minipage}{\textwidth}
+\begin{figure}[H]\centering\includegraphics[width=\textwidth,height=.83\textheight,keepaspectratio]{figures/seq_UC_20.pdf}
+\caption{UC-20 内部分析序列（1/\allowbreak{}2）}\label{seq_UC_20}\end{figure}
+\begin{figure}[H]\centering\includegraphics[width=\textwidth,height=.83\textheight,keepaspectratio]{figures/seq_UC_20_reopen.pdf}
+\caption{UC-20 总部重开与季度引用检查（2/\allowbreak{}2）}\label{seq_UC_20_reopen}\end{figure}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-20操作契约 1}\label{tab346}
-\begin{tabular}{@{}p{2.640cm}@{\hspace{0.16cm}}p{12.640cm}@{}}
+\begin{longtable}{@{}p{2.4cm}@{\hspace{0.16cm}}p{12.7cm}@{}}
+\caption{UC-20详细操作与表示设计}\label{comp_uc20_detail}\\
 \toprule
 \bfseries \Cell{项目} & \bfseries \Cell{详细设计}\\\midrule
-\Cell{签名} & \Cell{prepare\allowbreak{}Period\allowbreak{}Close(\allowbreak{}period\allowbreak{}Id)\allowbreak{}:\allowbreak{} Closing\allowbreak{}Package}\\[1pt]
-\Cell{输入} & \Cell{自然月、组织有效范围及全部纳入门诊来源版本}\\[1pt]
-\Cell{执行前检查} & \Cell{期间已结束且总部获授权}\\[1pt]
-\Cell{成功结果} & \Cell{形成带阻断项的核对包}\\[1pt]
-\Cell{领域算法} & \Cell{按月及组织有效期列应纳入门诊；检查已签执行与必要账单完整，按服务日和获准调整归集收入而不要求收清。逐店检查日结、收退款最终结果、资金及代收差异、成本分摊；任何未知结果或未解释差异均列阻断，正常欠款单列余额。}\\[1pt]
-\Cell{数据访问} & \Cell{期间仓储读取边界；关账检查仓储保存逐项证据；快照仓储保存待复核包。}\\[1pt]
-\Cell{事务与并发} & \Cell{按一致读取视图生成核对包；来源发生变化时标记包过期，不发布为已关账。}\\[1pt]
-\Cell{失败及恢复} & \Cell{缺门诊、未签执行、缺账单、未知资金或未解释差异均阻断；读取失败不形成正式快照，不将缺失金额默认为零。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
-{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-20操作契约 2}\label{tab347}
-\begin{tabular}{@{}p{2.640cm}@{\hspace{0.16cm}}p{12.640cm}@{}}
+\endfirsthead
 \toprule
 \bfseries \Cell{项目} & \bfseries \Cell{详细设计}\\\midrule
-\Cell{签名} & \Cell{close\allowbreak{}Period(\allowbreak{}package\allowbreak{}Id,\allowbreak{} reviewer\allowbreak{}Id,\allowbreak{} expected\allowbreak{}Digest)\allowbreak{}:\allowbreak{} Period\allowbreak{}Snapshot}\\[1pt]
-\Cell{输入} & \Cell{复核身份、意见和期望来源摘要}\\[1pt]
-\Cell{执行前检查} & \Cell{月份已结束，全部来源完整且资金差异查清，阻断为零，制表与复核不同人}\\[1pt]
-\Cell{成功结果} & \Cell{期间锁定且快照可引用}\\[1pt]
-\Cell{领域算法} & \Cell{重新检查全部纳入门诊、来源摘要、资金最终状态及逐项处理证据；正常未收账款不要求清零。阻断数为零且复核有效后，原子固定月度收入成本及余额来源，写锁定边界和快照号。}\\[1pt]
-\Cell{数据访问} & \Cell{快照仓储保存采用版本；期间仓储保存锁定；审计仓储保存复核结论。}\\[1pt]
-\Cell{事务与并发} & \Cell{快照、期间锁定和审计同一短事务；任一版本冲突整体回滚。}\\[1pt]
-\Cell{失败及恢复} & \Cell{资金未知或差异未解释保持开放；来源变化退回复核；重复关闭返回原快照；失败不得锁期却无快照。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
-{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-20表示与验收}\label{tab348}
-\begin{tabular}{@{}p{2.640cm}@{\hspace{0.16cm}}p{12.640cm}@{}}
-\toprule
-\bfseries \Cell{项目} & \bfseries \Cell{设计}\\\midrule
-\Cell{界面} & \Cell{逐门诊显示月度来源、资金最终结果和阻断清单；正常应收及已确认往来单列，阻断未清时关闭按钮不可完成。}\\[1pt]
-\Cell{接口} & \Cell{POST /\allowbreak{}periods/\allowbreak{}\{id\}/\allowbreak{}closing-\allowbreak{}package；POST /\allowbreak{}closing-\allowbreak{}packages/\allowbreak{}\{id\}/\allowbreak{}close。}\\[1pt]
-\Cell{验收场景} & \Cell{1.\allowbreak{} 签署执行及账单500元已出具，患者仅付300元且核对齐全→可关账，收入500元和应收200元分别保留。\\2.\allowbreak{} 退款仍在途且结果未知→即使有责任人与查证计划也不能关账。\\3.\allowbreak{} 成本未分摊或必要账单缺失→阻断关闭。\\4.\allowbreak{} 关闭提交时来源变化→保持开放并重新复核。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\Needspace{497pt}
+\endhead
+\bottomrule\endlastfoot
+\Cell{操作} & \Cell{closeMonth(id, expectedVersion)；reopenMonth(id, expectedVersion, reason)}\\[2pt]
+\Cell{关闭算法} & \Cell{锁定月份；核对draft状态、账证完整、出诊医生覆盖及有效门诊授权；复核者账号ID和staff.id均不同于制表者才固定closed。}\\[2pt]
+\Cell{重开算法} & \Cell{仅总部可重开。先检查incentive\_\allowbreak{}pool\_\allowbreak{}sources是否存在有效季度引用，存在即拒绝；未被引用的关闭月份可附原因重开，保持历史修订。}\\[2pt]
+\Cell{数据与并发} & \Cell{月份行锁和季度来源引用校验与状态、版本、审计在同一事务；季度生成也锁定被采用月份，避免关闭检查后来源被并发重开。}\\[2pt]
+\Cell{界面与接口} & \Cell{独立人员打开月度详情核对后关闭；重开附原因。POST /\allowbreak{}compensation/\allowbreak{}months/\allowbreak{}\{id\}/\allowbreak{}close；POST /\allowbreak{}compensation/\allowbreak{}months/\allowbreak{}\{id\}/\allowbreak{}reopen。}\\[2pt]
+\Cell{验收} & \Cell{同账号或同staff.id复核均被拒绝；漏出诊医生不能关闭；有效季度引用月份不能重开；无业务缺依据不能以零代替。}\\[2pt]
+\end{longtable}
+}
 \subsubsection{UC-21 计算医生季度业绩及10\%激励基金}
-边界：季度业绩试算页；控制：季度业绩计算控制。\par
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/class_UC_21.pdf}
+边界负责呈现与输入；薪酬应用服务检查会话、门诊范围、版本并组织事务，实体维护月份、季度、份额和发放状态。\par
+\begin{figure}[H]\centering\includegraphics[width=\textwidth,height=.83\textheight,keepaspectratio]{figures/class_UC_21.pdf}
 \caption{UC-21 分析实体类图}\label{class_UC_21}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/seq_UC_21.pdf}
+\begin{figure}[H]\centering\includegraphics[width=\textwidth,height=.83\textheight,keepaspectratio]{figures/seq_UC_21.pdf}
 \caption{UC-21 内部分析序列}\label{seq_UC_21}\end{figure}
-\par\noindent\begin{minipage}{\textwidth}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-21操作契约}\label{tab353}
-\begin{tabular}{@{}p{2.640cm}@{\hspace{0.16cm}}p{12.640cm}@{}}
+\begin{longtable}{@{}p{2.4cm}@{\hspace{0.16cm}}p{12.7cm}@{}}
+\caption{UC-21详细操作与表示设计}\label{comp_uc21_detail}\\
 \toprule
 \bfseries \Cell{项目} & \bfseries \Cell{详细设计}\\\midrule
-\Cell{签名} & \Cell{calculate\allowbreak{}Quarter\allowbreak{}Performance(\allowbreak{}quarter\allowbreak{}Id,\allowbreak{} snapshot\allowbreak{}Ids,\allowbreak{} rule\allowbreak{}Version)\allowbreak{}:\allowbreak{} Quarter\allowbreak{}Trial}\\[1pt]
-\Cell{输入} & \Cell{季度号、规则版本；完整来源由服务端按组织有效期确定}\\[1pt]
-\Cell{执行前检查} & \Cell{三个自然月及全部应纳入门诊均有有效关闭快照，执行签署和账单齐全，成本完整}\\[1pt]
-\Cell{成功结果} & \Cell{可复算的医生净利润与基金试算建立}\\[1pt]
-\Cell{领域算法} & \Cell{先按季度日期及组织有效期生成应纳入月份门诊矩阵，与当前关闭快照逐项核对，缺失或失效立即停止；不得接受部分来源子集。按已签执行及已出具账单去重归集收入，不要求收清；跨店合并实际医生与有效调整，扣除两类已复核成本。先合计含负数净利润，再取与零较大者乘10\%，四舍五入至分。}\\[1pt]
-\Cell{数据访问} & \Cell{期间快照仓储按季度全范围读取当前关闭来源；季度仓储固定覆盖集合、医生明细及各店展开；基金仓储保存公式输入。}\\[1pt]
-\Cell{事务与并发} & \Cell{同一来源摘要和规则唯一创建试算，医生行、基金及校验一起提交；失败不发布部分结果。}\\[1pt]
-\Cell{失败及恢复} & \Cell{漏月份、漏门诊、来源失效或未签未出账停止；正常未收应收不当作缺收入；零负合计正常生成零基金，重试返回原试算。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
-{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-21表示与验收}\label{tab354}
-\begin{tabular}{@{}p{2.640cm}@{\hspace{0.16cm}}p{12.640cm}@{}}
+\endfirsthead
 \toprule
-\bfseries \Cell{项目} & \bfseries \Cell{设计}\\\midrule
-\Cell{界面} & \Cell{先展示三个月与门诊关闭覆盖矩阵；通过完整性检查后显示医生跨店明细、未收应收和基金计算式。}\\[1pt]
-\Cell{接口} & \Cell{POST /\allowbreak{}quarters/\allowbreak{}\{id\}/\allowbreak{}performance-\allowbreak{}trials；GET /\allowbreak{}performance-\allowbreak{}trials/\allowbreak{}\{id\}/\allowbreak{}sources。}\\[1pt]
-\Cell{验收场景} & \Cell{1.\allowbreak{} 医生A净利润12000元、B亏损2000元→合计10000元，基金1000元。\\2.\allowbreak{} 同一医生跨两店→形成同一医生汇总且保留两店展开。\\3.\allowbreak{} 合计净利润为负→基金为零，亏损行不删除。\\4.\allowbreak{} 只提交季度中两个月的有效快照→仍拒绝，指出缺少的月份及门诊。\\5.\allowbreak{} 其中一家有效门诊缺快照→不能按零成本零收入继续。\\6.\allowbreak{} 已签执行且已出具500元账单，仅收300元→季度收入采用500元，应收200元另列。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\Needspace{497pt}
-\subsubsection{UC-22 复核激励分配并登记发放}
-边界：激励分配发放页；控制：激励分配控制。\par
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/class_UC_22.pdf}
+\bfseries \Cell{项目} & \bfseries \Cell{详细设计}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{操作} & \Cell{createQuarter(\{quarter, reference\})：生成完整季度快照}\\[2pt]
+\Cell{来源完整性} & \Cell{服务端按全部登记门诊×三个自然月读取已关闭底稿，包括停用门诊；不接收部分门诊列表或部分月份替代完整范围。}\\[2pt]
+\Cell{金额算法} & \Cell{按医生门诊汇总三类来源，再以staff.id跨店合并。采用BigInt，先合计含负数净利，再提取10\%；权重为max(跨店净利,0)，最大余数分配，同余按员工编号及ID。}\\[2pt]
+\Cell{数据与事务} & \Cell{固定incentive\_\allowbreak{}pools、incentive\_\allowbreak{}pool\_\allowbreak{}sources、doctor\_\allowbreak{}quarter\_\allowbreak{}results和incentive\_\allowbreak{}allocations，保存采用的月度关闭版本与规则。事务失败无部分基金。}\\[2pt]
+\Cell{界面与接口} & \Cell{季度页展现来源覆盖、门诊展开、医生跨店合计及基金、份额。GET/\allowbreak{}POST /\allowbreak{}compensation/\allowbreak{}quarters；GET /\allowbreak{}compensation/\allowbreak{}quarters/\allowbreak{}\{id\}。}\\[2pt]
+\Cell{验收} & \Cell{甲12000元、乙-2000元，基金1000元；同一医生跨店先合并再取正权重；缺一个门诊月份必须拒绝；零业务也需有效关闭底稿。}\\[2pt]
+\end{longtable}
+}
+\subsubsection{UC-22 审批激励、登记发放及本人查询}
+边界负责呈现与输入；薪酬应用服务检查会话、门诊范围、版本并组织事务，实体维护月份、季度、份额和发放状态。\par
+\begin{figure}[H]\centering\includegraphics[width=\textwidth,height=.83\textheight,keepaspectratio]{figures/class_UC_22.pdf}
 \caption{UC-22 分析实体类图}\label{class_UC_22}\end{figure}
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/seq_UC_22.pdf}
-\caption{UC-22 内部分析序列}\label{seq_UC_22}\end{figure}
-\par\noindent\begin{minipage}{\textwidth}
+\begin{figure}[H]\centering\includegraphics[width=\textwidth,height=.83\textheight,keepaspectratio]{figures/seq_UC_22.pdf}
+\caption{UC-22 内部分析序列（1/\allowbreak{}2）}\label{seq_UC_22}\end{figure}
+\begin{figure}[H]\centering\includegraphics[width=\textwidth,height=.83\textheight,keepaspectratio]{figures/seq_UC_22_payments.pdf}
+\caption{UC-22 发放占额与实际结果核实（2/\allowbreak{}2）}\label{seq_UC_22_payments}\end{figure}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-22操作契约 1}\label{tab359}
-\begin{tabular}{@{}p{2.640cm}@{\hspace{0.16cm}}p{12.640cm}@{}}
+\begin{longtable}{@{}p{2.4cm}@{\hspace{0.16cm}}p{12.7cm}@{}}
+\caption{UC-22详细操作与表示设计}\label{comp_uc22_detail}\\
 \toprule
 \bfseries \Cell{项目} & \bfseries \Cell{详细设计}\\\midrule
-\Cell{签名} & \Cell{approve\allowbreak{}Incentive\allowbreak{}Distribution(\allowbreak{}trial\allowbreak{}Id,\allowbreak{} reviewer\allowbreak{}Id,\allowbreak{} expected\allowbreak{}Digest)\allowbreak{}:\allowbreak{} Distribution}\\[1pt]
-\Cell{输入} & \Cell{有效试算、复核意见及来源摘要}\\[1pt]
-\Cell{执行前检查} & \Cell{制表与复核不同人，规则已确认}\\[1pt]
-\Cell{成功结果} & \Cell{基金守恒的医生份额固定}\\[1pt]
-\Cell{领域算法} & \Cell{重新核对含负数合计的基金；对正净贡献求权重，取整数分后按最大余数稳定分配余分；无基数不分配。复核者查看每行后确认。}\\[1pt]
-\Cell{数据访问} & \Cell{季度仓储读取试算；分配及份额仓储保存基金、权重、余差与批准版本。}\\[1pt]
-\Cell{事务与并发} & \Cell{整组份额、批准结论和来源引用同一事务提交；任一校验失败均不发布。}\\[1pt]
-\Cell{失败及恢复} & \Cell{来源重开导致失效则退回重算；同版本重复批准返回原分配；拒绝擅改权重。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
-{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-22操作契约 2}\label{tab360}
-\begin{tabular}{@{}p{2.640cm}@{\hspace{0.16cm}}p{12.640cm}@{}}
+\endfirsthead
 \toprule
 \bfseries \Cell{项目} & \bfseries \Cell{详细设计}\\\midrule
-\Cell{签名} & \Cell{record\allowbreak{}Incentive\allowbreak{}Payment(\allowbreak{}share\allowbreak{}Id,\allowbreak{} voucher,\allowbreak{} status,\allowbreak{} amount)\allowbreak{}:\allowbreak{} Payout}\\[1pt]
-\Cell{输入} & \Cell{批准份额、核实凭证、金额和状态}\\[1pt]
-\Cell{执行前检查} & \Cell{批准有效，办理人有发放权限}\\[1pt]
-\Cell{成功结果} & \Cell{可发余额与凭证一致，无超额登记}\\[1pt]
-\Cell{领域算法} & \Cell{以凭证号查重，锁定该医生批准份额，扣除已成功与在途占用后检查余额；成功才确认支出，失败释放占用，不明保持在途。}\\[1pt]
-\Cell{数据访问} & \Cell{发放仓储记录状态及核验依据；份额仓储保存成功和在途累计。}\\[1pt]
-\Cell{事务与并发} & \Cell{记录、额度占用和累计额原子更新；外部付款查证在事务外进行。}\\[1pt]
-\Cell{失败及恢复} & \Cell{同凭证不同金额进入核验；超发拒绝；状态未知不得重复支付或释放占用。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\par\noindent\begin{minipage}{\textwidth}
-{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{UC-22表示与验收}\label{tab361}
-\begin{tabular}{@{}p{2.640cm}@{\hspace{0.16cm}}p{12.640cm}@{}}
-\toprule
-\bfseries \Cell{项目} & \bfseries \Cell{设计}\\\midrule
-\Cell{界面} & \Cell{展示基金计算、医生正负贡献、批准份额和发放状态；个人视图只见本人份额依据。}\\[1pt]
-\Cell{接口} & \Cell{POST /\allowbreak{}performance-\allowbreak{}trials/\allowbreak{}\{id\}/\allowbreak{}distribution-\allowbreak{}review；POST /\allowbreak{}incentive-\allowbreak{}shares/\allowbreak{}\{id\}/\allowbreak{}payouts。}\\[1pt]
-\Cell{验收场景} & \Cell{1.\allowbreak{} 一名亏损医生→其分配权重为零，但亏损已降低基金。\\2.\allowbreak{} 四舍五入产生余分→最终分配合计与基金完全一致。\\3.\allowbreak{} 同一凭证重复登记→只有一笔发放。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\Needspace{497pt}
+\endhead
+\bottomrule\endlastfoot
+\Cell{操作} & \Cell{submitQuarter；approveQuarter；voidQuarter；createPayment；resolvePayment；myCompensation}\\[2pt]
+\Cell{批准与作废} & \Cell{submit将draft变为submitted；独立总部人员按expectedVersion批准。不同账号但同staff.id同样拒绝。未批准快照可附原因作废后重算，approved来源保持锁定。}\\[2pt]
+\Cell{额度算法} & \Cell{锁定获批份额，累计succeeded与pending，剩余额度=批准额-成功额-待核实额；本次金额不得超余额。凭证全局唯一，失败整笔回滚。}\\[2pt]
+\Cell{核实与查询} & \Cell{新记录为pending。实际核实后按版本转succeeded或failed，未知保持pending。本人查询从会话staff.id筛选approved份额，未关联身份返回空列表。}\\[2pt]
+\Cell{数据与事务} & \Cell{季度、份额及发放行锁保护状态和可发额度；状态变更及审计一起提交。银行查证在系统外进行，系统只登记核验后的凭证状态。}\\[2pt]
+\Cell{接口} & \Cell{POST /\allowbreak{}compensation/\allowbreak{}quarters/\allowbreak{}\{id\}/\allowbreak{}submit、/\allowbreak{}approve、/\allowbreak{}void；POST /\allowbreak{}compensation/\allowbreak{}allocations/\allowbreak{}\{id\}/\allowbreak{}payments；POST /\allowbreak{}compensation/\allowbreak{}payments/\allowbreak{}\{id\}/\allowbreak{}resolve；GET /\allowbreak{}compensation/\allowbreak{}me。}\\[2pt]
+\Cell{验收} & \Cell{同员工不同账号不能自审；并发发放两笔合计超额仅允许额度内记录；pending不释放额度，failed释放；普通员工只能查本人已批准份额。}\\[2pt]
+\end{longtable}
+}
 \subsubsection{UC-23 分析取消率与技能供需}
 边界：预约技能分析页；控制：预约技能分析控制。\par
 \begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/class_UC_23.pdf}
@@ -2928,23 +2893,10 @@ Andrew Chen兼任首席执行官与首席牙医。公司已有15家门诊，扩�
 }\end{minipage}\par\vspace{6pt}
 例如患者在甲店接受500元治疗，在乙店支付其中300元：治疗收入归属甲店的实际医生，乙店记录300元成功收款，患者仍欠200元。总部核对代收与资金划转，但划转不再增加300元治疗收入。退款若源于费用减免，先以调整单减少应收及相关收入，再记录实际退钱；单纯退还多付资金不冲减治疗收入。\par
 \Needspace{378pt}
-\subsection{成本分摊与关账}
-直接成本优先追溯实际执行。共同运营费用以已核验的医生工作时长作为分摊动因，分摊到医生与门诊；不能取得有效动因时，列为待处理事项并阻止相关期间关账。先计算高精度份额，向下取整到分，再按小数余数从大到小分配剩余分，余数相同按稳定医生标识排序，确保同一输入产生同一结果。\par
-\par\noindent\begin{minipage}{\textwidth}
-{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{关账检查顺序}\label{tab386}
-\begin{tabular}{@{}p{1.040cm}@{\hspace{0.16cm}}p{7.340cm}@{\hspace{0.16cm}}p{6.740cm}@{}}
-\toprule
-\bfseries \Cell{次序} & \bfseries \Cell{检查} & \bfseries \Cell{未通过的处理}\\\midrule
-\Cell{1} & \Cell{已完成就诊的执行已签署，必要结算单齐备} & \Cell{退回医生或前台补正，未执行治疗不能虚补收入。}\\[1pt]
-\Cell{2} & \Cell{收退款结果明确，日结及跨店代收差异已处理} & \Cell{在途交易继续查证，未解释差异不能跳过。}\\[1pt]
-\Cell{3} & \Cell{医疗用品耗用完整，运营费用来源及分摊守恒} & \Cell{缺成本不得默认为0；重复凭据必须排除。}\\[1pt]
-\Cell{4} & \Cell{制表和复核分离，期间结果及来源版本已固定} & \Cell{复核人退回或批准，原提交人不能自审。}\\[1pt]
-\Cell{5} & \Cell{按门诊营业有效期确定完整季度范围，所有实际经营月份已关闭，跨店明细完整} & \Cell{零业务月份仍须核验；营业期外月份保留排除依据，不能以缺数据代替零。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-关账后发现历史问题，保留原期间和原单，追加调整并说明业务发生日及入账期间。普通更正进入获准开放期间，同时披露其原归属；确需重开由独立复核批准，新版季度结果使原未发放分配失效。已经发放的差额形成追补或抵减事项，不删除发放记录。\par
-\Needspace{268pt}
+\subsection{账证归集与月度独立复核}
+医生月度账证汇总按门诊和自然月登记收入净额、医疗用品成本及运营费用，并逐类保存来源编号。共同费用先按经批准的制度在账证底稿中归属医生，季度核算不临时改变分摊规则。预约项目的参考价格和预约数量不自动形成服务收入；预收款与实际收入分别核对。\par
+月度草稿由原制表人修订并保留历史来源行；不同账号且不同员工的授权人员检查三类来源和当月出诊医生覆盖后关闭。全部登记门诊都进入季度来源范围，停用或无业务门诊也明确提交零业务依据。总部重开月份须写原因，已被有效季度快照引用的月份保持锁定。\par
+季度快照固定全部门诊三个自然月的关闭版本、医生门诊明细和个人份额。未批准且有误的快照先作废再重新生成；批准后的额度及其来源保持稳定。发放登记先占用额度，实际查证结果明确为成功或失败，未知结果继续待核实。\par
 \subsection{季度净利润与10\%基金}
 每名医生的季度收入、医疗用品成本和运营费用先在各门诊归集，再按医生统一标识跨店合并。医生季度净利润=\allowbreak{}收入净额-医疗用品成本-运营费用。全体医生净利润先合计，允许出现负贡献；基金=\allowbreak{}round(\allowbreak{}max(\allowbreak{}0,\allowbreak{}合计净利润)\allowbreak{}×10\%)\allowbreak{}，按人民币分四舍五入。亏损季度不提取基金是本设计采用的制度规则，不能把每位医生的负贡献分别截为0后再提取。\par
 \par\noindent\begin{minipage}{\textwidth}
@@ -2987,7 +2939,7 @@ Andrew Chen兼任首席执行官与首席牙医。公司已有15家门诊，扩�
 \Cell{一次就诊一张结算单} & \Cell{invoices.\allowbreak{}visit\_\allowbreak{}id NOT NULL UNIQUE；invoice\_\allowbreak{}lines按唯一execution\_\allowbreak{}item\_\allowbreak{}id取实际治疗} & \Cell{一对一身份清楚，费用更正追加调整而不生成第二张同次结算单。}\\[1pt]
 \Cell{收款与结算单多对多} & \Cell{payments—payment\_\allowbreak{}allocations—invoices} & \Cell{一笔可清多个应收，一个应收可由多笔付款清偿；未分配成功款独立成为预收。}\\[1pt]
 \Cell{材料耗用与运营费用} & \Cell{material\_\allowbreak{}consumptions归执行；cost\_\allowbreak{}documents—cost\_\allowbreak{}allocations归医生} & \Cell{直接用品与运营费分开归集，防止同一成本重复扣减医生贡献。}\\[1pt]
-\Cell{季度跨店业绩} & \Cell{doctor\_\allowbreak{}quarter\_\allowbreak{}results按医生×门诊×季度；跨店汇总为按dentist\_\allowbreak{}id求和的查询视图} & \Cell{门诊经营与个人贡献可以同时解释，不能把两种汇总再相加。}\\[1pt]
+\Cell{季度跨店业绩} & \Cell{doctor\_\allowbreak{}quarter\_\allowbreak{}results按基金快照×门诊×医生；跨店汇总为按doctor\_\allowbreak{}id求和的查询视图} & \Cell{门诊经营与个人贡献可以同时解释，不能把两种汇总再相加。}\\[1pt]
 \Cell{泛化映射选型} & \Cell{账号和岗位采用关联；执行、付款、退款保持独立实体；未强造持久化父类} & \Cell{单表继承易产生大量可空字段，子类分表需连接，具体类表复制公共字段；本业务不存在必须以继承解决的稳定互斥分类。}\\[1pt]
 \Cell{值对象与值表} & \Cell{金额为整数分，单位数量为定点数；稳定可维护的过敏原、资格、服务采用目录表，有限状态采用约束值} & \Cell{减少漂移术语；不为每个布尔或临时显示值建立目录表。}\\[1pt]
 \Cell{组合与历史保留} & \Cell{方案版本下项目、结算单下明细为组合；已签已开单对象禁止级联删除} & \Cell{归属生命周期明确，业务证据通过状态和更正链保存。}\\[1pt]
@@ -3061,21 +3013,23 @@ Andrew Chen兼任首席执行官与首席牙医。公司已有15家门诊，扩�
 \Cell{R3} & \Cell{execution\_\allowbreak{}items ← invoice\_\allowbreak{}lines.\allowbreak{}execution\_\allowbreak{}item\_\allowbreak{}id} & \Cell{1 /\allowbreak{} 0.\allowbreak{}.\allowbreak{}1}\\[1pt]
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/er_6.pdf}
-\caption{组织与权限关系模型 1}\label{er_6}\end{figure}
-\par\noindent\begin{minipage}{\textwidth}
+\begin{figure}[H]\centering\includegraphics[width=\textwidth,height=.83\textheight,keepaspectratio]{figures/er_6.pdf}
+\caption{员工身份、登录账号与门诊岗位关系}\label{er_6}\end{figure}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{组织与权限关系模型 1关联}\label{tab414}
-\begin{tabular}{@{}p{1.240cm}@{\hspace{0.16cm}}p{10.040cm}@{\hspace{0.16cm}}p{3.840cm}@{}}
+\begin{longtable}{@{}p{1.2cm}@{\hspace{0.16cm}}p{10cm}@{\hspace{0.16cm}}p{3.7cm}@{}}
+\caption{员工与岗位关系}\label{employee_identity_rel}\\
 \toprule
-\bfseries \Cell{编号} & \bfseries \Cell{外键联系} & \bfseries \Cell{父对象数/\allowbreak{}子对象数}\\\midrule
-\Cell{R1} & \Cell{staff ← clinics.\allowbreak{}manager\_\allowbreak{}staff\_\allowbreak{}id} & \Cell{1 /\allowbreak{} 0.\allowbreak{}.\allowbreak{}*\allowbreak{}}\\[1pt]
-\Cell{R2} & \Cell{staff ← users.\allowbreak{}staff\_\allowbreak{}id} & \Cell{0.\allowbreak{}.\allowbreak{}1 /\allowbreak{} 0.\allowbreak{}.\allowbreak{}1}\\[1pt]
-\Cell{R3} & \Cell{users ← role\_\allowbreak{}assignments.\allowbreak{}user\_\allowbreak{}id} & \Cell{1 /\allowbreak{} 0.\allowbreak{}.\allowbreak{}*\allowbreak{}}\\[1pt]
-\Cell{R4} & \Cell{clinics ← role\_\allowbreak{}assignments.\allowbreak{}clinic\_\allowbreak{}id} & \Cell{0.\allowbreak{}.\allowbreak{}1 /\allowbreak{} 0.\allowbreak{}.\allowbreak{}*\allowbreak{}}\\[1pt]
-\Cell{R5} & \Cell{users ← role\_\allowbreak{}assignments.\allowbreak{}approved\_\allowbreak{}by} & \Cell{1 /\allowbreak{} 0.\allowbreak{}.\allowbreak{}*\allowbreak{}}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
+\bfseries \Cell{编号} & \bfseries \Cell{外键联系} & \bfseries \Cell{父/\allowbreak{}子对象数}\\\midrule
+\endfirsthead
+\toprule
+\bfseries \Cell{编号} & \bfseries \Cell{外键联系} & \bfseries \Cell{父/\allowbreak{}子对象数}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{R1} & \Cell{users ← staff.user\_\allowbreak{}id} & \Cell{0..1 /\allowbreak{} 0..1}\\[2pt]
+\Cell{R2} & \Cell{users ← role\_\allowbreak{}assignments.user\_\allowbreak{}id} & \Cell{1 /\allowbreak{} 0..*}\\[2pt]
+\Cell{R3} & \Cell{clinics ← role\_\allowbreak{}assignments.clinic\_\allowbreak{}id} & \Cell{0..1 /\allowbreak{} 0..*}\\[2pt]
+\end{longtable}
+}
 \begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/er_7.pdf}
 \caption{组织与权限关系模型 2}\label{er_7}\end{figure}
 \begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/er_8.pdf}
@@ -3217,21 +3171,74 @@ Andrew Chen兼任首席执行官与首席牙医。公司已有15家门诊，扩�
 \Cell{R1} & \Cell{daily\_\allowbreak{}closes ← daily\_\allowbreak{}close\_\allowbreak{}items.\allowbreak{}daily\_\allowbreak{}close\_\allowbreak{}id} & \Cell{1 /\allowbreak{} 0.\allowbreak{}.\allowbreak{}*\allowbreak{}}\\[1pt]
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/er_23.pdf}
-\caption{季度业绩与激励关系模型 1}\label{er_23}\end{figure}
-\par\noindent\begin{minipage}{\textwidth}
+\begin{figure}[H]\centering\includegraphics[width=\textwidth,height=.83\textheight,keepaspectratio]{figures/compensation_concept.pdf}
+\caption{月度账证、季度基金与个人发放概念联系}\label{compensation_concept}\end{figure}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{季度业绩与激励关系模型 1关联}\label{tab443}
-\begin{tabular}{@{}p{1.240cm}@{\hspace{0.16cm}}p{10.040cm}@{\hspace{0.16cm}}p{3.840cm}@{}}
+\begin{longtable}{@{}p{1.2cm}@{\hspace{0.16cm}}p{10cm}@{\hspace{0.16cm}}p{3.7cm}@{}}
+\caption{激励概念关系}\label{comp_concept_rel}\\
 \toprule
-\bfseries \Cell{编号} & \bfseries \Cell{外键联系} & \bfseries \Cell{父对象数/\allowbreak{}子对象数}\\\midrule
-\Cell{R1} & \Cell{incentive\_\allowbreak{}pools ← incentive\_\allowbreak{}pool\_\allowbreak{}sources.\allowbreak{}pool\_\allowbreak{}id} & \Cell{1 /\allowbreak{} 0.\allowbreak{}.\allowbreak{}*\allowbreak{}}\\[1pt]
-\Cell{R2} & \Cell{doctor\_\allowbreak{}quarter\_\allowbreak{}results ← incentive\_\allowbreak{}pool\_\allowbreak{}sources.\allowbreak{}quarter\_\allowbreak{}result\_\allowbreak{}id} & \Cell{1 /\allowbreak{} 0.\allowbreak{}.\allowbreak{}*\allowbreak{}}\\[1pt]
-\Cell{R3} & \Cell{incentive\_\allowbreak{}pools ← incentive\_\allowbreak{}allocations.\allowbreak{}pool\_\allowbreak{}id} & \Cell{1 /\allowbreak{} 0.\allowbreak{}.\allowbreak{}*\allowbreak{}}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/er_24.pdf}
-\caption{季度业绩与激励关系模型 2}\label{er_24}\end{figure}
+\bfseries \Cell{编号} & \bfseries \Cell{业务联系} & \bfseries \Cell{数量}\\\midrule
+\endfirsthead
+\toprule
+\bfseries \Cell{编号} & \bfseries \Cell{业务联系} & \bfseries \Cell{数量}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{R1} & \Cell{月度底稿包含医生财务来源} & \Cell{1 /\allowbreak{} 0..*}\\[2pt]
+\Cell{R2} & \Cell{月度底稿被季度来源采用} & \Cell{1 /\allowbreak{} 0..*}\\[2pt]
+\Cell{R3} & \Cell{季度基金采用全部登记门诊三个自然月} & \Cell{1 /\allowbreak{} 3×C}\\[2pt]
+\Cell{R4} & \Cell{季度基金形成医生个人份额} & \Cell{1 /\allowbreak{} 0..*}\\[2pt]
+\Cell{R5} & \Cell{同医生各门诊业绩合并为个人份额} & \Cell{0..* /\allowbreak{} 1}\\[2pt]
+\Cell{R6} & \Cell{个人份额分次登记发放} & \Cell{1 /\allowbreak{} 0..*}\\[2pt]
+\end{longtable}
+}
+\begin{figure}[H]\centering\includegraphics[width=\textwidth,height=.83\textheight,keepaspectratio]{figures/er_compensation_months.pdf}
+\caption{激励月度底稿与不可覆盖的来源修订}\label{er_compensation_months}\end{figure}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{1.2cm}@{\hspace{0.16cm}}p{10cm}@{\hspace{0.16cm}}p{3.7cm}@{}}
+\caption{激励月度底稿与不可覆盖的来源修订关联}\label{er_compensation_months_relations}\\
+\toprule
+\bfseries \Cell{编号} & \bfseries \Cell{外键联系} & \bfseries \Cell{父/\allowbreak{}子对象数}\\\midrule
+\endfirsthead
+\toprule
+\bfseries \Cell{编号} & \bfseries \Cell{外键联系} & \bfseries \Cell{父/\allowbreak{}子对象数}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{R1} & \Cell{incentive\_\allowbreak{}months ← doctor\_\allowbreak{}financial\_\allowbreak{}sources.month\_\allowbreak{}id} & \Cell{1 /\allowbreak{} 0..*}\\[2pt]
+\Cell{R2} & \Cell{staff ← doctor\_\allowbreak{}financial\_\allowbreak{}sources.doctor\_\allowbreak{}id} & \Cell{1 /\allowbreak{} 0..*}\\[2pt]
+\end{longtable}
+}
+\begin{figure}[H]\centering\includegraphics[width=\textwidth,height=.83\textheight,keepaspectratio]{figures/er_23.pdf}
+\caption{季度基金、关闭月度来源与门诊业绩}\label{er_23}\end{figure}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{1.2cm}@{\hspace{0.16cm}}p{10cm}@{\hspace{0.16cm}}p{3.7cm}@{}}
+\caption{季度基金、关闭月度来源与门诊业绩关联}\label{er_23_relations}\\
+\toprule
+\bfseries \Cell{编号} & \bfseries \Cell{外键联系} & \bfseries \Cell{父/\allowbreak{}子对象数}\\\midrule
+\endfirsthead
+\toprule
+\bfseries \Cell{编号} & \bfseries \Cell{外键联系} & \bfseries \Cell{父/\allowbreak{}子对象数}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{R1} & \Cell{incentive\_\allowbreak{}pools ← incentive\_\allowbreak{}pool\_\allowbreak{}sources.pool\_\allowbreak{}id} & \Cell{1 /\allowbreak{} 0..*}\\[2pt]
+\Cell{R2} & \Cell{incentive\_\allowbreak{}pools ← doctor\_\allowbreak{}quarter\_\allowbreak{}results.pool\_\allowbreak{}id} & \Cell{1 /\allowbreak{} 0..*}\\[2pt]
+\end{longtable}
+}
+\begin{figure}[H]\centering\includegraphics[width=\textwidth,height=.83\textheight,keepaspectratio]{figures/er_24.pdf}
+\caption{个人激励份额与凭据核实发放}\label{er_24}\end{figure}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{1.2cm}@{\hspace{0.16cm}}p{10cm}@{\hspace{0.16cm}}p{3.7cm}@{}}
+\caption{个人激励份额与凭据核实发放关联}\label{er_24_relations}\\
+\toprule
+\bfseries \Cell{编号} & \bfseries \Cell{外键联系} & \bfseries \Cell{父/\allowbreak{}子对象数}\\\midrule
+\endfirsthead
+\toprule
+\bfseries \Cell{编号} & \bfseries \Cell{外键联系} & \bfseries \Cell{父/\allowbreak{}子对象数}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{R1} & \Cell{incentive\_\allowbreak{}pools ← incentive\_\allowbreak{}allocations.pool\_\allowbreak{}id} & \Cell{1 /\allowbreak{} 0..*}\\[2pt]
+\Cell{R2} & \Cell{incentive\_\allowbreak{}allocations ← incentive\_\allowbreak{}payments.allocation\_\allowbreak{}id} & \Cell{1 /\allowbreak{} 0..*}\\[2pt]
+\end{longtable}
+}
 \begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/er_25.pdf}
 \caption{系统保障关系模型}\label{er_25}\end{figure}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
@@ -3245,10 +3252,6 @@ Andrew Chen兼任首席执行官与首席牙医。公司已有15家门诊，扩�
 \endhead
 \bottomrule\endlastfoot
 \Cell{clinics.\allowbreak{}manager\_\allowbreak{}staff\_\allowbreak{}id} & \Cell{staff.\allowbreak{}id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
-\Cell{users.\allowbreak{}staff\_\allowbreak{}id} & \Cell{staff.\allowbreak{}id} & \Cell{可空} & \Cell{子端唯一}\\[1pt]
-\Cell{role\_\allowbreak{}assignments.\allowbreak{}user\_\allowbreak{}id} & \Cell{users.\allowbreak{}id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
-\Cell{role\_\allowbreak{}assignments.\allowbreak{}clinic\_\allowbreak{}id} & \Cell{clinics.\allowbreak{}id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
-\Cell{role\_\allowbreak{}assignments.\allowbreak{}approved\_\allowbreak{}by} & \Cell{users.\allowbreak{}id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
 \Cell{patients.\allowbreak{}merged\_\allowbreak{}into\_\allowbreak{}patient\_\allowbreak{}id} & \Cell{patients.\allowbreak{}id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
 \Cell{patients.\allowbreak{}allergy\_\allowbreak{}checked\_\allowbreak{}by} & \Cell{staff.\allowbreak{}id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
 \Cell{patient\_\allowbreak{}access\_\allowbreak{}grants.\allowbreak{}user\_\allowbreak{}id} & \Cell{users.\allowbreak{}id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
@@ -3390,21 +3393,6 @@ Andrew Chen兼任首席执行官与首席牙医。公司已有15家门诊，扩�
 \Cell{period\_\allowbreak{}closes.\allowbreak{}supersedes\_\allowbreak{}close\_\allowbreak{}id} & \Cell{period\_\allowbreak{}closes.\allowbreak{}id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
 \Cell{period\_\allowbreak{}closes.\allowbreak{}prepared\_\allowbreak{}by} & \Cell{users.\allowbreak{}id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
 \Cell{period\_\allowbreak{}closes.\allowbreak{}approved\_\allowbreak{}by} & \Cell{users.\allowbreak{}id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
-\Cell{doctor\_\allowbreak{}quarter\_\allowbreak{}results.\allowbreak{}dentist\_\allowbreak{}id} & \Cell{staff.\allowbreak{}id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
-\Cell{doctor\_\allowbreak{}quarter\_\allowbreak{}results.\allowbreak{}clinic\_\allowbreak{}id} & \Cell{clinics.\allowbreak{}id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
-\Cell{doctor\_\allowbreak{}quarter\_\allowbreak{}results.\allowbreak{}month1\_\allowbreak{}close\_\allowbreak{}id} & \Cell{period\_\allowbreak{}closes.\allowbreak{}id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
-\Cell{doctor\_\allowbreak{}quarter\_\allowbreak{}results.\allowbreak{}month2\_\allowbreak{}close\_\allowbreak{}id} & \Cell{period\_\allowbreak{}closes.\allowbreak{}id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
-\Cell{doctor\_\allowbreak{}quarter\_\allowbreak{}results.\allowbreak{}month3\_\allowbreak{}close\_\allowbreak{}id} & \Cell{period\_\allowbreak{}closes.\allowbreak{}id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
-\Cell{doctor\_\allowbreak{}quarter\_\allowbreak{}results.\allowbreak{}prepared\_\allowbreak{}by} & \Cell{users.\allowbreak{}id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
-\Cell{doctor\_\allowbreak{}quarter\_\allowbreak{}results.\allowbreak{}reviewed\_\allowbreak{}by} & \Cell{users.\allowbreak{}id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
-\Cell{incentive\_\allowbreak{}pools.\allowbreak{}prepared\_\allowbreak{}by} & \Cell{users.\allowbreak{}id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
-\Cell{incentive\_\allowbreak{}pools.\allowbreak{}approved\_\allowbreak{}by} & \Cell{users.\allowbreak{}id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
-\Cell{incentive\_\allowbreak{}pool\_\allowbreak{}sources.\allowbreak{}pool\_\allowbreak{}id} & \Cell{incentive\_\allowbreak{}pools.\allowbreak{}id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
-\Cell{incentive\_\allowbreak{}pool\_\allowbreak{}sources.\allowbreak{}quarter\_\allowbreak{}result\_\allowbreak{}id} & \Cell{doctor\_\allowbreak{}quarter\_\allowbreak{}results.\allowbreak{}id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
-\Cell{incentive\_\allowbreak{}allocations.\allowbreak{}pool\_\allowbreak{}id} & \Cell{incentive\_\allowbreak{}pools.\allowbreak{}id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
-\Cell{incentive\_\allowbreak{}allocations.\allowbreak{}dentist\_\allowbreak{}id} & \Cell{staff.\allowbreak{}id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
-\Cell{incentive\_\allowbreak{}payments.\allowbreak{}allocation\_\allowbreak{}id} & \Cell{incentive\_\allowbreak{}allocations.\allowbreak{}id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
-\Cell{incentive\_\allowbreak{}payments.\allowbreak{}handled\_\allowbreak{}by} & \Cell{users.\allowbreak{}id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
 \Cell{interclinic\_\allowbreak{}settlements.\allowbreak{}paying\_\allowbreak{}clinic\_\allowbreak{}id} & \Cell{clinics.\allowbreak{}id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
 \Cell{interclinic\_\allowbreak{}settlements.\allowbreak{}receiving\_\allowbreak{}clinic\_\allowbreak{}id} & \Cell{clinics.\allowbreak{}id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
 \Cell{interclinic\_\allowbreak{}settlements.\allowbreak{}prepared\_\allowbreak{}by} & \Cell{users.\allowbreak{}id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
@@ -3441,6 +3429,38 @@ Andrew Chen兼任首席执行官与首席牙医。公司已有15家门诊，扩�
 \Cell{appointments.\allowbreak{}reservation\_\allowbreak{}id} & \Cell{resource\_\allowbreak{}reservations.\allowbreak{}id} & \Cell{非空} & \Cell{子端唯一}\\[1pt]
 \Cell{booking\_\allowbreak{}holds.\allowbreak{}reservation\_\allowbreak{}id} & \Cell{resource\_\allowbreak{}reservations.\allowbreak{}id} & \Cell{非空} & \Cell{子端唯一}\\[1pt]
 \Cell{treatment\_\allowbreak{}references.\allowbreak{}booking\_\allowbreak{}service\_\allowbreak{}id} & \Cell{services.\allowbreak{}id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}months.clinic\_\allowbreak{}id} & \Cell{clinics.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}months.created\_\allowbreak{}by} & \Cell{users.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}months.created\_\allowbreak{}staff\_\allowbreak{}id} & \Cell{staff.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}months.updated\_\allowbreak{}by} & \Cell{users.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}months.closed\_\allowbreak{}by} & \Cell{users.id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}months.closed\_\allowbreak{}staff\_\allowbreak{}id} & \Cell{staff.id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
+\Cell{doctor\_\allowbreak{}financial\_\allowbreak{}sources.month\_\allowbreak{}id} & \Cell{incentive\_\allowbreak{}months.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{doctor\_\allowbreak{}financial\_\allowbreak{}sources.doctor\_\allowbreak{}id} & \Cell{staff.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{doctor\_\allowbreak{}financial\_\allowbreak{}sources.created\_\allowbreak{}by} & \Cell{users.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}pools.created\_\allowbreak{}by} & \Cell{users.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}pools.created\_\allowbreak{}staff\_\allowbreak{}id} & \Cell{staff.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}pools.approved\_\allowbreak{}by} & \Cell{users.id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}pools.approved\_\allowbreak{}staff\_\allowbreak{}id} & \Cell{staff.id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}pools.voided\_\allowbreak{}by} & \Cell{users.id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}pool\_\allowbreak{}sources.pool\_\allowbreak{}id} & \Cell{incentive\_\allowbreak{}pools.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}pool\_\allowbreak{}sources.month\_\allowbreak{}id} & \Cell{incentive\_\allowbreak{}months.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}pool\_\allowbreak{}sources.clinic\_\allowbreak{}id} & \Cell{clinics.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}pool\_\allowbreak{}sources.closed\_\allowbreak{}by} & \Cell{users.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}pool\_\allowbreak{}sources.closed\_\allowbreak{}staff\_\allowbreak{}id} & \Cell{staff.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{doctor\_\allowbreak{}quarter\_\allowbreak{}results.pool\_\allowbreak{}id} & \Cell{incentive\_\allowbreak{}pools.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{doctor\_\allowbreak{}quarter\_\allowbreak{}results.clinic\_\allowbreak{}id} & \Cell{clinics.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{doctor\_\allowbreak{}quarter\_\allowbreak{}results.doctor\_\allowbreak{}id} & \Cell{staff.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}allocations.pool\_\allowbreak{}id} & \Cell{incentive\_\allowbreak{}pools.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}allocations.doctor\_\allowbreak{}id} & \Cell{staff.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}payments.allocation\_\allowbreak{}id} & \Cell{incentive\_\allowbreak{}allocations.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}payments.created\_\allowbreak{}by} & \Cell{users.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}payments.created\_\allowbreak{}staff\_\allowbreak{}id} & \Cell{staff.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}payments.resolved\_\allowbreak{}by} & \Cell{users.id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
+\Cell{incentive\_\allowbreak{}payments.resolved\_\allowbreak{}staff\_\allowbreak{}id} & \Cell{staff.id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
+\Cell{staff.user\_\allowbreak{}id} & \Cell{users.id} & \Cell{可空} & \Cell{子端唯一}\\[1pt]
+\Cell{role\_\allowbreak{}assignments.user\_\allowbreak{}id} & \Cell{users.id} & \Cell{非空} & \Cell{子端可多条}\\[1pt]
+\Cell{role\_\allowbreak{}assignments.clinic\_\allowbreak{}id} & \Cell{clinics.id} & \Cell{可空} & \Cell{子端可多条}\\[1pt]
 \end{longtable}
 }
 \par\noindent\begin{minipage}{\textwidth}
@@ -3488,81 +3508,79 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \Cell{row\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{并发版本，成功修改递增}\\[1pt]
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
-约束：UNIQUE(\allowbreak{}clinic\_\allowbreak{}no)\allowbreak{}；row\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；floor\_\allowbreak{}area\_\allowbreak{}m2>\allowbreak{}0；opens\_\allowbreak{}at<\allowbreak{}closes\_\allowbreak{}at；closed\_\allowbreak{}on IS NULL OR closed\_\allowbreak{}on>\allowbreak{}=\allowbreak{}opened\_\allowbreak{}on；主管任职和manager权限须覆盖门诊及生效期间。停业不删除历史业务。；季度范围逐月依据opened\_\allowbreak{}on和closed\_\allowbreak{}on构造；整月不在经营有效期的排除有来源，不能因没有月结快照就默认为未经营或金额为零。\par
+约束：UNIQUE(\allowbreak{}clinic\_\allowbreak{}no)\allowbreak{}；row\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；floor\_\allowbreak{}area\_\allowbreak{}m2>\allowbreak{}0；opens\_\allowbreak{}at<\allowbreak{}closes\_\allowbreak{}at；closed\_\allowbreak{}on IS NULL OR closed\_\allowbreak{}on>\allowbreak{}=\allowbreak{}opened\_\allowbreak{}on；主管任职和manager权限须覆盖门诊及生效期间。停业不删除历史业务。；激励季度范围包含全部登记门诊的三个自然月，停用或无业务门诊也须提供经复核的月度依据。\par
 \Needspace{552pt}
 \subsubsection{员工与医生档案（staff）}
-记录医生个人资料，并作为跨门诊执业、资格与业绩的稳定主体。\par
-\par\noindent\begin{minipage}{\textwidth}
+员工档案保存稳定员工编号和可选唯一账号关联，医生与非医生共享员工主体。出生日期、家庭住址和电子邮箱用于内部人事管理；公开医生资料不返回这三项。\par
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{staff字段}\label{tab456}
-\begin{tabular}{@{}p{3.940cm}@{\hspace{0.16cm}}p{2.740cm}@{\hspace{0.16cm}}p{3.140cm}@{\hspace{0.16cm}}p{5.140cm}@{}}
+\begin{longtable}{@{}p{3.6cm}@{\hspace{0.16cm}}p{2.1cm}@{\hspace{0.16cm}}p{3.7cm}@{\hspace{0.16cm}}p{5.3cm}@{}}
+\caption{staff字段}\label{schema_staff}\\
 \toprule
 \bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
-\Cell{id} & \Cell{UUID} & \Cell{NN；PK} & \Cell{稳定全局标识，不承载业务顺序}\\[1pt]
-\Cell{staff\_\allowbreak{}no} & \Cell{TEXT} & \Cell{NN} & \Cell{员工编号}\\[1pt]
-\Cell{name} & \Cell{TEXT} & \Cell{NN} & \Cell{姓名}\\[1pt]
-\Cell{birth\_\allowbreak{}date} & \Cell{DATE} & \Cell{NN} & \Cell{出生日期}\\[1pt]
-\Cell{home\_\allowbreak{}address\_\allowbreak{}ref} & \Cell{TEXT} & \Cell{NN} & \Cell{家庭住址的加密受控存储引用}\\[1pt]
-\Cell{phone} & \Cell{TEXT} & \Cell{NN} & \Cell{联系电话}\\[1pt]
-\Cell{email} & \Cell{TEXT} & \Cell{NN} & \Cell{电子邮箱}\\[1pt]
-\Cell{staff\_\allowbreak{}type} & \Cell{TEXT} & \Cell{NN} & \Cell{dentist、support、operations}\\[1pt]
-\Cell{employment\_\allowbreak{}status} & \Cell{TEXT} & \Cell{NN} & \Cell{employed、leave、terminated}\\[1pt]
-\Cell{joined\_\allowbreak{}on} & \Cell{DATE} & \Cell{NN} & \Cell{入职日期}\\[1pt]
-\Cell{left\_\allowbreak{}on} & \Cell{DATE} & \Cell{NULL} & \Cell{离职日期}\\[1pt]
-\Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{创建时间，UTC保存}\\[1pt]
-\Cell{updated\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{当前草稿或状态最后变更时间}\\[1pt]
-\Cell{row\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{并发版本，成功修改递增}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-约束：UNIQUE(\allowbreak{}staff\_\allowbreak{}no)\allowbreak{}；row\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；left\_\allowbreak{}on IS NULL OR left\_\allowbreak{}on>\allowbreak{}=\allowbreak{}joined\_\allowbreak{}on；出生日期和家庭住址仅供必要人事核验，不进入顾客号源或普通前台视图。医生是否可执业另外核查资格及任务授权。\par
-\Needspace{482pt}
+\endfirsthead
+\toprule
+\bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{id} & \Cell{UUID} & \Cell{NN；PK} & \Cell{稳定全局标识，自动生成UUID}\\[2pt]
+\Cell{user\_\allowbreak{}id} & \Cell{UUID} & \Cell{NULL；UNIQUE；FK→\allowbreak{}users.id} & \Cell{关联登录账号；staff.user\_\allowbreak{}id可空且唯一，岗位授权中必填}\\[2pt]
+\Cell{employee\_\allowbreak{}no} & \Cell{TEXT} & \Cell{NN；UNIQUE} & \Cell{唯一员工编号，跨门诊保持同一编号；公开医生DTO不返回}\\[2pt]
+\Cell{name} & \Cell{TEXT} & \Cell{NN} & \Cell{员工姓名}\\[2pt]
+\Cell{phone} & \Cell{TEXT} & \Cell{NN} & \Cell{内部人员联系电话；公开医生DTO不返回}\\[2pt]
+\Cell{specialty} & \Cell{TEXT} & \Cell{NN} & \Cell{岗位或医生专长说明}\\[2pt]
+\Cell{is\_\allowbreak{}dentist} & \Cell{BOOLEAN} & \Cell{NN} & \Cell{是否牙医；支持非医生员工与医生采用同一员工主体}\\[2pt]
+\Cell{active} & \Cell{BOOLEAN} & \Cell{NN} & \Cell{当前可用标记；停用保留历史}\\[2pt]
+\Cell{row\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{乐观并发版本；成功状态变更递增}\\[2pt]
+\Cell{is\_\allowbreak{}demo} & \Cell{BOOLEAN} & \Cell{NN} & \Cell{合成演示资料标记；不接受普通表单伪造}\\[2pt]
+\Cell{bio} & \Cell{TEXT} & \Cell{NN} & \Cell{对外展示的个人简介}\\[2pt]
+\Cell{focus\_\allowbreak{}areas} & \Cell{TEXT[]} & \Cell{NN} & \Cell{对外展示的专长项目数组}\\[2pt]
+\Cell{birth\_\allowbreak{}date} & \Cell{DATE} & \Cell{NULL} & \Cell{内部人事出生日期；公开医生DTO不返回}\\[2pt]
+\Cell{home\_\allowbreak{}address} & \Cell{TEXT} & \Cell{NULL} & \Cell{内部人事家庭住址；公开医生DTO不返回}\\[2pt]
+\Cell{email} & \Cell{TEXT} & \Cell{NULL} & \Cell{内部人事电子邮箱；公开医生DTO不返回}\\[2pt]
+\end{longtable}
+}
+约束：employee\_\allowbreak{}no唯一；user\_\allowbreak{}id可空且唯一，关联users.id。is\_\allowbreak{}dentist区分牙医和非医生员工；active停用不删除历史。row\_\allowbreak{}version为正整数。医生档案、非医生员工档案及账号授权分别由相应管理入口维护；同一员工不能以多个账号绕过制审ID校验。\par
 \subsubsection{登录账号（users）}
-认证身份与患者档案、员工档案分离。\par
-\par\noindent\begin{minipage}{\textwidth}
+账号负责认证，员工通过staff.user\_\allowbreak{}id关联本人账号；患者通过患者档案关联本人账号。员工号和账号名分别保持稳定唯一，显示姓名不用于推断数据权限。\par
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{users字段}\label{tab460}
-\begin{tabular}{@{}p{3.940cm}@{\hspace{0.16cm}}p{2.740cm}@{\hspace{0.16cm}}p{3.140cm}@{\hspace{0.16cm}}p{5.140cm}@{}}
+\begin{longtable}{@{}p{3.6cm}@{\hspace{0.16cm}}p{2.1cm}@{\hspace{0.16cm}}p{3.7cm}@{\hspace{0.16cm}}p{5.3cm}@{}}
+\caption{users字段}\label{schema_users}\\
 \toprule
 \bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
-\Cell{id} & \Cell{UUID} & \Cell{NN；PK} & \Cell{稳定全局标识，不承载业务顺序}\\[1pt]
-\Cell{login\_\allowbreak{}name} & \Cell{TEXT} & \Cell{NN} & \Cell{规范化登录名}\\[1pt]
-\Cell{password\_\allowbreak{}hash} & \Cell{TEXT} & \Cell{NN} & \Cell{密码的不可逆安全散列}\\[1pt]
-\Cell{principal\_\allowbreak{}type} & \Cell{TEXT} & \Cell{NN} & \Cell{customer或staff}\\[1pt]
-\Cell{staff\_\allowbreak{}id} & \Cell{UUID} & \Cell{NULL；FK→\\staff.\allowbreak{}id} & \Cell{员工主体；customer账号为空}\\[1pt]
-\Cell{display\_\allowbreak{}name} & \Cell{TEXT} & \Cell{NN} & \Cell{账号显示姓名，不能单独作为身份核验依据}\\[1pt]
-\Cell{status} & \Cell{TEXT} & \Cell{NN} & \Cell{active、locked、disabled}\\[1pt]
-\Cell{session\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{撤销已有会话的版本}\\[1pt]
-\Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{创建时间，UTC保存}\\[1pt]
-\Cell{updated\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{当前草稿或状态最后变更时间}\\[1pt]
-\Cell{row\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{并发版本，成功修改递增}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-约束：UNIQUE(\allowbreak{}login\_\allowbreak{}name)\allowbreak{}；UNIQUE(\allowbreak{}staff\_\allowbreak{}id)\allowbreak{}；row\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；(\allowbreak{}principal\_\allowbreak{}type=\allowbreak{}'staff' AND staff\_\allowbreak{}id IS NOT NULL)\allowbreak{} OR (\allowbreak{}principal\_\allowbreak{}type=\allowbreak{}'customer' AND staff\_\allowbreak{}id IS NULL)\allowbreak{}；session\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；顾客可通过经核验授权管理本人或家庭成员；共用手机号不推导医疗资料权限。离职停用不删除历史经办和签署。\par
-\Needspace{523pt}
+\endfirsthead
+\toprule
+\bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{id} & \Cell{UUID} & \Cell{NN；PK} & \Cell{稳定全局标识，自动生成UUID}\\[2pt]
+\Cell{username} & \Cell{TEXT} & \Cell{NN；UNIQUE} & \Cell{小写规范化登录名，唯一}\\[2pt]
+\Cell{password\_\allowbreak{}hash} & \Cell{TEXT} & \Cell{NN} & \Cell{不可逆安全密码散列，不保存明文密码}\\[2pt]
+\Cell{display\_\allowbreak{}name} & \Cell{TEXT} & \Cell{NN} & \Cell{账号显示姓名，不作为员工身份关联依据}\\[2pt]
+\Cell{active} & \Cell{BOOLEAN} & \Cell{NN} & \Cell{当前可用标记；停用保留历史}\\[2pt]
+\Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{记录创建时刻，保存为带时区时间}\\[2pt]
+\Cell{account\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{账号并发与会话有效性版本，正整数}\\[2pt]
+\Cell{must\_\allowbreak{}change\_\allowbreak{}password} & \Cell{BOOLEAN} & \Cell{NN} & \Cell{首次或临时凭据是否必须更改密码}\\[2pt]
+\end{longtable}
+}
+约束：username小写且唯一，active控制账号启停；account\_\allowbreak{}version为正整数。临时密码流程由must\_\allowbreak{}change\_\allowbreak{}password控制，停用与密码变更使旧会话失效，保留历史经办记录。\par
 \subsubsection{岗位与门诊授权（role\_assignments）}
-定义员工在时间与门诊范围内承担的任务。\par
-\par\noindent\begin{minipage}{\textwidth}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{role\_assignments字段}\label{tab464}
-\begin{tabular}{@{}p{3.940cm}@{\hspace{0.16cm}}p{2.740cm}@{\hspace{0.16cm}}p{3.140cm}@{\hspace{0.16cm}}p{5.140cm}@{}}
+\begin{longtable}{@{}p{3.6cm}@{\hspace{0.16cm}}p{2.1cm}@{\hspace{0.16cm}}p{3.7cm}@{\hspace{0.16cm}}p{5.3cm}@{}}
+\caption{role\_\allowbreak{}assignments字段}\label{schema_role_assignments}\\
 \toprule
 \bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
-\Cell{id} & \Cell{UUID} & \Cell{NN；PK} & \Cell{稳定全局标识，不承载业务顺序}\\[1pt]
-\Cell{user\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\\users.\allowbreak{}id} & \Cell{员工账号}\\[1pt]
-\Cell{role\_\allowbreak{}code} & \Cell{TEXT} & \Cell{NN} & \Cell{front、doctor、manager、hq}\\[1pt]
-\Cell{clinic\_\allowbreak{}id} & \Cell{UUID} & \Cell{NULL；FK→\\clinics.\allowbreak{}id} & \Cell{门诊范围；仅总部全链授权可空}\\[1pt]
-\Cell{valid\_\allowbreak{}from} & \Cell{DATE} & \Cell{NN} & \Cell{生效日}\\[1pt]
-\Cell{valid\_\allowbreak{}until} & \Cell{DATE} & \Cell{NULL} & \Cell{终止日}\\[1pt]
-\Cell{approved\_\allowbreak{}by} & \Cell{UUID} & \Cell{NN；FK→\\users.\allowbreak{}id} & \Cell{授权批准账号}\\[1pt]
-\Cell{approval\_\allowbreak{}ref} & \Cell{TEXT} & \Cell{NN} & \Cell{任职或授权凭据}\\[1pt]
-\Cell{status} & \Cell{TEXT} & \Cell{NN} & \Cell{active、revoked、expired}\\[1pt]
-\Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{创建时间，UTC保存}\\[1pt]
-\Cell{updated\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{当前草稿或状态最后变更时间}\\[1pt]
-\Cell{row\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{并发版本，成功修改递增}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-约束：UNIQUE(\allowbreak{}user\_\allowbreak{}id,\allowbreak{}role\_\allowbreak{}code,\allowbreak{}clinic\_\allowbreak{}id,\allowbreak{}valid\_\allowbreak{}from)\allowbreak{}；row\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；valid\_\allowbreak{}until IS NULL OR valid\_\allowbreak{}until>\allowbreak{}=\allowbreak{}valid\_\allowbreak{}from；role\_\allowbreak{}code=\allowbreak{}'hq' OR clinic\_\allowbreak{}id IS NOT NULL；总部是组织内部岗位；制单与审批还按自然员工回避，不能以切换账号规避。医生角色不自动替代专业资格。\par
-\Needspace{216pt}
+\endfirsthead
+\toprule
+\bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{id} & \Cell{UUID} & \Cell{NN；PK} & \Cell{稳定全局标识，自动生成UUID}\\[2pt]
+\Cell{user\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}users.id} & \Cell{关联登录账号；staff.user\_\allowbreak{}id可空且唯一，岗位授权中必填}\\[2pt]
+\Cell{role} & \Cell{TEXT} & \Cell{NN} & \Cell{front、doctor、manager、hq；同一账号可承担多岗位}\\[2pt]
+\Cell{clinic\_\allowbreak{}id} & \Cell{UUID} & \Cell{NULL；FK→\allowbreak{}clinics.id} & \Cell{来源门诊的稳定ID}\\[2pt]
+\end{longtable}
+}
+约束：role取front、doctor、manager、hq；总部hq的clinic\_\allowbreak{}id必须为空，其他岗位必须绑定门诊。同(user\_\allowbreak{}id,role,clinic\_\allowbreak{}id)唯一，空值按同值处理。服务端从会话读取当前账号与岗位，每项操作再检查员工状态及门诊范围；独立复核同时比较账号和staff.id。\par
 \subsubsection{患者主档（patients）}
 保存患者身份、联系资料和逐项过敏核对状态。\par
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
@@ -4432,7 +4450,7 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{创建时间，UTC保存}\\[1pt]
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
-约束：UNIQUE(\allowbreak{}adjustment\_\allowbreak{}no)\allowbreak{}；UNIQUE(\allowbreak{}reverses\_\allowbreak{}adjustment\_\allowbreak{}id)\allowbreak{}；delta\_\allowbreak{}cents<\allowbreak{}>\allowbreak{}0；requested\_\allowbreak{}by<\allowbreak{}>\allowbreak{}approved\_\allowbreak{}by；调整后原费用行净应收不得为负。费用减免不自动退钱；退款也不自动减免应收。更正以前期间在当前开放期入账，保留原服务与原费用引用。按自然员工实施制审分离。；调减后如原净核销高于新应收，同事务释放超额核销到原款未分配预收；实际退款另有审批和渠道结果，不能留下无解释的超额核销。\par
+约束：UNIQUE(\allowbreak{}adjustment\_\allowbreak{}no)\allowbreak{}；UNIQUE(\allowbreak{}reverses\_\allowbreak{}adjustment\_\allowbreak{}id)\allowbreak{}；delta\_\allowbreak{}cents<\allowbreak{}>\allowbreak{}0；requested\_\allowbreak{}by<\allowbreak{}>\allowbreak{}approved\_\allowbreak{}by；调整后原费用行净应收不得为负。费用减免不自动退钱；退款也不自动减免应收。更正以前期间在当前开放期入账，保留原服务与原费用引用。以有效员工档案、不同账号ID和不同员工ID实施制审分离。；调减后如原净核销高于新应收，同事务释放超额核销到原款未分配预收；实际退款另有审批和渠道结果，不能留下无解释的超额核销。\par
 \Needspace{216pt}
 \subsubsection{真实收款（payments）}
 保存实际成功收款及预收，不把支付请求当成到账。\par
@@ -4526,7 +4544,7 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \Cell{row\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{并发版本，成功修改递增}\\[1pt]
 \end{longtable}
 }
-约束：UNIQUE(\allowbreak{}refund\_\allowbreak{}no)\allowbreak{}；row\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；requested\_\allowbreak{}cents>\allowbreak{}0；approved\_\allowbreak{}cents>\allowbreak{}=\allowbreak{}0 AND approved\_\allowbreak{}cents<\allowbreak{}=\allowbreak{}requested\_\allowbreak{}cents；approved\_\allowbreak{}by IS NULL OR approved\_\allowbreak{}by<\allowbreak{}>\allowbreak{}requested\_\allowbreak{}by；有效批准占用可退来源，成功和未决执行均占用额度。申请与审批按自然员工分离；已核销退款只释放其对应核销，费用是否减免另办。一个申请只针对一笔原款及一个核销来源或未分配余额。；预收可退余额=\allowbreak{}原成功收款-\allowbreak{}成功退款-\allowbreak{}当前净核销-\allowbreak{}有效未执行的预收退款冻结。已核销退款按原核销剩余可释放额扣除同来源有效冻结，不再重复扣入预收可用额。；成功退款同时减少原款净额；若退已核销款还同步release原核销，因此不会凭空增加患者预收。申请所指allocation\_\allowbreak{}id必须属于payment\_\allowbreak{}id且为原apply。\par
+约束：UNIQUE(\allowbreak{}refund\_\allowbreak{}no)\allowbreak{}；row\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；requested\_\allowbreak{}cents>\allowbreak{}0；approved\_\allowbreak{}cents>\allowbreak{}=\allowbreak{}0 AND approved\_\allowbreak{}cents<\allowbreak{}=\allowbreak{}requested\_\allowbreak{}cents；approved\_\allowbreak{}by IS NULL OR approved\_\allowbreak{}by<\allowbreak{}>\allowbreak{}requested\_\allowbreak{}by；有效批准占用可退来源，成功和未决执行均占用额度。申请与审批校验不同账号及不同员工ID；已核销退款只释放其对应核销，费用是否减免另办。一个申请只针对一笔原款及一个核销来源或未分配余额。；预收可退余额=\allowbreak{}原成功收款-\allowbreak{}成功退款-\allowbreak{}当前净核销-\allowbreak{}有效未执行的预收退款冻结。已核销退款按原核销剩余可释放额扣除同来源有效冻结，不再重复扣入预收可用额。；成功退款同时减少原款净额；若退已核销款还同步release原核销，因此不会凭空增加患者预收。申请所指allocation\_\allowbreak{}id必须属于payment\_\allowbreak{}id且为原apply。\par
 \Needspace{627pt}
 \subsubsection{实际退付交易（refund\_transactions）}
 分别保存渠道受理和最终成功，允许分次执行获批退款。\par
@@ -4708,13 +4726,12 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \Cell{row\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{并发版本，成功修改递增}\\[1pt]
 \end{longtable}
 }
-约束：UNIQUE(\allowbreak{}clinic\_\allowbreak{}id,\allowbreak{}period\_\allowbreak{}month,\allowbreak{}version\_\allowbreak{}no)\allowbreak{}；row\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；EXTRACT(\allowbreak{}DAY FROM period\_\allowbreak{}month)\allowbreak{}=\allowbreak{}1；version\_\allowbreak{}no>\allowbreak{}=\allowbreak{}1；approved\_\allowbreak{}by IS NULL OR approved\_\allowbreak{}by<\allowbreak{}>\allowbreak{}prepared\_\allowbreak{}by；unresolved\_\allowbreak{}funds\_\allowbreak{}count>\allowbreak{}=\allowbreak{}0；unexplained\_\allowbreak{}difference\_\allowbreak{}count>\allowbreak{}=\allowbreak{}0；status<\allowbreak{}>\allowbreak{}'closed' OR (\allowbreak{}unresolved\_\allowbreak{}funds\_\allowbreak{}count=\allowbreak{}0 AND unexplained\_\allowbreak{}difference\_\allowbreak{}count=\allowbreak{}0)\allowbreak{}；incomplete\_\allowbreak{}business\_\allowbreak{}count>\allowbreak{}=\allowbreak{}0；status<\allowbreak{}>\allowbreak{}'closed' OR incomplete\_\allowbreak{}business\_\allowbreak{}count=\allowbreak{}0；按月顺序关账，必要日结、未计费治疗、材料及费用归属缺项应处理后提交。真实应收和预收可带余额结转，不强行抹零。同门诊月份仅一个当前有效closed版本，以部分唯一索引保证。普通更正记当前开放月；重大重开需独立批准并重建受影响季度结果。；未知资金结果或未解释资金差异均阻止正式通过；已分派负责人、已写说明或拟继续查证不能代替实际核实结案。有证据的渠道结算在途和正常应收可分别列示，不混同未知交易。\par
+约束：UNIQUE(\allowbreak{}clinic\_\allowbreak{}id,\allowbreak{}period\_\allowbreak{}month,\allowbreak{}version\_\allowbreak{}no)\allowbreak{}；row\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；EXTRACT(\allowbreak{}DAY FROM period\_\allowbreak{}month)\allowbreak{}=\allowbreak{}1；version\_\allowbreak{}no>\allowbreak{}=\allowbreak{}1；approved\_\allowbreak{}by IS NULL OR approved\_\allowbreak{}by<\allowbreak{}>\allowbreak{}prepared\_\allowbreak{}by；unresolved\_\allowbreak{}funds\_\allowbreak{}count>\allowbreak{}=\allowbreak{}0；unexplained\_\allowbreak{}difference\_\allowbreak{}count>\allowbreak{}=\allowbreak{}0；status<\allowbreak{}>\allowbreak{}'closed' OR (\allowbreak{}unresolved\_\allowbreak{}funds\_\allowbreak{}count=\allowbreak{}0 AND unexplained\_\allowbreak{}difference\_\allowbreak{}count=\allowbreak{}0)\allowbreak{}；incomplete\_\allowbreak{}business\_\allowbreak{}count>\allowbreak{}=\allowbreak{}0；status<\allowbreak{}>\allowbreak{}'closed' OR incomplete\_\allowbreak{}business\_\allowbreak{}count=\allowbreak{}0；按月顺序关账，必要日结、未计费治疗、材料及费用归属缺项应处理后提交。真实应收和预收可带余额结转，不强行抹零。同门诊月份仅一个当前有效closed版本，以部分唯一索引保证。普通更正记当前开放月；经营账务更正保留新依据；已批准激励采用的月报版本保持锁定，后续调整另附原来源。；未知资金结果或未解释资金差异均阻止正式通过；已分派负责人、已写说明或拟继续查证不能代替实际核实结案。有证据的渠道结算在途和正常应收可分别列示，不混同未知交易。\par
 \Needspace{216pt}
-\subsubsection{医生门诊季度业绩（doctor\_quarter\_results）}
-按医生×门诊×季度保存收入、用品成本、运营费及净利。\par
+\subsubsection{门诊月度激励底稿（incentive\_\allowbreak{}months）}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\begin{longtable}{@{}p{3.940cm}@{\hspace{0.16cm}}p{2.740cm}@{\hspace{0.16cm}}p{3.140cm}@{\hspace{0.16cm}}p{5.140cm}@{}}
-\caption{doctor\_quarter\_results字段}\label{tab632}\\
+\begin{longtable}{@{}p{3.6cm}@{\hspace{0.16cm}}p{2.1cm}@{\hspace{0.16cm}}p{3.7cm}@{\hspace{0.16cm}}p{5.3cm}@{}}
+\caption{incentive\_\allowbreak{}months字段}\label{schema_incentive_months}\\
 \toprule
 \bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
 \endfirsthead
@@ -4722,36 +4739,29 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
 \endhead
 \bottomrule\endlastfoot
-\Cell{id} & \Cell{UUID} & \Cell{NN；PK} & \Cell{稳定全局标识，不承载业务顺序}\\[1pt]
-\Cell{dentist\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\\staff.\allowbreak{}id} & \Cell{实际贡献医生}\\[1pt]
-\Cell{clinic\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\\clinics.\allowbreak{}id} & \Cell{贡献发生门诊}\\[1pt]
-\Cell{quarter\_\allowbreak{}start} & \Cell{DATE} & \Cell{NN} & \Cell{季度首月首日}\\[1pt]
-\Cell{version\_\allowbreak{}no} & \Cell{INTEGER} & \Cell{NN} & \Cell{业绩版本}\\[1pt]
-\Cell{month1\_\allowbreak{}close\_\allowbreak{}id} & \Cell{UUID} & \Cell{NULL；FK→\\period\_\allowbreak{}closes.\allowbreak{}id} & \Cell{季度第一月有效关账；仅门诊该整月不在经营范围且有依据时可空}\\[1pt]
-\Cell{month2\_\allowbreak{}close\_\allowbreak{}id} & \Cell{UUID} & \Cell{NULL；FK→\\period\_\allowbreak{}closes.\allowbreak{}id} & \Cell{季度第二月有效关账；仅门诊该整月不在经营范围且有依据时可空}\\[1pt]
-\Cell{month3\_\allowbreak{}close\_\allowbreak{}id} & \Cell{UUID} & \Cell{NULL；FK→\\period\_\allowbreak{}closes.\allowbreak{}id} & \Cell{季度第三月有效关账；仅门诊该整月不在经营范围且有依据时可空}\\[1pt]
-\Cell{revenue\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{已执行项目收入及有效费用调整；单位分}\\[1pt]
-\Cell{material\_\allowbreak{}cost\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{直接材料净耗用成本；单位分}\\[1pt]
-\Cell{operating\_\allowbreak{}expense\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{归属医生的净运营费用；单位分}\\[1pt]
-\Cell{net\_\allowbreak{}profit\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{收入减医疗用品成本减运营费用；单位分}\\[1pt]
-\Cell{source\_\allowbreak{}hash} & \Cell{TEXT} & \Cell{NN} & \Cell{源期间及业绩明细摘要}\\[1pt]
-\Cell{status} & \Cell{TEXT} & \Cell{NN} & \Cell{draft、approved、superseded}\\[1pt]
-\Cell{prepared\_\allowbreak{}by} & \Cell{UUID} & \Cell{NN；FK→\\users.\allowbreak{}id} & \Cell{计算账号}\\[1pt]
-\Cell{reviewed\_\allowbreak{}by} & \Cell{UUID} & \Cell{NULL；FK→\\users.\allowbreak{}id} & \Cell{独立复核账号}\\[1pt]
-\Cell{source\_\allowbreak{}manifest\_\allowbreak{}ref} & \Cell{TEXT} & \Cell{NN} & \Cell{本医生门诊的收费、调整、耗用及费用分配来源编号、版本和金额清单}\\[1pt]
-\Cell{scope\_\allowbreak{}exclusion\_\allowbreak{}ref} & \Cell{TEXT} & \Cell{NULL} & \Cell{季度中整月不在经营范围时的门诊生效与排除依据；正常三月齐全可空}\\[1pt]
-\Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{创建时间，UTC保存}\\[1pt]
-\Cell{updated\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{当前草稿或状态最后变更时间}\\[1pt]
-\Cell{row\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{并发版本，成功修改递增}\\[1pt]
+\Cell{id} & \Cell{UUID} & \Cell{NN；PK} & \Cell{稳定全局标识，自动生成UUID}\\[2pt]
+\Cell{clinic\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}clinics.id} & \Cell{来源门诊的稳定ID}\\[2pt]
+\Cell{month} & \Cell{DATE} & \Cell{NN} & \Cell{自然月首日，接口使用YYYY-MM}\\[2pt]
+\Cell{reference} & \Cell{TEXT} & \Cell{NN} & \Cell{月度总依据、季度核算依据或付款凭证，按所属表解释}\\[2pt]
+\Cell{no\_\allowbreak{}activity} & \Cell{BOOLEAN} & \Cell{NN} & \Cell{明确核验的零业务声明，不能由缺来源推定}\\[2pt]
+\Cell{status} & \Cell{TEXT} & \Cell{NN} & \Cell{本对象的受控状态，具体集合见表后规则}\\[2pt]
+\Cell{source\_\allowbreak{}revision} & \Cell{INTEGER} & \Cell{NN} & \Cell{月度医生来源修订号；保存追加，关闭及重开不改此号}\\[2pt]
+\Cell{row\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{乐观并发版本；成功状态变更递增}\\[2pt]
+\Cell{created\_\allowbreak{}by} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}users.id} & \Cell{创建或制表账号}\\[2pt]
+\Cell{created\_\allowbreak{}staff\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}staff.id} & \Cell{创建或制表时的有效员工身份}\\[2pt]
+\Cell{updated\_\allowbreak{}by} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}users.id} & \Cell{最近保存或状态变更账号}\\[2pt]
+\Cell{closed\_\allowbreak{}by} & \Cell{UUID} & \Cell{NULL；FK→\allowbreak{}users.id} & \Cell{独立关闭月份的复核账号}\\[2pt]
+\Cell{closed\_\allowbreak{}staff\_\allowbreak{}id} & \Cell{UUID} & \Cell{NULL；FK→\allowbreak{}staff.id} & \Cell{独立关闭月份的复核员工}\\[2pt]
+\Cell{closed\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NULL} & \Cell{复核关闭时刻}\\[2pt]
+\Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{记录创建时刻，保存为带时区时间}\\[2pt]
+\Cell{updated\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{最近保存或状态变更时刻}\\[2pt]
 \end{longtable}
 }
-约束：UNIQUE(\allowbreak{}dentist\_\allowbreak{}id,\allowbreak{}clinic\_\allowbreak{}id,\allowbreak{}quarter\_\allowbreak{}start,\allowbreak{}version\_\allowbreak{}no)\allowbreak{}；row\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；EXTRACT(\allowbreak{}DAY FROM quarter\_\allowbreak{}start)\allowbreak{}=\allowbreak{}1 AND EXTRACT(\allowbreak{}MONTH FROM quarter\_\allowbreak{}start)\allowbreak{} IN (\allowbreak{}1,\allowbreak{}4,\allowbreak{}7,\allowbreak{}10)\allowbreak{}；version\_\allowbreak{}no>\allowbreak{}=\allowbreak{}1；net\_\allowbreak{}profit\_\allowbreak{}cents=\allowbreak{}revenue\_\allowbreak{}cents-\allowbreak{}material\_\allowbreak{}cost\_\allowbreak{}cents-\allowbreak{}operating\_\allowbreak{}expense\_\allowbreak{}cents；reviewed\_\allowbreak{}by IS NULL OR reviewed\_\allowbreak{}by<\allowbreak{}>\allowbreak{}prepared\_\allowbreak{}by；逐笔清单必须与三个获批月度来源清单一致，按实际医生及门诊筛选；材料冲回和费用调整按符号纳入，不以新筛选浮动数据覆盖定稿。；关账引用分别对应本门诊该季度三个自然月；凡该月处于经营有效范围，引用必填且当前有效closed。只有整月在经营有效期外、有组织日期和排除依据时才可为空，不得把缺快照视为零。；净利允许负值；跨店以同一dentist\_\allowbreak{}id合并。门店和医生汇总是同一事实不同视图，不能再次相加。\par
-\Needspace{216pt}
-\subsubsection{季度10\%激励基金（incentive\_pools）}
-按ADC既定10\%规则计算全连锁季度激励池。\par
+约束：同门诊与自然月唯一。month为月首日，reference去空格后1—500字；source\_\allowbreak{}revision和row\_\allowbreak{}version为正整数。状态仅draft、closed；closed时复核账号、员工及时间同时非空，且复核账号及员工分别不同于制表身份。关闭还检查当月已发布出诊医生覆盖；有效季度引用阻止保存或重开。\par
+\subsubsection{医生月度财务来源修订（doctor\_\allowbreak{}financial\_\allowbreak{}sources）}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\begin{longtable}{@{}p{3.940cm}@{\hspace{0.16cm}}p{2.740cm}@{\hspace{0.16cm}}p{3.140cm}@{\hspace{0.16cm}}p{5.140cm}@{}}
-\caption{incentive\_pools字段}\label{tab636}\\
+\begin{longtable}{@{}p{3.6cm}@{\hspace{0.16cm}}p{2.1cm}@{\hspace{0.16cm}}p{3.7cm}@{\hspace{0.16cm}}p{5.3cm}@{}}
+\caption{doctor\_\allowbreak{}financial\_\allowbreak{}sources字段}\label{schema_doctor_financial_sources}\\
 \toprule
 \bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
 \endfirsthead
@@ -4759,91 +4769,160 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
 \endhead
 \bottomrule\endlastfoot
-\Cell{id} & \Cell{UUID} & \Cell{NN；PK} & \Cell{稳定全局标识，不承载业务顺序}\\[1pt]
-\Cell{quarter\_\allowbreak{}start} & \Cell{DATE} & \Cell{NN} & \Cell{季度首月首日}\\[1pt]
-\Cell{version\_\allowbreak{}no} & \Cell{INTEGER} & \Cell{NN} & \Cell{基金版本}\\[1pt]
-\Cell{scope\_\allowbreak{}description} & \Cell{TEXT} & \Cell{NN} & \Cell{按门诊营业有效期与季度交集固定的完整应纳入范围，包含有核验零业务结果的门诊}\\[1pt]
-\Cell{total\_\allowbreak{}net\_\allowbreak{}profit\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{全部纳入医生门诊净利的代数和；单位分}\\[1pt]
-\Cell{fund\_\allowbreak{}rate\_\allowbreak{}bps} & \Cell{INTEGER} & \Cell{NN} & \Cell{提取比例，固定1000基点即10\%}\\[1pt]
-\Cell{pool\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{非负季度净利合计乘10\%并四舍五入到分；单位分}\\[1pt]
-\Cell{allocated\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{已分配总额；单位分}\\[1pt]
-\Cell{allocation\_\allowbreak{}rule} & \Cell{TEXT} & \Cell{NN} & \Cell{doctor\_\allowbreak{}positive\_\allowbreak{}net\_\allowbreak{}contribution\_\allowbreak{}largest\_\allowbreak{}remainder}\\[1pt]
-\Cell{source\_\allowbreak{}hash} & \Cell{TEXT} & \Cell{NN} & \Cell{全部业绩版本及规则摘要}\\[1pt]
-\Cell{prepared\_\allowbreak{}by} & \Cell{UUID} & \Cell{NN；FK→\\users.\allowbreak{}id} & \Cell{制单账号}\\[1pt]
-\Cell{approved\_\allowbreak{}by} & \Cell{UUID} & \Cell{NULL；FK→\\users.\allowbreak{}id} & \Cell{独立批准账号}\\[1pt]
-\Cell{status} & \Cell{TEXT} & \Cell{NN} & \Cell{draft、submitted、approved、superseded}\\[1pt]
-\Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{创建时间，UTC保存}\\[1pt]
-\Cell{updated\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{当前草稿或状态最后变更时间}\\[1pt]
-\Cell{row\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{并发版本，成功修改递增}\\[1pt]
+\Cell{id} & \Cell{UUID} & \Cell{NN；PK} & \Cell{稳定全局标识，自动生成UUID}\\[2pt]
+\Cell{month\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}incentive\_\allowbreak{}months.id} & \Cell{对应门诊月度底稿}\\[2pt]
+\Cell{source\_\allowbreak{}revision} & \Cell{INTEGER} & \Cell{NN} & \Cell{月度医生来源修订号；保存追加，关闭及重开不改此号}\\[2pt]
+\Cell{doctor\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}staff.id} & \Cell{牙医员工ID，引用staff.id；跨店统一识别}\\[2pt]
+\Cell{doctor\_\allowbreak{}name} & \Cell{TEXT} & \Cell{NN} & \Cell{来源或季度生成时的医生姓名快照}\\[2pt]
+\Cell{employee\_\allowbreak{}no} & \Cell{TEXT} & \Cell{NN} & \Cell{唯一员工编号，跨门诊保持同一编号；公开医生DTO不返回}\\[2pt]
+\Cell{revenue\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{已核对服务收入净额，可含有依据的负数调整；单位分}\\[2pt]
+\Cell{material\_\allowbreak{}cost\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{已核对医疗用品耗用净成本；单位分}\\[2pt]
+\Cell{operating\_\allowbreak{}expense\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{已核对归属医生的运营费用；单位分}\\[2pt]
+\Cell{revenue\_\allowbreak{}reference} & \Cell{TEXT} & \Cell{NN} & \Cell{服务收入账证或调整来源编号；零金额亦明确填写}\\[2pt]
+\Cell{material\_\allowbreak{}reference} & \Cell{TEXT} & \Cell{NN} & \Cell{用品成本账证或调整来源编号；零金额亦明确填写}\\[2pt]
+\Cell{expense\_\allowbreak{}reference} & \Cell{TEXT} & \Cell{NN} & \Cell{运营费用账证或调整来源编号；零金额亦明确填写}\\[2pt]
+\Cell{created\_\allowbreak{}by} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}users.id} & \Cell{创建或制表账号}\\[2pt]
+\Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{记录创建时刻，保存为带时区时间}\\[2pt]
 \end{longtable}
 }
-约束：UNIQUE(\allowbreak{}quarter\_\allowbreak{}start,\allowbreak{}version\_\allowbreak{}no)\allowbreak{}；row\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；EXTRACT(\allowbreak{}DAY FROM quarter\_\allowbreak{}start)\allowbreak{}=\allowbreak{}1 AND EXTRACT(\allowbreak{}MONTH FROM quarter\_\allowbreak{}start)\allowbreak{} IN (\allowbreak{}1,\allowbreak{}4,\allowbreak{}7,\allowbreak{}10)\allowbreak{}；version\_\allowbreak{}no>\allowbreak{}=\allowbreak{}1；fund\_\allowbreak{}rate\_\allowbreak{}bps=\allowbreak{}1000；pool\_\allowbreak{}cents=\allowbreak{}ROUND(\allowbreak{}GREATEST(\allowbreak{}total\_\allowbreak{}net\_\allowbreak{}profit\_\allowbreak{}cents,\allowbreak{}0)\allowbreak{}*\allowbreak{}0.\allowbreak{}10)\allowbreak{}；allocated\_\allowbreak{}cents>\allowbreak{}=\allowbreak{}0 AND allocated\_\allowbreak{}cents<\allowbreak{}=\allowbreak{}pool\_\allowbreak{}cents；approved\_\allowbreak{}by IS NULL OR approved\_\allowbreak{}by<\allowbreak{}>\allowbreak{}prepared\_\allowbreak{}by；先合计所有纳入范围医生的正负净利，再取非负基数；不得剔除亏损医生或亏损门诊。10\%源于ADC经营要求；按医生正净贡献权重分配是本设计采用的明确规则。批准分配不表示银行已经发放。；不得仅因缺少经营事实而排除有效营业门诊；零业务月份也须核验，营业期外的月份凭日期和范围证据排除。\par
-\Needspace{395pt}
-\subsubsection{基金纳入业绩版本（incentive\_pool\_sources）}
-固定激励池的完整业绩来源范围。\par
-\par\noindent\begin{minipage}{\textwidth}
+约束：同(month\_\allowbreak{}id,source\_\allowbreak{}revision,doctor\_\allowbreak{}id)唯一。三类金额各在±1000000000000分内，三类来源编号各1—500字。每次保存追加新revision，旧行由append-only触发器禁止更新和删除；季度按采用的source\_\allowbreak{}revision读取。\par
+\subsubsection{季度10\%激励基金（incentive\_\allowbreak{}pools）}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{incentive\_pool\_sources字段}\label{tab640}
-\begin{tabular}{@{}p{3.940cm}@{\hspace{0.16cm}}p{2.740cm}@{\hspace{0.16cm}}p{3.140cm}@{\hspace{0.16cm}}p{5.140cm}@{}}
+\begin{longtable}{@{}p{3.6cm}@{\hspace{0.16cm}}p{2.1cm}@{\hspace{0.16cm}}p{3.7cm}@{\hspace{0.16cm}}p{5.3cm}@{}}
+\caption{incentive\_\allowbreak{}pools字段}\label{schema_incentive_pools}\\
 \toprule
 \bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
-\Cell{id} & \Cell{UUID} & \Cell{NN；PK} & \Cell{稳定全局标识，不承载业务顺序}\\[1pt]
-\Cell{pool\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\\incentive\_\allowbreak{}pools.\allowbreak{}id} & \Cell{基金版本}\\[1pt]
-\Cell{quarter\_\allowbreak{}result\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\\doctor\_\allowbreak{}quarter\_\allowbreak{}results.\allowbreak{}id} & \Cell{获批医生门诊季度业绩}\\[1pt]
-\Cell{net\_\allowbreak{}profit\_\allowbreak{}snapshot\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{来源净利冻结值；单位分}\\[1pt]
-\Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{创建时间，UTC保存}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-约束：UNIQUE(\allowbreak{}pool\_\allowbreak{}id,\allowbreak{}quarter\_\allowbreak{}result\_\allowbreak{}id)\allowbreak{}；同池只能纳入同一季度、同一医生门诊组合的一个有效业绩版本。范围覆盖所有发生业务的门诊及对应医生，包含负净利；不能选择性遗漏亏损来源。\par
-\Needspace{545pt}
-\subsubsection{医生激励分配（incentive\_allocations）}
-以医生跨店合并后的正净贡献计算守恒分配。\par
-\par\noindent\begin{minipage}{\textwidth}
-{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{incentive\_allocations字段}\label{tab644}
-\begin{tabular}{@{}p{3.940cm}@{\hspace{0.16cm}}p{2.740cm}@{\hspace{0.16cm}}p{3.140cm}@{\hspace{0.16cm}}p{5.140cm}@{}}
+\endfirsthead
 \toprule
 \bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
-\Cell{id} & \Cell{UUID} & \Cell{NN；PK} & \Cell{稳定全局标识，不承载业务顺序}\\[1pt]
-\Cell{pool\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\\incentive\_\allowbreak{}pools.\allowbreak{}id} & \Cell{基金版本}\\[1pt]
-\Cell{dentist\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\\staff.\allowbreak{}id} & \Cell{医生稳定主体}\\[1pt]
-\Cell{combined\_\allowbreak{}net\_\allowbreak{}profit\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{医生所有门诊季度净利之和；单位分}\\[1pt]
-\Cell{positive\_\allowbreak{}weight\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{max(\allowbreak{}0,\allowbreak{}医生跨店净利合计)\allowbreak{}；单位分}\\[1pt]
-\Cell{base\_\allowbreak{}award\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{按比例计算后向下取整的分额；单位分}\\[1pt]
-\Cell{remainder\_\allowbreak{}rank} & \Cell{INTEGER} & \Cell{NN} & \Cell{小数余数从大到小、同余员工号升序}\\[1pt]
-\Cell{tail\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{获得的余分，0或1；单位分}\\[1pt]
-\Cell{award\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{最终分配额；单位分}\\[1pt]
-\Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{创建时间，UTC保存}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-约束：UNIQUE(\allowbreak{}pool\_\allowbreak{}id,\allowbreak{}dentist\_\allowbreak{}id)\allowbreak{}；positive\_\allowbreak{}weight\_\allowbreak{}cents=\allowbreak{}GREATEST(\allowbreak{}combined\_\allowbreak{}net\_\allowbreak{}profit\_\allowbreak{}cents,\allowbreak{}0)\allowbreak{}；base\_\allowbreak{}award\_\allowbreak{}cents>\allowbreak{}=\allowbreak{}0；tail\_\allowbreak{}cents IN (\allowbreak{}0,\allowbreak{}1)\allowbreak{}；award\_\allowbreak{}cents=\allowbreak{}base\_\allowbreak{}award\_\allowbreak{}cents+\allowbreak{}tail\_\allowbreak{}cents；remainder\_\allowbreak{}rank>\allowbreak{}=\allowbreak{}1；先跨店合并医生净利，再计算正权重。总权重为零时基金应为0且全部分配为0。非零基金最终分配合计等于pool\_\allowbreak{}cents；不能把负贡献变成个人扣款。来源或关账变更须建立新版本重新审批。\par
-\Needspace{604pt}
-\subsubsection{获批激励实际发放（incentive\_payments）}
-按独立获批份额登记真实付款，区分批准、在途和成功。\par
-\par\noindent\begin{minipage}{\textwidth}
+\endhead
+\bottomrule\endlastfoot
+\Cell{id} & \Cell{UUID} & \Cell{NN；PK} & \Cell{稳定全局标识，自动生成UUID}\\[2pt]
+\Cell{quarter} & \Cell{TEXT} & \Cell{NN} & \Cell{已结束的自然季度，格式YYYY-Q1至YYYY-Q4}\\[2pt]
+\Cell{reference} & \Cell{TEXT} & \Cell{NN} & \Cell{月度总依据、季度核算依据或付款凭证，按所属表解释}\\[2pt]
+\Cell{status} & \Cell{TEXT} & \Cell{NN} & \Cell{本对象的受控状态，具体集合见表后规则}\\[2pt]
+\Cell{rule\_\allowbreak{}version} & \Cell{TEXT} & \Cell{NN} & \Cell{固定规则版本quarterly-positive-contribution-v1}\\[2pt]
+\Cell{total\_\allowbreak{}revenue\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{采用的全部医生门诊收入合计；单位分}\\[2pt]
+\Cell{total\_\allowbreak{}material\_\allowbreak{}cost\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{采用的全部医生门诊用品成本合计；单位分}\\[2pt]
+\Cell{total\_\allowbreak{}operating\_\allowbreak{}expense\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{采用的全部医生门诊运营费用合计；单位分}\\[2pt]
+\Cell{net\_\allowbreak{}profit\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{收入减用品成本减运营费，允许为负；单位分}\\[2pt]
+\Cell{fund\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{全体净利合计正部的10\%，四舍五入至分}\\[2pt]
+\Cell{clinic\_\allowbreak{}count} & \Cell{INTEGER} & \Cell{NN} & \Cell{采用的全部登记门诊数量，必须大于零}\\[2pt]
+\Cell{doctor\_\allowbreak{}count} & \Cell{INTEGER} & \Cell{NN} & \Cell{季度中按员工ID去重后的医生数}\\[2pt]
+\Cell{row\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{乐观并发版本；成功状态变更递增}\\[2pt]
+\Cell{created\_\allowbreak{}by} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}users.id} & \Cell{创建或制表账号}\\[2pt]
+\Cell{created\_\allowbreak{}staff\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}staff.id} & \Cell{创建或制表时的有效员工身份}\\[2pt]
+\Cell{submitted\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NULL} & \Cell{制表人提交季度草稿的时刻}\\[2pt]
+\Cell{approved\_\allowbreak{}by} & \Cell{UUID} & \Cell{NULL；FK→\allowbreak{}users.id} & \Cell{独立总部批准账号}\\[2pt]
+\Cell{approved\_\allowbreak{}staff\_\allowbreak{}id} & \Cell{UUID} & \Cell{NULL；FK→\allowbreak{}staff.id} & \Cell{独立总部批准员工}\\[2pt]
+\Cell{approved\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NULL} & \Cell{季度批准时刻}\\[2pt]
+\Cell{void\_\allowbreak{}reason} & \Cell{TEXT} & \Cell{NULL} & \Cell{未批准快照作废的具体原因}\\[2pt]
+\Cell{voided\_\allowbreak{}by} & \Cell{UUID} & \Cell{NULL；FK→\allowbreak{}users.id} & \Cell{作废经办账号}\\[2pt]
+\Cell{voided\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NULL} & \Cell{作废时刻}\\[2pt]
+\Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{记录创建时刻，保存为带时区时间}\\[2pt]
+\end{longtable}
+}
+约束：quarter符合YYYY-Qn；rule\_\allowbreak{}version固定为quarterly-positive-contribution-v1。status为draft、submitted、approved、voided；每季度仅一个非voided快照。净利等于三类合计相减，基金等于非负净利的10\%四舍五入至分。批准时账号、员工和时间齐全，且账号及员工分别不同于制表者；作废必须有原因、经办人和时间。\par
+\subsubsection{基金采用的关闭月度来源（incentive\_\allowbreak{}pool\_\allowbreak{}sources）}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{incentive\_payments字段}\label{tab648}
-\begin{tabular}{@{}p{3.940cm}@{\hspace{0.16cm}}p{2.740cm}@{\hspace{0.16cm}}p{3.140cm}@{\hspace{0.16cm}}p{5.140cm}@{}}
+\begin{longtable}{@{}p{3.6cm}@{\hspace{0.16cm}}p{2.1cm}@{\hspace{0.16cm}}p{3.7cm}@{\hspace{0.16cm}}p{5.3cm}@{}}
+\caption{incentive\_\allowbreak{}pool\_\allowbreak{}sources字段}\label{schema_incentive_pool_sources}\\
 \toprule
 \bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
-\Cell{id} & \Cell{UUID} & \Cell{NN；PK} & \Cell{稳定全局标识}\\[1pt]
-\Cell{allocation\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\\incentive\_\allowbreak{}allocations.\allowbreak{}id} & \Cell{已批准医生份额}\\[1pt]
-\Cell{payment\_\allowbreak{}no} & \Cell{TEXT} & \Cell{NN} & \Cell{激励发放内部编号}\\[1pt]
-\Cell{amount\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{本次实际申请或核实发放额，单位分}\\[1pt]
-\Cell{provider} & \Cell{TEXT} & \Cell{NN} & \Cell{银行或付款渠道}\\[1pt]
-\Cell{provider\_\allowbreak{}transaction\_\allowbreak{}id} & \Cell{TEXT} & \Cell{NULL} & \Cell{渠道内唯一付款凭证号}\\[1pt]
-\Cell{request\_\allowbreak{}key} & \Cell{TEXT} & \Cell{NN} & \Cell{同一次发放重试键}\\[1pt]
-\Cell{status} & \Cell{TEXT} & \Cell{NN} & \Cell{pending、succeeded、failed、unknown}\\[1pt]
-\Cell{evidence\_\allowbreak{}ref} & \Cell{TEXT} & \Cell{NULL} & \Cell{核实支付或失败的受控凭据}\\[1pt]
-\Cell{succeeded\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NULL} & \Cell{成功核实时间}\\[1pt]
-\Cell{handled\_\allowbreak{}by} & \Cell{UUID} & \Cell{NN；FK→\\users.\allowbreak{}id} & \Cell{发放经办账号}\\[1pt]
-\Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{创建时间，UTC保存}\\[1pt]
-\Cell{updated\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{最后状态更新时间}\\[1pt]
-\Cell{row\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{并发版本}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-约束：UNIQUE(\allowbreak{}payment\_\allowbreak{}no)\allowbreak{}；UNIQUE(\allowbreak{}provider,\allowbreak{}provider\_\allowbreak{}transaction\_\allowbreak{}id)\allowbreak{}；UNIQUE(\allowbreak{}request\_\allowbreak{}key)\allowbreak{}；amount\_\allowbreak{}cents>\allowbreak{}0；row\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；只有approved基金的有效份额可执行；同一份额成功及pending/\allowbreak{}unknown金额合计不得超过获批award\_\allowbreak{}cents。；渠道受理不等于成功。未知时查原交易，不换新键再付；失败释放该次预占。；发放属于现金流，不再作为本季度医生医疗用品成本或运营费重复扣减。；更正季度产生新分配版本时，原成功发放仍保留并关联原份额。新版本按同医生同季度已付及在途合计控制新增可付差额；多付差额单独核查，不自动扣个人款。\par
-\Needspace{604pt}
+\endfirsthead
+\toprule
+\bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{pool\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；PK；FK→\allowbreak{}incentive\_\allowbreak{}pools.id} & \Cell{所属季度基金快照}\\[2pt]
+\Cell{month\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；PK；FK→\allowbreak{}incentive\_\allowbreak{}months.id} & \Cell{对应门诊月度底稿}\\[2pt]
+\Cell{source\_\allowbreak{}revision} & \Cell{INTEGER} & \Cell{NN} & \Cell{月度医生来源修订号；保存追加，关闭及重开不改此号}\\[2pt]
+\Cell{clinic\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}clinics.id} & \Cell{来源门诊的稳定ID}\\[2pt]
+\Cell{clinic\_\allowbreak{}name} & \Cell{TEXT} & \Cell{NN} & \Cell{采用时的门诊名称快照}\\[2pt]
+\Cell{month} & \Cell{DATE} & \Cell{NN} & \Cell{自然月首日，接口使用YYYY-MM}\\[2pt]
+\Cell{reference} & \Cell{TEXT} & \Cell{NN} & \Cell{月度总依据、季度核算依据或付款凭证，按所属表解释}\\[2pt]
+\Cell{no\_\allowbreak{}activity} & \Cell{BOOLEAN} & \Cell{NN} & \Cell{明确核验的零业务声明，不能由缺来源推定}\\[2pt]
+\Cell{closed\_\allowbreak{}by} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}users.id} & \Cell{独立关闭月份的复核账号}\\[2pt]
+\Cell{closed\_\allowbreak{}staff\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}staff.id} & \Cell{独立关闭月份的复核员工}\\[2pt]
+\Cell{closed\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{复核关闭时刻}\\[2pt]
+\end{longtable}
+}
+约束：联合主键(pool\_\allowbreak{}id,month\_\allowbreak{}id)，且(pool\_\allowbreak{}id,clinic\_\allowbreak{}id,month)唯一。source\_\allowbreak{}revision为正整数。固定采用时门诊、月份、总依据、零业务声明和关闭复核身份。append-only触发器禁止覆盖或删除；生成时必须覆盖全部登记门诊三个自然月。\par
+\subsubsection{医生门诊季度业绩（doctor\_\allowbreak{}quarter\_\allowbreak{}results）}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{3.6cm}@{\hspace{0.16cm}}p{2.1cm}@{\hspace{0.16cm}}p{3.7cm}@{\hspace{0.16cm}}p{5.3cm}@{}}
+\caption{doctor\_\allowbreak{}quarter\_\allowbreak{}results字段}\label{schema_doctor_quarter_results}\\
+\toprule
+\bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
+\endfirsthead
+\toprule
+\bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{id} & \Cell{UUID} & \Cell{NN；PK} & \Cell{稳定全局标识，自动生成UUID}\\[2pt]
+\Cell{pool\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}incentive\_\allowbreak{}pools.id} & \Cell{所属季度基金快照}\\[2pt]
+\Cell{clinic\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}clinics.id} & \Cell{来源门诊的稳定ID}\\[2pt]
+\Cell{clinic\_\allowbreak{}name} & \Cell{TEXT} & \Cell{NN} & \Cell{采用时的门诊名称快照}\\[2pt]
+\Cell{doctor\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}staff.id} & \Cell{牙医员工ID，引用staff.id；跨店统一识别}\\[2pt]
+\Cell{doctor\_\allowbreak{}name} & \Cell{TEXT} & \Cell{NN} & \Cell{来源或季度生成时的医生姓名快照}\\[2pt]
+\Cell{employee\_\allowbreak{}no} & \Cell{TEXT} & \Cell{NN} & \Cell{唯一员工编号，跨门诊保持同一编号；公开医生DTO不返回}\\[2pt]
+\Cell{revenue\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{已核对服务收入净额，可含有依据的负数调整；单位分}\\[2pt]
+\Cell{material\_\allowbreak{}cost\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{已核对医疗用品耗用净成本；单位分}\\[2pt]
+\Cell{operating\_\allowbreak{}expense\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{已核对归属医生的运营费用；单位分}\\[2pt]
+\Cell{net\_\allowbreak{}profit\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{收入减用品成本减运营费，允许为负；单位分}\\[2pt]
+\end{longtable}
+}
+约束：同(pool\_\allowbreak{}id,clinic\_\allowbreak{}id,doctor\_\allowbreak{}id)唯一，净利必须等于收入减两类成本。季度门诊医生明细通过append-only触发器保持不变；同一医生跨店合并不重复计入集团总额。\par
+\subsubsection{医生跨店激励份额（incentive\_\allowbreak{}allocations）}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{3.6cm}@{\hspace{0.16cm}}p{2.1cm}@{\hspace{0.16cm}}p{3.7cm}@{\hspace{0.16cm}}p{5.3cm}@{}}
+\caption{incentive\_\allowbreak{}allocations字段}\label{schema_incentive_allocations}\\
+\toprule
+\bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
+\endfirsthead
+\toprule
+\bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{id} & \Cell{UUID} & \Cell{NN；PK} & \Cell{稳定全局标识，自动生成UUID}\\[2pt]
+\Cell{pool\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}incentive\_\allowbreak{}pools.id} & \Cell{所属季度基金快照}\\[2pt]
+\Cell{doctor\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}staff.id} & \Cell{牙医员工ID，引用staff.id；跨店统一识别}\\[2pt]
+\Cell{doctor\_\allowbreak{}name} & \Cell{TEXT} & \Cell{NN} & \Cell{来源或季度生成时的医生姓名快照}\\[2pt]
+\Cell{employee\_\allowbreak{}no} & \Cell{TEXT} & \Cell{NN} & \Cell{唯一员工编号，跨门诊保持同一编号；公开医生DTO不返回}\\[2pt]
+\Cell{contribution\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{该医生跨全部门诊合并后的有符号净利润分}\\[2pt]
+\Cell{weight\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{max(该医生跨店净利润,0)，作为统一分配权重}\\[2pt]
+\Cell{amount\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{该份额批准金额，或单笔付款占用金额；单位分}\\[2pt]
+\Cell{row\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{乐观并发版本；成功状态变更递增}\\[2pt]
+\end{longtable}
+}
+约束：同(pool\_\allowbreak{}id,doctor\_\allowbreak{}id)唯一。weight\_\allowbreak{}cents=max(contribution\_\allowbreak{}cents,0)，amount\_\allowbreak{}cents非负，row\_\allowbreak{}version为正整数。最大余数法使全部个人金额严格等于fund\_\allowbreak{}cents；同余按员工编号、医生ID稳定排序。支付触发器更新版本；本人读取以会话员工ID筛选。\par
+\subsubsection{激励发放核实记录（incentive\_\allowbreak{}payments）}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{3.6cm}@{\hspace{0.16cm}}p{2.1cm}@{\hspace{0.16cm}}p{3.7cm}@{\hspace{0.16cm}}p{5.3cm}@{}}
+\caption{incentive\_\allowbreak{}payments字段}\label{schema_incentive_payments}\\
+\toprule
+\bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
+\endfirsthead
+\toprule
+\bfseries \Cell{字段} & \bfseries \Cell{类型} & \bfseries \Cell{键与空值} & \bfseries \Cell{含义及限制}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{id} & \Cell{UUID} & \Cell{NN；PK} & \Cell{稳定全局标识，自动生成UUID}\\[2pt]
+\Cell{allocation\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}incentive\_\allowbreak{}allocations.id} & \Cell{本次付款对应的获批医生份额}\\[2pt]
+\Cell{amount\_\allowbreak{}cents} & \Cell{BIGINT} & \Cell{NN} & \Cell{该份额批准金额，或单笔付款占用金额；单位分}\\[2pt]
+\Cell{reference} & \Cell{TEXT} & \Cell{NN；UNIQUE} & \Cell{月度总依据、季度核算依据或付款凭证，按所属表解释}\\[2pt]
+\Cell{status} & \Cell{TEXT} & \Cell{NN} & \Cell{本对象的受控状态，具体集合见表后规则}\\[2pt]
+\Cell{result\_\allowbreak{}reference} & \Cell{TEXT} & \Cell{NULL；UNIQUE} & \Cell{实际核实成功或失败的凭证编号，与所有付款凭证交叉去重}\\[2pt]
+\Cell{row\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{乐观并发版本；成功状态变更递增}\\[2pt]
+\Cell{created\_\allowbreak{}by} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}users.id} & \Cell{创建或制表账号}\\[2pt]
+\Cell{created\_\allowbreak{}staff\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\allowbreak{}staff.id} & \Cell{创建或制表时的有效员工身份}\\[2pt]
+\Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{记录创建时刻，保存为带时区时间}\\[2pt]
+\Cell{resolved\_\allowbreak{}by} & \Cell{UUID} & \Cell{NULL；FK→\allowbreak{}users.id} & \Cell{实际核实付款结果的经办账号}\\[2pt]
+\Cell{resolved\_\allowbreak{}staff\_\allowbreak{}id} & \Cell{UUID} & \Cell{NULL；FK→\allowbreak{}staff.id} & \Cell{实际核实付款结果的员工身份}\\[2pt]
+\Cell{resolved\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NULL} & \Cell{实际核实结果时刻}\\[2pt]
+\end{longtable}
+}
+约束：reference全局唯一且1—500字；result\_\allowbreak{}reference非空时同样为1—500字，两类凭证通过事务锁交叉去重。新记录必须pending；只可依据凭据从pending转succeeded或failed，终态及原始额度不可改写，记录禁止删除。触发器锁定approved份额，成功与pending合计不超额度；未知继续pending，明确失败释放占用。\par
 \subsubsection{跨店代收内部清算（interclinic\_settlements）}
 按实际划转结果清偿收款店与服务店的内部余额。\par
 \par\noindent\begin{minipage}{\textwidth}
@@ -5015,7 +5094,7 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{创建时间，UTC保存}\\[1pt]
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
-约束：UNIQUE(\allowbreak{}role\_\allowbreak{}assignment\_\allowbreak{}id,\allowbreak{}permission\_\allowbreak{}code)\allowbreak{}；permission\_\allowbreak{}code IN (\allowbreak{}'patient.\allowbreak{}manage',\allowbreak{}'qualification.\allowbreak{}verify',\allowbreak{}'catalog.\allowbreak{}publish',\allowbreak{}'schedule.\allowbreak{}publish',\allowbreak{}'appointment.\allowbreak{}manage',\allowbreak{}'clinical.\allowbreak{}sign',\allowbreak{}'record.\allowbreak{}addendum',\allowbreak{}'invoice.\allowbreak{}prepare',\allowbreak{}'invoice.\allowbreak{}adjust.\allowbreak{}request',\allowbreak{}'invoice.\allowbreak{}adjust.\allowbreak{}approve',\allowbreak{}'payment.\allowbreak{}record',\allowbreak{}'payment.\allowbreak{}allocate',\allowbreak{}'refund.\allowbreak{}request',\allowbreak{}'refund.\allowbreak{}approve',\allowbreak{}'refund.\allowbreak{}execute',\allowbreak{}'daily\_\allowbreak{}close.\allowbreak{}prepare',\allowbreak{}'daily\_\allowbreak{}close.\allowbreak{}review',\allowbreak{}'cost.\allowbreak{}prepare',\allowbreak{}'cost.\allowbreak{}review',\allowbreak{}'period\_\allowbreak{}close.\allowbreak{}prepare',\allowbreak{}'period\_\allowbreak{}close.\allowbreak{}approve',\allowbreak{}'quarter.\allowbreak{}prepare',\allowbreak{}'quarter.\allowbreak{}review',\allowbreak{}'incentive.\allowbreak{}approve',\allowbreak{}'incentive.\allowbreak{}pay',\allowbreak{}'interclinic.\allowbreak{}prepare',\allowbreak{}'interclinic.\allowbreak{}approve',\allowbreak{}'interclinic.\allowbreak{}execute',\allowbreak{}'analytics.\allowbreak{}read',\allowbreak{}'staff.\allowbreak{}authorize',\allowbreak{}'audit.\allowbreak{}read')\allowbreak{}；任务代码须属于所授岗位的受控允许集合；不能给前台增加clinical.\allowbreak{}sign，也不能给普通店长授予全链quarter.\allowbreak{}review。；所有审批与实际发放检查有效岗位、任务、门诊和自然员工；同一users.\allowbreak{}staff\_\allowbreak{}id不得审批自己制单，即使以不同角色进入。\par
+约束：UNIQUE(\allowbreak{}role\_\allowbreak{}assignment\_\allowbreak{}id,\allowbreak{}permission\_\allowbreak{}code)\allowbreak{}；permission\_\allowbreak{}code IN (\allowbreak{}'patient.\allowbreak{}manage',\allowbreak{}'qualification.\allowbreak{}verify',\allowbreak{}'catalog.\allowbreak{}publish',\allowbreak{}'schedule.\allowbreak{}publish',\allowbreak{}'appointment.\allowbreak{}manage',\allowbreak{}'clinical.\allowbreak{}sign',\allowbreak{}'record.\allowbreak{}addendum',\allowbreak{}'invoice.\allowbreak{}prepare',\allowbreak{}'invoice.\allowbreak{}adjust.\allowbreak{}request',\allowbreak{}'invoice.\allowbreak{}adjust.\allowbreak{}approve',\allowbreak{}'payment.\allowbreak{}record',\allowbreak{}'payment.\allowbreak{}allocate',\allowbreak{}'refund.\allowbreak{}request',\allowbreak{}'refund.\allowbreak{}approve',\allowbreak{}'refund.\allowbreak{}execute',\allowbreak{}'daily\_\allowbreak{}close.\allowbreak{}prepare',\allowbreak{}'daily\_\allowbreak{}close.\allowbreak{}review',\allowbreak{}'cost.\allowbreak{}prepare',\allowbreak{}'cost.\allowbreak{}review',\allowbreak{}'period\_\allowbreak{}close.\allowbreak{}prepare',\allowbreak{}'period\_\allowbreak{}close.\allowbreak{}approve',\allowbreak{}'quarter.\allowbreak{}prepare',\allowbreak{}'quarter.\allowbreak{}review',\allowbreak{}'incentive.\allowbreak{}approve',\allowbreak{}'incentive.\allowbreak{}pay',\allowbreak{}'interclinic.\allowbreak{}prepare',\allowbreak{}'interclinic.\allowbreak{}approve',\allowbreak{}'interclinic.\allowbreak{}execute',\allowbreak{}'analytics.\allowbreak{}read',\allowbreak{}'staff.\allowbreak{}authorize',\allowbreak{}'audit.\allowbreak{}read')\allowbreak{}；任务代码须属于所授岗位的受控允许集合；不能给前台增加clinical.\allowbreak{}sign，也不能给普通店长授予全链quarter.\allowbreak{}review。；所有审批与实际发放检查有效岗位、任务、门诊和员工身份；同一staff.id不得审批自己制单，即使以不同角色进入。\par
 \Needspace{621pt}
 \subsubsection{写命令幂等回执（command\_receipts）}
 按请求身份记住业务命令的唯一决策，处理重试、超时及崩溃。\par
@@ -5182,8 +5261,6 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \Cell{refund\_\allowbreak{}transactions} & \Cell{(\allowbreak{}business\_\allowbreak{}date,\allowbreak{}status)\allowbreak{}} & \Cell{日结退付来源}\\[1pt]
 \Cell{cost\_\allowbreak{}documents} & \Cell{(\allowbreak{}clinic\_\allowbreak{}id,\allowbreak{}posting\_\allowbreak{}period,\allowbreak{}status)\allowbreak{}} & \Cell{归集当月费用}\\[1pt]
 \Cell{cost\_\allowbreak{}allocations} & \Cell{(\allowbreak{}dentist\_\allowbreak{}id)\allowbreak{}} & \Cell{查询医生费用来源}\\[1pt]
-\Cell{doctor\_\allowbreak{}quarter\_\allowbreak{}results} & \Cell{(\allowbreak{}quarter\_\allowbreak{}start,\allowbreak{}dentist\_\allowbreak{}id,\allowbreak{}status)\allowbreak{}} & \Cell{跨店合并医生季度业绩}\\[1pt]
-\Cell{incentive\_\allowbreak{}payments} & \Cell{(\allowbreak{}allocation\_\allowbreak{}id,\allowbreak{}status)\allowbreak{}} & \Cell{汇总每份额成功与未决执行，阻止超发}\\[1pt]
 \Cell{followup\_\allowbreak{}tasks} & \Cell{(\allowbreak{}assigned\_\allowbreak{}user\_\allowbreak{}id,\allowbreak{}status,\allowbreak{}earliest\_\allowbreak{}on)\allowbreak{}} & \Cell{前台复诊跟进待办}\\[1pt]
 \Cell{audit\_\allowbreak{}events} & \Cell{(\allowbreak{}subject\_\allowbreak{}type,\allowbreak{}subject\_\allowbreak{}id,\allowbreak{}occurred\_\allowbreak{}at)\allowbreak{}} & \Cell{对象变更追溯}\\[1pt]
 \Cell{audit\_\allowbreak{}events} & \Cell{(\allowbreak{}actor\_\allowbreak{}user\_\allowbreak{}id,\allowbreak{}occurred\_\allowbreak{}at)\allowbreak{}} & \Cell{敏感访问复核}\\[1pt]
@@ -5196,6 +5273,7 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 号源查询按门诊、日期范围和所需资格下推到SQL；患者历史按患者标识与时间游标分页；季度业绩先按关闭来源汇总，再建立有来源版本的结果表。禁止先把全链路数据读入服务内存再筛选。索引需用固定数据规模和执行计划验证，不因列了索引就认定性能已达标。\par
 \Needspace{9\baselineskip}
 \Needspace{634pt}
+激励月度查询利用incentive\_\allowbreak{}month\_\allowbreak{}period(month,clinic\_\allowbreak{}id,status)；季度有效版本由incentive\_\allowbreak{}one\_\allowbreak{}live\_\allowbreak{}quarter部分唯一索引保证；来源引用检索使用incentive\_\allowbreak{}sources\_\allowbreak{}month(month\_\allowbreak{}id,pool\_\allowbreak{}id)，付款汇总使用incentive\_\allowbreak{}payments\_\allowbreak{}allocation(allocation\_\allowbreak{}id,status)。创建、关闭、重开及季度状态变更使用同一期间事务序列锁；付款触发器锁定个人份额并核对批准状态与累计占用。\par
 \section{业务逻辑、接口与表示层}
 \Needspace{3\baselineskip}
 \subsection{总体架构与技术选择}
@@ -5248,11 +5326,11 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \Cell{部分付款及跨店核销} & \Cell{成功收款、payment\_\allowbreak{}allocations及审计} & \Cell{原款、涉及Invoice按编号排序；重算成功退款和已批准冻结；净核销不超净原款和净应收；患者一致，跨店具备授权且保留往来来源} & \Cell{金额或范围不符整批回滚，既有核销和预收不被覆盖。}\\[1pt]
 \Cell{费用减免与退款} & \Cell{费用调整独立提交；退款批准与实际执行分别提交} & \Cell{调整锁Invoice；批准锁原款及原核销；成功回执锁申请、退付和需释放的核销；获批冻结及成功未决退付不超来源；退款成功与核销释放原子完成；费用调整不改变现金事实} & \Cell{外部失败或未知保留待查，不能重发新交易或假记成功；拒绝审批不改变原款。}\\[1pt]
 \Cell{实际材料成本归属} & \Cell{材料批次、耗用与冲回行} & \Cell{来源批次及原耗用行；数量和分值不超来源，最后一份承担尾差；一笔用品不再次进入运营费用} & \Cell{不足、隔离或证据不全不确认耗用；更正追加反向行不覆盖原记录。}\\[1pt]
-\Cell{运营费分摊} & \Cell{费用凭据及全部cost\_\allowbreak{}allocations} & \Cell{费用凭据、核验工时快照；审批按自然员工分离；直接归属有明确医生；共享以真实核验工时为动因；分配合计等于来源分值} & \Cell{零分母、重复凭据或金额不守恒时拒绝批准，不保存部分已批准分配。}\\[1pt]
+\Cell{运营费分摊} & \Cell{费用凭据及全部cost\_\allowbreak{}allocations} & \Cell{费用凭据、核验工时快照；审批校验不同账号及不同员工ID；直接归属有明确医生；共享以真实核验工时为动因；分配合计等于来源分值} & \Cell{零分母、重复凭据或金额不守恒时拒绝批准，不保存部分已批准分配。}\\[1pt]
 \Cell{跨店内部清算} & \Cell{清算单、来源分配和外部事件} & \Cell{按门诊对及来源核销编号锁定未清余额；成功和未决指令不超未清来源；只有核实成功才减少内部往来} & \Cell{银行未知保留预占并查询原指令；失败释放，不新增患者收入。}\\[1pt]
-\Cell{月度关账与迟到更正} & \Cell{period\_\allowbreak{}closes及来源快照} & \Cell{门诊月份控制行；资金、计费、材料和费用写入先检查该月份锁；关账来源集合稳定且月份唯一有效；正常应收预收可结转} & \Cell{预检失败保持开放；普通迟到更正进当前开放月并引用原日期。重大重开需独立批准、新版本和受影响季度重算，不静默改旧利润。}\\[1pt]
-\Cell{季度业绩及10\%激励} & \Cell{医生门诊结果、逐笔来源、全链基金、来源及分配} & \Cell{季度计算批次；固定全部三个月有效关账及全范围来源版本；先合计医生门诊正负净利；池额round(\allowbreak{}max(\allowbreak{}0,\allowbreak{}总净利)\allowbreak{}*\allowbreak{}10\%)\allowbreak{}；跨店合并医生正贡献形成权重；分配总额等于池额} & \Cell{缺月、漏亏损来源、来源变动或尾差不守恒时不批准；建立新版本而非覆盖已批准结果。}\\[1pt]
-\Cell{激励实际发放} & \Cell{incentive\_\allowbreak{}payments及获批份额} & \Cell{医生同季度的有效分配版本及历史成功、在途发放；累计成功及未决不超当前有效获批份额；新版本先扣原已付和在途，不重新支付全额} & \Cell{未知查询原指令，失败释放；成功付款记录不可因分配重编而删除。}\\[1pt]
+\Cell{激励月度底稿与修订} & \Cell{incentive\_\allowbreak{}months、doctor\_\allowbreak{}financial\_\allowbreak{}sources} & \Cell{期间事务序列锁及月份行锁；版本校验、不同账号与员工ID、医生覆盖和账证完整；源行修订追加，已引用月份保持锁定} & \Cell{冲突或缺项整体回滚；总部仅可重开无有效季度引用的月份，重开原因进入审计。}\\[1pt]
+\Cell{季度业绩及10\%激励} & \Cell{基金、关闭来源、医生门诊结果及个人份额} & \Cell{全部登记门诊×三个自然月完整关闭；冻结source\_\allowbreak{}revision；先合计正负净利再取10\%，跨店后按正贡献分配至分，份额合计等于基金} & \Cell{缺项即拒绝。未批准且有误快照作废后重算；已批准来源保持锁定。}\\[1pt]
+\Cell{激励实际发放} & \Cell{incentive\_\allowbreak{}payments及获批份额} & \Cell{支付触发器锁定份额并核对approved；唯一凭证交叉去重，成功与pending合计不得超过amount\_\allowbreak{}cents} & \Cell{未知保持pending，明确failed才释放；终态与原始额度不可改写，记录不可删除。}\\[1pt]
 \Cell{写命令回执和通知outbox} & \Cell{command\_\allowbreak{}receipts、用例聚合、audit\_\allowbreak{}events及notification\_\allowbreak{}tasks/\allowbreak{}资金发件事件} & \Cell{先认证和授权，按actor\_\allowbreak{}key/\allowbreak{}request\_\allowbreak{}id取得唯一命令；随后按用例的固定聚合顺序加锁；业务变更、最终命令决策和待发任务一次提交；同键不同内容拒绝，重复同内容只重放原决策} & \Cell{提交前崩溃整体回滚；已提交响应丢失重放回执。外部调用在事务外，由租约、重试、验真回执与人工未知队列恢复，不将外部成功宣称为本地原子操作。}\\[1pt]
 \Cell{预约意向与资源承诺衔接} & \Cell{appointment\_\allowbreak{}requests、候补及最终预约} & \Cell{申请及其有效候补；确认资源仍按固定患者医生牙椅顺序锁定；申请和邀约不占作正式承诺；同意图满足后同步关联最终预约，需求统计沿来源去重} & \Cell{未匹配保留待处理状态，不生成虚假预约；资源失败不丢原意向。}\\[1pt]
 \end{longtable}
@@ -5302,10 +5380,10 @@ Postgre\allowbreak{}SQL时间范围与排斥约束用于同一资源区间冲突
 \Cell{\mbox{UC-16}} & \Cell{POST /\allowbreak{}receipts；POST /\allowbreak{}receipts/\allowbreak{}\{id\}/\allowbreak{}confirm；POST /\allowbreak{}receipts/\allowbreak{}\{id\}/\allowbreak{}allocations。}\\[1pt]
 \Cell{\mbox{UC-17}} & \Cell{POST /\allowbreak{}corrections；POST /\allowbreak{}corrections/\allowbreak{}\{id\}/\allowbreak{}approval；POST /\allowbreak{}refunds/\allowbreak{}\{id\}/\allowbreak{}verified-\allowbreak{}result。}\\[1pt]
 \Cell{\mbox{UC-18}} & \Cell{POST /\allowbreak{}daily-\allowbreak{}closes/\allowbreak{}prepare；POST /\allowbreak{}daily-\allowbreak{}closes/\allowbreak{}\{id\}/\allowbreak{}review；POST /\allowbreak{}interclinic-\allowbreak{}items/\allowbreak{}\{id\}/\allowbreak{}confirm。}\\[1pt]
-\Cell{\mbox{UC-19}} & \Cell{POST /\allowbreak{}period-\allowbreak{}costs；POST /\allowbreak{}period-\allowbreak{}costs/\allowbreak{}\{id\}/\allowbreak{}allocations；POST /\allowbreak{}cost-\allowbreak{}allocations/\allowbreak{}\{id\}/\allowbreak{}review。}\\[1pt]
-\Cell{\mbox{UC-20}} & \Cell{POST /\allowbreak{}periods/\allowbreak{}\{id\}/\allowbreak{}closing-\allowbreak{}package；POST /\allowbreak{}closing-\allowbreak{}packages/\allowbreak{}\{id\}/\allowbreak{}close。}\\[1pt]
-\Cell{\mbox{UC-21}} & \Cell{POST /\allowbreak{}quarters/\allowbreak{}\{id\}/\allowbreak{}performance-\allowbreak{}trials；GET /\allowbreak{}performance-\allowbreak{}trials/\allowbreak{}\{id\}/\allowbreak{}sources。}\\[1pt]
-\Cell{\mbox{UC-22}} & \Cell{POST /\allowbreak{}performance-\allowbreak{}trials/\allowbreak{}\{id\}/\allowbreak{}distribution-\allowbreak{}review；POST /\allowbreak{}incentive-\allowbreak{}shares/\allowbreak{}\{id\}/\allowbreak{}payouts。}\\[1pt]
+\Cell{\mbox{UC-19}} & \Cell{GET/\allowbreak{}POST /\allowbreak{}compensation/\allowbreak{}months；PUT /\allowbreak{}compensation/\allowbreak{}months/\allowbreak{}\{id\}。}\\[1pt]
+\Cell{\mbox{UC-20}} & \Cell{POST /\allowbreak{}compensation/\allowbreak{}months/\allowbreak{}\{id\}/\allowbreak{}close；POST /\allowbreak{}compensation/\allowbreak{}months/\allowbreak{}\{id\}/\allowbreak{}reopen。}\\[1pt]
+\Cell{\mbox{UC-21}} & \Cell{GET/\allowbreak{}POST /\allowbreak{}compensation/\allowbreak{}quarters；GET /\allowbreak{}compensation/\allowbreak{}quarters/\allowbreak{}\{id\}。}\\[1pt]
+\Cell{\mbox{UC-22}} & \Cell{POST /\allowbreak{}compensation/\allowbreak{}quarters/\allowbreak{}\{id\}/\allowbreak{}submit、/\allowbreak{}approve、/\allowbreak{}void；POST /\allowbreak{}compensation/\allowbreak{}allocations/\allowbreak{}\{id\}/\allowbreak{}payments；POST /\allowbreak{}compensation/\allowbreak{}payments/\allowbreak{}\{id\}/\allowbreak{}resolve；GET /\allowbreak{}compensation/\allowbreak{}me。}\\[1pt]
 \Cell{\mbox{UC-23}} & \Cell{GET /\allowbreak{}reports/\allowbreak{}appointment-\allowbreak{}skill-\allowbreak{}demand；POST /\allowbreak{}reports/\allowbreak{}\{id\}/\allowbreak{}management-\allowbreak{}actions。}\\[1pt]
 \Cell{\mbox{UC-24}} & \Cell{POST /\allowbreak{}assignments；POST /\allowbreak{}assignments/\allowbreak{}\{id\}/\allowbreak{}revoke；POST /\allowbreak{}staff/\allowbreak{}\{id\}/\allowbreak{}deactivation。}\\[1pt]
 \end{longtable}
@@ -5333,6 +5411,8 @@ Postgre\allowbreak{}SQL时间范围与排斥约束用于同一资源区间冲突
 患者可浏览医生介绍、擅长方向和可预约的咨询服务，并按项目类别查看价格参考区间、单位、年份及资料来源。参考区间用于就诊前了解费用，具体诊疗方案和实际费用经面诊确认；种植、正畸等复杂项目可先预约评估或咨询，不把参考疗程价格作为一次预约收费。\par
 \Needspace{338pt}
 \subsection{员工工作台与组件}
+员工工作台设置“薪酬与激励”。总部按月登记账证、查看完整季度来源、生成和提交基金快照，由另一名已关联员工身份的总部人员批准后登记发放；店长管理所属门诊月度底稿。每名员工通过本人入口查询已批准季度份额、付款状态及余额。员工档案与账号关联采用唯一员工号，财务金额不进入公开医生展示。\par
+
 \par\noindent\begin{minipage}{\textwidth}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
 \captionof{table}{工作台与可复用组件}\label{tab717}
@@ -5467,10 +5547,10 @@ Postgre\allowbreak{}SQL时间范围与排斥约束用于同一资源区间冲突
 \Cell{\mbox{UC-16}} & \Cell{分析类图；边界—控制—实体序列；操作、仓储、事务及界面契约} & \Cell{同一支付回执推送三次→一笔收款。}\\[1pt]
 \Cell{\mbox{UC-17}} & \Cell{分析类图；边界—控制—实体序列；操作、仓储、事务及界面契约} & \Cell{多收款退回→现金净额减少，服务收入不变。}\\[1pt]
 \Cell{\mbox{UC-18}} & \Cell{分析类图；边界—控制—实体序列；操作、仓储、事务及界面契约} & \Cell{A店为B店代收→患者一笔收款，双方往来等额反向。}\\[1pt]
-\Cell{\mbox{UC-19}} & \Cell{分析类图；边界—控制—实体序列；操作、仓储、事务及界面契约} & \Cell{共同费用100分由三名等工时医生承担→34、33、33分且规则稳定。}\\[1pt]
-\Cell{\mbox{UC-20}} & \Cell{分析类图；边界—控制—实体序列；操作、仓储、事务及界面契约} & \Cell{签署执行及账单500元已出具，患者仅付300元且核对齐全→可关账，收入500元和应收200元分别保留。}\\[1pt]
-\Cell{\mbox{UC-21}} & \Cell{分析类图；边界—控制—实体序列；操作、仓储、事务及界面契约} & \Cell{医生A净利润12000元、B亏损2000元→合计10000元，基金1000元。}\\[1pt]
-\Cell{\mbox{UC-22}} & \Cell{分析类图；边界—控制—实体序列；操作、仓储、事务及界面契约} & \Cell{一名亏损医生→其分配权重为零，但亏损已降低基金。}\\[1pt]
+\Cell{\mbox{UC-19}} & \Cell{GET/\allowbreak{}POST /\allowbreak{}compensation/\allowbreak{}months；PUT /\allowbreak{}compensation/\allowbreak{}months/\allowbreak{}\{id\}。}\\[1pt]
+\Cell{\mbox{UC-20}} & \Cell{POST /\allowbreak{}compensation/\allowbreak{}months/\allowbreak{}\{id\}/\allowbreak{}close；POST /\allowbreak{}compensation/\allowbreak{}months/\allowbreak{}\{id\}/\allowbreak{}reopen。}\\[1pt]
+\Cell{\mbox{UC-21}} & \Cell{GET/\allowbreak{}POST /\allowbreak{}compensation/\allowbreak{}quarters；GET /\allowbreak{}compensation/\allowbreak{}quarters/\allowbreak{}\{id\}。}\\[1pt]
+\Cell{\mbox{UC-22}} & \Cell{POST /\allowbreak{}compensation/\allowbreak{}quarters/\allowbreak{}\{id\}/\allowbreak{}submit、/\allowbreak{}approve、/\allowbreak{}void；POST /\allowbreak{}compensation/\allowbreak{}allocations/\allowbreak{}\{id\}/\allowbreak{}payments；POST /\allowbreak{}compensation/\allowbreak{}payments/\allowbreak{}\{id\}/\allowbreak{}resolve；GET /\allowbreak{}compensation/\allowbreak{}me。}\\[1pt]
 \Cell{\mbox{UC-23}} & \Cell{分析类图；边界—控制—实体序列；操作、仓储、事务及界面契约} & \Cell{已到诊8、已取消2、已确认未到1，另有待到4及待核实3→分母11，取消率2/\allowbreak{}11。}\\[1pt]
 \Cell{\mbox{UC-24}} & \Cell{分析类图；边界—控制—实体序列；操作、仓储、事务及界面契约} & \Cell{店长授总部权限→拒绝且原授权不变。}\\[1pt]
 \end{longtable}

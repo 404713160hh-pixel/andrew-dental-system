@@ -1,15 +1,15 @@
 {
-  "revisedAt": "2026-10-27",
+  "revisedAt": "2026-11-06",
   "file": "1602240215.pdf",
-  "sha256": "096bd52dcafed8f3a797318ac3d3e696650f86a384a2e40c3d296346d855f34b",
+  "sha256": "8acafd09f35c1622767fe0b8208e4b5097fc48c111f2fbd5bf83b657ab327d5a",
   "pages": 305,
-  "figures": 104,
-  "numberedTables": 272,
+  "figures": 108,
+  "numberedTables": 269,
   "systemUseCases": 24,
   "businessProcesses": 12,
   "database": {
-    "documentedTables": 61,
-    "documentedFields": 844
+    "documentedTables": 63,
+    "documentedFields": 865
   },
   "verification": {
     "allPagesRendered": true,
@@ -17,7 +17,10 @@
     "missingGlyphs": false,
     "unresolvedReferences": false,
     "overfullLines": false,
-    "outsideText": false
+    "outsideText": false,
+    "visualReview": "passed",
+    "compensationSchemaTables": 10,
+    "compensationSchemaFields": 124
   },
   "source": "source-current/main.tex"
 }

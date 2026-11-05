@@ -1,7 +1,7 @@
 {
   "pdf": "1602240215.pdf",
-  "revisedAt": "2026-10-27",
+  "revisedAt": "2026-11-06",
   "pages": 305,
-  "sha256": "096bd52dcafed8f3a797318ac3d3e696650f86a384a2e40c3d296346d855f34b",
-  "implementationScope": "UC01-07 booking core; architecture/database/quality chapters 7-9"
+  "sha256": "8acafd09f35c1622767fe0b8208e4b5097fc48c111f2fbd5bf83b657ab327d5a",
+  "implementationScope": "UC01-07 booking core; UC02 private staff data; UC19-22 quarterly financial sources and incentives; UC24 staff identity and authorization"
 }

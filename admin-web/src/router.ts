@@ -19,7 +19,8 @@ export const router = createRouter({
     { path: '/', component: () => import('./views/PublicView.vue'), meta: { public: true, title: '安德鲁牙科' } },
     { path: '/explore/:section(services|doctors|clinics)/:id?', component: () => import('./views/PublicView.vue'), meta: { public: true, title: '了解安德鲁牙科' } },
     { path: '/change-password', component: () => import('./views/ChangePasswordView.vue'), meta: { title: '修改密码' } },
-    { path: '/staff/accounts', component: () => import('./views/StaffAccountsView.vue'), meta: { title: '员工账号', hq: true } },
+    { path: '/staff/accounts', component: () => import('./views/StaffAccountsView.vue'), meta: { title: '员工账号与档案', hq: true } },
+    { path: '/compensation', component: () => import('./views/CompensationView.vue'), meta: { title: '薪酬与激励' } },
     {
       path: '/appointments',
       component: () => import('./views/AppointmentsView.vue'),

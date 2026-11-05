@@ -24,7 +24,9 @@ test('upgrade preserves existing clinics and old staff edits preserve new public
   }
   const password='OnlySynthetic-'+randomBytes(20).toString('hex'); await seed(db,password);
   const before=(await db.query('SELECT id,name,row_version FROM clinics ORDER BY name')).rows;
-  assert.deepEqual(await migrate(db),['007_clinic_public_details.sql']); assert.deepEqual(await migrate(db),[]);
+  const applied=await migrate(db);
+  assert.equal(applied[0],'007_clinic_public_details.sql');
+  assert.deepEqual(await migrate(db),[]);
   const after=(await db.query('SELECT id,name,row_version,description,opening_hours FROM clinics ORDER BY name')).rows;
   assert.deepEqual(after.map(({id,name,row_version})=>({id,name,row_version})),before); assert.ok(after.every(x=>x.description===null&&x.opening_hours===null));
   const id=after[0].id; await db.query('UPDATE clinics SET description=$1,opening_hours=$2 WHERE id=$3',['合成简介','周一至周五 09:00–18:00',id]);

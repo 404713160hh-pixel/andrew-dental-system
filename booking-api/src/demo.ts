@@ -175,6 +175,14 @@ export async function enrichDemoData(pool:pg.Pool,environment:'development'|'tes
    if(previousBio){const suffix=` ${profile.name}是课程演示中的虚构人物，以上内容不代表真实执照、学历、任职或治疗履历，也不构成具体诊疗建议。`;
     await db.query('UPDATE staff SET bio=$2,row_version=row_version+1 WHERE id=$1 AND is_demo AND name=$3 AND bio=$4',[row.record_id,biography,profile.name,previousBio+suffix]);}
    doctorIds.push(row.record_id);
+   // Complete only missing personal fields on the explicitly marked fictional
+   // doctor. Never replace a user's later verified edits or ordinary staff.
+   await db.query(`UPDATE staff SET birth_date=coalesce(birth_date,$2::date),
+    home_address=CASE WHEN coalesce(home_address,'')='' THEN $3 ELSE home_address END,
+    email=coalesce(email,$4),row_version=row_version+1
+    WHERE id=$1 AND is_demo AND (birth_date IS NULL OR coalesce(home_address,'')='' OR email IS NULL)`,
+    [row.record_id,`${1978+i*2}-0${i%8+1}-${String(10+i).padStart(2,'0')}`,
+     `广州市·虚构员工家庭地址${i+1}号（演示）`,`doctor${i+1}@example.test`]);
    await db.query('INSERT INTO dentist_qualifications(dentist_id,qualification_id,valid_from)VALUES($1,$2,date_trunc(\'day\',clock_timestamp())-interval \'1 day\')ON CONFLICT DO NOTHING',[row.record_id,qualificationId]);
    for(const service of profile.services){const qualification=specializationIds[service];if(qualification)await db.query('INSERT INTO dentist_qualifications(dentist_id,qualification_id,valid_from)VALUES($1,$2,date_trunc(\'day\',clock_timestamp())-interval \'1 day\')ON CONFLICT DO NOTHING',[row.record_id,qualification]);}
   }

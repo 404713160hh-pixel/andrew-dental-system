@@ -17,6 +17,8 @@ import { bookingPolicy,createHold,confirmAppointment,changeAppointment,appointme
 import { saveResource,publishShift,cancelShift } from './services/resources.js';
 import { isQueryDateAllowed,queryWindow,QUERY_MAX_DAYS } from './query-window.js';
 import { registerStaffAccountRoutes } from './staff-accounts.js';
+import { registerStaffProfileRoutes } from './staff-profiles.js';
+import { registerCompensationRoutes } from './compensation.js';
 import { registerPatientInviteRoutes } from './patient-invites.js';
 import { registerDoctorProfileRoutes } from './doctor-profile.js';
 import { PRIVACY_VERSION,privacyInput,recordConsent,hasCurrentConsent } from './privacy.js';
@@ -51,6 +53,8 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
   }});
  }
  registerStaffAccountRoutes(route,pool);
+ registerStaffProfileRoutes(route,pool);
+ registerCompensationRoutes(route,pool);
  registerPatientInviteRoutes(route,pool,config);
  registerDoctorProfileRoutes(route,pool);
  route('GET','/health','none',async()=>{await pool.query('SELECT 1');return {status:'ok',database:'postgresql'};});
@@ -139,7 +143,7 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
    AND ($3::uuid IS NULL OR NOT EXISTS(SELECT 1 FROM service_qualifications sq WHERE sq.service_id=$3 AND NOT EXISTS(SELECT 1 FROM dentist_qualifications dq JOIN qualifications q ON q.id=dq.qualification_id WHERE dq.dentist_id=s.id AND dq.qualification_id=sq.qualification_id AND q.active AND dq.valid_from<=now() AND (dq.valid_until IS NULL OR dq.valid_until>now()))))
    AND ($4::uuid[] IS NULL OR s.active OR EXISTS(SELECT 1 FROM doctor_shifts ds WHERE ds.doctor_id=s.id AND ds.clinic_id=ANY($4))) ORDER BY s.name`,[inactive,clinic,service,scopes])).rows;
   if(user&&isHq(user))return doctors;
-  return doctors.map(({employeeNo:_employeeNo,phone:_phone,...visible})=>visible);
+  return doctors.map(({employeeNo:_employeeNo,phone:_phone,birthDate:_birthDate,homeAddress:_homeAddress,email:_email,...visible})=>visible);
  });
  route('GET','/qualifications','optional',async(req,user)=>{
   const inactive=req.query.includeInactive==='true';if(inactive){requireThat(user,401,'UNAUTHENTICATED','请先登录');staffOnly(user);}

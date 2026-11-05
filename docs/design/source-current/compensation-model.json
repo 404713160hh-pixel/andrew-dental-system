@@ -1,0 +1,1214 @@
+{
+  "schema": "database/migrations/008_staff_compensation.sql",
+  "schemaSha256": "be813238ee51f629352bcb514746ccd4bc22e66f8602d114df57562f01f26b6a",
+  "tables": {
+    "incentive_months": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": true,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "clinic_id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "clinics.id"
+      },
+      {
+        "name": "month",
+        "type": "DATE",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "reference",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "no_activity",
+        "type": "BOOLEAN",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "source_revision",
+        "type": "INTEGER",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "row_version",
+        "type": "INTEGER",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "created_by",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "users.id"
+      },
+      {
+        "name": "created_staff_id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "staff.id"
+      },
+      {
+        "name": "updated_by",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "users.id"
+      },
+      {
+        "name": "closed_by",
+        "type": "UUID",
+        "nullable": true,
+        "pk": false,
+        "unique": false,
+        "reference": "users.id"
+      },
+      {
+        "name": "closed_staff_id",
+        "type": "UUID",
+        "nullable": true,
+        "pk": false,
+        "unique": false,
+        "reference": "staff.id"
+      },
+      {
+        "name": "closed_at",
+        "type": "TIMESTAMPTZ",
+        "nullable": true,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "created_at",
+        "type": "TIMESTAMPTZ",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "updated_at",
+        "type": "TIMESTAMPTZ",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      }
+    ],
+    "doctor_financial_sources": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": true,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "month_id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "incentive_months.id"
+      },
+      {
+        "name": "source_revision",
+        "type": "INTEGER",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "doctor_id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "staff.id"
+      },
+      {
+        "name": "doctor_name",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "employee_no",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "revenue_cents",
+        "type": "BIGINT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "material_cost_cents",
+        "type": "BIGINT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "operating_expense_cents",
+        "type": "BIGINT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "revenue_reference",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "material_reference",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "expense_reference",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "created_by",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "users.id"
+      },
+      {
+        "name": "created_at",
+        "type": "TIMESTAMPTZ",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      }
+    ],
+    "incentive_pools": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": true,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "quarter",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "reference",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "rule_version",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "total_revenue_cents",
+        "type": "BIGINT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "total_material_cost_cents",
+        "type": "BIGINT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "total_operating_expense_cents",
+        "type": "BIGINT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "net_profit_cents",
+        "type": "BIGINT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "fund_cents",
+        "type": "BIGINT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "clinic_count",
+        "type": "INTEGER",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "doctor_count",
+        "type": "INTEGER",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "row_version",
+        "type": "INTEGER",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "created_by",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "users.id"
+      },
+      {
+        "name": "created_staff_id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "staff.id"
+      },
+      {
+        "name": "submitted_at",
+        "type": "TIMESTAMPTZ",
+        "nullable": true,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "approved_by",
+        "type": "UUID",
+        "nullable": true,
+        "pk": false,
+        "unique": false,
+        "reference": "users.id"
+      },
+      {
+        "name": "approved_staff_id",
+        "type": "UUID",
+        "nullable": true,
+        "pk": false,
+        "unique": false,
+        "reference": "staff.id"
+      },
+      {
+        "name": "approved_at",
+        "type": "TIMESTAMPTZ",
+        "nullable": true,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "void_reason",
+        "type": "TEXT",
+        "nullable": true,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "voided_by",
+        "type": "UUID",
+        "nullable": true,
+        "pk": false,
+        "unique": false,
+        "reference": "users.id"
+      },
+      {
+        "name": "voided_at",
+        "type": "TIMESTAMPTZ",
+        "nullable": true,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "created_at",
+        "type": "TIMESTAMPTZ",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      }
+    ],
+    "incentive_pool_sources": [
+      {
+        "name": "pool_id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": true,
+        "unique": false,
+        "reference": "incentive_pools.id"
+      },
+      {
+        "name": "month_id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": true,
+        "unique": false,
+        "reference": "incentive_months.id"
+      },
+      {
+        "name": "source_revision",
+        "type": "INTEGER",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "clinic_id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "clinics.id"
+      },
+      {
+        "name": "clinic_name",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "month",
+        "type": "DATE",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "reference",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "no_activity",
+        "type": "BOOLEAN",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "closed_by",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "users.id"
+      },
+      {
+        "name": "closed_staff_id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "staff.id"
+      },
+      {
+        "name": "closed_at",
+        "type": "TIMESTAMPTZ",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      }
+    ],
+    "doctor_quarter_results": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": true,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "pool_id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "incentive_pools.id"
+      },
+      {
+        "name": "clinic_id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "clinics.id"
+      },
+      {
+        "name": "clinic_name",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "doctor_id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "staff.id"
+      },
+      {
+        "name": "doctor_name",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "employee_no",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "revenue_cents",
+        "type": "BIGINT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "material_cost_cents",
+        "type": "BIGINT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "operating_expense_cents",
+        "type": "BIGINT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "net_profit_cents",
+        "type": "BIGINT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      }
+    ],
+    "incentive_allocations": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": true,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "pool_id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "incentive_pools.id"
+      },
+      {
+        "name": "doctor_id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "staff.id"
+      },
+      {
+        "name": "doctor_name",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "employee_no",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "contribution_cents",
+        "type": "BIGINT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "weight_cents",
+        "type": "BIGINT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "amount_cents",
+        "type": "BIGINT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "row_version",
+        "type": "INTEGER",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      }
+    ],
+    "incentive_payments": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": true,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "allocation_id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "incentive_allocations.id"
+      },
+      {
+        "name": "amount_cents",
+        "type": "BIGINT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "reference",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": true,
+        "reference": null
+      },
+      {
+        "name": "status",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "result_reference",
+        "type": "TEXT",
+        "nullable": true,
+        "pk": false,
+        "unique": true,
+        "reference": null
+      },
+      {
+        "name": "row_version",
+        "type": "INTEGER",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "created_by",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "users.id"
+      },
+      {
+        "name": "created_staff_id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "staff.id"
+      },
+      {
+        "name": "created_at",
+        "type": "TIMESTAMPTZ",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "resolved_by",
+        "type": "UUID",
+        "nullable": true,
+        "pk": false,
+        "unique": false,
+        "reference": "users.id"
+      },
+      {
+        "name": "resolved_staff_id",
+        "type": "UUID",
+        "nullable": true,
+        "pk": false,
+        "unique": false,
+        "reference": "staff.id"
+      },
+      {
+        "name": "resolved_at",
+        "type": "TIMESTAMPTZ",
+        "nullable": true,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      }
+    ],
+    "staff": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": true,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "user_id",
+        "type": "UUID",
+        "nullable": true,
+        "pk": false,
+        "unique": true,
+        "reference": "users.id"
+      },
+      {
+        "name": "employee_no",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": true,
+        "reference": null
+      },
+      {
+        "name": "name",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "phone",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "specialty",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "is_dentist",
+        "type": "BOOLEAN",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "active",
+        "type": "BOOLEAN",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "row_version",
+        "type": "INTEGER",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "is_demo",
+        "type": "BOOLEAN",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "bio",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "focus_areas",
+        "type": "TEXT[]",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "birth_date",
+        "type": "DATE",
+        "nullable": true,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "home_address",
+        "type": "TEXT",
+        "nullable": true,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "email",
+        "type": "TEXT",
+        "nullable": true,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      }
+    ],
+    "users": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": true,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "username",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": true,
+        "reference": null
+      },
+      {
+        "name": "password_hash",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "display_name",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "active",
+        "type": "BOOLEAN",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "created_at",
+        "type": "TIMESTAMPTZ",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "account_version",
+        "type": "INTEGER",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "must_change_password",
+        "type": "BOOLEAN",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      }
+    ],
+    "role_assignments": [
+      {
+        "name": "id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": true,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "user_id",
+        "type": "UUID",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": "users.id"
+      },
+      {
+        "name": "role",
+        "type": "TEXT",
+        "nullable": false,
+        "pk": false,
+        "unique": false,
+        "reference": null
+      },
+      {
+        "name": "clinic_id",
+        "type": "UUID",
+        "nullable": true,
+        "pk": false,
+        "unique": false,
+        "reference": "clinics.id"
+      }
+    ]
+  },
+  "fieldCount": 97,
+  "staffFieldCount": 15,
+  "relations": [
+    [
+      "incentive_months.clinic_id",
+      "clinics.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "incentive_months.created_by",
+      "users.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "incentive_months.created_staff_id",
+      "staff.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "incentive_months.updated_by",
+      "users.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "incentive_months.closed_by",
+      "users.id",
+      "可空",
+      "子端可多条"
+    ],
+    [
+      "incentive_months.closed_staff_id",
+      "staff.id",
+      "可空",
+      "子端可多条"
+    ],
+    [
+      "doctor_financial_sources.month_id",
+      "incentive_months.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "doctor_financial_sources.doctor_id",
+      "staff.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "doctor_financial_sources.created_by",
+      "users.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "incentive_pools.created_by",
+      "users.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "incentive_pools.created_staff_id",
+      "staff.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "incentive_pools.approved_by",
+      "users.id",
+      "可空",
+      "子端可多条"
+    ],
+    [
+      "incentive_pools.approved_staff_id",
+      "staff.id",
+      "可空",
+      "子端可多条"
+    ],
+    [
+      "incentive_pools.voided_by",
+      "users.id",
+      "可空",
+      "子端可多条"
+    ],
+    [
+      "incentive_pool_sources.pool_id",
+      "incentive_pools.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "incentive_pool_sources.month_id",
+      "incentive_months.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "incentive_pool_sources.clinic_id",
+      "clinics.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "incentive_pool_sources.closed_by",
+      "users.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "incentive_pool_sources.closed_staff_id",
+      "staff.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "doctor_quarter_results.pool_id",
+      "incentive_pools.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "doctor_quarter_results.clinic_id",
+      "clinics.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "doctor_quarter_results.doctor_id",
+      "staff.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "incentive_allocations.pool_id",
+      "incentive_pools.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "incentive_allocations.doctor_id",
+      "staff.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "incentive_payments.allocation_id",
+      "incentive_allocations.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "incentive_payments.created_by",
+      "users.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "incentive_payments.created_staff_id",
+      "staff.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "incentive_payments.resolved_by",
+      "users.id",
+      "可空",
+      "子端可多条"
+    ],
+    [
+      "incentive_payments.resolved_staff_id",
+      "staff.id",
+      "可空",
+      "子端可多条"
+    ],
+    [
+      "staff.user_id",
+      "users.id",
+      "可空",
+      "子端唯一"
+    ],
+    [
+      "role_assignments.user_id",
+      "users.id",
+      "非空",
+      "子端可多条"
+    ],
+    [
+      "role_assignments.clinic_id",
+      "clinics.id",
+      "可空",
+      "子端可多条"
+    ]
+  ]
+}

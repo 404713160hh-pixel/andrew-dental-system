@@ -8,7 +8,7 @@ export const patientSelect=`SELECT p.id,p.name,to_char(p.birth_date,'YYYY-MM-DD'
 export const clinicSelect=`SELECT id,name,address,phone,email,timezone,active,row_version AS "rowVersion",description,opening_hours AS "openingHours" FROM clinics`;
 export const chairSelect=`SELECT id,clinic_id AS "clinicId",name,active,row_version AS "rowVersion" FROM chairs`;
 export const qualificationSelect=`SELECT id,name,active,row_version AS "rowVersion" FROM qualifications`;
-export const doctorSelect=`SELECT s.id,s.employee_no AS "employeeNo",s.name,s.phone,s.specialty,s.active,s.row_version AS "rowVersion",
+export const doctorSelect=`SELECT s.id,s.employee_no AS "employeeNo",s.name,s.phone,to_char(s.birth_date,'YYYY-MM-DD') AS "birthDate",s.home_address AS "homeAddress",s.email,s.specialty,s.active,s.row_version AS "rowVersion",
  s.is_demo AS "isDemo",s.bio,s.focus_areas AS "focusAreas",
  ARRAY(SELECT DISTINCT ds.clinic_id FROM doctor_shifts ds JOIN clinics c ON c.id=ds.clinic_id AND c.active
  WHERE ds.doctor_id=s.id AND ds.status='published' AND ds.ends_at>clock_timestamp() ORDER BY ds.clinic_id) AS "clinicIds",

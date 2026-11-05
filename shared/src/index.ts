@@ -1,4 +1,5 @@
 /** Wire contracts for /api/v1. Instants are ISO 8601 with timezone; versions are integers. */
+export * from './compensation.js';
 export type Role = 'patient' | 'front' | 'doctor' | 'manager' | 'hq';
 export type AllergyStatus = 'unknown' | 'none_reported' | 'known';
 export interface Assignment { role: Exclude<Role, 'patient'>; clinicId: string | null }
@@ -11,8 +12,8 @@ export interface PatientCandidate { id:string; name:string; phone:string; birthY
 export interface Clinic { id: string; name: string; address: string; phone: string; email: string; timezone: 'Asia/Shanghai'; active: boolean; rowVersion: number; description?: string | null; openingHours?: string | null }
 export interface Qualification { id: string; name: string; active: boolean; rowVersion: number }
 export interface DentistQualification { qualificationId: string; qualificationName?: string; validFrom: string; validUntil: string | null }
-export interface Doctor { id: string; employeeNo: string; name: string; phone: string; specialty: string; active: boolean; rowVersion: number; qualifications: DentistQualification[]; serviceIds: string[]; isDemo?: boolean; bio?: string; focusAreas?: string[]; clinicIds?: string[] }
-export type PublicDoctor = Omit<Doctor, 'employeeNo' | 'phone'>;
+export interface Doctor { id: string; employeeNo: string; name: string; phone: string; birthDate: string|null; homeAddress: string|null; email: string|null; specialty: string; active: boolean; rowVersion: number; qualifications: DentistQualification[]; serviceIds: string[]; isDemo?: boolean; bio?: string; focusAreas?: string[]; clinicIds?: string[] }
+export type PublicDoctor = Omit<Doctor, 'employeeNo' | 'phone' | 'birthDate' | 'homeAddress' | 'email'>;
 /** User-supplied, unverified treatment-price reference; never an appointment or treatment quote. */
 export interface TreatmentReference { id: string; category: string; name: string; priceMinCents: number; priceMaxCents: number; unit: string; referenceYear: number; sourceLabel: string; description: string; bookingServiceId: string | null }
 export interface Service { id: string; name: string; description: string; durationMinutes: number; bufferMinutes: number; priceCents: number; unit: string; active: boolean; clinicIds: string[]; qualificationIds: string[]; rowVersion: number }

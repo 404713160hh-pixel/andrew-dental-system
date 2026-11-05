@@ -12,6 +12,7 @@ import {
   SwitchButton,
   Plus,
   ArrowRight,
+  Coin,
 } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import { useAuth } from './stores/auth';
@@ -45,7 +46,7 @@ watch(
 );
 watch(() => route.fullPath, () => { menuOpen.value = false; });
 const title = computed(() => doctorView.value && route.path === '/appointments' ? '我的预约'
-  : doctorView.value && route.path === '/shifts' ? '我的排班' : String(route.meta.title || '预约工作台'));
+  : doctorView.value && route.path === '/shifts' ? '我的排班' : String(route.meta.title || '员工工作台'));
 async function logout() {
   try {
     await auth.logout();
@@ -68,11 +69,12 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
     <aside id="staff-navigation" class="sidebar" :class="{ 'is-open': menuOpen }">
       <router-link class="brand" to="/appointments"
         ><span class="brand-mark">A<span>+</span></span
-        ><span>ANDREW<span class="brand-sub">安德鲁牙科 · 预约工作台</span></span></router-link
+        ><span>ANDREW<span class="brand-sub">安德鲁牙科 · 员工工作台</span></span></router-link
       >
       <div class="nav-label">工作空间</div>
       <nav aria-label="主导航">
-        <router-link v-if="auth.isHq" to="/staff/accounts"><el-icon><User /></el-icon>员工账号</router-link>
+        <router-link v-if="auth.isHq" to="/staff/accounts"><el-icon><User /></el-icon>员工账号与档案</router-link>
+        <router-link to="/compensation"><el-icon><Coin /></el-icon>薪酬与激励</router-link>
         <router-link to="/change-password"><el-icon><Setting /></el-icon>修改密码</router-link>
         <router-link to="/appointments"
           ><el-icon><Calendar /></el-icon>{{ doctorView ? '我的预约' : '预约总览' }}</router-link
@@ -106,7 +108,7 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
         </template>
       </nav>
       <div class="sidebar-note">
-        <span class="live-dot"></span>预约协同工作台
+        <span class="live-dot"></span>员工协同工作台
         <p>时区 · 中国标准时间 UTC+8</p>
         <small>服务价格为预约参考价，实际诊疗费用以医生确认的方案为准。</small>
       </div>

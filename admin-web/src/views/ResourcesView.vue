@@ -27,6 +27,8 @@ interface ResourceForm {
   email: string;
   active: boolean;
   employeeNo: string;
+  birthDate: string;
+  homeAddress: string;
   specialty: string;
   qualifications: DentistQualification[];
   description: string;
@@ -113,6 +115,8 @@ const defaults = (): ResourceForm => ({
   email: '',
   active: true,
   employeeNo: '',
+  birthDate: '',
+  homeAddress: '',
   specialty: '',
   qualifications: [],
   description: '',
@@ -174,6 +178,9 @@ function open(row: Resource | null = null) {
     if ('employeeNo' in row) {
       form.employeeNo = row.employeeNo;
       form.phone = row.phone;
+      form.birthDate = row.birthDate || '';
+      form.homeAddress = row.homeAddress || '';
+      form.email = row.email || '';
       form.specialty = row.specialty;
       form.qualifications = row.qualifications.map((item) => ({
         qualificationId: item.qualificationId,
@@ -243,6 +250,18 @@ async function save() {
       formError.value = '请填写工号、电话与专业方向。';
       return;
     }
+    if (!editing.value && (!form.birthDate || !form.homeAddress.trim() || !form.email.trim())) {
+      formError.value = '请填写出生日期、家庭住址和电子邮箱。';
+      return;
+    }
+    if (form.birthDate && (form.birthDate < '1900-01-01' || form.birthDate > today())) {
+      formError.value = '请填写有效的出生日期。';
+      return;
+    }
+    if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      formError.value = '请填写有效的电子邮箱。';
+      return;
+    }
     if (
       form.qualifications.some(
         (item) =>
@@ -265,6 +284,9 @@ async function save() {
       ...body,
       employeeNo: form.employeeNo.trim(),
       phone: form.phone.trim(),
+      birthDate: form.birthDate || null,
+      homeAddress: form.homeAddress.trim(),
+      email: form.email.trim() || null,
       specialty: form.specialty.trim(),
       qualifications: form.qualifications.map((item) => ({
         qualificationId: item.qualificationId,
@@ -519,9 +541,16 @@ onUnmounted(() => {
             ><el-input v-model="form.employeeNo" maxlength="40" /></el-form-item
           ><el-form-item label="联系电话" required
             ><el-input v-model="form.phone" maxlength="32" /></el-form-item
+          ><el-form-item label="出生日期" :required="!editing"
+            ><el-date-picker v-model="form.birthDate" type="date" value-format="YYYY-MM-DD" format="YYYY-MM-DD" placeholder="出生日期" /></el-form-item
+          ><el-form-item label="电子邮箱" :required="!editing"
+            ><el-input v-model="form.email" type="email" maxlength="180" /></el-form-item
+          ><el-form-item label="家庭住址" :required="!editing" class="span-two"
+            ><el-input v-model="form.homeAddress" maxlength="240" /></el-form-item
           ><el-form-item label="专业方向" required class="span-two"
             ><el-input v-model="form.specialty" maxlength="180"
           /></el-form-item>
+          <p class="muted small span-two">出生日期、家庭住址和联系邮箱仅供总部管理，患者端不展示。历史缺失资料按核实结果补充。</p>
           <div class="span-two qualification-editor">
             <div class="section-row">
               <h3>专业资格与有效期</h3>
