@@ -109,6 +109,17 @@ function patientProfile(index:number):PatientInput{
   allergies:known?[index===3?'乳胶（虚构声明）':'树脂（虚构声明）']:[]};
 }
 
+/** Opening times for the two provenance-verified fictional clinics only. */
+export function demoShiftHours(date:string,clinicIndex:number,now=Date.now()):{start:string;end:string}|null{
+ const weekday=new Date(date+'T00:00:00Z').getUTCDay();
+ if((clinicIndex===0&&weekday===0)||(clinicIndex===1&&weekday===1))return null;
+ const opens=Date.parse(date+(clinicIndex===0?'T09:00:00+08:00':'T09:30:00+08:00'));
+ const closes=Date.parse(date+(clinicIndex===0?'T18:00:00+08:00':'T18:30:00+08:00'));
+ const start=Math.max(opens,Math.ceil((now+30*60000)/(15*60000))*15*60000);
+ if(closes-start<90*60000)return null;
+ return {start:new Date(start).toISOString(),end:new Date(closes).toISOString()};
+}
+
 export async function enrichDemoData(pool:pg.Pool,environment:'development'|'test'|'production',transferBufferMinutes=30){
  // Guard is inside the exported function as well as the CLI, before any query.
  ensure(environment!=='production','Synthetic demo enrichment is disabled in production');
@@ -200,11 +211,14 @@ export async function enrichDemoData(pool:pg.Pool,environment:'development'|'tes
   }
   for(const doctorId of [...doctorIds].sort())await db.query('SELECT id FROM staff WHERE id=$1 FOR UPDATE',[doctorId]);
   const today=new Date(Date.now()+8*3600000).toISOString().slice(0,10);let addedShifts=0;let keptExistingShifts=0;
-  for(let day=1;day<=14;day++){
+  for(let day=0;day<=28;day++){
    const date=new Date(Date.parse(today+'T00:00:00Z')+day*86400000).toISOString().slice(0,10);
-   const start=date+'T09:00:00+08:00';const end=date+'T17:00:00+08:00';
    for(let i=0;i<doctorIds.length;i++){
-    const doctorId=doctorIds[i]!;const clinicId=clinicIds[i<2?i:(i+day)%2]!;
+    const doctorId=doctorIds[i]!;let clinicIndex=i<2?i:(i+day)%2;
+    let hours=demoShiftHours(date,clinicIndex);
+    if(!hours&&i>=2){clinicIndex=1-clinicIndex;hours=demoShiftHours(date,clinicIndex);}
+    if(!hours)continue;
+    const {start,end}=hours;const clinicId=clinicIds[clinicIndex]!;
     const doctor=await one<{active:boolean}>(db,'SELECT active FROM staff WHERE id=$1',[doctorId]);
     const clinic=await one<{active:boolean}>(db,'SELECT active FROM clinics WHERE id=$1 FOR SHARE',[clinicId]);
     if(!doctor?.active||!clinic?.active||!await one(db,'SELECT 1 FROM chairs WHERE clinic_id=$1 AND active LIMIT 1',[clinicId]))continue;
