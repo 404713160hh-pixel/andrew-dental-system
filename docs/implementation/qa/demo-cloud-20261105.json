@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "date": "2026-11-05",
+  "maintenanceCommit": "95bc68467ce0e3712c3e218548c2a04a9af22b3a",
+  "database": "andrew_booking_preview",
+  "localPostgresTests": { "passed": 21, "failed": 0 },
+  "addedShifts": 122,
+  "keptOverlappingShifts": 102,
+  "fictionalPatientCharts": 8,
+  "addedClinicAccessLinks": 8,
+  "addedAppointments": 7,
+  "addedAppointmentStatuses": { "confirmed": 5, "cancelled": 1, "rescheduled": 1 },
+  "totalAppointments": 13,
+  "repeatRun": { "appointmentsAdded": 0, "clinicLinksAdded": 0, "syntheticConsentsAdded": 0 },
+  "patientViews": {
+    "patient.a": { "appointments": 8, "upcoming": 1, "ownChartOnly": true },
+    "patient.b": { "appointments": 3, "upcoming": 2, "ownChartOnly": true }
+  },
+  "staffPatientAppointmentIdentityMatch": true,
+  "frontDeskAuthorizedChartSearch": true,
+  "ordinaryPatientRowsPreserved": true,
+  "existingAppointmentRowsPreserved": true,
+  "backupReadVerified": true,
+  "runningServicesHealthy": true,
+  "physicalDeviceVerified": false,
+  "evidence": "Workbench maintenance CLI, database row hashes, and internal API verification; screenshot and private receipts retained outside Git"
+}
