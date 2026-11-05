@@ -23,6 +23,7 @@ export function doctorView(item: Doctor) {
   const portrait = item.isDemo ? portraitPositions[item.name] : undefined;
   return {
     ...item,
+    shortName: item.isDemo ? item.name.replace(/（虚构医生）$/, '') : item.name,
     isDemo: Boolean(item.isDemo),
     hasPortrait: Boolean(portrait), portraitCol: portrait?.[0] ?? 0, portraitRow: portrait?.[1] ?? 0,
     initial: item.name.slice(0, 1),

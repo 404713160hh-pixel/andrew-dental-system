@@ -1,7 +1,7 @@
 <view class="page">
-  <view class="login-intro"><view class="eyebrow">ANDREW'S DENTAL</view><view class="title"><view>你好，欢迎来到</view><view>你的微笑照护空间。</view></view><view class="muted">登录后可为本人预约。</view></view>
+  <view class="login-intro"><view class="title">{{mode === 'consent' ? '隐私授权' : '登录 / 注册'}}</view></view>
   <view class="card">
-    <view wx:if="{{mode !== 'consent'}}" class="login-tabs"><view class="{{mode === 'login' ? 'active' : ''}}" data-mode="login" bindtap="mode">账号登录</view><view class="{{mode === 'register' ? 'active' : ''}}" data-mode="register" bindtap="mode">建立账号</view><view class="{{mode === 'linked' ? 'active' : ''}}" data-mode="linked" bindtap="mode">关联已有档案</view></view>
+    <view wx:if="{{mode !== 'consent'}}" class="login-tabs"><view class="{{mode === 'login' ? 'active' : ''}}" data-mode="login" bindtap="mode">账号登录</view><view class="{{mode === 'register' ? 'active' : ''}}" data-mode="register" bindtap="mode">注册账号</view><view class="{{mode === 'linked' ? 'active' : ''}}" data-mode="linked" bindtap="mode">关联已有档案</view></view>
     <block wx:if="{{mode !== 'consent'}}"><text class="label">账号</text><input class="input" value="{{username}}" data-field="username" bindinput="input" placeholder="输入登录账号" maxlength="80" disabled="{{busy}}" /><text class="label">密码</text><input class="input" value="{{password}}" data-field="password" bindinput="input" password placeholder="输入账号密码" maxlength="128" disabled="{{busy}}" /></block>
     <block wx:if="{{mode === 'register'}}"><view class="muted space">账号 3–80 位，支持字母、数字和 . _ -；密码至少 12 位。</view><patient-form value="{{profile}}" disabled="{{busy}}" bindchange="profileChange" /></block>
     <block wx:if="{{mode === 'linked'}}"><view class="muted space">请向前台核实身份并领取一次性凭证。</view><text class="label">一次性凭证</text><input class="input" value="{{code}}" data-field="code" bindinput="input" placeholder="输入前台提供的凭证" maxlength="24" disabled="{{busy}}" /><text class="label">档案出生日期</text><picker mode="date" value="{{linkedBirthDate}}" bindchange="linkedDate" disabled="{{busy}}"><view class="picker">{{linkedBirthDate || '选择出生日期'}} ▾</view></picker></block>
@@ -14,7 +14,7 @@
     </block>
     <view wx:if="{{error}}" class="error space">{{error}}</view><button class="primary space" loading="{{busy}}" disabled="{{busy || loading}}" bindtap="submit">{{mode === 'login' ? '登录账号' : mode === 'consent' ? '确认并继续' : '注册并登录'}}</button>
   </view>
-  <view wx:if="{{loading}}" class="loading">正在准备登录…</view>
-  <view wx:if="{{config.demoLoginEnabled && mode === 'login'}}" class="card"><view class="section-title">演示体验账号</view><view class="muted">虚构演示账号，请勿输入真实医疗信息。</view><block wx:for="{{config.demoAccounts}}" wx:key="username"><button wx:if="{{item.portal === 'patient'}}" class="secondary space" data-username="{{item.username}}" bindtap="demo" disabled="{{busy}}">{{item.displayName}} · 演示登录</button></block></view>
-  <view class="footer-note">请妥善保管账号信息，预约记录仅本人可查看。</view>
+  <view wx:if="{{loading}}" class="loading">加载中…</view>
+  <view wx:if="{{config.demoLoginEnabled && mode === 'login'}}" class="card"><view class="section-title">演示账号</view><view class="muted">虚构账号，请勿输入真实医疗信息。</view><block wx:for="{{config.demoAccounts}}" wx:key="username"><button wx:if="{{item.portal === 'patient'}}" class="secondary space" data-username="{{item.username}}" bindtap="demo" disabled="{{busy}}">{{item.displayName}} · 演示登录</button></block></view>
+
 </view>

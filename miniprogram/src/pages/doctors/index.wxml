@@ -1,16 +1,11 @@
 <view class="page doctors-page">
-  <view class="eyebrow">MEET YOUR CARE TEAM</view>
-  <view class="title">先了解医生，<view>再安排你的就诊。</view></view>
-  <view class="muted page-intro">查看医生与门诊安排。</view>
   <view class="card doctor-filter"><view class="filter-summary"><view class="section-title">医生团队</view><view class="small muted">{{doctors.length}} 位医生</view></view><picker range="{{clinicNames}}" value="{{clinicIndex}}" bindchange="clinicChange" disabled="{{loading}}"><view class="filter-choice"><text class="filter-value">{{clinicNames[clinicIndex]}}</text><text class="filter-arrow">⌄</text></view></picker></view>
   <view wx:if="{{error}}" class="error">{{error}}<button class="secondary space" bindtap="load">重新加载</button></view>
-  <view wx:if="{{loading}}" class="loading">正在读取医生与门诊安排…</view>
+  <view wx:if="{{loading}}" class="loading">加载中…</view>
   <view wx:for="{{doctors}}" wx:key="id" class="card team-card" hover-class="card-pressed" data-id="{{item.id}}" bindtap="openDoctor">
-    <view class="team-top"><view wx:if="{{item.hasPortrait}}" class="doctor-avatar"><image class="doctor-sprite" src="/assets/demo-doctors-grid.jpg" mode="scaleToFill" style="left: -{{item.portraitCol * 100}}%; top: -{{item.portraitRow * 100}}%;" aria-label="AI 生成的虚构医生示意图"/><text>AI 虚构示意</text></view><view class="grow"><view class="name-line"><text class="doctor-name">{{item.name}}</text></view><view class="doctor-specialty">{{item.specialty}}</view><text wx:if="{{item.isDemo}}" class="demo-badge team-demo">虚构医生 · 演示资料</text></view></view>
-    <view class="doctor-location"><view class="location-label">排班门诊</view><view>{{item.clinicLabel}}</view></view>
-    <view wx:if="{{item.focusLabels.length}}" class="focus-tags"><text wx:for="{{item.focusLabels}}" wx:for-item="focus" wx:key="*this">{{focus}}</text></view>
-    <view class="team-footer"><text class="small muted">查看开放班次</text><text class="link">了解医生与预约 →</text></view>
+    <view class="team-top"><view wx:if="{{item.hasPortrait}}" class="doctor-avatar"><image class="doctor-sprite" src="/assets/demo-doctors-grid.jpg" mode="scaleToFill" style="left: -{{item.portraitCol * 100}}%; top: -{{item.portraitRow * 100}}%;" aria-label="AI 生成的虚构医生示意图"/></view><view class="grow"><view class="name-line"><text class="doctor-name">{{item.shortName}}</text></view><view class="doctor-specialty">{{item.specialty}}</view><text wx:if="{{item.isDemo}}" class="demo-badge team-demo">虚构资料</text></view></view>
+    <view class="doctor-location">{{item.clinicLabel}}</view>
+    <view class="team-footer"><text class="link">查看排班 →</text></view>
   </view>
-  <view wx:if="{{!loading && !error && !doctors.length}}" class="empty">当前门诊暂无公开医生安排。<view class="space">可切换门诊，或稍后重新查看。</view></view>
-  <view class="footer-note">虚构医生资料及照片仅供演示</view>
+  <view wx:if="{{!loading && !error && !doctors.length}}" class="empty">暂无医生排班，请切换门诊。</view>
 </view>

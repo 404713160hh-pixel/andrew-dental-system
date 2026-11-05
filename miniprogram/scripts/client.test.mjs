@@ -95,7 +95,7 @@ test('existing account must accept privacy notice before entering patient pages'
 });
 test('native build includes all configured pages, assets and callable WXML handlers', () => {
   const app = JSON.parse(readFileSync(join(root, 'dist/app.json'), 'utf8'));
-  assert.deepEqual([...app.pages].sort(), ['home', 'login', 'booking', 'confirm', 'appointments', 'detail', 'profile', 'doctors', 'doctor-detail', 'prices'].map(name => 'pages/' + name + '/index').sort());
+  assert.deepEqual([...app.pages].sort(), ['home', 'login', 'booking', 'confirm', 'appointments', 'detail', 'profile', 'doctors', 'doctor-detail', 'prices', 'clinics'].map(name => 'pages/' + name + '/index').sort());
   const r = runtime();
   for (const page of app.pages) {
     for (const extension of ['.js', '.json', '.wxml', '.wxss']) assert.ok(existsSync(join(root, 'dist', page + extension)), page + extension);
@@ -105,6 +105,49 @@ test('native build includes all configured pages, assets and callable WXML handl
     assert.doesNotMatch(template, /<\/?(?:br|div|span|img)\b/);
   }
   r.load('components/patient-form/index'); assert.equal(r.components.length, 1);
+});
+
+test('home appointment entry requires login while the clinic tab remains public', () => {
+  const r = runtime(), page = patientPage(r, 'home');
+  page.startBooking(); assert.equal(r.navigations.at(-1).url, '/pages/login/index');
+  page.clinics(); assert.equal(r.navigations.at(-1).url, '/pages/clinics/index');
+  r.load('utils/session').setSession(login('home-patient'));
+  page.startBooking(); assert.equal(r.navigations.at(-1).url, '/pages/booking/index');
+  assert.equal(r.requests.length, 0, 'Navigation must not reserve an appointment');
+});
+
+test('clinic locations use shared records, copy exact addresses and never dial demo or missing phone numbers', async () => {
+  const r = runtime(), page = patientPage(r, 'clinics'), copied = [], called = [];
+  r.context.wx.setClipboardData = options => copied.push(options.data);
+  r.context.wx.makePhoneCall = options => called.push(options.phoneNumber);
+  r.success([
+    { id: 'demo', name: '安德鲁牙科·越秀门诊', address: '虚构演示地址', phone: '020-00000000', description: '课程演示' },
+    { id: 'real', name: '已核对的测试记录', address: '测试地址', phone: '020-12345678' },
+    { id: 'incomplete', name: '未公布地址电话', address: '', phone: '' },
+  ]);
+  await page.load(); assert.match(r.requests[0].url, /\/api\/v1\/clinics$/);
+  const event = id => ({ currentTarget: { dataset: { id } } });
+  page.copyAddress(event('demo')); assert.deepEqual(copied, ['虚构演示地址']);
+  page.copyAddress(event('incomplete')); page.copyAddress(event('unknown')); assert.equal(copied.length, 1);
+  page.call(event('demo')); page.call(event('incomplete')); page.call(event('unknown')); assert.equal(called.length, 0);
+  page.call(event('real')); assert.deepEqual(called, ['020-12345678']);
+  page.book(event('demo')); assert.equal(r.navigations.at(-1).url, '/pages/booking/index?clinicId=demo');
+  page.doctors(event('real')); assert.equal(r.navigations.at(-1).url, '/pages/doctors/index?clinicId=real');
+  const count = r.navigations.length; page.book(event('unknown')); page.doctors(event('unknown')); assert.equal(r.navigations.length, count);
+  assert.equal(r.requests.filter(request => request.method === 'POST').length, 0);
+});
+
+test('clinic reload ignores stale responses and can recover from a network failure', async () => {
+  const r = runtime(), page = patientPage(r, 'clinics'), pending = [];
+  r.respond(options => pending.push(options));
+  const first = page.load(), second = page.load();
+  pending[1].success({ statusCode: 200, data: { data: [{ id: 'fresh', name: '新资料', address: '', phone: '' }] } });
+  await second;
+  pending[0].success({ statusCode: 200, data: { data: [{ id: 'stale', name: '旧资料', address: '', phone: '' }] } });
+  await first; assert.equal(page.data.clinics[0].id, 'fresh');
+  const failure = page.load(); pending[2].fail({ errMsg: 'request:fail offline' }); await failure;
+  assert.ok(page.data.error); assert.equal(page.data.loading, false);
+  r.success([]); await page.load(); assert.equal(page.data.error, ''); assert.equal(page.data.clinics.length, 0);
 });
 test('uncertain confirmation persists original key and content; only same operation is retried', async () => {
   const r = runtime(), auth = r.load('utils/session'), booking = r.load('utils/booking'); auth.setSession(login('one'));

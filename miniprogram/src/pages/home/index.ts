@@ -1,36 +1,35 @@
-import type { AuthConfig, Clinic, PublicDoctor as Doctor, Service, TreatmentReference } from '../../types';
+import type { AuthConfig, PublicDoctor as Doctor, Service } from '../../types';
 import { api, errorMessage } from '../../utils/api';
-import { clinicView, doctorView } from '../../utils/catalog';
+import { doctorView } from '../../utils/catalog';
 import { price } from '../../utils/format';
 import { session } from '../../utils/session';
 Page({
   requestSequence: 0,
   data: {
-    loading: false, error: '', clinics: [] as (Clinic & { demoImage: string })[], services: [] as (Service & { priceLabel: string })[],
-    doctorsPreview: [] as ReturnType<typeof doctorView>[], doctorCount: 0, referenceCount: 0, referenceYearLabel: '',
-    signedIn: false, displayName: '', demoEnabled: false,
+    loading: false, error: '', services: [] as (Service & { priceLabel: string })[],
+    doctorsPreview: [] as ReturnType<typeof doctorView>[],
+    signedIn: false, demoEnabled: false,
   },
-  onShow() { this.setData({ signedIn: Boolean(session()), displayName: session()?.user.displayName ?? '' }); void this.load(); },
+  onShow() { this.setData({ signedIn: Boolean(session()) }); void this.load(); },
   onUnload() { this.requestSequence++; },
   async onPullDownRefresh() { await this.load(); wx.stopPullDownRefresh(); },
   async load() {
     const request = ++this.requestSequence;
     this.setData({ loading: true, error: '' });
     try {
-      const [clinics, services, config, doctors, references] = await Promise.all([
-        api<Clinic[]>('/clinics'), api<Service[]>('/services'), api<AuthConfig>('/auth/config'),
-        api<Doctor[]>('/doctors'), api<TreatmentReference[]>('/treatment-references'),
+      const [services, config, doctors] = await Promise.all([
+        api<Service[]>('/services'), api<AuthConfig>('/auth/config'), api<Doctor[]>('/doctors'),
       ]);
       if (request !== this.requestSequence) return;
-      this.setData({ clinics: clinics.map(clinicView), services: services.map(item => ({ ...item, priceLabel: price(item.priceCents) })),
-        doctorsPreview: doctors.slice(0, 3).map(doctorView), doctorCount: doctors.length, referenceCount: references.length,
-        referenceYearLabel: [...new Set(references.map(item => item.referenceYear))].join(' / '), demoEnabled: config.demoLoginEnabled });
+      this.setData({ services: services.slice(0, 3).map(item => ({ ...item, priceLabel: price(item.priceCents) })),
+        doctorsPreview: doctors.slice(0, 3).map(doctorView),
+        demoEnabled: config.demoLoginEnabled });
     } catch (error) { if (request === this.requestSequence) this.setData({ error: errorMessage(error) }); }
     finally { if (request === this.requestSequence) this.setData({ loading: false }); }
   },
   book() { wx.navigateTo({ url: '/pages/booking/index' }); },
-  clinic(event: WechatMiniprogram.BaseEvent) { wx.navigateTo({ url: '/pages/booking/index?clinicId=' + encodeURIComponent(String(event.currentTarget.dataset.id)) }); },
-  clinicDoctors(event: WechatMiniprogram.BaseEvent) { wx.navigateTo({ url: '/pages/doctors/index?clinicId=' + encodeURIComponent(String(event.currentTarget.dataset.id)) }); },
+  startBooking() { if (session()) this.book(); else this.login(); },
+  clinics() { wx.switchTab({ url: '/pages/clinics/index' }); },
   service(event: WechatMiniprogram.BaseEvent) {
     const service = this.data.services.find(item => item.id === String(event.currentTarget.dataset.id));
     if (service) wx.navigateTo({ url: '/pages/booking/index?serviceId=' + encodeURIComponent(service.id) + (service.clinicIds[0] ? '&clinicId=' + encodeURIComponent(service.clinicIds[0]) : '') });

@@ -1,27 +1,21 @@
 .doctor-detail-page { padding-top: 32rpx; }
 .doctor-detail-page > .card { padding: 30rpx; margin-bottom: 28rpx; border-radius: 18rpx; }
-.doctor-profile { background: #fff; border: 1rpx solid #e6e2d9; border-radius: 20rpx; padding: 38rpx 30rpx; text-align: center; margin-bottom: 28rpx; }
-.profile-portrait { position: relative; margin: 0 auto 30rpx; width: 216rpx; height: 216rpx; overflow: hidden; border-radius: 16rpx; background: #f3efe7; }
+.doctor-profile { display: flex; align-items: center; gap: 26rpx; background: #fff; border: 1rpx solid #e6e2d9; border-radius: 20rpx; padding: 30rpx; margin-bottom: 24rpx; }
+.profile-portrait { position: relative; flex-shrink: 0; width: 156rpx; height: 156rpx; overflow: hidden; border-radius: 14rpx; background: #f3efe7; }
 .profile-portrait image { width: 100%; height: 100%; display: block; }
-.profile-portrait text { position: absolute; right: 8rpx; bottom: 8rpx; left: 8rpx; text-align: center; color: #625b50; font-size: 19rpx; line-height: 1.6; background: rgba(255,255,255,.93); padding: 4rpx 8rpx; border-radius: 5rpx; }
 .profile-portrait image.doctor-sprite { position: absolute; width: 400%; height: 200%; max-width: none; }
-.doctor-profile > .eyebrow { font-size: 18rpx; letter-spacing: 2rpx; line-height: 1.8; }
-.profile-name { font-family: "Noto Serif SC","Songti SC",serif; font-size: 38rpx; font-weight: 600; line-height: 1.6; margin: 16rpx 0 14rpx; word-break: break-all; }
-.profile-specialty { font-size: 25rpx; color: #625d55; line-height: 1.8; margin-top: 24rpx; }
-.profile-focus { display: flex; flex-wrap: wrap; gap: 12rpx; justify-content: center; margin-top: 24rpx; }
-.profile-focus text { font-size: 22rpx; line-height: 1.6; color: #716553; padding: 8rpx 15rpx; background: #f8f6f1; border: 1rpx solid #e9e3d8; border-radius: 7rpx; }
-.demo-notice { font-size: 22rpx; color: #786548; line-height: 1.9; background: #f9f6f0; border: 1rpx solid #e6e0d4; border-radius: 12rpx; padding: 24rpx 28rpx; margin-bottom: 28rpx; }
+.profile-summary { flex: 1; min-width: 0; }
+.profile-name { font-family: "Noto Serif SC","Songti SC",serif; font-size: 32rpx; font-weight: 600; line-height: 1.6; word-break: break-all; }
+.profile-specialty { font-size: 24rpx; color: #625d55; line-height: 1.8; margin-top: 14rpx; }
+.demo-notice { font-size: 22rpx; color: #786548; line-height: 1.9; background: #f9f6f0; border: 1rpx solid #e6e0d4; border-radius: 12rpx; padding: 20rpx 26rpx; margin-bottom: 28rpx; }
 .section-heading { display: flex; align-items: center; gap: 14rpx; margin-bottom: 24rpx; }
 .section-heading .section-title { margin: 0; font-size: 29rpx; line-height: 1.6; }
 .section-rule { height: 25rpx; width: 5rpx; flex-shrink: 0; border-radius: 3rpx; background: #b79a6b; }
 .bio-paragraph { color: #625d55; font-size: 26rpx; line-height: 1.95; word-break: break-all; }
-.detail-tip { font-size: 22rpx; color: #817b71; line-height: 1.9; margin-top: 26rpx; padding-top: 22rpx; border-top: 1rpx solid #ece8e0; }
 .qualification-item { display: flex; align-items: flex-start; gap: 18rpx; padding: 22rpx 0; }
 .qualification-item + .qualification-item { border-top: 1rpx solid #ece8e0; }
-.qualification-icon { height: 46rpx; width: 46rpx; flex-shrink: 0; border-radius: 50%; background: #f4f0e8; color: #91774f; line-height: 46rpx; text-align: center; font-size: 24rpx; }
 .qualification-name { font-size: 25rpx; line-height: 1.7; margin-bottom: 8rpx; word-break: break-all; }
 .qualification-item .small { font-size: 22rpx; line-height: 1.8; }
-.booking-card > .small { line-height: 1.9; margin-bottom: 28rpx; }
 .booking-card .label { margin-top: 26rpx; margin-bottom: 14rpx; }
 .booking-card .picker { font-size: 25rpx; line-height: 1.7; padding: 20rpx; }
 .booking-card .primary { margin-top: 30rpx; }

@@ -1,14 +1,40 @@
- .home-page{padding-top:28rpx}.brand{padding:6rpx 0 42rpx;align-items:center}.brand-identity{min-width:0}.brand-name{font-family:Georgia,serif;font-size:29rpx;font-weight:600;letter-spacing:3rpx;line-height:1.25;white-space:nowrap}.brand-name text{font-weight:400}.brand-sub{font-size:18rpx;color:#77746f;letter-spacing:3rpx;margin-top:5rpx}.account-link{font-size:23rpx;color:#5d5b56;max-width:235rpx;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.account-link text{color:#9e8257;margin-left:8rpx}
-.hero{padding-bottom:16rpx}.hero-title{font-family:"Noto Serif SC","Songti SC",serif;font-size:58rpx;line-height:1.4;color:#252522;margin:20rpx 0 16rpx;font-weight:600}.hero-description{font-size:26rpx;line-height:1.9;color:#77746f}.hero-actions{display:flex;align-items:center;gap:35rpx;margin:30rpx 0 38rpx}.hero-button{margin:0;padding:19rpx 27rpx;width:265rpx;font-size:26rpx;text-align:left}.hero-button text{float:right}.hero-secondary{font-size:25rpx;color:#4e4b46}.hero-secondary text{color:#9e8257}.hero-image{width:100%;height:360rpx;display:block;border-radius:5rpx;background:#f7f5f1}.image-caption{display:flex;justify-content:space-between;font-size:18rpx;letter-spacing:2rpx;color:#8e8980;margin-top:12rpx}.image-caption text{letter-spacing:0}.demo-home-notice{display:flex;gap:12rpx;align-items:flex-start;padding:18rpx 0;font-size:22rpx;color:#77746f}.demo-home-notice .demo-badge{flex-shrink:0}
-.home-shortcuts{display:grid;grid-template-columns:repeat(4,1fr);border-top:1rpx solid #eae7e1;border-bottom:1rpx solid #eae7e1;margin:25rpx 0 57rpx}.home-shortcuts>view{padding:24rpx 7rpx 26rpx;border-right:1rpx solid #eae7e1;transition:opacity .2s ease}.home-shortcuts>view:last-child{border:0}.shortcut-number,.shortcut-title,.shortcut-more{display:block}.shortcut-number{font-family:Georgia,serif;color:#a68b62;font-size:20rpx}.shortcut-title{font-size:23rpx;color:#292d30;font-weight:600;margin-top:8rpx;white-space:nowrap}.shortcut-more{font-size:19rpx;color:#77746f;margin-top:8rpx;white-space:nowrap}.shortcut-pressed{opacity:.55}
-.home-section-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:15rpx;margin:52rpx 0 24rpx}.section-kicker{font-size:19rpx;letter-spacing:2rpx;color:#947a55;margin-bottom:9rpx}.home-section-heading .section-title{font-size:35rpx;margin:0}.home-section-heading>.small{font-size:21rpx;white-space:nowrap}.section-link{font-size:23rpx;color:#826a48;white-space:nowrap}
-.clinic-card{display:flex;gap:24rpx;padding:25rpx 0;border-bottom:1rpx solid #eae7e1}.clinic-number{font-family:Georgia,serif;font-size:26rpx;color:#aa9370}.clinic-name{font-family:"Noto Serif SC","Songti SC",serif;font-size:30rpx;font-weight:600}.clinic-address,.clinic-phone{font-size:23rpx;color:#77746f;line-height:1.9;margin-top:5rpx}.clinic-actions{display:flex;gap:30rpx;font-size:23rpx;color:#826a48;margin-top:20rpx}
-.home-doctor-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15rpx}.home-doctor-card{min-width:0;transition:transform .2s,opacity .2s}.home-portrait{height:200rpx;position:relative;overflow:hidden;background:#f7f5f1}.home-portrait image{width:100%;height:100%;display:block}.home-portrait>text{position:absolute;right:6rpx;bottom:6rpx;color:#51483d;font-size:17rpx;background:#fff;padding:3rpx 7rpx}.home-doctor-name{font-size:25rpx;font-weight:600;margin-top:13rpx}.home-doctor-specialty{font-size:20rpx;color:#77746f;line-height:1.6;margin:5rpx 0 10rpx;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;min-height:62rpx}.home-doctor-card .demo-badge{font-size:18rpx}
-.service-intro{line-height:1.9;margin:0 0 20rpx}.home-service{display:flex;align-items:center;gap:20rpx;padding:26rpx 0;border-bottom:1rpx solid #eae7e1;transition:opacity .2s}.service-name{font-family:"Noto Serif SC","Songti SC",serif;font-size:29rpx;font-weight:600}.service-description{font-size:23rpx;line-height:1.8;color:#77746f;margin-top:8rpx}.service-meta{font-size:21rpx;color:#8b7352;margin-top:10rpx}.service-arrow{font-size:30rpx;color:#a68b62}.reference-entry{margin-top:35rpx;padding:25rpx;background:#fcfbf9;border:1rpx solid #eae7e1;display:flex;align-items:center;gap:20rpx}.reference-entry-title{font-family:"Noto Serif SC","Songti SC",serif;font-size:27rpx;font-weight:600}.reference-entry-source{font-size:21rpx;color:#77746f;margin-top:8rpx}.reference-entry>text{color:#a68b62}.care-strip{padding:48rpx 0 12rpx}.care-title{font-family:"Noto Serif SC","Songti SC",serif;font-size:35rpx;line-height:1.4;margin:14rpx 0}.care-strip .primary{width:100%;margin-top:25rpx}.home-page>.footer-note{border-top:1rpx solid #eae7e1;padding-top:25rpx;margin-top:35rpx}
-@media(max-width:350px){.hero-title{font-size:49rpx}.shortcut-title{font-size:21rpx}.shortcut-more{font-size:17rpx}.home-portrait{height:170rpx}}
-
-.service-scene{margin:26rpx 0 10rpx}.service-scene image{width:100%;height:270rpx;display:block;border-radius:5rpx;background:#f7f5f1}.service-scene>view{display:flex;justify-content:space-between;gap:12rpx;margin-top:11rpx;color:#77746f;font-size:18rpx;letter-spacing:2rpx}.service-scene text{letter-spacing:0}
-
-/* Eight fictional portraits share a compact image sheet; each card reveals one cell. */
+.home-page{padding-top:24rpx}
+.home-banner{position:relative;height:280rpx;overflow:hidden;border-radius:24rpx;background:#e4e9e6}
+.banner-image{display:block;width:100%;height:100%}
+.banner-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(30,49,49,.45),rgba(30,49,49,0) 80%)}
+.banner-title{position:absolute;left:32rpx;bottom:38rpx;color:#fff;font-size:44rpx;font-weight:600;letter-spacing:3rpx}
+.banner-caption{position:absolute;right:18rpx;bottom:16rpx;color:#fff;font-size:18rpx;background:rgba(30,49,49,.35);padding:3rpx 10rpx;border-radius:6rpx}
+.entry-panel{position:relative;margin-top:24rpx;padding:24rpx;background:#fff;border-radius:24rpx;border:1rpx solid #eae7e1}
+.primary-entries{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18rpx}
+.feature-entry{display:flex;align-items:center;gap:16rpx;min-width:0;min-height:158rpx;padding:24rpx 18rpx;border-radius:18rpx}
+.booking-entry{background:linear-gradient(135deg,#edf6fa,#dceff2)}
+.clinic-entry{background:linear-gradient(135deg,#f5f3e8,#f0ebdc)}
+.feature-icon{width:62rpx;height:62rpx;flex-shrink:0;opacity:.8}
+.feature-title{font-size:29rpx;font-weight:600;line-height:1.5;white-space:nowrap}
+.feature-subtitle{font-size:21rpx;color:#717975;margin-top:8rpx;line-height:1.6;white-space:nowrap}
+.home-shortcuts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12rpx;padding-top:30rpx}
+.home-shortcuts>view{display:flex;flex-direction:column;align-items:center;gap:12rpx;min-width:0;padding:8rpx 0}
+.home-shortcuts>view>text{font-size:23rpx;color:#414c4b;line-height:1.5;white-space:nowrap}
+.shortcut-icon{display:flex;align-items:center;justify-content:center;width:76rpx;height:76rpx;border-radius:24rpx}
+.shortcut-icon image{width:46rpx;height:46rpx;opacity:.8}
+.team-icon{background:#e8f2f4}.project-icon{background:#f6eedf}.appointment-icon{background:#edf0f8}.profile-icon{background:#eaf2eb}
+.demo-home-notice{font-size:21rpx;color:#8b8171;padding:18rpx 6rpx 0;line-height:1.7}
+.home-section{margin-top:24rpx;padding:28rpx;background:#fff;border:1rpx solid #eae7e1;border-radius:24rpx}
+.home-section-heading{display:flex;align-items:center;justify-content:space-between;gap:18rpx;margin-bottom:24rpx}
+.home-section-heading .section-title{font-family:inherit;font-size:31rpx;line-height:1.5;margin:0}
+.section-link{font-size:22rpx;color:#77746f;white-space:nowrap;padding:8rpx 0}
+.home-doctor-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18rpx}
+.home-doctor-card{min-width:0}
+.home-portrait{width:100%;aspect-ratio:1;position:relative;overflow:hidden;background:#f3f0ea;border-radius:14rpx}
 .home-portrait image.doctor-sprite{position:absolute;width:400%;height:200%;max-width:none}
-.clinic-card{flex-wrap:wrap}.clinic-visual{position:relative;width:100%;height:260rpx;overflow:hidden;background:#f1eee8}.clinic-visual image{width:100%;height:100%;display:block}.clinic-visual text{position:absolute;right:8rpx;bottom:8rpx;background:#fff;color:#625b50;font-size:19rpx;padding:4rpx 8rpx}.clinic-hours,.clinic-description{font-size:23rpx;color:#77746f;line-height:1.8;margin-top:6rpx}
+.home-portrait>text{position:absolute;right:6rpx;bottom:6rpx;border-radius:4rpx;color:#625b50;font-size:17rpx;background:rgba(255,255,255,.94);padding:2rpx 7rpx}
+.portrait-initial{display:flex;align-items:center;justify-content:center;height:100%;font-size:42rpx;color:#8b8171}
+.home-doctor-name{font-size:26rpx;font-weight:600;line-height:1.5;margin-top:14rpx}
+.home-doctor-specialty{font-size:21rpx;color:#77746f;line-height:1.6;margin-top:6rpx;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.home-service{display:flex;align-items:center;gap:18rpx;padding:22rpx 0;border-top:1rpx solid #efede8}
+.home-service:first-of-type{border-top:0}
+.service-name{font-size:27rpx;font-weight:500;line-height:1.6}
+.service-meta{font-size:21rpx;color:#77746f;line-height:1.7;margin-top:6rpx}
+.service-arrow{font-size:34rpx;color:#a29a8a;flex-shrink:0}
+.home-empty{font-size:25rpx;color:#77746f;text-align:center;padding:24rpx 0}
+@media(max-width:350px){.entry-panel{padding:20rpx}.primary-entries{gap:14rpx}.feature-entry{padding:24rpx 14rpx;gap:10rpx}.feature-icon{width:52rpx;height:52rpx}.feature-title{font-size:27rpx}.feature-subtitle{font-size:20rpx}.home-section{padding:24rpx}.home-shortcuts>view>text{font-size:22rpx}}
