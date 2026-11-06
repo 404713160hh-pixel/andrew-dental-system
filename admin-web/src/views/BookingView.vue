@@ -414,7 +414,7 @@ onMounted(async () => {
                 ><el-select
                   v-model="doctorId"
                   clearable
-                  placeholder="不限定医生，查询时校验资格"
+                  placeholder="不限定医生，按实际班次查询"
                   :disabled="!serviceId"
                   ><el-option
                     v-for="doctor in availableDoctors"

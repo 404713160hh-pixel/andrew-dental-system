@@ -152,7 +152,7 @@ onMounted(async()=>{await Promise.all([load(),loadResources()]);});
     <el-form-item class="wide-field" label="家庭住址"><el-input v-model="profileForm.homeAddress" type="textarea" :rows="2" maxlength="500" /></el-form-item>
     <el-form-item class="wide-field" label="岗位说明"><el-input v-model="profileForm.specialty" type="textarea" :rows="2" maxlength="500" /></el-form-item>
     <el-form-item class="wide-field" label="关联现有员工账号"><el-select v-model="profileForm.userId" clearable filterable placeholder="可稍后在账号管理中关联" style="width:100%"><el-option v-for="account in accountOptions" :key="account.id" :value="account.id" :label="account.displayName+' · '+account.username" :disabled="!account.active || (!!account.staffId && account.staffId!==profileEditing?.id) || account.assignments.some(a=>a.role==='doctor')" /></el-select></el-form-item>
-    <p class="muted small wide-field">关联档案用于识别制表与复核人员。医生档案请通过“医生与资质”维护。</p>
+    <p class="muted small wide-field">关联档案用于识别制表与复核人员。医生资料请通过“医生档案”维护。</p>
     <div class="button-row wide-field" style="justify-content:flex-end;margin-top:20px"><el-button @click="profileDialog=false">返回</el-button><el-button type="primary" native-type="submit" :loading="busy">保存档案</el-button></div>
    </el-form>
   </el-dialog>

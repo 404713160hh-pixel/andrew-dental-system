@@ -217,14 +217,16 @@ test('patient profile rejects readonly demo marker and accepts a correctly selec
   const preserved = data<Patient>(await request('GET', '/patients/me', 'patient.a')); assert.equal(preserved.phone, valid.phone); assert.equal(preserved.rowVersion, valid.rowVersion);
 });
 
-test('specialist consultations require the matching demo skill in addition to the base qualification', async () => {
+test('demo specialties distinguish display profiles without restricting any active service', async () => {
   const doctors = data<Doctor[]>(await request('GET', '/doctors')).filter(item => item.isDemo);
   const services = data<Service[]>(await request('GET', '/services'));
   const implant = services.find(item => item.name === '种植方案咨询（演示）')!, orthodontic = services.find(item => item.name === '正畸方案咨询（演示）')!;
   const implantationDoctor = doctors.find(item => item.name.includes('周沐辰'))!, orthodonticDoctor = doctors.find(item => item.name.includes('许知夏'))!;
-  assert.ok(implantationDoctor.serviceIds.includes(implant.id)); assert.ok(!implantationDoctor.serviceIds.includes(orthodontic.id));
-  assert.ok(orthodonticDoctor.serviceIds.includes(orthodontic.id)); assert.ok(!orthodonticDoctor.serviceIds.includes(implant.id));
-  assert.ok(doctors.every(item => item.serviceIds.length < 6));
+  assert.notEqual(implantationDoctor.specialty, orthodonticDoctor.specialty);
+  for (const doctor of doctors) {
+    assert.ok(doctor.serviceIds.includes(implant.id)); assert.ok(doctor.serviceIds.includes(orthodontic.id));
+    assert.deepEqual([...doctor.serviceIds].sort(), services.filter(service => service.active).map(service => service.id).sort());
+  }
   const requirement = (await db.query('SELECT qualification_id FROM service_qualifications WHERE service_id=$1', [implant.id])).rows;
   assert.equal(requirement.length, 2);
 });

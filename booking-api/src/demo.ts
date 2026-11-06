@@ -4,7 +4,6 @@ import type { PatientInput } from '@andrew/shared';
 import { one,transaction } from './db.js';
 import { audit } from './auth.js';
 import { insertPatient,saveAllergies } from './repositories/catalog.js';
-import { lockQualifications,qualified } from './services/resources.js';
 import { referenceInputs } from './demo-reference-data.js';
 
 type Kind='clinic'|'doctor'|'patient'|'service'|'qualification'|'treatment_reference';
@@ -237,11 +236,13 @@ export async function enrichDemoData(pool:pg.Pool,environment:'development'|'tes
       LIMIT 1`,[doctorId,start,end,clinicId,transferBufferMinutes]);
     if(overlap){keptExistingShifts++;continue;}
     const available:string[]=[];
-    for(const key of [...doctorProfiles[i]!.services].sort()){
-     const serviceId=serviceIds[key]!;
-     if(!await one(db,'SELECT 1 FROM services WHERE id=$1 AND active FOR SHARE',[serviceId]))continue;
-     await lockQualifications(db,serviceId);if(await qualified(db,doctorId,serviceId,start,end))available.push(serviceId);
-    }
+    // Specialties describe doctors; each new shift opens all active services
+    // offered by its clinic that fit within the shift, regardless of specialty.
+    const availableServices=await db.query<{id:string}>(`SELECT v.id FROM services v
+     JOIN clinic_services cs ON cs.service_id=v.id AND cs.clinic_id=$1
+     WHERE v.active AND (v.duration_minutes+v.buffer_minutes)*60000<=$2
+     ORDER BY v.id FOR SHARE OF v`,[clinicId,Date.parse(end)-Date.parse(start)]);
+    available.push(...availableServices.rows.map(service=>service.id));
     if(!available.length)continue;
     const shift=await one<{id:string}>(db,'INSERT INTO doctor_shifts(clinic_id,doctor_id,starts_at,ends_at,created_by)VALUES($1,$2,$3,$4,$5)RETURNING id',[clinicId,doctorId,start,end,hq.id]);
     for(const serviceId of available)await db.query('INSERT INTO doctor_shift_services(shift_id,service_id)VALUES($1,$2)',[shift!.id,serviceId]);addedShifts++;

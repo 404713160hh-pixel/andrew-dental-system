@@ -60,17 +60,17 @@ const editing = ref<Resource | null>(null);
 const formError = ref('');
 const names: Record<Kind, string> = {
   clinics: '门诊机构',
-  doctors: '医生与资质',
+  doctors: '医生档案',
   services: '预约服务',
   chairs: '牙椅资源',
-  qualifications: '资格目录',
+  qualifications: '资质档案目录',
 };
 const explanations: Record<Kind, string> = {
   clinics: '维护机构信息与服务地点，停用门诊前需妥善处理既有预约。',
-  doctors: '管理医生基本资料与资格有效期，服务能力由资格规则计算。',
-  services: '明确服务时长、准备缓冲与资格要求，连接可用的门诊资源。',
+  doctors: '管理医生资料与展示专长。所有医生均可开展全部门诊项目，资质信息仅供内部留档。',
+  services: '设置服务时长、准备缓冲与开展门诊，当班开放项目由排班安排。',
   chairs: '按门诊维护牙椅资源，预约占用由系统统一校验。',
-  qualifications: '总部统一维护资格目录，医生资质与服务要求使用同一目录。',
+  qualifications: '总部统一维护医生资质档案目录与有效期记录，供内部查阅。',
 };
 const allRows = computed<Resource[]>(() => {
   if (!ready.value || error.value || completedKind.value !== kind.value || !catalog.loaded) return [];
@@ -443,7 +443,7 @@ onUnmounted(() => {
         />
       </div>
     </div>
-    <p v-if="kind === 'doctors'" class="muted small qualification-validity">资格状态按当前时间辅助展示；完整班次的资格有效性仍由服务端在发布和预约时校验。</p>
+    <p v-if="kind === 'doctors'" class="muted small qualification-validity">专长用于向患者展示与推荐；所有医生均可预约全部门诊项目。以下资质及有效期仅作内部档案。</p>
     <el-table :data="rows" row-key="id" v-loading="loading" :empty-text="emptyText"
       ><el-table-column prop="name" label="名称" min-width="170"
         ><template #default="{ row }"
@@ -458,7 +458,7 @@ onUnmounted(() => {
           label="联系电话"
           min-width="150" /></template
       ><template v-if="kind === 'doctors'"
-        ><el-table-column label="专业资格" min-width="250"
+        ><el-table-column label="内部资质档案" min-width="250"
           ><template #default="{ row }"
             ><div class="qualification-summary">
               <div
@@ -547,19 +547,19 @@ onUnmounted(() => {
             ><el-input v-model="form.email" type="email" maxlength="180" /></el-form-item
           ><el-form-item label="家庭住址" :required="!editing" class="span-two"
             ><el-input v-model="form.homeAddress" maxlength="240" /></el-form-item
-          ><el-form-item label="专业方向" required class="span-two"
+          ><el-form-item label="展示专长" required class="span-two"
             ><el-input v-model="form.specialty" maxlength="180"
           /></el-form-item>
           <p class="muted small span-two">出生日期、家庭住址和联系邮箱仅供总部管理，患者端不展示。历史缺失资料按核实结果补充。</p>
           <div class="span-two qualification-editor">
             <div class="section-row">
-              <h3>专业资格与有效期</h3>
+              <h3>内部资质档案与有效期</h3>
               <el-button text type="primary" :icon="Plus" @click="addQualification"
                 >添加资格</el-button
               >
             </div>
             <p class="muted small mb-16">
-              资格起止按北京时间填写；失效时刻留空表示长期有效，须覆盖完整班次。
+              仅用于内部留档，不限制排班或预约项目。起止按北京时间填写，失效时刻留空表示长期有效。
             </p>
             <div
               v-for="(qualification, index) in form.qualifications"
@@ -592,7 +592,7 @@ onUnmounted(() => {
               >
             </div>
             <p v-if="!form.qualifications.length" class="muted small">
-              尚未配置资格。可提供的服务由资格目录与服务要求计算。
+              尚未录入资质档案，可继续安排全部门诊项目。
             </p>
           </div></template
         ><template v-if="kind === 'services'"
@@ -629,20 +629,7 @@ onUnmounted(() => {
                 :disabled="
                   !clinic.active && !form.clinicIds.includes(clinic.id)
                 " /></el-select></el-form-item
-          ><el-form-item label="所需资格（须同时满足）" class="span-two"
-            ><el-select
-              v-model="form.qualificationIds"
-              multiple
-              clearable
-              placeholder="无资格要求时可留空"
-              ><el-option
-                v-for="item in catalog.qualifications"
-                :key="item.id"
-                :value="item.id"
-                :label="item.name"
-                :disabled="
-                  !item.active && !form.qualificationIds.includes(item.id)
-                " /></el-select></el-form-item></template
+          ><p class="muted small span-two">所有医生均可开展该项目，患者可参考展示专长选择医生。实际预约以门诊开放项目、班次与可用时间为准。</p></template
         ><el-form-item v-if="kind === 'chairs'" label="所属门诊" required class="span-two"
           ><el-select v-model="form.clinicId" :disabled="!!editing"
             ><el-option

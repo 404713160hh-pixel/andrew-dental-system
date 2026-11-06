@@ -29,7 +29,7 @@ const id=(req:Request)=>uuid.parse(req.params.id);
 export async function createApp(config:Config,pool:pg.Pool,logging=false){
  const app=Fastify({logger:logging?{redact:['req.headers.authorization','req.url','password','password_hash','token']}:false,bodyLimit:131072,requestTimeout:30000,connectionTimeout:10000,genReqId:()=>randomUUID(),trustProxy:config.TRUSTED_PROXY_IPS.trim()?config.TRUSTED_PROXY_IPS.split(',').map(ip=>ip.trim()):false});
  await app.register(cors,{origin:config.CORS_ORIGINS.split(',').map(s=>s.trim()),methods:['GET','POST','PUT','OPTIONS'],allowedHeaders:['Content-Type','Authorization','Idempotency-Key']});
- await app.register(rateLimit,{max:300,timeWindow:'1 minute',errorResponseBuilder:request=>({error:{code:'RATE_LIMITED',message:'操作频繁，请稍后重试'},requestId:request.id})});
+ await app.register(rateLimit,{max:300,timeWindow:'1 minute',errorResponseBuilder:(_request,context)=>new AppError(context.statusCode,'RATE_LIMITED','操作频繁，请稍后重试')});
  app.setErrorHandler((error,req,reply)=>{
   let known:AppError;
   if(error instanceof AppError)known=error;
@@ -140,7 +140,7 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
   const inactive=req.query.includeInactive==='true';if(inactive){requireThat(user,401,'UNAUTHENTICATED','请先登录');staffOnly(user);}
   const clinic=req.query.clinicId?uuid.parse(req.query.clinicId):null;const service=req.query.serviceId?uuid.parse(req.query.serviceId):null;const scopes=inactive?scopeIds(user!):null;
   const doctors=(await pool.query<Doctor>(doctorSelect+` WHERE s.is_dentist AND ($1::boolean OR s.active) AND ($2::uuid IS NULL OR EXISTS(SELECT 1 FROM doctor_shifts ds JOIN clinics c ON c.id=ds.clinic_id AND c.active WHERE ds.doctor_id=s.id AND ds.clinic_id=$2 AND ds.status='published' AND ds.ends_at>clock_timestamp()))
-   AND ($3::uuid IS NULL OR NOT EXISTS(SELECT 1 FROM service_qualifications sq WHERE sq.service_id=$3 AND NOT EXISTS(SELECT 1 FROM dentist_qualifications dq JOIN qualifications q ON q.id=dq.qualification_id WHERE dq.dentist_id=s.id AND dq.qualification_id=sq.qualification_id AND q.active AND dq.valid_from<=now() AND (dq.valid_until IS NULL OR dq.valid_until>now()))))
+   AND ($3::uuid IS NULL OR EXISTS(SELECT 1 FROM services v WHERE v.id=$3 AND v.active AND ($2::uuid IS NULL OR EXISTS(SELECT 1 FROM clinic_services cs WHERE cs.service_id=v.id AND cs.clinic_id=$2))))
    AND ($4::uuid[] IS NULL OR s.active OR EXISTS(SELECT 1 FROM doctor_shifts ds WHERE ds.doctor_id=s.id AND ds.clinic_id=ANY($4))) ORDER BY s.name`,[inactive,clinic,service,scopes])).rows;
   if(user&&isHq(user))return doctors;
   return doctors.map(({employeeNo:_employeeNo,phone:_phone,birthDate:_birthDate,homeAddress:_homeAddress,email:_email,...visible})=>visible);

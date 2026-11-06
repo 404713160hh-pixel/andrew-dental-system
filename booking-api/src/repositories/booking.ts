@@ -19,10 +19,6 @@ export async function querySlots(db:Db,filter:SlotFilter,policy:BookingPolicy):P
  AND ($6::uuid IS NULL OR ds.doctor_id=$6)
  AND ($9::timestamptz IS NULL OR t.starts_at=$9)
  AND ($10::uuid IS NULL OR ch.id=$10) AND ($11::uuid IS NULL OR ds.id=$11)
- AND NOT EXISTS(SELECT 1 FROM service_qualifications sq WHERE sq.service_id=v.id AND NOT EXISTS(
-  SELECT 1 FROM dentist_qualifications dq JOIN qualifications q ON q.id=dq.qualification_id AND q.active
-  WHERE dq.dentist_id=ds.doctor_id AND dq.qualification_id=sq.qualification_id AND dq.valid_from<=t.starts_at
-  AND (dq.valid_until IS NULL OR dq.valid_until>=t.starts_at+(v.duration_minutes+v.buffer_minutes)*interval '1 minute')))
  AND NOT EXISTS(SELECT 1 FROM chair_blocks b WHERE b.chair_id=ch.id AND tstzrange(b.starts_at,b.ends_at,'[)')&&tstzrange(t.starts_at,t.starts_at+(v.duration_minutes+v.buffer_minutes)*interval '1 minute','[)'))
  AND NOT EXISTS(SELECT 1 FROM resource_reservations r WHERE r.id IS DISTINCT FROM $8::uuid
   AND (r.doctor_id=ds.doctor_id OR r.chair_id=ch.id OR r.patient_id=$7::uuid)

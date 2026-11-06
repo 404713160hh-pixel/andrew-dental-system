@@ -33,13 +33,13 @@ PatientInput：name、birthDate(YYYY-MM-DD)、phone、email(可null/空)、billi
 
 ## 目录与排班
 
-公开数组接口：`GET /clinics`、`GET /services?clinicId`、`GET /doctors?clinicId&serviceId`、`GET /qualifications`、`GET /chairs?clinicId`。默认仅活动资源；`includeInactive=true`要求员工会话并按授权管理范围处理。目录不等于可预约承诺，最终号源接口检查资格有效期和全部资源。
+公开数组接口：`GET /clinics`、`GET /services?clinicId`、`GET /doctors?clinicId&serviceId`、`GET /qualifications`、`GET /chairs?clinicId`。默认仅活动资源；`includeInactive=true`要求员工会话并按授权管理范围处理。最终号源接口按已发布班次、项目时长、医生在岗及牙椅空闲情况计算可约时段。
 
 医生只读展示扩展为 `isDemo`、`bio`、`focusAreas`、`clinicIds`。`clinicIds` 来自已发布班次涉及的活动门诊。患者及匿名目录不返回员工工号或联系电话；总部管理视图可读取完整信息。演示资格不是实际执照核验。原有医生维护输入保持原契约，不接受通过普通资料更新改写演示来源。
 
-总部可通过 `PUT /staff/doctors/{id}/profile` 编辑患者可见的简介与擅长方向，提交 `{expectedVersion,bio,focusAreas}`；字段要求简介不超过 2000 字、方向不超过 20 项且不重复。服务端重新核对总部授权、行版本并记录审计，已有预约不会阻止只修改公开资料；资格或其他资源变更仍遵守原有业务限制。机构须对公开资料真实性负责。
+总部可通过 `PUT /staff/doctors/{id}/profile` 编辑患者可见的简介与擅长方向，提交 `{expectedVersion,bio,focusAreas}`；字段要求简介不超过 2000 字、方向不超过 20 项且不重复。服务端重新核对总部授权、行版本并记录审计，已有预约不会阻止只修改公开资料；专业经历与特长档案可独立修改；停用医生、变更门诊和牙椅等资源时检查已有预约。机构须对公开资料真实性负责。
 
-`GET /treatment-references` 在开发与测试环境公开返回 `TreatmentReference[]`：`id`、`category`、`name`、`priceMinCents`、`priceMaxCents`、`unit`、`referenceYear`、`sourceLabel`、`description`、`bookingServiceId`。价格为非负整数分、上限不小于下限；年份与来源随资料保存，本轮来源明确为用户提供且未独立核验。`bookingServiceId` 可以为空，非空时只是关联评估/咨询的导航，不赋予额外诊疗能力；是否可约仍由号源与资格校验决定。资料价格不写入 Service.priceCents、hold 或预约费用。生产配置下该接口统一返回空列表，直到正式价格的维护、审核和发布机制完成；预约服务目录仍由门诊维护。
+`GET /treatment-references` 在开发与测试环境公开返回 `TreatmentReference[]`：`id`、`category`、`name`、`priceMinCents`、`priceMaxCents`、`unit`、`referenceYear`、`sourceLabel`、`description`、`bookingServiceId`。价格为非负整数分、上限不小于下限；年份与来源随资料保存，本轮来源明确为用户提供且未独立核验。`bookingServiceId` 可以为空，非空时只是关联评估/咨询的导航，不赋予额外诊疗能力；可约时间由班次、时长和空闲资源决定。资料价格不写入 Service.priceCents、hold 或预约费用。生产配置下该接口统一返回空列表，直到正式价格的维护、审核和发布机制完成；预约服务目录仍由门诊维护。
 
 `GET /shifts?clinicId&date`为员工接口，返回Shift数组。医生仅本人，前台/店长仅授权门诊，总部全链。GET只读，时间查询不创建hold。
 
@@ -54,7 +54,7 @@ PatientInput：name、birthDate(YYYY-MM-DD)、phone、email(可null/空)、billi
 | POST /staff/shifts/{id}/cancel | 总部/所属门诊店长 | expectedVersion |
 | POST /staff/chair-blocks | 总部/所属门诊店长 | chairId,startsAt,endsAt,reason；当前API有停用区间，工作台仅基础启停 |
 
-qualifications项为 `{qualificationId,validFrom,validUntil:null|ISO时间}`；必须覆盖完整班次/服务适用区间。服务多资格要求按全部满足。已发布排班显式列出开放项目；医生跨店重叠或转场不足拒绝。预约占用中的核心资源/资格调整、班次撤销与牙椅停用会被拒绝，需要先处理有效预约或等待占位到期。
+qualifications项为 `{qualificationId,validFrom,validUntil:null|ISO时间}`，作为内部专业经历记录。所有在岗医生可承接全部有效项目；`Doctor.serviceIds`返回全部有效项目，门诊范围另按`clinic_services`筛选。已发布排班显式列出开放项目，默认选择该门诊全部有效项目；医生跨店重叠或转场不足时返回冲突。停用医生、变更核心资源、撤销班次和牙椅停用前检查有效预约；专业经历与特长修改可独立保存。
 
 患者员工侧：`GET /staff/patients?q&page&pageSize` → Page。总部支持条件列表；普通前台/店长必须完整姓名或完整电话精确核对，不允许空查询枚举全链。`POST /staff/patients`用PatientInput建立未绑定患者档案，前台/店长/总部可用。员工录入不会自动给患者创建登录账号，也不会凭手机号绑定现有账号。
 
@@ -78,7 +78,7 @@ qualifications项为 `{qualificationId,validFrom,validUntil:null|ISO时间}`；�
 {"holdId":"UUID","holdVersion":1,"patientConfirmed":true,"rulesAccepted":true}
 ```
 
-员工可同时传patientId核对。必须是当前操作者拥有的有效hold，匹配真实就诊人；再次验证目录/资格/班次/牙椅、事务提交后才返回Appointment。预约编号由后端唯一生成；不返回支付成功或到诊完成。
+员工可同时传patientId核对。必须是当前操作者拥有的有效hold，匹配真实就诊人；再次验证有效项目、在岗医生、班次与牙椅、事务提交后才返回Appointment。预约编号由后端唯一生成；不返回支付成功或到诊完成。
 
 ## 查询、取消、改期和恢复
 

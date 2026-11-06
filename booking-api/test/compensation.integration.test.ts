@@ -78,13 +78,13 @@ test('staff profiles support non-doctor identity, protect patient accounts and d
  const preserved=ok<StaffProfile>(await req('PUT','/staff/profiles/'+self.id,maker.token,{employeeNo:self.employeeNo,name:self.name,phone:self.phone,specialty:self.specialty,active:true,userId:self.userId,expectedVersion:changed.rowVersion}));assert.equal(preserved.birthDate,'1990-01-01');assert.equal(preserved.homeAddress,'合成家庭地址');
  assert.equal((await req('PUT','/staff/profiles/'+doctors[0]!.id,maker.token,{employeeNo:'D001',name:'医生',phone:'020-00000000',specialty:'',active:true,userId:null,expectedVersion:1})).json().error.code,'DOCTOR_RESOURCE_REQUIRED');
 });
-test('doctors with future bookings can maintain private profile fields without changing protected clinical conditions',async()=>{
+test('doctors with future bookings can maintain private fields and internal qualifications while remaining active',async()=>{
  const existing=(await db.query('SELECT r.doctor_id FROM appointments a JOIN resource_reservations r ON r.id=a.reservation_id LIMIT 1')).rows[0]!;
  const record=ok<Doctor[]>(await req('GET','/doctors?includeInactive=true',maker.token)).find(d=>d.id===existing.doctor_id)!;
  const body={employeeNo:record.employeeNo,name:record.name,phone:record.phone,specialty:record.specialty,active:record.active,qualifications:record.qualifications.map(q=>({qualificationId:q.qualificationId,validFrom:q.validFrom,validUntil:q.validUntil})),expectedVersion:record.rowVersion,birthDate:'1988-03-14',homeAddress:'合成医生家庭住址',email:'doctor-private@example.invalid'};
  const updated=ok<Doctor>(await req('PUT','/staff/doctors/'+record.id,maker.token,body));assert.equal(updated.birthDate,'1988-03-14');assert.equal(updated.homeAddress,'合成医生家庭住址');
  assert.equal((await req('PUT','/staff/doctors/'+record.id,maker.token,{...body,expectedVersion:updated.rowVersion,active:false})).json().error.code,'FUTURE_BOOKINGS_EXIST');
- assert.equal((await req('PUT','/staff/doctors/'+record.id,maker.token,{...body,expectedVersion:updated.rowVersion,qualifications:[]})).json().error.code,'FUTURE_BOOKINGS_EXIST');
+ const archived=ok<Doctor>(await req('PUT','/staff/doctors/'+record.id,maker.token,{...body,expectedVersion:updated.rowVersion,qualifications:[]}));assert.deepEqual(archived.qualifications,[]);assert.equal(archived.active,true);
  for(const token of [undefined,manager.token,doctor.token]){const publicRows=ok<Record<string,unknown>[]>(await req('GET','/doctors',token));assert.ok(publicRows.length);assert.ok(publicRows.every(d=>!['employeeNo','phone','birthDate','homeAddress','email'].some(key=>key in d)));}
 });
 test('month sources require past periods, independent employee review, creator ownership and scoped access',async()=>{

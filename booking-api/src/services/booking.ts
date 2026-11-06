@@ -11,7 +11,6 @@ import { PRIVACY_VERSION } from '../privacy.js';
 import { holdInput,confirmInput,changeInput } from '../validation.js';
 import { querySlots } from '../repositories/booking.js';
 import { getPatient,getAppointment } from '../repositories/catalog.js';
-import { lockQualifications } from './resources.js';
 export function bookingPolicy(config:Config):BookingPolicy{return {holdSeconds:config.HOLD_SECONDS,cancellationNoticeMinutes:config.CANCELLATION_NOTICE_MINUTES,transferBufferMinutes:config.TRANSFER_BUFFER_MINUTES,slotStepMinutes:config.SLOT_STEP_MINUTES,timezone:'Asia/Shanghai'};}
 function localDate(instant:string){return new Date(Date.parse(instant)+8*3600000).toISOString().slice(0,10);}
 function actualPatient(user:Principal,requested?:string){
@@ -34,10 +33,9 @@ async function expire(db:PoolClient){
  await db.query("UPDATE resource_reservations SET status='expired' WHERE status='held' AND expires_at<=clock_timestamp()");
 }
 async function exactSlot(db:PoolClient,selection:SlotSelection,patientId:string,policy:BookingPolicy,ignoreReservationId?:string):Promise<BookingSlot>{
- await lockQualifications(db,selection.serviceId);
  const slots=await querySlots(db,{...selection,date:localDate(selection.startsAt),patientId,ignoreReservationId},policy);
  const slot=slots.find(s=>s.shiftId===selection.shiftId&&s.chairId===selection.chairId&&s.startsAt===iso(selection.startsAt));
- requireThat(slot,409,'SLOT_UNAVAILABLE','时段已不可用，或资格、班次、牙椅条件已变化，请重新选择');return slot;
+ requireThat(slot,409,'SLOT_UNAVAILABLE','时段已不可用，或门诊、班次、牙椅条件已变化，请重新选择');return slot;
 }
 type HoldRow={id:string;reservation_id:string;created_by:string;expires_at:Date;row_version:number;consumed_at:Date|null;patient_id:string;clinic_id:string;service_id:string;doctor_id:string;chair_id:string;shift_id:string;starts_at:Date;status:string;policy_snapshot:BookingPolicy};
 async function holdRow(db:PoolClient,id:string){return one<HoldRow>(db,`SELECT h.*,r.patient_id,r.clinic_id,r.service_id,r.doctor_id,r.chair_id,r.shift_id,r.starts_at,r.status

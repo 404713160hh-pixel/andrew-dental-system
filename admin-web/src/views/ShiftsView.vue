@@ -70,13 +70,12 @@ function open() {
     endsAt: `${date.value || today()}T18:00:00`,
     serviceIds: [],
   });
+  form.serviceIds = serviceOptions.value.map((service) => service.id);
   formError.value = '';
   dialog.value = true;
 }
-watch([() => form.clinicId, () => form.doctorId], () => {
-  form.serviceIds = form.serviceIds.filter((id) =>
-    serviceOptions.value.some((item) => item.id === id),
-  );
+watch(() => form.clinicId, () => {
+  form.serviceIds = serviceOptions.value.map((service) => service.id);
 });
 async function save() {
   if (saving.value) return;
@@ -148,7 +147,7 @@ onUnmounted(() => { disposed = true; requests.stop(); });
     <div>
       <div class="eyebrow">DOCTOR SCHEDULES</div>
       <h1>{{ doctorOnly ? '我的排班' : '医生排班' }}</h1>
-      <p>让医生资格、门诊服务与可预约时段保持一致。</p>
+      <p>安排出诊门诊、工作时段与当班开放项目。</p>
     </div>
     <div class="button-row">
       <el-button :icon="Refresh" :loading="loading" @click="load">刷新</el-button
@@ -297,7 +296,7 @@ onUnmounted(() => { disposed = true; requests.stop(); });
             format="YYYY-MM-DD HH:mm"
             class="full-width" /></el-form-item
         ><el-form-item label="本班次开展服务" required class="span-two"
-          ><el-select v-model="form.serviceIds" multiple placeholder="先选择门诊与医生"
+          ><el-select v-model="form.serviceIds" multiple placeholder="选择当班开放项目"
             ><el-option
               v-for="service in serviceOptions"
               :key="service.id"
@@ -305,7 +304,7 @@ onUnmounted(() => { disposed = true; requests.stop(); });
               :label="service.name"
           /></el-select>
           <p class="muted small">
-            仅展示该门诊已配置的服务；发布时将校验医生资格是否覆盖完整班次，并检查跨店排班冲突。
+            默认开放该门诊全部启用项目，可按当班安排调整。所有医生均可开展全部项目，专长用于展示与推荐；发布时检查服务时长及跨店排班冲突。
           </p></el-form-item
         >
       </div></el-form

@@ -20,7 +20,7 @@ const fields:Record<Resource,Record<string,string>>={
  chairs:{clinicId:'clinic_id',name:'name',active:'active'},qualifications:{name:'name',active:'active'}
 };
 async function futureUse(db:PoolClient,resource:Resource,id:string){
- const predicate:Record<Resource,string>={clinics:'r.clinic_id=$1',doctors:'r.doctor_id=$1',services:'r.service_id=$1',chairs:'r.chair_id=$1',qualifications:'EXISTS(SELECT 1 FROM service_qualifications sq WHERE sq.service_id=r.service_id AND sq.qualification_id=$1)'};
+ const predicate:Record<Resource,string>={clinics:'r.clinic_id=$1',doctors:'r.doctor_id=$1',services:'r.service_id=$1',chairs:'r.chair_id=$1',qualifications:'false'};
  const result=await one<{used:boolean}>(db,`SELECT EXISTS(SELECT 1 FROM resource_reservations r WHERE ${predicate[resource]} AND r.starts_at>now() AND (r.status='booked' OR r.status='held' AND r.expires_at>now())) AS used`,[id]);
  return result?.used;
 }
@@ -33,17 +33,23 @@ export async function saveResource(pool:pg.Pool,user:Principal,kind:Resource,raw
   const table=tables[kind];
   let qualificationsChanged=true;
   if(id){
-   const old=await one<{row_version:number;clinic_id?:string}>(db,`SELECT * FROM ${table} WHERE id=$1 FOR UPDATE`,[id]);
+   const old=await one<Record<string,unknown>&{row_version:number;clinic_id?:string}>(db,`SELECT * FROM ${table} WHERE id=$1 FOR UPDATE`,[id]);
    requireThat(old,404,'NOT_FOUND','资料不存在');
    if(kind==='chairs')clinicAccess(user,old.clinic_id!,['hq','manager']);
    requireThat(data.expectedVersion===old.row_version,409,'VERSION_CONFLICT','资料已变更，请刷新后重试');
-   // Published bookings keep the exact service, skill and resource conditions.
+   // Published bookings keep their operating resources. Qualification records
+   // are internal archives and never determine the services a doctor can book.
    if(kind==='doctors'){
     const incoming=(data.qualifications as z.infer<typeof doctorInput>['qualifications']).map(q=>[q.qualificationId,Date.parse(q.validFrom),q.validUntil===null?null:Date.parse(q.validUntil)]).sort((a,b)=>String(a[0]).localeCompare(String(b[0])));
     const existing=(await db.query<{qualification_id:string;valid_from:Date;valid_until:Date|null}>('SELECT qualification_id,valid_from,valid_until FROM dentist_qualifications WHERE dentist_id=$1 ORDER BY qualification_id',[id])).rows.map(q=>[q.qualification_id,new Date(q.valid_from).getTime(),q.valid_until===null?null:new Date(q.valid_until).getTime()]);
     qualificationsChanged=JSON.stringify(incoming)!==JSON.stringify(existing);
    }
-   const structural=kind==='clinics'?data.active===false:kind==='doctors'?data.active===false||qualificationsChanged:true;
+   let structural=kind==='qualifications'?false:kind==='clinics'||kind==='doctors'?data.active===false:true;
+   if(kind==='services'){
+    const previousClinics=(await db.query<{clinic_id:string}>('SELECT clinic_id FROM clinic_services WHERE service_id=$1 ORDER BY clinic_id',[id])).rows.map(row=>row.clinic_id);
+    structural=Object.entries(fields.services).some(([key,column])=>data[key]!==old[column])
+     ||JSON.stringify([...(data.clinicIds as string[])].sort())!==JSON.stringify(previousClinics);
+   }
    requireThat(!structural||!await futureUse(db,kind,id),409,'FUTURE_BOOKINGS_EXIST','已有有效预约或占位，请先处理后再调整该资源');
   }
   // Old clients omit these optional fields; do not erase values they cannot edit.
@@ -73,14 +79,6 @@ export async function saveResource(pool:pg.Pool,user:Principal,kind:Resource,raw
   return (await db.query(reads[kind]+` WHERE ${alias}id=$1`,[savedId])).rows[0];
  });
 }
-export async function qualified(db:PoolClient,doctorId:string,serviceId:string,start:string,end:string):Promise<boolean>{
- const row=await one<{ok:boolean}>(db,`SELECT NOT EXISTS(SELECT 1 FROM service_qualifications sq WHERE sq.service_id=$2 AND NOT EXISTS(
- SELECT 1 FROM dentist_qualifications dq JOIN qualifications q ON q.id=dq.qualification_id WHERE dq.dentist_id=$1 AND dq.qualification_id=sq.qualification_id
- AND q.active AND dq.valid_from<=$3::timestamptz AND (dq.valid_until IS NULL OR dq.valid_until>=$4::timestamptz))) AS ok`,[doctorId,serviceId,start,end]);return !!row?.ok;
-}
-export async function lockQualifications(db:PoolClient,serviceId:string){
- await db.query('SELECT q.id FROM qualifications q JOIN service_qualifications sq ON sq.qualification_id=q.id WHERE sq.service_id=$1 ORDER BY q.id FOR SHARE OF q',[serviceId]);
-}
 export async function publishShift(pool:pg.Pool,config:Config,user:Principal,raw:unknown,requestId:string){
  const input=shiftInput.parse(raw);clinicAccess(user,input.clinicId,['hq','manager']);
  requireThat(Date.parse(input.startsAt)>Date.now(),400,'PAST_SHIFT','只能发布未来的班次');
@@ -96,10 +94,8 @@ export async function publishShift(pool:pg.Pool,config:Config,user:Principal,raw
   for(const serviceId of [...input.serviceIds].sort()){
    const s=await one<{active:boolean;minutes:number}>(db,`SELECT active,duration_minutes+buffer_minutes AS minutes FROM services WHERE id=$1 FOR SHARE`,[serviceId]);
    requireThat(s?.active,400,'SERVICE_UNAVAILABLE','服务项目不可用');
-   await lockQualifications(db,serviceId);
    requireThat(Date.parse(input.endsAt)-Date.parse(input.startsAt)>=s.minutes*60000,400,'SHIFT_TOO_SHORT','班次不足以完成服务及缓冲');
    requireThat(await one(db,'SELECT 1 FROM clinic_services WHERE clinic_id=$1 AND service_id=$2',[input.clinicId,serviceId]),400,'SERVICE_NOT_OFFERED','门诊未提供该项目');
-   requireThat(await qualified(db,input.doctorId,serviceId,input.startsAt,input.endsAt),409,'QUALIFICATION_REQUIRED','医生资格不覆盖该班次项目');
   }
   const row=await one<{id:string}>(db,'INSERT INTO doctor_shifts(clinic_id,doctor_id,starts_at,ends_at,created_by)VALUES($1,$2,$3,$4,$5)RETURNING id',[input.clinicId,input.doctorId,input.startsAt,input.endsAt,user.id]);
   for(const serviceId of input.serviceIds)await db.query('INSERT INTO doctor_shift_services(shift_id,service_id)VALUES($1,$2)',[row!.id,serviceId]);

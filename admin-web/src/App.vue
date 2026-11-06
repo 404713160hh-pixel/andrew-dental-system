@@ -94,7 +94,7 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
             ><el-icon><OfficeBuilding /></el-icon>门诊机构</router-link
           >
           <router-link to="/resources/doctors"
-            ><el-icon><FirstAidKit /></el-icon>医生与资质</router-link
+            ><el-icon><FirstAidKit /></el-icon>医生档案</router-link
           >
           <router-link to="/resources/services"
             ><el-icon><Setting /></el-icon>预约服务</router-link
@@ -103,7 +103,7 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
             ><el-icon><Setting /></el-icon>牙椅资源</router-link
           >
           <router-link to="/resources/qualifications"
-            ><el-icon><Setting /></el-icon>资格目录</router-link
+            ><el-icon><Setting /></el-icon>资质档案目录</router-link
           >
         </template>
       </nav>

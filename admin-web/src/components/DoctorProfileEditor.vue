@@ -25,7 +25,7 @@ async function save(){
 <template>
  <el-button text type="primary" @click="open">公开资料</el-button>
  <el-dialog v-model="visible" :title="`${doctor.name} · 医生公开资料`" width="min(620px, 94vw)" :close-on-click-modal="false">
-  <p class="muted small">这些内容会展示给患者；请由机构核对医生资料后填写。每行填写一个擅长方向。</p>
+  <p class="muted small">这些内容会展示给患者并用于选择推荐；请由机构核对医生资料后填写。每行填写一个擅长方向，所有医生均可预约全部门诊项目。</p>
   <el-alert v-if="error" :title="error" type="error" :closable="false" show-icon />
   <el-form label-position="top" @submit.prevent="save">
    <el-form-item label="医生简介"><el-input v-model="bio" type="textarea" :rows="4" maxlength="2000" show-word-limit /></el-form-item>

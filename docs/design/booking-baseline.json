@@ -1,7 +1,9 @@
 {
   "pdf": "1602240215.pdf",
   "revisedAt": "2026-11-06",
-  "pages": 305,
-  "sha256": "8acafd09f35c1622767fe0b8208e4b5097fc48c111f2fbd5bf83b657ab327d5a",
-  "implementationScope": "UC01-07 booking core; UC02 private staff data; UC19-22 quarterly financial sources and incentives; UC24 staff identity and authorization"
+  "pages": 301,
+  "sha256": "57c95b7169b16da7c89865685bf5004c602b7435c71ea93f71910115daec6a1c",
+  "bookingFlow": "患者小程序预约→前台到店核对→医生诊疗→前台结账→总部季度核算",
+  "doctorServices": "所有在岗医生可承接门诊全部有效项目，特长用于介绍及选医",
+  "implementationScope": "UC01-07 booking core; UC02 private staff data; UC19-22 quarterly incentives; UC24 staff identity and authorization"
 }

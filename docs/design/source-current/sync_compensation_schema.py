@@ -102,7 +102,7 @@ def run():
     s=s[:a]+identity+s[b:]
     a=s.index(r'\subsubsection{员工与医生档案（staff）}')
     b=s.index(r'\subsubsection{登录账号',a)
-    body=r'\subsubsection{员工与医生档案（staff）}'+'\n'+t('员工档案保存稳定员工编号和可选唯一账号关联，医生与非医生共享员工主体。出生日期、家庭住址和电子邮箱用于内部人事管理；公开医生资料不返回这三项。')+r'\par'+'\n'+field_table('staff',staff)+t('约束：employee_no唯一；user_id可空且唯一，关联users.id。is_dentist区分牙医和非医生员工；active停用不删除历史。row_version为正整数。医生档案、非医生员工档案及账号授权分别由相应管理入口维护；同一员工不能以多个账号绕过制审ID校验。')+r'\par'+'\n'
+    body=r'\subsubsection{员工与医生档案（staff）}'+'\n'+t('员工档案保存稳定员工编号和可选唯一账号关联，医生与非医生共享员工主体。出生日期、家庭住址和电子邮箱用于内部人事管理；公开医生资料不返回这三项。')+r'\par'+'\n'+field_table('staff',staff)+t('约束：employee_no唯一；user_id可空且唯一，关联users.id。is_dentist区分牙医和非医生员工；active停用不删除历史。row_version为正整数。医生档案、非医生员工档案及账号授权分别由相应管理入口维护；制表和复核同时核对账号与员工编号。')+r'\par'+'\n'
     s=s[:a]+body+s[b:]
     # Remove the reversed, non-existent users.staff_id relationship and keep the
     # actual staff.user_id direction in both the identity dictionary and FK set.

@@ -24,3 +24,25 @@ test('untrusted peers cannot choose a client IP through forwarding headers', asy
     } finally { await app.close(); }
   }
 });
+
+test('the real IP rate limit returns the 429 error contract and rejects spoofed forwarding headers', async () => {
+  const app = await createApp(loadConfig({ NODE_ENV: 'test', DATABASE_URL: 'postgres://unused', TRUSTED_PROXY_IPS: '' }), {} as pg.Pool, false);
+  let handled = 0;
+  app.get('/test-rate-limit', async () => { handled++; return { ok: true }; });
+  await app.ready();
+  try {
+    for (let index = 0; index < 300; index++) {
+      const accepted = await app.inject({ method: 'GET', url: '/test-rate-limit', remoteAddress: '192.0.2.10', headers: { 'x-forwarded-for': '203.0.113.' + (index % 254 + 1) } });
+      assert.equal(accepted.statusCode, 200, accepted.body);
+    }
+    const limited = await app.inject({ method: 'GET', url: '/test-rate-limit', remoteAddress: '192.0.2.10', headers: { 'x-forwarded-for': '198.51.100.99' } });
+    assert.equal(limited.statusCode, 429, limited.body);
+    assert.equal(limited.json().error.code, 'RATE_LIMITED');
+    assert.equal(limited.json().error.message, '操作频繁，请稍后重试');
+    assert.match(limited.json().requestId, /^[0-9a-f-]{36}$/);
+    assert.ok(Number(limited.headers['retry-after']) > 0);
+    assert.equal(handled, 300, 'The throttled request must not enter the handler');
+    const otherPeer = await app.inject({ method: 'GET', url: '/test-rate-limit', remoteAddress: '192.0.2.11' });
+    assert.equal(otherPeer.statusCode, 200, otherPeer.body);
+  } finally { await app.close(); }
+});

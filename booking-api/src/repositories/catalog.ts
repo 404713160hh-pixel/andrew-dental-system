@@ -14,9 +14,7 @@ export const doctorSelect=`SELECT s.id,s.employee_no AS "employeeNo",s.name,s.ph
  WHERE ds.doctor_id=s.id AND ds.status='published' AND ds.ends_at>clock_timestamp() ORDER BY ds.clinic_id) AS "clinicIds",
  coalesce((SELECT jsonb_agg(jsonb_build_object('qualificationId',d.qualification_id,'qualificationName',q.name,'validFrom',d.valid_from,'validUntil',d.valid_until) ORDER BY q.name)
  FROM dentist_qualifications d JOIN qualifications q ON q.id=d.qualification_id WHERE d.dentist_id=s.id),'[]') AS qualifications,
- ARRAY(SELECT v.id FROM services v WHERE v.active AND NOT EXISTS(SELECT 1 FROM service_qualifications sq WHERE sq.service_id=v.id AND NOT EXISTS(
- SELECT 1 FROM dentist_qualifications dq JOIN qualifications q ON q.id=dq.qualification_id WHERE dq.dentist_id=s.id AND dq.qualification_id=sq.qualification_id AND q.active
- AND dq.valid_from<=now() AND (dq.valid_until IS NULL OR dq.valid_until>now())))) AS "serviceIds" FROM staff s`;
+ ARRAY(SELECT v.id FROM services v WHERE v.active ORDER BY v.id) AS "serviceIds" FROM staff s`;
 export const serviceSelect=`SELECT v.id,v.name,v.description,v.duration_minutes AS "durationMinutes",v.buffer_minutes AS "bufferMinutes",v.price_cents AS "priceCents",v.unit,v.active,v.row_version AS "rowVersion",
  ARRAY(SELECT clinic_id FROM clinic_services cs WHERE cs.service_id=v.id ORDER BY clinic_id) AS "clinicIds",
  ARRAY(SELECT qualification_id FROM service_qualifications sq WHERE sq.service_id=v.id ORDER BY qualification_id) AS "qualificationIds" FROM services v`;

@@ -8,6 +8,7 @@ import { createApp } from '../src/app.js';
 import { loadConfig } from '../src/config.js';
 import { migrate, poolFor } from '../src/db.js';
 import { seed } from '../src/seed.js';
+import { enrichDemoData } from '../src/demo.js';
 import { PRIVACY_VERSION } from '../src/privacy.js';
 
 // Integration tests create a new random database. Never truncate/drop a developer database.
@@ -495,18 +496,20 @@ test('chair block removes affected slots even when the doctor is available', asy
   } finally { await db.query('DELETE FROM chair_blocks WHERE id=$1', [inserted.id]); }
 });
 
-test('service qualification requirements are AND conditions and must cover the entire service interval', async () => {
+test('qualification archive gaps and short validity never restrict slots, holds or confirmation', async () => {
   const selected = await firstSlot();
   const extra = (await db.query("INSERT INTO qualifications(name)VALUES($1)RETURNING id", [`合成额外资格-${randomUUID()}`])).rows[0].id;
   await db.query('INSERT INTO service_qualifications(service_id,qualification_id)VALUES($1,$2)', [selected.serviceId, extra]);
   try {
-    const unavailable = await slots({ clinicId: selected.clinicId, doctorId: selected.doctorId, serviceId: selected.serviceId });
-    assert.equal(unavailable.length, 0, 'A doctor missing one required qualification must not be advertised');
-    rejected(await request('POST', '/booking-holds', 'patient.a', select(selected), randomUUID()), [400, 409]);
+    const withoutArchive = await slots({ clinicId: selected.clinicId, doctorId: selected.doctorId, serviceId: selected.serviceId });
+    assert.ok(withoutArchive.some(x => x.startsAt === selected.startsAt), 'An absent archive entry does not remove a doctor');
+    const selectedHold = await hold('patient.a', selected);
     await db.query('INSERT INTO dentist_qualifications(dentist_id,qualification_id,valid_from,valid_until)VALUES($1,$2,$3,$4)',
       [selected.doctorId, extra, new Date(new Date(selected.startsAt).getTime() - 86_400_000).toISOString(), new Date(new Date(selected.startsAt).getTime() + 60_000).toISOString()]);
+    const appointment = await confirm('patient.a', selectedHold);
+    await cancel('patient.a', appointment);
     const available = await slots({ clinicId: selected.clinicId, doctorId: selected.doctorId, serviceId: selected.serviceId });
-    assert.ok(!available.some(x => x.startsAt === selected.startsAt), 'Expiring one minute after the start does not cover the service');
+    assert.ok(available.some(x => x.startsAt === selected.startsAt), 'Expiring during the service does not remove otherwise valid capacity');
   } finally {
     await db.query('DELETE FROM dentist_qualifications WHERE qualification_id=$1', [extra]);
     await db.query('DELETE FROM service_qualifications WHERE qualification_id=$1', [extra]);
@@ -531,7 +534,7 @@ test('appointment and audit events are append-only in PostgreSQL', async () => {
   await cancel('patient.a', appointment);
 });
 
-test('confirmation rechecks resource status and qualifications after the hold was created', async () => {
+test('confirmation rechecks operating resources while treating qualification changes as archive updates', async () => {
   const changes = [
     { table: 'staff', id: (s: BookingSlot) => s.doctorId, field: 'active', invalid: false, valid: true },
     { table: 'chairs', id: (s: BookingSlot) => s.chairId, field: 'active', invalid: false, valid: true },
@@ -563,9 +566,9 @@ test('confirmation rechecks resource status and qualifications after the hold wa
     else await db.query('UPDATE dentist_qualifications SET valid_until=$3 WHERE dentist_id=$1 AND qualification_id=$2',
       [selected.slot.doctorId, required.id, new Date(Date.parse(selected.slot.startsAt) + 60_000).toISOString()]);
     try {
-      rejected(await request('POST', '/appointments/confirm', 'patient.a',
-        { holdId: selected.id, holdVersion: selected.rowVersion, patientConfirmed: true, rulesAccepted: true }, randomUUID()), [409]);
-      assert.equal(Number((await db.query('SELECT count(*) AS n FROM appointments WHERE hold_id=$1', [selected.id])).rows[0].n), 0);
+      const appointment = await confirm('patient.a', selected);
+      assert.equal(appointment.status, 'confirmed');
+      await cancel('patient.a', appointment);
     } finally {
       await db.query('UPDATE qualifications SET active=true WHERE id=$1', [required.id]);
       await db.query('UPDATE dentist_qualifications SET valid_until=$3 WHERE dentist_id=$1 AND qualification_id=$2',
@@ -697,7 +700,7 @@ test('cancellation policy is snapshotted at the hold and a later configuration c
   } finally { await strict.close(); }
 });
 
-test('confirmation waits for a concurrent qualification change and rechecks its committed state', async () => {
+test('an uncommitted qualification archive edit does not lock or invalidate confirmation', async () => {
   const selected = await hold('patient.a', await firstSlot());
   const required = (await db.query('SELECT qualification_id AS id FROM service_qualifications WHERE service_id=$1 LIMIT 1', [selected.slot.serviceId])).rows[0];
   assert.ok(required);
@@ -709,18 +712,12 @@ test('confirmation waits for a concurrent qualification change and rechecks its 
     await writer.query('UPDATE qualifications SET active=false WHERE id=$1', [required.id]);
     pending = request('POST', '/appointments/confirm', 'patient.a',
       { holdId: selected.id, holdVersion: selected.rowVersion, patientConfirmed: true, rulesAccepted: true }, randomUUID());
-    let observedWait = false;
-    const deadline = Date.now() + 5000;
-    while (Date.now() < deadline) {
-      const waiting = await db.query("SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query LIKE '%FOR SHARE OF q%' LIMIT 1");
-      if (waiting.rowCount) { observedWait = true; break; }
-      await new Promise(resolve => setTimeout(resolve, 20));
-    }
+    const beforeArchiveCommit = await Promise.race([pending, new Promise<undefined>(resolve => setTimeout(resolve, 3000))]);
     await writer.query('COMMIT');
     completed = await pending;
-    assert.ok(observedWait, 'The confirmation must actually wait on the shared qualification row lock');
-    rejected(completed, [409]);
-    assert.equal(Number((await db.query('SELECT count(*) AS n FROM appointments WHERE hold_id=$1', [selected.id])).rows[0].n), 0);
+    assert.ok(beforeArchiveCommit, 'Booking must finish while the unrelated archive transaction is still open');
+    assert.equal(data<Appointment>(completed).status, 'confirmed');
+    assert.equal(Number((await db.query('SELECT count(*) AS n FROM appointments WHERE hold_id=$1', [selected.id])).rows[0].n), 1);
   } finally {
     await writer.query('ROLLBACK');
     writer.release();
@@ -728,5 +725,65 @@ test('confirmation waits for a concurrent qualification change and rechecks its 
     await db.query('UPDATE qualifications SET active=true WHERE id=$1', [required.id]);
     if (completed && [200, 201].includes(completed.statusCode)) await cancel('patient.a', data<Appointment>(completed));
     else await db.query("UPDATE resource_reservations SET status='released' WHERE id=(SELECT reservation_id FROM booking_holds WHERE id=$1)", [selected.id]);
+  }
+});
+
+test('all eight demo doctors can publish and book every service at their scheduled clinics without qualification records', async (t) => {
+  await enrichDemoData(db, 'test');
+  const allDoctors = data<Doctor[]>(await request('GET', '/doctors')).filter(doctor => doctor.isDemo && doctor.active);
+  const allServices = data<Service[]>(await request('GET', '/services')).filter(service => service.active);
+  assert.equal(allDoctors.length, 8); assert.ok(allServices.length >= 6);
+  assert.ok(new Set(allDoctors.map(doctor => doctor.specialty)).size > 1, 'The exercise must include different specialties');
+  const archived = (await db.query('DELETE FROM dentist_qualifications RETURNING dentist_id,qualification_id,valid_from,valid_until')).rows;
+  const published: Shift[] = [];
+  let confirmed = 0;
+  let scenario = 0;
+  // Each doctor/clinic journey uses a distinct loopback client so this business
+  // matrix does not test the unrelated per-IP request rate limit.
+  const capabilityRequest = (method: HTTPMethods, path: string, who?: string, payload?: object, key?: string) => app.inject({
+    method, url: prefix + path, remoteAddress: '127.0.1.' + scenario,
+    headers: { ...(who ? { authorization: 'Bearer ' + identities[who]!.token } : {}), ...(key ? { 'idempotency-key': key } : {}) },
+    ...(payload === undefined ? {} : { payload }),
+  });
+  try {
+    for (let clinicIndex = 0; clinicIndex < clinics.length; clinicIndex++) {
+      const clinic = clinics[clinicIndex]!;
+      const offered = allServices.filter(service => service.clinicIds.includes(clinic.id));
+      assert.ok(offered.length);
+      const day = new Date(Date.parse(shifts[0]!.startsAt) + (32 + clinicIndex) * 86400000).toISOString().slice(0, 10);
+      for (const doctor of allDoctors.filter(item => item.clinicIds?.includes(clinic.id))) {
+        scenario++;
+        const shift = data<Shift>(await capabilityRequest('POST', '/staff/shifts', 'hq', {
+          clinicId: clinic.id, doctorId: doctor.id, startsAt: day + 'T09:00:00+08:00', endsAt: day + 'T17:00:00+08:00',
+          serviceIds: offered.map(service => service.id),
+        }));
+        published.push(shift);
+        for (const service of offered) {
+          const directory = data<Doctor[]>(await capabilityRequest('GET', '/doctors?' + new URLSearchParams({ clinicId: clinic.id, serviceId: service.id })));
+          assert.ok(directory.some(item => item.id === doctor.id && item.serviceIds.includes(service.id)), 'Service selection never excludes a doctor by specialty');
+          const available = data<BookingSlot[]>(await capabilityRequest('GET', '/booking-slots?' + new URLSearchParams({ clinicId: clinic.id, doctorId: doctor.id, serviceId: service.id, date: day })));
+          const slot = available.find(item => item.shiftId === shift.id);
+          assert.ok(slot, `${doctor.name} must offer ${service.name} at ${clinic.name}`);
+          const selected = data<Hold>(await capabilityRequest('POST', '/booking-holds', 'patient.a', select(slot), randomUUID()));
+          const appointment = data<Appointment>(await capabilityRequest('POST', '/appointments/confirm', 'patient.a', {
+            holdId: selected.id, holdVersion: selected.rowVersion, patientConfirmed: true, rulesAccepted: true,
+          }, randomUUID()));
+          assert.equal(appointment.doctorId, doctor.id); assert.equal(appointment.serviceId, service.id);
+          assert.equal(appointment.status, 'confirmed');
+          confirmed++;
+          assert.equal(data<Appointment>(await capabilityRequest('POST', `/appointments/${appointment.id}/changes`, 'patient.a', {
+            intent: 'cancel', expectedVersion: appointment.rowVersion, reason: '全部医生跨项目实际预约回归',
+          }, randomUUID())).status, 'cancelled');
+        }
+      }
+    }
+    const expected = allDoctors.reduce((total, doctor) => total + clinics.reduce((count, clinic) => count + (doctor.clinicIds?.includes(clinic.id) ? allServices.filter(service => service.clinicIds.includes(clinic.id)).length : 0), 0), 0);
+    assert.equal(confirmed, expected);
+    assert.ok(confirmed >= 48, 'Every one of the eight doctors must complete all six service booking flows');
+    t.diagnostic(`${allDoctors.length} doctors; ${allServices.length} active services; ${published.length} doctor/clinic shifts; ${confirmed} complete booking journeys`);
+  } finally {
+    for (const grant of archived) await db.query('INSERT INTO dentist_qualifications(dentist_id,qualification_id,valid_from,valid_until)VALUES($1,$2,$3,$4)',
+      [grant.dentist_id, grant.qualification_id, grant.valid_from, grant.valid_until]);
+    for (const shift of published) data(await capabilityRequest('POST', `/staff/shifts/${shift.id}/cancel`, 'hq', { expectedVersion: shift.rowVersion }));
   }
 });

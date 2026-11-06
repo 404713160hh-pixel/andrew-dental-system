@@ -11,6 +11,7 @@ export type PatientInput = Omit<Patient, 'id' | 'rowVersion' | 'isDemo'>;
 export interface PatientCandidate { id:string; name:string; phone:string; birthYear:string; hasAccount:boolean; isDemo?:boolean }
 export interface Clinic { id: string; name: string; address: string; phone: string; email: string; timezone: 'Asia/Shanghai'; active: boolean; rowVersion: number; description?: string | null; openingHours?: string | null }
 export interface Qualification { id: string; name: string; active: boolean; rowVersion: number }
+/** Internal archive metadata; qualifications and specialties do not restrict booking. */
 export interface DentistQualification { qualificationId: string; qualificationName?: string; validFrom: string; validUntil: string | null }
 export interface Doctor { id: string; employeeNo: string; name: string; phone: string; birthDate: string|null; homeAddress: string|null; email: string|null; specialty: string; active: boolean; rowVersion: number; qualifications: DentistQualification[]; serviceIds: string[]; isDemo?: boolean; bio?: string; focusAreas?: string[]; clinicIds?: string[] }
 export type PublicDoctor = Omit<Doctor, 'employeeNo' | 'phone' | 'birthDate' | 'homeAddress' | 'email'>;

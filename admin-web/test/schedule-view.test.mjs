@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
+import * as vue from 'vue';
 
 const exports = {};
 vm.runInNewContext(ts.transpileModule(readFileSync(new URL('../src/schedule-view.ts', import.meta.url), 'utf8'), {
@@ -92,33 +93,57 @@ test('superseded full-day reads stop without requesting another page', async () 
   assert.equal(result.reason, 'superseded');
 });
 
-function shiftView() {
+function shiftView(useReactiveRuntime = false) {
   const requests = [];
   const unmounted = [];
-  const auth = { user: { id: 'owner-A', roles: ['doctor'] }, isHq: false, canManage: false, clinicIds: new Set(['clinic-A']) };
+  const authState = { user: { id: 'owner-A', roles: ['doctor'] }, isHq: false, canManage: false, clinicIds: new Set(['clinic-A']) };
+  const auth = useReactiveRuntime ? vue.reactive(authState) : authState;
+  const catalogState = { clinics: [], services: [], doctors: [], loaded: true };
+  const catalog = useReactiveRuntime ? vue.reactive(catalogState) : catalogState;
   const schedulerExports = {};
   vm.runInNewContext(ts.transpileModule(readFileSync(new URL('../src/visible-refresh.ts', import.meta.url), 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText, { exports: schedulerExports });
   const modules = {
-    vue: { ref: value => ({ value }), reactive: value => value, computed: getter => ({ get value() { return getter(); } }),
-      watch: () => {}, onMounted: () => {}, onUnmounted: callback => unmounted.push(callback) },
+    vue: { ...(useReactiveRuntime ? vue : { ref: value => ({ value }), reactive: value => value, computed: getter => ({ get value() { return getter(); } }), watch: () => {} }),
+      onMounted: () => {}, onUnmounted: callback => unmounted.push(callback) },
     'element-plus': { ElMessage: {}, ElMessageBox: {} },
     '@element-plus/icons-vue': {},
     '../api': { api: path => new Promise((resolve, reject) => requests.push({ path, resolve, reject })), query: values => '?' + new URLSearchParams(values), errorText: error => error.message },
     '../stores/auth': { useAuth: () => auth },
-    '../stores/catalog': { useCatalog: () => ({ clinics: [], services: [], loaded: true }) },
+    '../stores/catalog': { useCatalog: () => catalog },
     '../utils': { today: () => '2026-10-25' },
     '../visible-refresh': schedulerExports,
     '../schedule-view': exports,
   };
   const source = readFileSync(new URL('../src/views/ShiftsView.vue', import.meta.url), 'utf8').match(/<script setup lang="ts">([\s\S]*?)<\/script>/)[1];
   const viewExports = {};
-  vm.runInNewContext(ts.transpileModule(source + '\nexport const exposed = { load, search, selectDate, rows, date, error, loading, doctorOnly, canCancel };', {
+  vm.runInNewContext(ts.transpileModule(source + '\nexport const exposed = { load, search, selectDate, rows, date, error, loading, doctorOnly, canCancel, open, form, serviceOptions };', {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText, { exports: viewExports, require: name => { assert.ok(name in modules, name); return modules[name]; }, URLSearchParams });
-  return { ...viewExports.exposed, auth, requests, unmounted };
+  return { ...viewExports.exposed, auth, catalog, requests, unmounted };
 }
+
+test('new shifts default to every active clinic service and changing doctors preserves the chosen open projects', async () => {
+  const view = shiftView(true);
+  view.auth.isHq = true; view.auth.canManage = true;
+  view.catalog.clinics.push({ id: 'clinic-A', active: true }, { id: 'clinic-B', active: true });
+  view.catalog.services.push(
+    { id: 'general', active: true, clinicIds: ['clinic-A', 'clinic-B'] },
+    { id: 'implant', active: true, clinicIds: ['clinic-A'] },
+    { id: 'closed', active: false, clinicIds: ['clinic-A'] },
+    { id: 'child', active: true, clinicIds: ['clinic-B'] },
+  );
+  view.catalog.doctors.push({ id: 'doctor-A', active: true, serviceIds: ['general'] }, { id: 'doctor-B', active: true, serviceIds: ['implant'] });
+  view.open(); await vue.nextTick();
+  assert.equal([...view.form.serviceIds].sort().join(','), 'general,implant');
+  view.form.doctorId = 'doctor-A'; view.form.serviceIds = ['implant']; await vue.nextTick();
+  view.form.doctorId = 'doctor-B'; await vue.nextTick();
+  assert.equal([...view.form.serviceIds].join(','), 'implant');
+  assert.equal(view.serviceOptions.value.length, 2);
+  view.form.clinicId = 'clinic-B'; await vue.nextTick();
+  assert.equal([...view.form.serviceIds].sort().join(','), 'child,general');
+});
 
 test('the actual shifts view keeps the newer date response and ignores the old error', async () => {
   const view = shiftView();
