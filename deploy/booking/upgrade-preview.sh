@@ -77,6 +77,10 @@ done
 docker exec "$project-web-1" nginx -t
 docker exec "$project-https-1" nginx -t
 docker exec "$project-https-1" nginx -s reload
+if [[ ${ANDREW_PREVIEW_COMPENSATION_DEMO:-0} == 1 ]]; then
+  "${compose[@]}" run --rm --no-deps -e NODE_ENV=development -e ANDREW_DEMO_COMPENSATION=1 migrate \
+    node booking-api/dist/booking-api/src/cli.js demo-compensation
+fi
 curl --fail --silent --show-error --retry 3 --retry-delay 2 --max-time 15 https://andrewdental.top/api/v1/health
 printf '\nDeployed commit: %s\n' "$(git rev-parse HEAD)"
 printf 'Rollback files: %s\n' "$backup_dir"
