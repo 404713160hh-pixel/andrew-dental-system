@@ -4,7 +4,8 @@ import { one } from './db.js';
 import { audit } from './auth.js';
 import { requireThat } from './errors.js';
 
-export const PRIVACY_VERSION = '2026-10-27-v1';
+export const PRIVACY_VERSION = '2026-11-06-v2';
+export const PRIVACY_PURPOSE = '供安德鲁连锁门诊预约和接诊使用；员工按职责及就诊任务查阅必要资料。';
 const guardianInput = z.object({
  name:z.string().trim().min(1).max(100), relationship:z.string().trim().min(1).max(100), accepted:z.literal(true)
 }).strict();
@@ -21,7 +22,7 @@ export async function recordConsent(db:Db,actorId:string,patientId:string,birthD
  const guardian=consent.guardian;
  await db.query(`INSERT INTO patient_privacy_consents(patient_id,actor_id,policy_version,notice_accepted,sensitive_accepted,guardian_name,guardian_relationship,guardian_accepted)
   VALUES($1,$2,$3,true,true,$4,$5,$6)`,[patientId,actorId,consent.policyVersion,guardian?.name??null,guardian?.relationship??null,!!guardian]);
- await audit(db,actorId,'patient.privacy.accepted',patientId,requestId,{policyVersion:consent.policyVersion,guardianDeclared:!!guardian});
+ await audit(db,actorId,'patient.privacy.accepted',patientId,requestId,{policyVersion:consent.policyVersion,purpose:'chain_appointment_and_care',guardianDeclared:!!guardian});
 }
 export async function hasCurrentConsent(db:Db,patientId:string,actorId:string) {
  return !!await one(db,'SELECT 1 FROM patient_privacy_consents WHERE patient_id=$1 AND actor_id=$2 AND policy_version=$3 AND revoked_at IS NULL LIMIT 1',[patientId,actorId,PRIVACY_VERSION]);

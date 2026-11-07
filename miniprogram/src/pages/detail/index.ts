@@ -54,6 +54,12 @@ Page({
     const item = this.data.appointment; if (!item || this.data.loading || this.data.pending || !this.data.changeAllowed) return;
     wx.navigateTo({ url: '/pages/booking/index?appointmentId=' + encodeURIComponent(item.id) + '&version=' + item.rowVersion + '&clinicId=' + encodeURIComponent(item.clinicId) + '&serviceId=' + encodeURIComponent(item.serviceId) + '&doctorId=' + encodeURIComponent(item.doctorId) });
   },
+  followup() {
+    if (!requireLogin()) return;
+    const item = this.data.appointment;
+    if (!item || item.status !== 'confirmed' || this.data.loading || this.data.busy || this.data.pending || this.data.ownerId !== session()?.user.id) return;
+    wx.navigateTo({ url: '/pages/booking/index?followup=1&clinicId=' + encodeURIComponent(item.clinicId) + '&serviceId=' + encodeURIComponent(item.serviceId) + '&doctorId=' + encodeURIComponent(item.doctorId) });
+  },
   related(event: WechatMiniprogram.BaseEvent) { wx.navigateTo({ url: '/pages/detail/index?id=' + encodeURIComponent(String(event.currentTarget.dataset.id)) }); },
   async inspect() {
     if (this.data.busy) return; this.setData({ busy: true, error: '' });

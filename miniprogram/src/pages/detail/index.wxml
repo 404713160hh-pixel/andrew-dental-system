@@ -6,6 +6,7 @@
       <view wx:if="{{cancelling}}" class="space"><text class="label">取消原因 *</text><textarea class="textarea" value="{{reason}}" bindinput="reasonInput" maxlength="500" placeholder="请简要说明取消原因" /><button class="danger space" bindtap="cancel" loading="{{busy}}" disabled="{{loading || busy || pending || !changeAllowed || !reason}}">确认取消</button></view><view wx:if="{{appointment.cancellationReason}}" class="muted space">变更原因：{{appointment.cancellationReason}}</view>
       <view wx:if="{{appointment.supersedesAppointmentId}}" class="link space" data-id="{{appointment.supersedesAppointmentId}}" bindtap="related">查看原预约 →</view><view wx:if="{{appointment.replacementAppointmentId}}" class="link space" data-id="{{appointment.replacementAppointmentId}}" bindtap="related">查看新预约 →</view>
     </view>
+    <view wx:if="{{appointment.status === 'confirmed'}}" class="card"><view class="section-title">下次就诊</view><view class="muted">按医生建议安排复诊，沿用本次门诊、医生和项目，也可自行调整。</view><button class="primary space" bindtap="followup" disabled="{{loading || busy || pending}}">复诊预约</button></view>
     <view wx:if="{{events.length}}" class="card"><view class="section-title">预约动态</view><view wx:for="{{events}}" wx:key="id" class="event"><view class="event-dot"></view><view class="grow"><view>{{item.label}}</view><view class="muted small">{{item.dateLabel}} · {{item.actorName}}</view><view wx:if="{{item.reason}}" class="small">{{item.reason}}</view></view></view></view>
     <button class="secondary" bindtap="appointments">返回我的预约</button>
   </block>

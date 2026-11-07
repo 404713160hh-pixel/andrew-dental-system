@@ -3,7 +3,7 @@ import { api, errorMessage, RequestError } from '../../utils/api';
 import { emptyProfile, profileError } from '../../utils/format';
 import { setSession, session } from '../../utils/session';
 
-type Notice = {policyVersion:string;controller:string;contact:string;retention:string};
+type Notice = {policyVersion:string;purpose:string;controller:string;contact:string;retention:string};
 type Status = {accepted:boolean;minor:boolean;policyVersion:string};
 const patientAccounts=[{label:'患者A',username:'patient.a'},{label:'患者B',username:'patient.b'}];
 const selectedPatient=(username:string)=>patientAccounts.find(account=>account.username===username.trim())?.username||'';

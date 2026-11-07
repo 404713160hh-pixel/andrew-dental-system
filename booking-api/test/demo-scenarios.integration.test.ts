@@ -122,7 +122,7 @@ test('rerunning scenario maintenance preserves rows and does not duplicate accou
   assert.deepEqual(await ordinarySnapshot(), ordinaryBefore);
 });
 
-test('production routes show the same scenario records to the owning patient and authorized clinic staff only', async () => {
+test('production routes restrict appointments by ownership while reception can match chain-consented identity summaries', async () => {
   await loginAs('hq', 'staff'); await loginAs('front.a', 'staff');
   const owner = await loginAs('patient.a', 'patient');
   const mine = await request('GET', '/appointments', 'patient.a'); assert.equal(mine.statusCode, 200, mine.body);
@@ -133,7 +133,11 @@ test('production routes show the same scenario records to the owning patient and
   const localName = (await db.query("SELECT p.name FROM patients p JOIN demo_seed_records d ON d.record_id=p.id WHERE d.record_key='demo:patient:3'")).rows[0].name;
   const otherName = (await db.query("SELECT p.name FROM patients p JOIN demo_seed_records d ON d.record_id=p.id WHERE d.record_key='demo:patient:4'")).rows[0].name;
   const local = await request('GET', '/staff/patients?q=' + encodeURIComponent(localName), 'front.a'); assert.equal(local.statusCode, 200, local.body); assert.equal(local.json().data.total, 1);
-  const other = await request('GET', '/staff/patients?q=' + encodeURIComponent(otherName), 'front.a'); assert.equal(other.statusCode, 200, other.body); assert.equal(other.json().data.total, 0);
+  const other = await request('GET', '/staff/patients?q=' + encodeURIComponent(otherName), 'front.a'); assert.equal(other.statusCode, 200, other.body); assert.equal(other.json().data.total, 1);
+  const identity=other.json().data.items[0];assert.match(identity.phone,/\*\*\*\*/);assert.ok(!('allergies' in identity)&&!('billingAddress' in identity));
+  const frontAppointments=await request('GET','/staff/appointments','front.a');assert.equal(frontAppointments.statusCode,200);
+  const frontClinic=(await db.query("SELECT clinic_id FROM role_assignments r JOIN users u ON u.id=r.user_id WHERE u.username='front.a' AND r.role='front'")).rows[0].clinic_id;
+  assert.ok(frontAppointments.json().data.items.every((row:Appointment)=>row.clinicId===frontClinic));
   assert.equal((await request('GET', '/staff/patients', 'patient.a')).statusCode, 403);
 });
 

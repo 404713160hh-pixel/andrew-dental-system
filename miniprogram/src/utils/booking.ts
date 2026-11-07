@@ -4,7 +4,7 @@ import { session } from './session';
 const pendingKey = 'andrew.booking.pending.v1';
 const holdKey = 'andrew.booking.hold.v1';
 const ownedKey = (base: string, owner = session()?.user.id ?? '') => base + ':' + owner;
-export interface HoldContext { hold: Hold; oldAppointmentId?: string; oldVersion?: number; reason?: string; ownerId: string; doctorIsDemo?: boolean; patientIsDemo?: boolean }
+export interface HoldContext { hold: Hold; oldAppointmentId?: string; oldVersion?: number; isFollowup?: boolean; reason?: string; ownerId: string; doctorIsDemo?: boolean; patientIsDemo?: boolean }
 export interface PendingCommand { key: string; path: string; body: ConfirmInput | ChangeInput; ownerId: string; createdAt: string }
 export interface CompletedOperation { kind: 'confirm' | 'reschedule' | 'cancel'; appointment: Appointment }
 // A short-lived, one-use handoff from an actual command response. It is never

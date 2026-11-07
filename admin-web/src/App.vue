@@ -26,6 +26,7 @@ const booking = useBooking();
 const compact = ref(false);
 const menuOpen = ref(false);
 const doctorView = computed(() => !!auth.user?.roles.includes('doctor') && !auth.canBook);
+const compensationTitle = computed(() => auth.isHq ? '季度业绩与激励' : auth.canManage ? '月度业绩与激励' : '我的季度激励');
 function restoreDensity() {
   try { compact.value = !!auth.user && localStorage.getItem('andrew.staff.density:' + auth.user.id) === 'compact'; }
   catch { compact.value = false; }
@@ -45,7 +46,7 @@ watch(
   { immediate: true },
 );
 watch(() => route.fullPath, () => { menuOpen.value = false; });
-const title = computed(() => doctorView.value && route.path === '/appointments' ? '我的预约'
+const title = computed(() => route.path === '/compensation' ? compensationTitle.value : doctorView.value && route.path === '/appointments' ? '我的预约'
   : doctorView.value && route.path === '/shifts' ? '我的排班' : String(route.meta.title || '员工工作台'));
 async function logout() {
   try {
@@ -74,7 +75,7 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
       <div class="nav-label">工作空间</div>
       <nav aria-label="主导航">
         <router-link v-if="auth.isHq" to="/staff/accounts"><el-icon><User /></el-icon>员工账号与档案</router-link>
-        <router-link to="/compensation"><el-icon><Coin /></el-icon>薪酬与激励</router-link>
+        <router-link to="/compensation"><el-icon><Coin /></el-icon>{{ compensationTitle }}</router-link>
         <router-link to="/change-password"><el-icon><Setting /></el-icon>修改密码</router-link>
         <router-link to="/appointments"
           ><el-icon><Calendar /></el-icon>{{ doctorView ? '我的预约' : '预约总览' }}</router-link

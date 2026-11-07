@@ -21,7 +21,7 @@ import { registerStaffProfileRoutes } from './staff-profiles.js';
 import { registerCompensationRoutes } from './compensation.js';
 import { registerPatientInviteRoutes } from './patient-invites.js';
 import { registerDoctorProfileRoutes } from './doctor-profile.js';
-import { PRIVACY_VERSION,privacyInput,recordConsent,hasCurrentConsent } from './privacy.js';
+import { PRIVACY_VERSION,PRIVACY_PURPOSE,privacyInput,recordConsent,hasCurrentConsent } from './privacy.js';
 type Shape={Params:Record<string,string>;Querystring:Record<string,string>;Body:unknown};
 type Request=FastifyRequest<Shape>;
 type Handler=(request:Request,user:Principal|undefined)=>Promise<unknown>;
@@ -85,7 +85,7 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
   });
  });
  route('POST','/auth/wechat','none',async()=>{throw new AppError(501,'WECHAT_NOT_CONFIGURED','微信授权登录尚未配置，请使用账号登录');});
- route('GET','/privacy/notice','none',async()=>({policyVersion:PRIVACY_VERSION,controller:config.PRIVACY_CONTROLLER_NAME||'演示环境（非真实机构）',contact:config.PRIVACY_CONTACT||'演示环境无正式联系方式',retention:config.PRIVACY_RETENTION||'演示数据仅供本地测试，由演示环境管理者清理'}));
+ route('GET','/privacy/notice','none',async()=>({policyVersion:PRIVACY_VERSION,purpose:PRIVACY_PURPOSE,controller:config.PRIVACY_CONTROLLER_NAME||'演示环境（非真实机构）',contact:config.PRIVACY_CONTACT||'演示环境无正式联系方式',retention:config.PRIVACY_RETENTION||'演示数据仅供本地测试，由演示环境管理者清理'}));
  route('GET','/privacy/status','required',async(_req,user)=>{requireThat(user!.patientId,403,'PATIENT_ONLY','此入口仅用于患者');
   const patient=await one<{minor:boolean}>(pool,"SELECT (birth_date + interval '14 years') > (clock_timestamp() AT TIME ZONE 'Asia/Shanghai')::date AS minor FROM patients WHERE id=$1",[user!.patientId]);
   return {policyVersion:PRIVACY_VERSION,accepted:await hasCurrentConsent(pool,user!.patientId!,user!.id),minor:!!patient?.minor};});
@@ -180,16 +180,18 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
  route('GET','/staff/patients','required',async(req,user)=>{
   staffOnly(user!);requireThat(user!.roles.some(r=>['hq','manager','front'].includes(r)),403,'FORBIDDEN','该岗位没有患者检索权限');
   const {page,pageSize}=pageInput.parse(req.query);const q=z.string().trim().max(100).parse(req.query.q??'');
-  // First-visit contact lookup is explicit; ordinary staff cannot enumerate the chain.
+  // Exact identity lookup supports a chosen clinic's reception task. Only a
+  // masked identity summary is returned; it is not access to the medical record.
   requireThat(isHq(user!)||q.length>=2,400,'PATIENT_SEARCH_REQUIRED','请输入至少两个字的姓名或联系电话核对患者');
   const match='%'+q.replace(/[\\%_]/g,'\\$&')+'%';const hq=isHq(user!);const scopes=scopeIds(user!,['hq','manager','front']);
   const where=` WHERE (($2::boolean AND (p.name ILIKE $1 ESCAPE '\\' OR p.phone ILIKE $1 ESCAPE '\\')) OR (NOT $2::boolean AND (p.name=$3 OR p.phone=$3)))
    AND ($2::boolean OR EXISTS(SELECT 1 FROM patient_clinic_access x WHERE x.patient_id=p.id AND x.clinic_id=ANY($4::uuid[]))
-    OR EXISTS(SELECT 1 FROM appointments a JOIN resource_reservations r ON r.id=a.reservation_id WHERE a.patient_id=p.id AND r.clinic_id=ANY($4::uuid[])))`;
+    OR EXISTS(SELECT 1 FROM appointments a JOIN resource_reservations r ON r.id=a.reservation_id WHERE a.patient_id=p.id AND r.clinic_id=ANY($4::uuid[]))
+    OR EXISTS(SELECT 1 FROM patient_privacy_consents pc WHERE pc.patient_id=p.id AND pc.policy_version=$5 AND pc.revoked_at IS NULL))`;
   return transaction(pool,async db=>{
-   const values=[match,hq,q,scopes];const total=Number((await one<{n:string}>(db,'SELECT count(*) AS n FROM patients p'+where,values))!.n);
+   const values=[match,hq,q,scopes,PRIVACY_VERSION];const total=Number((await one<{n:string}>(db,'SELECT count(*) AS n FROM patients p'+where,values))!.n);
    const items=(await db.query(`SELECT p.id,p.name,CASE WHEN length(p.phone)>7 THEN left(p.phone,3)||'****'||right(p.phone,4) ELSE '***' END AS phone,
-    to_char(p.birth_date,'YYYY') AS "birthYear",(p.user_id IS NOT NULL) AS "hasAccount",p.is_demo AS "isDemo" FROM patients p`+where+' ORDER BY p.created_at DESC LIMIT $5 OFFSET $6',[...values,pageSize,(page-1)*pageSize])).rows;
+    to_char(p.birth_date,'YYYY') AS "birthYear",(p.user_id IS NOT NULL) AS "hasAccount",p.is_demo AS "isDemo" FROM patients p`+where+' ORDER BY p.created_at DESC LIMIT $6 OFFSET $7',[...values,pageSize,(page-1)*pageSize])).rows;
    await audit(db,user!.id,'patient.search',null,req.id,{returned:items.length});return {items,total,page,pageSize};
   });
  });

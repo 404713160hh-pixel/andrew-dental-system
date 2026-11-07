@@ -10,7 +10,8 @@ import { centsToYuan, compensationStatuses, independentReviewer, previousQuarter
 
 const auth = useAuth();
 const canManage = computed(() => auth.isHq || !!auth.user?.roles.includes('manager'));
-const tab = ref(canManage.value ? 'months' : 'mine');
+const tab = ref(auth.isHq ? 'quarters' : canManage.value ? 'months' : 'mine');
+const pageTitle = computed(() => auth.isHq ? '季度业绩与激励' : canManage.value ? '月度业绩与激励' : '我的季度激励');
 const quarter = ref(previousQuarter()), clinicId = ref('');
 const context = ref<CompensationContext | null>(null), months = ref<IncentiveMonth[]>([]), quarters = ref<IncentiveQuarter[]>([]);
 const mine = ref<MyCompensation>({ staffId: null, notice: null, allocations: [] });
@@ -178,11 +179,16 @@ onUnmounted(() => { disposed = true; loadSequence++; detailSequence++; });
 
 <template>
   <section class="page-heading">
-    <div><h1>薪酬与激励</h1><p>{{ canManage ? '月度账证、季度核算与激励发放。' : '查看本人已批准的季度激励及发放记录。' }}</p></div>
+    <div><h1>{{ pageTitle }}</h1><p>{{ auth.isHq ? '汇总医生季度收入与成本，查看固定 10% 激励基金、个人分配和发放结果。' : canManage ? '登记门诊月度账证，经独立复核后纳入总部季度核算。' : '查看本人已批准的季度激励及发放记录。' }}</p></div>
     <el-button :icon="Refresh" :loading="loading" :disabled="busy" @click="load">刷新</el-button>
   </section>
   <el-alert v-if="error" class="mb-16" :title="error" type="error" show-icon :closable="false" />
   <el-alert v-if="canManage && context && !context.actor" class="mb-16" title="请先在员工账号与档案中关联本人档案，再制表或复核。" type="warning" show-icon :closable="false" />
+  <section v-if="canManage" class="panel incentive-rules mb-16" aria-label="季度激励核算口径">
+    <div class="incentive-rule-heading"><div><h2>净利润的 10% 作为季度激励基金</h2><p>净利润 = 治疗收入净额 − 医疗用品成本 − 医生运营费用</p></div><span class="fixed-rate">固定比例 <strong>10%</strong></span></div>
+    <p class="incentive-workflow">月度账证 → 独立复核关闭 → 总部季度快照与批准 → 个人分配与发放。医生登录后从“我的季度激励”查看本人已批准的份额。</p>
+    <details class="incentive-basis"><summary>查看核算口径与制度依据</summary><p>原案例第 1 页规定净利润定义及 10% 激励基金，第 2 页要求按季度跟踪每位牙医的收入、成本和运营费用。</p><p>本系统补充制度：先跨店合并，亏损计入全体净利润；基金最低为零，四舍五入到分；个人份额按正净贡献比例分配，余分按固定规则补齐；月度账证和季度结果均须独立复核。案例未给出个人分配、基本工资、税费或社保算法。</p></details>
+  </section>
   <div v-if="canManage" class="panel mb-16 compensation-filters">
     <el-form inline @submit.prevent="load"><el-form-item label="季度"><el-input v-model="quarter" aria-label="核算季度" placeholder="2026-Q3" maxlength="7" style="width:130px" @input="filtersChanged" /></el-form-item>
       <el-form-item v-if="tab==='months'" label="门诊"><el-select v-model="clinicId" placeholder="全部授权门诊" clearable style="width:230px" @change="filtersChanged"><el-option v-for="clinic in context?.clinics || []" :key="clinic.id" :value="clinic.id" :label="clinic.name" /></el-select></el-form-item>
@@ -209,17 +215,21 @@ onUnmounted(() => { disposed = true; loadSequence++; detailSequence++; });
         </el-table>
       </div>
     </el-tab-pane>
-    <el-tab-pane v-if="auth.isHq" label="季度激励" name="quarters">
+    <el-tab-pane v-if="auth.isHq" label="季度业绩与激励" name="quarters">
+      <el-alert v-if="quarters.some(item => item.reference.includes('虚构'))" class="mb-16" title="标注“虚构演示”的季度账证、基金和个人份额仅供课程演示。" type="info" show-icon :closable="false" />
       <div class="panel" v-loading="loading">
         <div class="panel-heading"><div><h2>季度核算</h2><p>跨店合并医生净利润，提取合计正值的 10%。</p></div><el-button type="primary" :icon="Plus" :disabled="loading || busy || !context?.actor" @click="quarterReference='';formError='';createQuarterDialog=true">生成季度快照</el-button></div>
         <el-table :data="quarters" empty-text="暂无该季度快照">
-          <el-table-column prop="quarter" label="季度" min-width="100" />
+          <el-table-column label="季度" min-width="110"><template #default="{row}">{{ row.quarter }}<div v-if="row.reference.includes('虚构')" class="muted small">虚构演示</div></template></el-table-column>
           <el-table-column label="状态" min-width="100"><template #default="{row}"><el-tag :type="row.status==='approved'?'success':row.status==='submitted'?'warning':'info'">{{ status(row.status) }}</el-tag></template></el-table-column>
+          <el-table-column label="治疗收入净额" min-width="140" align="right"><template #default="{row}">{{ money(row.totalRevenueCents) }}</template></el-table-column>
+          <el-table-column label="用品成本" min-width="130" align="right"><template #default="{row}">{{ money(row.totalMaterialCostCents) }}</template></el-table-column>
+          <el-table-column label="运营费用" min-width="130" align="right"><template #default="{row}">{{ money(row.totalOperatingExpenseCents) }}</template></el-table-column>
           <el-table-column label="净利润" min-width="140" align="right"><template #default="{row}">{{ money(row.netProfitCents) }}</template></el-table-column>
           <el-table-column label="10% 激励基金" min-width="140" align="right"><template #default="{row}">{{ money(row.fundCents) }}</template></el-table-column>
           <el-table-column prop="createdByName" label="制表人" min-width="105" />
           <el-table-column label="生成时间" min-width="150"><template #default="{row}">{{ dateTime(row.createdAt) }}</template></el-table-column>
-          <el-table-column label="操作" min-width="90"><template #default="{row}"><el-button link type="primary" @click="showQuarter(row.id)">明细</el-button></template></el-table-column>
+          <el-table-column label="操作" min-width="155" fixed="right"><template #default="{row}"><el-button link type="primary" @click="showQuarter(row.id)">个人分配与明细</el-button></template></el-table-column>
         </el-table>
       </div>
     </el-tab-pane>
@@ -307,6 +317,16 @@ onUnmounted(() => { disposed = true; loadSequence++; detailSequence++; });
 </template>
 
 <style scoped>
+.incentive-rules { padding: 22px 24px; }
+.incentive-rule-heading { display: flex; justify-content: space-between; align-items: center; gap: 18px; }
+.incentive-rule-heading h2 { font-size: 17px; margin: 0 0 10px; }
+.incentive-rule-heading p,.incentive-workflow,.incentive-basis p { font-size: 13px; color: #6e6962; line-height: 1.8; margin: 0; }
+.fixed-rate { background: #eae3d8; padding: 10px 16px; border-radius: 10px; font-size: 12px; white-space: nowrap; }
+.fixed-rate strong { display: block; margin-top: 3px; font-size: 24px; }
+.incentive-workflow { margin-top: 16px; }
+.incentive-basis { margin-top: 14px; border-top: 1px solid #ebe6df; padding-top: 12px; }
+.incentive-basis summary { cursor: pointer; font-size: 13px; color: #62503b; }
+.incentive-basis p { margin-top: 10px; }
 .compensation-filters { padding: 20px 24px 2px; }
 .compensation-tabs :deep(.el-tabs__header) { margin-bottom: 20px; }
 .compensation-note { color: #77716a; font-size: 12px; margin-top: 18px; }
@@ -325,5 +345,5 @@ onUnmounted(() => { disposed = true; loadSequence++; detailSequence++; });
 .personal-incentives { display: grid; gap: 18px; }
 .award { font-size: 24px; font-weight: 600; }
 .personal-totals { grid-template-columns: repeat(4,minmax(0,1fr)); padding: 0 24px 24px; }
-@media(max-width:760px) { .month-form-grid,.source-grid { grid-template-columns: 1fr; } .quarter-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); } .source-heading,.quarter-heading { flex-wrap: wrap; } .personal-totals { grid-template-columns: repeat(2,minmax(0,1fr)); } .compensation-filters { padding: 16px 16px 0; } .source-row { padding: 16px; } }
+@media(max-width:760px) { .month-form-grid,.source-grid { grid-template-columns: 1fr; } .quarter-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); } .source-heading,.quarter-heading { flex-wrap: wrap; } .personal-totals { grid-template-columns: repeat(2,minmax(0,1fr)); } .compensation-filters { padding: 16px 16px 0; } .source-row { padding: 16px; } .incentive-rules { padding: 18px 16px; } .incentive-rule-heading { align-items: flex-start; } .fixed-rate { padding: 10px; } }
 </style>

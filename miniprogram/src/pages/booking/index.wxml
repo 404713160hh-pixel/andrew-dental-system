@@ -1,6 +1,6 @@
 <view class="page booking-page">
   <van-steps custom-class="booking-steps" steps="{{steps}}" active="{{0}}" active-color="#9e8257" inactive-color="#91a4ad" />
-  <view class="title">{{oldAppointmentId ? '选择新时段' : '选择号源'}}</view><view class="muted intro">{{oldAppointmentId ? '确认新时段后，原预约自动替换。' : '选定时段后，请及时确认。'}}</view>
+  <view class="title">{{oldAppointmentId ? '选择新时段' : isFollowup ? '复诊预约' : '选择号源'}}</view><view class="muted intro">{{oldAppointmentId ? '确认新时段后，原预约自动替换。' : isFollowup ? '核对本次项目，选择下次就诊时间；门诊和医生可调整。' : '选定时段后，请及时确认。'}}</view>
   <view wx:if="{{pending}}" class="notice">有一笔预约操作结果待确认。<view class="link space" bindtap="pendingPage">去核对原操作 →</view></view>
   <view class="card booking-filter"><view class="filter-heading"><view class="section-title">门诊与项目</view><text class="small muted">时间均为北京时间</text></view><text class="label">门诊</text><picker range="{{clinics}}" range-key="name" value="{{clinicIndex}}" bindchange="clinicChange" disabled="{{loading || searching || holding || !clinics.length}}"><view class="picker">{{clinics[clinicIndex].name || (catalogFailed ? '门诊资料读取未完成' : '暂无开放门诊')}} ▾</view></picker>
     <text class="label">项目</text><picker range="{{services}}" range-key="name" value="{{serviceIndex}}" bindchange="serviceChange" disabled="{{loading || searching || holding || !services.length}}"><view class="picker">{{serviceUnavailable ? '请选择其他开放咨询服务' : services[serviceIndex].name || (catalogFailed ? '服务资料读取未完成' : '暂无可预约服务')}} ▾</view></picker>

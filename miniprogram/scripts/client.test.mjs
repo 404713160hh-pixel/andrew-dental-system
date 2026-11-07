@@ -507,6 +507,42 @@ function detailPage(r, id, query = {}) {
   page.onLoad({ id, ...query });
   return page;
 }
+test('follow-up entry reuses the previous clinic and doctor as preferences and creates a new booking', async () => {
+  const r=runtime(),auth=r.load('utils/session');auth.setSession(login('one'));
+  const original=resultFixture({startsAt:'2020-01-02T01:00:00Z',endsAt:'2020-01-02T01:30:00Z'});r.success(original);
+  const detail=detailPage(r,original.id);detail.onShow();await detail.lastLoad;
+  assert.equal(detail.data.changeAllowed,false,'a past appointment cannot be rescheduled');detail.followup();
+  const destination=new URL(r.navigations.at(-1).url,'https://test.invalid');
+  assert.equal(destination.searchParams.get('followup'),'1');assert.equal(destination.searchParams.get('clinicId'),original.clinicId);
+  assert.equal(destination.searchParams.get('doctorId'),original.doctorId);assert.equal(destination.searchParams.get('serviceId'),original.serviceId);
+  assert.equal(destination.searchParams.has('appointmentId'),false);assert.equal(destination.searchParams.has('version'),false);
+  const count=r.navigations.length;detail.data.pending=true;detail.followup();assert.equal(r.navigations.length,count);
+  detail.data.pending=false;detail.data.appointment.status='cancelled';detail.followup();assert.equal(r.navigations.length,count);
+  detail.data.appointment.status='confirmed';auth.setSession(login('two'));detail.followup();assert.equal(r.navigations.length,count);
+});
+
+test('follow-up context uses normal holds and confirmation without rescheduling or clinic consent requests', async () => {
+  const r=runtime();r.load('utils/session').setSession(login('one'));
+  const {page,replyToBooking}=bookingAvailabilityFixture(r);page.setData({isFollowup:true});r.respond(replyToBooking);
+  await page.choose({currentTarget:{dataset:{index:0}}});
+  const booking=r.load('utils/booking'),context=booking.getHold();assert.equal(context.isFollowup,true);assert.equal(context.oldAppointmentId,undefined);
+  const confirm=patientPage(r,'confirm');Object.assign(confirm.data,{ownerId:'one',patientConfirmed:true,rulesAccepted:true,patient:{
+    id:'patient-one',rowVersion:1,name:'合成患者',birthDate:'2000-01-01',phone:'13800009999',email:null,billingAddress:'合成地址',emergencyName:'合成联系人',emergencyPhone:'13900009999',allergyStatus:'unknown',allergies:[]
+  }});
+  r.respond(request=>request.success({statusCode:200,data:{data:resultFixture()}}));await confirm.submit();
+  assert.equal(confirm.data.error,'');const posts=r.requests.filter(request=>request.method==='POST');
+  assert.equal(posts.length,2);assert.match(posts[0].url,/\/booking-holds$/);assert.match(posts[1].url,/\/appointments\/confirm$/);
+  assert.equal(Object.hasOwn(posts[1].data,'intent'),false);assert.ok(r.requests.every(request=>!request.url.includes('/privacy/consent')));
+});
+
+test('current privacy consent stays valid on returning patient login and health consent is never inferred from profile edits', async () => {
+  const r=runtime(),page=loginPage(r);Object.assign(page.data,{username:'my.patient',password:'LongSyntheticPassword',notice:{policyVersion:'current'}});
+  page.profileChange({detail:{birthDate:'1990-01-01',name:'合成姓名'}});assert.equal(page.data.acceptedNotice,false);assert.equal(page.data.acceptedSensitive,false);
+  r.respond(request=>request.success({statusCode:200,data:{data:request.url.endsWith('/auth/login')?login('one'):{accepted:true,minor:false,policyVersion:'current'}}}));
+  await page.submit();assert.equal(r.requests.length,2);assert.ok(r.requests.every(request=>!request.url.includes('/privacy/consent')));
+  assert.equal(r.navigations.at(-1).url,'/pages/home/index');
+});
+
 async function submitFeedbackFixture(r, appointment, reschedule = false) {
   const booking = r.load('utils/booking');
   const hold = { id: 'feedback-hold', rowVersion: 1, expiresAt: '2099-01-01T00:00:00Z', policy: appointment.policy, slot: {

@@ -23,7 +23,8 @@ const allergyText = ref('');
 const busy = ref(false);
 const error = ref('');
 const auth=useAuth(),catalog=useCatalog();
-const clinicId=ref(''),notice=ref<{policyVersion:string;controller:string;contact:string;retention:string}|null>(null);
+interface PrivacyNotice { policyVersion: string; purpose: string; controller: string; contact: string; retention: string }
+const clinicId=ref(''),notice=ref<PrivacyNotice|null>(null);
 const noticeAccepted=ref(false),sensitiveAccepted=ref(false),guardianAccepted=ref(false),guardianName=ref(''),guardianRelationship=ref('');
 const allowedClinics=computed(()=>catalog.clinics.filter(c=>c.active&&(auth.isHq||auth.clinicIds.has(c.id))));
 const minor=computed(()=>{if(!form.birthDate)return false;const today=new Date(),birth=new Date(form.birthDate+'T00:00:00');const limit=new Date(birth);limit.setFullYear(limit.getFullYear()+14);return today<limit;});
@@ -33,7 +34,7 @@ function reset() {
   error.value = '';
   clinicId.value=allowedClinics.value.length===1?allowedClinics.value[0]!.id:'';
   noticeAccepted.value=false;sensitiveAccepted.value=false;guardianAccepted.value=false;guardianName.value='';guardianRelationship.value='';notice.value=null;
-  void api<{policyVersion:string;controller:string;contact:string;retention:string}>('/privacy/notice').then(v=>notice.value=v).catch(e=>error.value=errorText(e));
+  void api<PrivacyNotice>('/privacy/notice').then(v=>notice.value=v).catch(e=>error.value=errorText(e));
 }
 async function save() {
   if (busy.value) return;
@@ -141,7 +142,7 @@ async function save() {
           required
           ><el-input v-model="allergyText" type="textarea" :rows="2" maxlength="500"
         /></el-form-item></div>
-      <div v-if="notice" class="muted small"><p>信息处理方：{{ notice.controller }}；联系方式：{{ notice.contact }}。为预约及就诊协调处理姓名、联系方式、出生日期、地址和紧急联系人；过敏信息用于诊疗风险核对，仅授权人员依职责访问。保存期限：{{ notice.retention }}。患者可联系处理方咨询、更正、撤回同意或申请删除；依法应保存的信息按规定处理。</p><el-checkbox v-model="noticeAccepted">已向患者说明上述告知，患者同意处理预约信息</el-checkbox><el-checkbox v-model="sensitiveAccepted">患者单独同意处理过敏等健康信息</el-checkbox><template v-if="minor"><p>患者未满14周岁，请由父母或其他监护人确认，以下为当面登记的自述信息。</p><el-input v-model="guardianName" placeholder="监护人姓名" /><el-input v-model="guardianRelationship" placeholder="与患者的关系" /><el-checkbox v-model="guardianAccepted">监护人已同意处理患者个人信息</el-checkbox></template></div>
+      <div v-if="notice" class="muted small privacy-notice"><p>信息处理方：{{ notice.controller }}；联系方式：{{ notice.contact }}。</p><p>使用目的：{{ notice.purpose }}处理的资料包括姓名、联系方式、出生日期、地址和紧急联系人；过敏等健康信息用于接诊风险核对。保存期限：{{ notice.retention }}。患者可联系处理方咨询、更正、撤回同意或申请删除；依法应保存的信息按规定处理。</p><el-checkbox v-model="noticeAccepted">已向患者说明上述告知，患者同意连锁门诊为预约和接诊使用个人资料</el-checkbox><el-checkbox v-model="sensitiveAccepted">患者单独同意为接诊处理过敏等健康信息</el-checkbox><template v-if="minor"><p>患者未满14周岁，请由父母或其他监护人确认，以下为当面登记的自述信息。</p><el-input v-model="guardianName" placeholder="监护人姓名" /><el-input v-model="guardianRelationship" placeholder="与患者的关系" /><el-checkbox v-model="guardianAccepted">监护人已同意处理患者个人信息</el-checkbox></template></div>
     </el-form
     ><template #footer
       ><el-button :disabled="busy" @click="emit('update:modelValue', false)">返回</el-button
@@ -149,3 +150,8 @@ async function save() {
     ></el-dialog
   >
 </template>
+<style scoped>
+.privacy-notice :deep(.el-checkbox) { display: flex; align-items: flex-start; height: auto; margin: 12px 0; }
+.privacy-notice :deep(.el-checkbox__input) { margin-top: 4px; }
+.privacy-notice :deep(.el-checkbox__label) { white-space: normal; line-height: 1.7; }
+</style>

@@ -44,15 +44,54 @@ test('public doctor directory omits employee contact data while headquarters may
  assert.ok(managed.some(d=>'phone' in d&&'employeeNo' in d));
 });
 
-test('patient search and invitation issuance honor clinic scope and never return sensitive details',async()=>{
+test('current chain notice permits exact reception identity lookup while medical details stay restricted',async()=>{
  const own=await intake(clinicId,front),other=await intake(otherClinicId);
  const list=data<{items:Record<string,unknown>[]}>(await req('GET','/staff/patients?q='+encodeURIComponent(adult.name),front));
- assert.ok(list.items.some(p=>p.id===own.id));assert.ok(!list.items.some(p=>p.id===other.id));
+ assert.ok(list.items.some(p=>p.id===own.id));assert.ok(list.items.some(p=>p.id===other.id));
  for(const p of list.items){assert.ok(!('allergies' in p)&&!('billingAddress' in p)&&!('emergencyPhone' in p));assert.match(String(p.phone),/\*\*\*\*/);}
- assert.equal((await req('POST',`/staff/patients/${other.id}/invitations`,front,{identityVerified:true})).statusCode,404);
+ assert.equal((await req('GET','/staff/patients',front)).statusCode,400);
+ assert.equal(data<{items:unknown[]}>(await req('GET','/staff/patients?q='+encodeURIComponent(adult.name.slice(0,2)),front)).items.length,0);
+ assert.equal((await req('GET',`/patients/${other.id}`,front)).statusCode,404);
+ assert.equal((await req('POST',`/staff/patients/${other.id}/invitations`,front,{identityVerified:true})).statusCode,200);
+ const legacy=await intake(otherClinicId);await db.query("UPDATE patient_privacy_consents SET policy_version='2026-10-27-v1' WHERE patient_id=$1",[legacy.id]);
+ const legacySearch=data<{items:{id:string}[]}>(await req('GET','/staff/patients?q='+encodeURIComponent(adult.name),front));
+ assert.ok(!legacySearch.items.some(p=>p.id===legacy.id));
+ assert.equal((await req('POST',`/staff/patients/${legacy.id}/invitations`,front,{identityVerified:true})).statusCode,404);
  assert.equal((await req('POST',`/staff/patients/${own.id}/invitations`,front,{identityVerified:false})).statusCode,400);
  const audit=await db.query("SELECT detail::text FROM audit_events WHERE action='patient.search' ORDER BY occurred_at DESC LIMIT 1");
  assert.ok(audit.rows.length);assert.ok(!audit.rows[0].detail.includes(adult.name)&&!audit.rows[0].detail.includes(adult.phone));
+});
+
+test('one explicit chain notice supports a new follow-up at another chosen clinic and its normal changes',async()=>{
+ const notice=data<{policyVersion:string;purpose:string}>(await req('GET','/privacy/notice'));
+ assert.equal(notice.policyVersion,PRIVACY_VERSION);assert.match(notice.purpose,/连锁门诊预约和接诊/);
+ const registered=data<LoginResult>(await req('POST','/auth/register',undefined,{username:'followup.patient',password,profile:{...adult,name:'合成复诊患者'},consent:adultConsent}));
+ const patientId=registered.user.patientId!;
+ const consentCount=async()=>Number((await db.query('SELECT count(*) AS n FROM patient_privacy_consents WHERE patient_id=$1',[patientId])).rows[0].n);
+ const slots=async(clinic:string)=>{
+  const shift=data<Shift[]>(await req('GET',`/shifts?clinicId=${clinic}`,hq)).find(s=>s.status==='published')!;
+  const day=new Date(Date.parse(shift.startsAt)+8*3600000).toISOString().slice(0,10);
+  return data<BookingSlot[]>(await req('GET','/booking-slots?'+new URLSearchParams({clinicId:clinic,serviceId:shift.serviceIds[0]!,doctorId:shift.doctorId,date:day}),registered));
+ };
+ const select=(s:BookingSlot)=>({clinicId:s.clinicId,serviceId:s.serviceId,doctorId:s.doctorId,chairId:s.chairId,shiftId:s.shiftId,startsAt:s.startsAt});
+ const book=async(s:BookingSlot)=>{const hold=data<Hold>(await req('POST','/booking-holds',registered,select(s)));return data<Appointment>(await req('POST','/appointments/confirm',registered,{holdId:hold.id,holdVersion:hold.rowVersion,patientConfirmed:true,rulesAccepted:true},randomUUID()));};
+ const first=await book((await slots(otherClinicId))[0]!);
+ const second=await book((await slots(clinicId)).at(-1)!);
+ assert.equal(second.patientId,first.patientId);assert.notEqual(first.clinicId,second.clinicId);
+ assert.equal(second.supersedesAppointmentId,null);assert.equal(data<Appointment>(await req('GET',`/appointments/${first.id}`,registered)).status,'confirmed');
+ const replacementHold=data<Hold>(await req('POST','/booking-holds',registered,select((await slots(clinicId))[0]!)));
+ const changed=data<Appointment>(await req('POST',`/appointments/${second.id}/changes`,registered,{intent:'reschedule',expectedVersion:second.rowVersion,reason:'合成复诊改期',holdId:replacementHold.id,holdVersion:replacementHold.rowVersion},randomUUID()));
+ assert.equal(changed.supersedesAppointmentId,second.id);assert.equal(changed.patientId,patientId);
+ const staffView=data<{items:Appointment[]}>(await req('GET',`/staff/appointments?clinicId=${clinicId}`,front));assert.ok(staffView.items.some(a=>a.id===changed.id));
+ assert.equal((await req('GET',`/appointments/${first.id}`,front)).statusCode,403);
+ const cancelled=data<Appointment>(await req('POST',`/appointments/${changed.id}/changes`,registered,{intent:'cancel',expectedVersion:changed.rowVersion,reason:'合成复诊取消'},randomUUID()));assert.equal(cancelled.status,'cancelled');
+ assert.equal(await consentCount(),1);
+ assert.equal(data<{accepted:boolean}>(await req('GET','/privacy/status',registered)).accepted,true);
+ const selected=(await slots(clinicId))[0]!;
+ const receptionPatient=data<LoginResult>(await req('POST','/auth/register',undefined,{username:'reception.chain.patient',password,profile:{...adult,name:'合成连锁接诊患者'},consent:adultConsent}));
+ const receptionHold=data<Hold>(await req('POST','/booking-holds',front,{...select(selected),patientId:receptionPatient.user.patientId!}));
+ assert.ok(receptionHold.id,'a chosen reception clinic can use the existing identity without another clinic-consent step');
+ const denied=await req('POST','/booking-holds',front,{...select((await slots(otherClinicId)).at(-1)!),patientId:receptionPatient.user.patientId!});assert.equal(denied.statusCode,403);
 });
 
 test('invitation replaces older codes, checks date, binds once and records consent without storing the code',async()=>{

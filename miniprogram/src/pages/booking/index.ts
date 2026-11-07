@@ -14,11 +14,11 @@ Page({
     quickDates: quickDateChoices(dateToday()), slotGroups: [] as SlotGroup[],
     steps: [{ text: '选择时段', desc: '门诊 · 医生 · 日期' }, { text: '核对确认', desc: '核对就诊人与规则' }, { text: '预约完成', desc: '获取预约编号' }],
     slots: [] as (ReturnType<typeof slotView> & { doctorIsDemo: boolean })[], policy: null as BookingQueryPolicy | null,
-    oldAppointmentId: '', oldVersion: 0, preferredClinicId: '', preferredServiceId: '', preferredDoctorId: '',
+    oldAppointmentId: '', oldVersion: 0, isFollowup: false, preferredClinicId: '', preferredServiceId: '', preferredDoctorId: '',
     serviceUnavailable: false, doctorUnavailable: false, pending: false, signedIn: false,
   },
   onLoad(options: Record<string, string | undefined>) {
-    this.setData({ oldAppointmentId: options.appointmentId ?? '', oldVersion: Number(options.version ?? 0),
+    this.setData({ oldAppointmentId: options.appointmentId ?? '', oldVersion: Number(options.version ?? 0), isFollowup: options.followup === '1' && !options.appointmentId,
       preferredClinicId: options.clinicId ?? '', preferredServiceId: options.serviceId ?? '', preferredDoctorId: options.doctorId ?? '' });
     void this.load();
   },
@@ -162,7 +162,7 @@ Page({
       if (validation) { wx.showModal({ title: '请先完善本人资料', content: validation, success(result) { if (result.confirm) wx.switchTab({ url: '/pages/profile/index' }); } }); return; }
       const hold = await api<Hold>('/booking-holds', 'POST', slotSelection(slot));
       if (session()?.user.id !== ownerId || this.data.requestVersion !== version) return;
-      saveHold({ hold, doctorIsDemo: slot.doctorIsDemo, patientIsDemo: Boolean(patient.isDemo),
+      saveHold({ hold, isFollowup: this.data.isFollowup, doctorIsDemo: slot.doctorIsDemo, patientIsDemo: Boolean(patient.isDemo),
         ...(this.data.oldAppointmentId ? { oldAppointmentId: this.data.oldAppointmentId, oldVersion: this.data.oldVersion } : {}) });
       wx.navigateTo({ url: '/pages/confirm/index' });
     } catch (error) { if (session()?.user.id === ownerId && this.data.requestVersion === version) this.setData({ error: error instanceof RequestError && error.uncertain ? '占位结果待确认，尚未生成正式预约。请等待短时占位到期后重新查询；改期前原预约仍有效。' : errorMessage(error) }); }
