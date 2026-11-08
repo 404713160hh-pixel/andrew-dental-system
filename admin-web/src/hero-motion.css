@@ -35,29 +35,105 @@
 }
 @media(prefers-reduced-motion:reduce) { .public-site .public-hero-motion video { display:none; } }
 
+/* Keep the still image as the always-ready fallback beneath the optional film. */
+.public-site .public-hero-motion .public-hero-image img,
+.public-site .public-hero-motion .public-hero-image video {
+  transform: translate3d(0, var(--hero-parallax-y, 0px), 0) scale(1.045);
+  will-change: transform;
+}
+.public-site .public-hero-motion .public-video-control {
+  position: absolute;
+  z-index: 4;
+  right: 24px;
+  bottom: 52px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid rgba(255,255,255,.68);
+  border-radius: 2px;
+  background: rgba(22,25,24,.62);
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: .04em;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: background-color .2s ease, border-color .2s ease;
+}
+.public-site .public-hero-motion .public-video-control:hover {
+  border-color: #fff;
+  background: rgba(22,25,24,.82);
+}
+.public-site .public-hero-motion .public-video-control:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+.public-site .public-hero-motion .public-video-control span { font-size: 10px; }
+@media(max-width:800px) {
+  .public-site .public-hero-motion .public-video-control { right: 18px; bottom: 48px; }
+}
+@media(max-width:480px) {
+  .public-site .public-hero-motion .public-video-control { right: 12px; bottom: 46px; min-height: 34px; padding: 0 10px; font-size: 10px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .public-site .public-hero-motion .public-hero-image img,
+  .public-site .public-hero-motion .public-hero-image video { transform: none !important; will-change: auto; }
+  .public-site .public-hero-motion .public-video-control { transition: none; }
+}
+
+/* Staggered entry and a small parallax offset stay within a restrained range. */
+.public-site .public-page-enter-active { transition: opacity .2s ease; }
+.public-site .public-page-enter-from { opacity: 0; }
+.public-site .public-page-leave-active { display: none !important; transition: none !important; }
+.public-site .will-reveal { transition-delay: var(--reveal-delay, 0ms); }
+.public-site .public-values > .will-reveal:nth-child(2),
+.public-site .public-gallery .will-reveal:nth-child(2),
+.public-site .public-steps-grid > .will-reveal:nth-child(2) { --reveal-delay: 75ms; }
+.public-site .public-values > .will-reveal:nth-child(3),
+.public-site .public-gallery .will-reveal:nth-child(3),
+.public-site .public-steps-grid > .will-reveal:nth-child(3) { --reveal-delay: 150ms; }
+.public-site .public-steps-grid > .will-reveal:nth-child(4) { --reveal-delay: 225ms; }
+.public-site .public-service-card.will-reveal { transition-delay: var(--reveal-delay, 0ms); }
+.public-site .public-service-card:nth-child(2) { --reveal-delay: 75ms; }
+.public-site .public-service-card:nth-child(3) { --reveal-delay: 150ms; }
+.public-site .public-service-card:nth-child(4) { --reveal-delay: 225ms; }
+
+@media(max-width:800px) {
+  .public-site .public-nav { display:flex; visibility:hidden; opacity:0; transform:translateY(-8px); transition:opacity .18s ease,transform .18s ease,visibility .18s; }
+  .public-site .public-nav.open { visibility:visible; opacity:1; transform:translateY(0); }
+  .public-site .public-nav-enter-active,.public-site .public-nav-leave-active { transition:opacity .18s ease,transform .18s ease,visibility .18s; }
+  .public-site .public-nav-enter-from,.public-site .public-nav-leave-to { opacity:0; transform:translateY(-8px); }
+}
+@media(prefers-reduced-motion:reduce) {
+  .public-site .public-page-enter-active { transition: none !important; }
+  .public-site .will-reveal { transition-delay:0ms !important; }
+  .public-site .public-nav-enter-active,.public-site .public-nav-leave-active { transition:none !important; }
+}
+
 /* A continuous warm-neutral canvas keeps neighboring sections connected. */
 .public-site {
-  --wash: #f1efe7;
-  --warm: #ebe9de;
-  --line: #dedbd0;
-  background: #f1efe7;
+  --wash: #fcfbf9;
+  --warm: #f5f3ef;
+  --line: #e7e4df;
+  background: #fcfbf9;
 }
 .public-site main:has(.public-hero-motion) {
-  background: linear-gradient(180deg, #edeae1 0%, #f4f2eb 28%, #f6f5ef 53%, #eeece3 77%, #f4f2eb 100%);
+  background: linear-gradient(180deg, #fcfbf9 0%, #ffffff 28%, #fcfbf9 53%, #f8f7f4 77%, #fcfbf9 100%);
 }
-.public-site .public-notice { background: #eae8dd; color: #5c5a50; }
+.public-site .public-notice { background: #f5f3ef; color: #5c6063; }
 .public-site .public-header { transition: background-color .4s ease, color .4s ease, box-shadow .4s ease, border-color .4s ease; }
-.public-site .public-header.is-scrolled { background: rgba(241,239,231,.97); border-color: #dedbd0; }
+.public-site .public-header.is-scrolled { background: rgba(252,251,249,.97); border-color: #e7e4df; }
 .public-site .public-hero-motion .public-hero-image::after {
-  background: linear-gradient(180deg, rgba(19,23,22,.55) 0%, rgba(22,24,22,.16) 35%, rgba(19,21,20,.72) 84%, #edeae1 100%);
+  background: linear-gradient(180deg, rgba(19,23,22,.58) 0%, rgba(22,24,22,.17) 35%, rgba(19,21,20,.72) 84%, #fcfbf9 100%);
 }
-.public-site .public-values { border-color: #dcd8cd; }
+.public-site .public-values { border-color: #e7e4df; }
 .public-site .public-about { background: transparent; }
 .public-site .public-gallery-section {
-  background: linear-gradient(180deg, transparent, rgba(225,221,208,.32) 22%, rgba(225,221,208,.32) 78%, transparent);
+  background: linear-gradient(180deg, transparent, rgba(245,243,239,.76) 22%, rgba(245,243,239,.76) 78%, transparent);
 }
 .public-site .public-steps {
-  background: linear-gradient(180deg, transparent, rgba(219,215,201,.38) 24%, rgba(219,215,201,.38) 76%, transparent);
+  background: linear-gradient(180deg, transparent, rgba(245,243,239,.84) 24%, rgba(245,243,239,.84) 76%, transparent);
 }
-.public-site .public-footer { background: #eae8de; }
-.public-site .public-rail-controls button { background: #f4f2eb; }
+.public-site .public-footer { background: #f5f3ef; }
+.public-site .public-rail-controls button { background: #fcfbf9; }

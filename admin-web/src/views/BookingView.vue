@@ -336,7 +336,7 @@ onMounted(async () => {
                   :prefix-icon="Search"
                   placeholder="输入姓名或联系电话"
                   clearable
-                  style="width: 280px" /></el-form-item
+                  class="booking-patient-input" /></el-form-item
               ><el-button type="primary" native-type="submit" :loading="patientSearchBusy"
                 >查找患者</el-button
               ></el-form
@@ -557,3 +557,256 @@ onMounted(async () => {
   </div>
   <PatientEditor v-model="createDialog" @created="patientCreated" />
 </template>
+
+<style scoped>
+.booking-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 350px);
+  gap: clamp(16px, 2vw, 24px);
+}
+
+.booking-main {
+  display: grid;
+  gap: 20px;
+}
+
+.booking-main > .panel.mt-24 {
+  margin-top: 0;
+}
+
+.booking-summary {
+  min-width: 0;
+  border-color: var(--border-subtle, #e7e4df);
+  box-shadow: var(--shadow-panel, 0 2px 10px rgb(41 45 48 / 4%));
+}
+
+.booking-summary .panel-heading {
+  flex-wrap: wrap;
+}
+
+.step-heading {
+  align-items: flex-start;
+}
+
+.step-heading > div,
+.selected-patient > div {
+  min-width: 0;
+}
+
+.selected-patient {
+  gap: 12px;
+  border-color: var(--border-subtle, #e7e4df);
+}
+
+.selected-patient h3,
+.selected-patient p {
+  overflow-wrap: anywhere;
+}
+
+.patient-search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0 10px;
+}
+
+.patient-search .el-form-item {
+  flex: 1 1 240px;
+  min-width: 0;
+  margin-right: 0;
+}
+
+.booking-patient-input {
+  width: min(100%, 360px);
+}
+
+.patient-result {
+  min-height: 68px;
+  gap: 12px;
+  border-color: var(--border-subtle, #e7e4df);
+  border-radius: 10px;
+  padding: 14px 12px;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.patient-result:hover,
+.patient-result:focus-visible {
+  background: var(--brand-soft, #fcfbf9);
+  border-color: var(--brand-gold, #b79a6b);
+}
+
+.patient-result:focus-visible,
+.slot-button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--focus-ring, #80653d) 38%, transparent);
+  outline-offset: 2px;
+}
+
+.patient-result > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.slot-grid {
+  gap: 12px;
+}
+
+.slot-button {
+  min-width: 0;
+  min-height: 112px;
+  border-color: var(--border-subtle, #e7e4df);
+  box-shadow: 0 2px 8px rgb(41 45 48 / 3%);
+  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.slot-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.slot-button.is-selected {
+  border-color: var(--brand-gold, #b79a6b);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-gold, #b79a6b) 18%, transparent);
+}
+
+.summary-status {
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.summary-status.ready {
+  background: var(--brand-gold-light, #f5f0e8);
+  color: var(--brand-gold-hover, #80653d);
+}
+
+.countdown {
+  min-height: 42px;
+  line-height: 1.5;
+}
+
+.summary-service {
+  align-items: flex-start;
+}
+
+.summary-service h3,
+.summary-facts li > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.summary-facts {
+  gap: 12px;
+}
+
+.confirmation-checks {
+  gap: 6px;
+}
+
+.confirmation-checks :deep(.el-checkbox) {
+  align-items: flex-start;
+  height: auto;
+  white-space: normal;
+}
+
+.confirmation-checks :deep(.el-checkbox__label) {
+  white-space: normal;
+  line-height: 1.55;
+}
+
+@media (max-width: 760px) {
+  .page-heading {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .page-heading > .el-button {
+    align-self: flex-start;
+  }
+
+  .booking-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .booking-main {
+    gap: 16px;
+  }
+
+  .booking-summary {
+    position: static;
+  }
+
+  .booking-main > .panel.mt-24 {
+    margin-top: 0;
+  }
+
+  .booking-main :deep(.panel-heading) {
+    align-items: flex-start;
+    padding: 18px 16px;
+  }
+
+  .booking-main :deep(.panel-body) {
+    padding: 0 16px 20px;
+  }
+
+  .patient-search {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .patient-search .el-form-item,
+  .booking-patient-input {
+    width: 100% !important;
+  }
+
+  .patient-search :deep(.el-button) {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .booking-summary .panel-heading,
+  .booking-summary .panel-body {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .booking-summary .panel-body {
+    padding-bottom: 20px;
+  }
+
+  .selected-patient {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 14px;
+  }
+
+  .selected-patient > div {
+    flex: 1 1 calc(100% - 60px);
+  }
+
+  .selected-patient > :deep(.el-button) {
+    margin-left: auto;
+  }
+
+  .slot-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 360px) {
+  .slot-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .patient-result,
+  .slot-button {
+    transition: none;
+  }
+
+  .slot-button:hover:not(:disabled) {
+    transform: none;
+  }
+}
+</style>

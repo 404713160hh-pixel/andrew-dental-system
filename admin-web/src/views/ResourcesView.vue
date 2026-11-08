@@ -420,13 +420,13 @@ onUnmounted(() => {
     ><el-tag type="info" round>停用 {{ allRows.length - enabledCount }}</el-tag></template>
   </div>
   <section class="panel">
-    <div class="panel-heading">
+    <div class="panel-heading resource-panel-heading">
       <h2>{{ names[kind] }}清单</h2>
-      <div class="button-row">
+      <div class="button-row resource-filters">
         <el-select
           v-if="kind === 'chairs'"
           v-model="clinicId"
-          style="width: 210px"
+          class="resource-clinic-filter"
           placeholder="选择门诊"
           @change="load(false)"
           ><el-option
@@ -439,12 +439,13 @@ onUnmounted(() => {
           :prefix-icon="Search"
           clearable
           placeholder="筛选名称"
-          style="width: 200px"
+          class="resource-name-filter"
         />
       </div>
     </div>
     <p v-if="kind === 'doctors'" class="muted small qualification-validity">专长用于向患者展示与推荐；所有医生均可预约全部门诊项目。以下资质及有效期仅作内部档案。</p>
-    <el-table :data="rows" row-key="id" v-loading="loading" :empty-text="emptyText"
+    <div class="resources-table-scroll" role="region" :aria-label="`${names[kind]}表格，可横向滚动`" tabindex="0">
+    <el-table :class="`resources-table resources-table--${kind}`" :data="rows" row-key="id" v-loading="loading" :empty-text="emptyText"
       ><el-table-column prop="name" label="名称" min-width="170"
         ><template #default="{ row }"
           ><strong>{{ row.name }}</strong>
@@ -506,6 +507,7 @@ onUnmounted(() => {
         ></el-table-column
       ></el-table
     >
+    </div>
   </section>
   <el-dialog
     v-model="dialog"
@@ -651,3 +653,204 @@ onUnmounted(() => {
     ></el-dialog
   >
 </template>
+
+<style scoped>
+.page-heading {
+  align-items: flex-end;
+  gap: 20px;
+}
+
+.page-heading > div:first-child {
+  min-width: 0;
+}
+
+.page-heading p {
+  max-width: 760px;
+  line-height: 1.65;
+}
+
+.resource-filter-summary {
+  align-items: center;
+  padding: 14px 18px;
+  border-color: var(--border-subtle, #e7e4df);
+  background: var(--brand-soft, #fcfbf9);
+  line-height: 1.55;
+}
+
+.resource-count {
+  flex-wrap: wrap;
+  row-gap: 8px;
+  margin-bottom: 20px;
+}
+
+.resource-count > strong {
+  color: var(--text-primary, #292d30);
+}
+
+.resource-panel-heading {
+  min-width: 0;
+}
+
+.resource-filters {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.resource-name-filter {
+  width: 220px;
+}
+
+.resource-clinic-filter {
+  width: 230px;
+}
+
+.qualification-validity {
+  line-height: 1.6;
+}
+
+.resources-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.resources-table {
+  width: 100%;
+}
+
+.qualification-summary {
+  min-width: 0;
+  gap: 10px;
+}
+
+.qualification-period {
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+
+.qualification-row {
+  align-items: start;
+}
+
+.resource-load-state {
+  line-height: 1.55;
+}
+
+:deep(.resources-table .cell) {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .page-heading {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .page-heading .button-row {
+    width: 100%;
+  }
+
+  .page-heading .button-row :deep(.el-button) {
+    flex: 1;
+  }
+
+  .resource-filter-summary {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    overflow-wrap: anywhere;
+  }
+
+  .resource-count {
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .resource-count > strong {
+    font-size: 23px;
+  }
+
+  .resource-count > .el-tag:first-of-type {
+    margin-left: 0;
+  }
+
+  .resource-panel-heading {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px 16px;
+  }
+
+  .resource-filters {
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .resource-name-filter,
+  .resource-clinic-filter {
+    width: 100% !important;
+  }
+
+  .resources-table--clinics,
+  .resources-table--doctors,
+  .resources-table--services,
+  .resources-table--chairs,
+  .resources-table--qualifications {
+    min-width: 760px;
+  }
+
+  .resources-table--doctors,
+  .resources-table--services {
+    min-width: 920px;
+  }
+
+  .resources-table--clinics {
+    min-width: 860px;
+  }
+
+  .resources-table--chairs {
+    min-width: 720px;
+  }
+
+  .qualification-validity {
+    margin: 0 16px 12px;
+  }
+
+  .qualification-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .qualification-row > .el-select,
+  .qualification-row > :deep(.el-date-editor) {
+    width: 100% !important;
+    max-width: none;
+  }
+
+  .qualification-row > :deep(.el-button) {
+    justify-self: end;
+  }
+
+  .section-row {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .section-row > :deep(.el-button) {
+    flex: 0 0 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resources-table-scroll {
+    scroll-behavior: auto;
+  }
+}
+</style>

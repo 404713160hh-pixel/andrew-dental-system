@@ -97,29 +97,29 @@ async function reset(){
 onMounted(async()=>{await Promise.all([load(),loadResources()]);});
 </script>
 <template>
- <section class="page-content">
+ <section class="page-content staff-accounts-page">
   <div class="page-heading"><div><h1>员工账号与档案</h1><p class="muted">员工身份、登录账号与岗位授权统一关联。</p></div><div class="button-row"><el-button :disabled="busy" @click="openProfile()">新建员工档案</el-button><el-button type="primary" :disabled="busy" @click="openCreate">新建账号</el-button></div></div>
   <el-alert v-if="error" :title="error" type="error" show-icon :closable="false" /><el-button v-if="error" @click="load();loadResources()">重新加载</el-button>
-  <el-tabs v-model="activeTab">
+  <el-tabs v-model="activeTab" class="staff-accounts-tabs">
   <el-tab-pane label="登录账号与岗位" name="accounts">
-  <el-table :data="rows" v-loading="loading" empty-text="暂无员工账号" style="width:100%">
+  <div class="staff-table-scroll" role="region" aria-label="登录账号与岗位表格，可横向滚动" tabindex="0"><el-table class="staff-accounts-table" :data="rows" v-loading="loading" empty-text="暂无员工账号" style="width:100%">
    <el-table-column prop="username" label="用户名" min-width="130" /><el-table-column prop="displayName" label="姓名" min-width="110" />
    <el-table-column label="关联员工" min-width="170"><template #default="{row}">{{ profiles.find(p=>p.id===row.staffId)?.name || (row.staffId?'待加载':'未关联') }}<div v-if="row.staffId" class="muted small">{{ profiles.find(p=>p.id===row.staffId)?.employeeNo }}</div></template></el-table-column>
    <el-table-column label="岗位和范围" min-width="240"><template #default="scope"><div v-for="a in scope.row.assignments" :key="a.role+':'+a.clinicId">{{ labelAssignment(a) }}</div></template></el-table-column>
    <el-table-column label="状态" min-width="110"><template #default="scope"><el-tag :type="scope.row.active?'success':'info'">{{ scope.row.active?'启用':'停用' }}</el-tag><div v-if="scope.row.mustChangePassword" class="muted small">等待修改密码</div></template></el-table-column>
    <el-table-column label="操作" min-width="150"><template #default="scope"><el-button link type="primary" @click="openEdit(scope.row)">管理</el-button><el-button link type="primary" @click="openReset(scope.row)">重置密码</el-button></template></el-table-column>
-  </el-table>
+  </el-table></div>
   <el-pagination v-if="total>30" class="mt-12" layout="prev, pager, next, total" :total="total" :page-size="30" v-model:current-page="page" @current-change="load" />
   </el-tab-pane>
   <el-tab-pane label="员工档案" name="profiles">
-   <el-table :data="profiles" empty-text="暂无员工档案" style="width:100%">
+   <div class="staff-table-scroll" role="region" aria-label="员工档案表格，可横向滚动" tabindex="0"><el-table class="staff-profiles-table" :data="profiles" empty-text="暂无员工档案" style="width:100%">
     <el-table-column prop="employeeNo" label="员工编号" min-width="120" /><el-table-column prop="name" label="姓名" min-width="130" />
     <el-table-column label="人员类型" min-width="110"><template #default="{row}">{{ row.isDentist?'医生':'其他员工' }}</template></el-table-column>
     <el-table-column prop="phone" label="联系电话" min-width="150" /><el-table-column prop="specialty" label="专长 / 岗位说明" min-width="190" show-overflow-tooltip />
     <el-table-column label="关联账号" min-width="140"><template #default="{row}">{{ row.username || '未关联' }}</template></el-table-column>
     <el-table-column label="状态" min-width="90"><template #default="{row}"><el-tag :type="row.active?'success':'info'">{{ row.active?'在岗':'停用' }}</el-tag></template></el-table-column>
     <el-table-column label="操作" min-width="110"><template #default="{row}"><el-button link type="primary" :disabled="busy" @click="openProfile(row)">{{ row.isDentist?'医生资料':'编辑档案' }}</el-button></template></el-table-column>
-   </el-table>
+   </el-table></div>
   </el-tab-pane>
   </el-tabs>
   <el-dialog append-to-body v-model="dialog" :title="editing?'管理员工账号':'新建员工账号'" width="min(640px, 94vw)" @closed="form.temporaryPassword=''">
@@ -130,7 +130,7 @@ onMounted(async()=>{await Promise.all([load(),loadResources()]);});
     <el-form-item label="关联员工档案（医生岗位须选医生）"><el-select v-model="form.staffId" clearable filterable placeholder="选择员工档案" style="width:100%"><el-option v-for="profile in profiles" :key="profile.id" :value="profile.id" :label="profile.name+' · '+profile.employeeNo+(profile.isDentist?' · 医生':'')" :disabled="(!profile.active && profile.id!==form.staffId) || (!!profile.userId && profile.userId!==editing?.id)" /></el-select></el-form-item>
     <el-form-item v-if="editing" label="账号状态"><el-switch v-model="form.active" active-text="启用" inactive-text="停用" /></el-form-item>
     <el-form-item label="岗位与门诊">
-     <div v-for="(a,i) in form.assignments" :key="i" style="display:flex;gap:8px;width:100%;margin-bottom:8px;flex-wrap:wrap">
+      <div v-for="(a,i) in form.assignments" :key="i" class="staff-assignment-row">
       <el-select v-model="a.role" style="width:120px" @change="roleChanged(a)"><el-option v-for="r in roles" :key="r.value" :value="r.value" :label="r.label" /></el-select>
       <el-select v-if="a.role!=='hq'" v-model="a.clinicId" placeholder="选择门诊" style="min-width:180px;flex:1"><el-option v-for="c in clinics.filter(x=>x.active)" :key="c.id" :value="c.id" :label="c.name" /></el-select>
       <span v-else class="muted">全部门诊</span><el-button :disabled="form.assignments.length===1" @click="form.assignments.splice(i,1)">移除</el-button>
@@ -166,5 +166,38 @@ onMounted(async()=>{await Promise.all([load(),loadResources()]);});
 <style scoped>
 .staff-profile-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 18px; }
 .wide-field { grid-column:1 / -1; }
-@media(max-width:560px) { .staff-profile-form { grid-template-columns:1fr; } }
+.staff-accounts-page { min-width:0; }
+.staff-accounts-page .page-heading { align-items:flex-end; gap:20px; }
+.staff-accounts-page .page-heading > div:first-child { min-width:0; }
+.staff-accounts-page .page-heading p { max-width:680px; line-height:1.6; }
+.staff-accounts-tabs :deep(.el-tabs__nav-wrap) { overflow-x:auto; }
+.staff-accounts-tabs :deep(.el-tabs__nav-scroll) { overflow:visible; }
+.staff-table-scroll { width:100%; overflow-x:auto; overscroll-behavior-inline:contain; -webkit-overflow-scrolling:touch; }
+.staff-accounts-table,.staff-profiles-table { width:100%; }
+.staff-assignment-row { display:flex; align-items:center; gap:8px; width:100%; margin-bottom:8px; flex-wrap:wrap; }
+.staff-assignment-row > .el-select { min-width:120px; }
+.staff-assignment-row > .el-select:nth-child(2) { min-width:180px; flex:1; }
+.staff-profile-form { gap:0 16px; }
+.staff-profile-form .el-form-item { min-width:0; }
+@media(max-width:760px) {
+ .staff-accounts-page .page-heading { align-items:stretch; flex-direction:column; gap:14px; }
+ .staff-accounts-page .page-heading .button-row { width:100%; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .staff-accounts-page .page-heading .button-row :deep(.el-button) { min-width:0; margin-left:0; }
+ .staff-accounts-tabs :deep(.el-tabs__header) { overflow:hidden; }
+ .staff-accounts-table { min-width:920px; }
+ .staff-profiles-table { min-width:1040px; }
+ .staff-profile-form { grid-template-columns:minmax(0,1fr); gap:0; }
+ .wide-field { grid-column:auto; }
+ .staff-assignment-row { display:grid; grid-template-columns:minmax(0,1fr); gap:8px; padding:12px; border:1px solid var(--border-subtle,#e7e4df); border-radius:10px; }
+ .staff-assignment-row > .el-select,
+ .staff-assignment-row > .el-select:nth-child(2) { width:100% !important; min-width:0; }
+ .staff-assignment-row > :deep(.el-button) { justify-self:end; }
+ .staff-accounts-page :deep(.el-pagination) { flex-wrap:wrap; gap:4px; }
+}
+@media(max-width:380px) {
+ .staff-accounts-page .page-heading .button-row { grid-template-columns:minmax(0,1fr); }
+}
+@media(prefers-reduced-motion:reduce) {
+ .staff-table-scroll { scroll-behavior:auto; }
+}
 </style>

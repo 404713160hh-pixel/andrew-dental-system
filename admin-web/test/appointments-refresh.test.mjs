@@ -152,6 +152,13 @@ function view() {
 const appointment = (id, status = 'confirmed') => ({ id, status, rowVersion: 1, patientName: '合成患者', startsAt: '2026-11-01T01:00:00Z', events: [] });
 function listResult(request, id) { request.resolve({ items: [appointment(id)], total: 1 }); }
 
+test('appointment overview uses one title for staff and a personal title for doctor-only accounts', () => {
+  const page = view();
+  assert.equal(page.currentTitle.value, '预约总览');
+  page.auth.user.roles = ['doctor'];
+  assert.equal(page.currentTitle.value, '我的预约');
+});
+
 test('actual appointments view keeps the newest filter result when older requests complete last', async () => {
   const page = view();
   const old = page.load();

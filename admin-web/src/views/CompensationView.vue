@@ -200,7 +200,7 @@ onUnmounted(() => { disposed = true; loadSequence++; detailSequence++; });
       <div class="panel" v-loading="loading">
         <div class="panel-heading"><div><h2>来源完整性</h2><p>已关闭 {{ closedCount }} / {{ coverage.length }} 个月份。无业务月份也需确认。</p></div>
           <el-button type="primary" :icon="Plus" :disabled="busy || loading || !context?.actor || !monthOptions.length" @click="openMonth()">月度底稿</el-button></div>
-        <el-table :data="coverage" empty-text="查询后显示核算月份" style="width:100%">
+        <div class="compensation-table-scroll" role="region" aria-label="月度账证表格，可横向滚动" tabindex="0"><el-table :data="coverage" empty-text="查询后显示核算月份" class="compensation-table">
           <el-table-column label="门诊" min-width="160"><template #default="{row}">{{ row.clinic.name }}</template></el-table-column>
           <el-table-column prop="month" label="月份" min-width="95" />
           <el-table-column label="状态" min-width="110"><template #default="{row}"><el-tag :type="row.source?.status==='closed'?'success':'info'">{{ row.source ? status(row.source.status) : '未登记' }}</el-tag></template></el-table-column>
@@ -212,14 +212,14 @@ onUnmounted(() => { disposed = true; loadSequence++; detailSequence++; });
               <el-button v-if="row.source.status==='draft'" link type="primary" :disabled="busy || !canReview(row.source)" @click="closeMonth(row.source)">复核关闭</el-button>
               <el-button v-if="row.source.status==='closed' && auth.isHq" link type="primary" :disabled="busy || !context?.actor" @click="reopenMonth(row.source)">重开</el-button></template>
           </template></el-table-column>
-        </el-table>
+        </el-table></div>
       </div>
     </el-tab-pane>
     <el-tab-pane v-if="auth.isHq" label="季度业绩与激励" name="quarters">
       <el-alert v-if="quarters.some(item => item.reference.includes('虚构'))" class="mb-16" title="标注“虚构演示”的季度账证、基金和个人份额仅供课程演示。" type="info" show-icon :closable="false" />
       <div class="panel" v-loading="loading">
         <div class="panel-heading"><div><h2>季度核算</h2><p>跨店合并医生净利润，提取合计正值的 10%。</p></div><el-button type="primary" :icon="Plus" :disabled="loading || busy || !context?.actor" @click="quarterReference='';formError='';createQuarterDialog=true">生成季度快照</el-button></div>
-        <el-table :data="quarters" empty-text="暂无该季度快照">
+        <div class="compensation-table-scroll" role="region" aria-label="季度核算表格，可横向滚动" tabindex="0"><el-table :data="quarters" empty-text="暂无该季度快照" class="compensation-table">
           <el-table-column label="季度" min-width="110"><template #default="{row}">{{ row.quarter }}<div v-if="row.reference.includes('虚构')" class="muted small">虚构演示</div></template></el-table-column>
           <el-table-column label="状态" min-width="100"><template #default="{row}"><el-tag :type="row.status==='approved'?'success':row.status==='submitted'?'warning':'info'">{{ status(row.status) }}</el-tag></template></el-table-column>
           <el-table-column label="治疗收入净额" min-width="140" align="right"><template #default="{row}">{{ money(row.totalRevenueCents) }}</template></el-table-column>
@@ -230,7 +230,7 @@ onUnmounted(() => { disposed = true; loadSequence++; detailSequence++; });
           <el-table-column prop="createdByName" label="制表人" min-width="105" />
           <el-table-column label="生成时间" min-width="150"><template #default="{row}">{{ dateTime(row.createdAt) }}</template></el-table-column>
           <el-table-column label="操作" min-width="155" fixed="right"><template #default="{row}"><el-button link type="primary" @click="showQuarter(row.id)">个人分配与明细</el-button></template></el-table-column>
-        </el-table>
+        </el-table></div>
       </div>
     </el-tab-pane>
     <el-tab-pane label="我的激励" name="mine">
@@ -240,7 +240,7 @@ onUnmounted(() => { disposed = true; loadSequence++; detailSequence++; });
         <article v-for="allocation in mine.allocations" :key="allocation.id" class="panel personal-incentive">
           <div class="panel-heading"><div><h2>{{ allocation.quarter }} · {{ allocation.doctorName }}</h2><p>{{ allocation.employeeNo }}</p></div><strong class="award">{{ money(allocation.amountCents) }}</strong></div>
           <div class="personal-totals"><span>跨店净贡献<strong>{{ money(allocation.contributionCents) }}</strong></span><span>已发放<strong>{{ money(allocation.paidCents) }}</strong></span><span>待确认<strong>{{ money(allocation.pendingCents) }}</strong></span><span>未发放<strong>{{ money(allocation.remainingCents) }}</strong></span></div>
-          <el-table :data="allocation.payments" empty-text="尚无发放记录"><el-table-column prop="reference" label="发放凭证" min-width="180" /><el-table-column label="金额" min-width="120"><template #default="{row}">{{ money(row.amountCents) }}</template></el-table-column><el-table-column label="状态" min-width="110"><template #default="{row}">{{ status(row.status) }}</template></el-table-column><el-table-column label="登记时间" min-width="150"><template #default="{row}">{{ dateTime(row.createdAt) }}</template></el-table-column><el-table-column prop="resultReference" label="核验结果凭据" min-width="170" /></el-table>
+          <div class="compensation-table-scroll" role="region" aria-label="本人发放记录，可横向滚动" tabindex="0"><el-table :data="allocation.payments" empty-text="尚无发放记录" class="compensation-table"><el-table-column prop="reference" label="发放凭证" min-width="180" /><el-table-column label="金额" min-width="120"><template #default="{row}">{{ money(row.amountCents) }}</template></el-table-column><el-table-column label="状态" min-width="110"><template #default="{row}">{{ status(row.status) }}</template></el-table-column><el-table-column label="登记时间" min-width="150"><template #default="{row}">{{ dateTime(row.createdAt) }}</template></el-table-column><el-table-column prop="resultReference" label="核验结果凭据" min-width="170" /></el-table></div>
         </article>
       </div>
     </el-tab-pane>
@@ -282,7 +282,7 @@ onUnmounted(() => { disposed = true; loadSequence++; detailSequence++; });
         <el-alert v-if="detail.voidReason" class="mt-16" :title="'作废原因：'+detail.voidReason" type="info" :closable="false" />
         <div class="quarter-metrics"><div><span>治疗收入净额</span><strong>{{ money(detail.totalRevenueCents) }}</strong></div><div><span>用品成本</span><strong>{{ money(detail.totalMaterialCostCents) }}</strong></div><div><span>运营费用</span><strong>{{ money(detail.totalOperatingExpenseCents) }}</strong></div><div><span>合计净利润</span><strong>{{ money(detail.netProfitCents) }}</strong></div><div class="fund"><span>10% 激励基金</span><strong>{{ money(detail.fundCents) }}</strong></div></div>
         <el-tabs>
-          <el-tab-pane label="个人分配与发放"><el-table :data="detail.allocations">
+          <el-tab-pane label="个人分配与发放"><div class="compensation-table-scroll" role="region" aria-label="个人分配表格，可横向滚动" tabindex="0"><el-table :data="detail.allocations" class="compensation-table">
             <el-table-column prop="doctorName" label="医生" min-width="130" /><el-table-column prop="employeeNo" label="员工编号" min-width="110" />
             <el-table-column label="跨店净贡献" min-width="130" align="right"><template #default="{row}">{{ money(row.contributionCents) }}</template></el-table-column>
             <el-table-column :label="detail.status==='approved'?'批准份额':'试算份额'" min-width="120" align="right"><template #default="{row}">{{ money(row.amountCents) }}</template></el-table-column>
@@ -290,13 +290,13 @@ onUnmounted(() => { disposed = true; loadSequence++; detailSequence++; });
             <el-table-column label="待确认" min-width="120" align="right"><template #default="{row}">{{ money(row.pendingCents) }}</template></el-table-column>
             <el-table-column label="可发余额" min-width="120" align="right"><template #default="{row}">{{ money(row.remainingCents) }}</template></el-table-column>
             <el-table-column v-if="detail.status==='approved'" label="操作" min-width="100"><template #default="{row}"><el-button link type="primary" :disabled="busy || row.remainingCents<=0 || !context?.actor" @click="openPayment(row)">登记发放</el-button></template></el-table-column>
-          </el-table><p class="muted small mt-12">份额按正净贡献比例分配，余分按固定规则补齐；亏损保留在基金计算中。</p>
-            <h3 class="mt-24">发放记录</h3><el-table :data="detail.payments" empty-text="暂无发放记录">
+          </el-table></div><p class="muted small mt-12">份额按正净贡献比例分配，余分按固定规则补齐；亏损保留在基金计算中。</p>
+            <h3 class="mt-24">发放记录</h3><div class="compensation-table-scroll" role="region" aria-label="季度发放记录表格，可横向滚动" tabindex="0"><el-table :data="detail.payments" empty-text="暂无发放记录" class="compensation-table">
               <el-table-column label="医生" min-width="120"><template #default="{row}">{{ detail.allocations.find(a=>a.id===row.allocationId)?.doctorName || '—' }}</template></el-table-column>
               <el-table-column prop="reference" label="发放凭证" min-width="160" /><el-table-column label="金额" min-width="110"><template #default="{row}">{{ money(row.amountCents) }}</template></el-table-column>
               <el-table-column label="状态" min-width="100"><template #default="{row}">{{ status(row.status) }}</template></el-table-column><el-table-column prop="resultReference" label="核验结果凭据" min-width="160" />
               <el-table-column label="操作" min-width="100"><template #default="{row}"><el-button v-if="row.status==='pending'" link type="primary" :disabled="busy || !context?.actor" @click="openResolve(row)">登记结果</el-button></template></el-table-column>
-            </el-table>
+            </el-table></div>
           </el-tab-pane>
           <el-tab-pane label="医生门诊明细"><el-table :data="detail.results"><el-table-column prop="doctorName" label="医生" min-width="130" /><el-table-column prop="clinicName" label="门诊" min-width="150" /><el-table-column label="收入" min-width="130" align="right"><template #default="{row}">{{ money(row.revenueCents) }}</template></el-table-column><el-table-column label="用品成本" min-width="130" align="right"><template #default="{row}">{{ money(row.materialCostCents) }}</template></el-table-column><el-table-column label="运营费用" min-width="130" align="right"><template #default="{row}">{{ money(row.operatingExpenseCents) }}</template></el-table-column><el-table-column label="净利润" min-width="130" align="right"><template #default="{row}">{{ money(row.netProfitCents) }}</template></el-table-column></el-table></el-tab-pane>
           <el-tab-pane label="月份来源"><el-table :data="detail.months"><el-table-column prop="clinicName" label="门诊" min-width="150" /><el-table-column prop="month" label="月份" min-width="100" /><el-table-column label="业务" min-width="100"><template #default="{row}">{{ row.noActivity?'无业务确认':'有业务底稿' }}</template></el-table-column><el-table-column prop="reference" label="核算依据" min-width="200" /><el-table-column prop="sourceRevision" label="来源修订" min-width="100" /><el-table-column label="关闭时间" min-width="150"><template #default="{row}">{{ dateTime(row.closedAt) }}</template></el-table-column></el-table></el-tab-pane>
@@ -346,4 +346,59 @@ onUnmounted(() => { disposed = true; loadSequence++; detailSequence++; });
 .award { font-size: 24px; font-weight: 600; }
 .personal-totals { grid-template-columns: repeat(4,minmax(0,1fr)); padding: 0 24px 24px; }
 @media(max-width:760px) { .month-form-grid,.source-grid { grid-template-columns: 1fr; } .quarter-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); } .source-heading,.quarter-heading { flex-wrap: wrap; } .personal-totals { grid-template-columns: repeat(2,minmax(0,1fr)); } .compensation-filters { padding: 16px 16px 0; } .source-row { padding: 16px; } .incentive-rules { padding: 18px 16px; } .incentive-rule-heading { align-items: flex-start; } .fixed-rate { padding: 10px; } }
+.page-heading { align-items: flex-end; gap: 18px; }
+.page-heading > div { min-width: 0; }
+.page-heading p { max-width: 900px; line-height: 1.65; }
+.incentive-rules { border-color: var(--border-subtle, #e7e4df); box-shadow: var(--shadow-panel, 0 2px 10px rgb(41 45 48 / 4%)); }
+.incentive-rule-heading { align-items: flex-start; }
+.incentive-rule-heading > div { min-width: 0; }
+.incentive-rule-heading h2 { line-height: 1.45; }
+.incentive-workflow { max-width: 1100px; }
+.incentive-basis { line-height: 1.7; }
+.compensation-filters { border-color: var(--border-subtle, #e7e4df); }
+.compensation-filters :deep(.el-form) { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 0 12px; }
+.compensation-filters :deep(.el-form-item) { margin-right: 0; }
+.compensation-tabs :deep(.el-tabs__nav-wrap) { overflow-x: auto; }
+.compensation-tabs :deep(.el-tabs__nav-scroll) { overflow: visible; }
+.compensation-table-scroll { width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; -webkit-overflow-scrolling: touch; }
+.compensation-table { width: 100%; }
+.compensation-table :deep(.cell) { overflow-wrap: anywhere; }
+.quarter-metrics > div { min-width: 0; border: 1px solid var(--border-subtle, #e7e4df); }
+.personal-totals { gap: 12px; }
+.personal-totals > span { min-width: 0; overflow-wrap: anywhere; }
+.personal-incentive { overflow: hidden; }
+.award { overflow-wrap: anywhere; }
+.source-row { min-width: 0; }
+.source-heading > :first-child { min-width: 0; }
+.dialog-actions { flex-wrap: wrap; }
+.compensation-note { line-height: 1.65; }
+@media (max-width: 760px) {
+  .page-heading { align-items: stretch; flex-direction: column; gap: 14px; }
+  .page-heading > .el-button { align-self: flex-start; }
+  .compensation-filters { padding: 16px 16px 2px; }
+  .compensation-filters :deep(.el-form) { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .compensation-filters :deep(.el-form-item),
+  .compensation-filters :deep(.el-input),
+  .compensation-filters :deep(.el-select) { width: 100% !important; }
+  .compensation-filters :deep(.el-button) { width: 100%; }
+  .incentive-rules { padding: 18px 16px; }
+  .incentive-rule-heading { flex-wrap: wrap; gap: 12px; }
+  .fixed-rate { display: flex; align-items: center; gap: 8px; }
+  .fixed-rate strong { margin: 0; }
+  .compensation-tabs :deep(.el-tabs__header) { overflow: hidden; }
+  .compensation-table { min-width: 860px; }
+  .compensation-tabs :deep(.el-table) { min-width: 860px; }
+  .quarter-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 18px 0; }
+  .quarter-metrics > div { padding: 12px; }
+  .quarter-metrics strong,.personal-totals strong { font-size: 16px; }
+  .personal-totals { padding: 0 16px 18px; gap: 10px; }
+  .source-heading { align-items: stretch; }
+  .source-heading :deep(.el-form-item),
+  .source-heading :deep(.el-select) { width: 100% !important; }
+  .dialog-actions { justify-content: stretch; }
+  .dialog-actions :deep(.el-button) { flex: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .compensation-table-scroll { scroll-behavior: auto; }
+}
 </style>

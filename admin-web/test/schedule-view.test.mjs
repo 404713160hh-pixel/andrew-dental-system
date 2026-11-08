@@ -186,3 +186,15 @@ test('the shifts view enforces read-only doctor actions and ignores responses af
   view.requests[1].resolve([{ id: 'after-disposal' }]); await disposing;
   assert.equal(view.rows.value.length, 0);
 });
+
+test('shifts visual refresh keeps permissioned cancellation and supports narrow, reduced-motion layouts', () => {
+  const source = readFileSync(new URL('../src/views/ShiftsView.vue', import.meta.url), 'utf8');
+  assert.match(source, /body:\s*\{\s*expectedVersion:\s*shift\.rowVersion\s*\}/);
+  assert.equal((source.match(/row\.status === 'published' && canCancel\(row\)/g) || []).length, 1);
+  assert.equal((source.match(/shift\.status === 'published' && canCancel\(shift\)/g) || []).length, 1);
+  assert.match(source, /@media\s*\(max-width:\s*760px\)/);
+  assert.match(source, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
+  assert.match(source, /\.schedule-filter-summary/);
+  assert.match(source, /\.schedule-shift-card:hover/);
+  assert.match(source, /:deep\(\.el-table__inner-wrapper\)\s*\{\s*min-width:\s*720px;/);
+});

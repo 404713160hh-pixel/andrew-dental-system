@@ -66,54 +66,51 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
 <template>
   <router-view v-if="route.meta.public" />
   <div v-else class="app-shell" :class="{ 'is-compact': compact, 'is-doctor': doctorView }" @keyup.esc="menuOpen = false">
-    <button v-if="menuOpen" class="navigation-backdrop" aria-label="收起导航" @click="menuOpen = false"></button>
+    <button v-if="menuOpen" type="button" class="navigation-backdrop" aria-label="收起导航" @click="menuOpen = false"></button>
     <aside id="staff-navigation" class="sidebar" :class="{ 'is-open': menuOpen }">
       <router-link class="brand" to="/appointments"
         ><span class="brand-mark">A<span>+</span></span
         ><span>ANDREW<span class="brand-sub">安德鲁牙科 · 员工工作台</span></span></router-link
       >
-      <div class="nav-label">工作空间</div>
-      <nav aria-label="主导航">
-        <router-link v-if="auth.isHq" to="/staff/accounts"><el-icon><User /></el-icon>员工账号与档案</router-link>
-        <router-link to="/compensation"><el-icon><Coin /></el-icon>{{ compensationTitle }}</router-link>
-        <router-link to="/change-password"><el-icon><Setting /></el-icon>修改密码</router-link>
-        <router-link to="/appointments"
-          ><el-icon><Calendar /></el-icon>{{ doctorView ? '我的预约' : '预约总览' }}</router-link
-        >
-        <router-link v-if="auth.canBook" to="/patients"
-          ><el-icon><User /></el-icon>患者档案</router-link
-        >
-        <router-link v-if="auth.canBook" to="/booking"
-          ><el-icon><Plus /></el-icon>患者代约</router-link
-        >
-        <router-link to="/shifts"
-          ><el-icon><Clock /></el-icon>{{ doctorView ? '我的排班' : '医生排班' }}</router-link
-        >
-        <template v-if="auth.canManage"
-          ><div class="nav-label">资源管理</div>
-          <router-link to="/resources/clinics"
-            ><el-icon><OfficeBuilding /></el-icon>门诊机构</router-link
+      <nav class="sidebar-navigation" aria-label="主导航">
+        <section class="navigation-group" aria-labelledby="nav-workspace">
+          <h2 id="nav-workspace" class="nav-label">工作空间</h2>
+          <router-link to="/appointments"
+            ><el-icon><Calendar /></el-icon>{{ doctorView ? '我的预约' : '预约总览' }}</router-link
           >
-          <router-link to="/resources/doctors"
-            ><el-icon><FirstAidKit /></el-icon>医生档案</router-link
+          <router-link to="/shifts"
+            ><el-icon><Clock /></el-icon>{{ doctorView ? '我的排班' : '医生排班' }}</router-link
           >
-          <router-link to="/resources/services"
-            ><el-icon><Setting /></el-icon>预约服务</router-link
-          >
-          <router-link to="/resources/chairs"
-            ><el-icon><Setting /></el-icon>牙椅资源</router-link
-          >
-          <router-link to="/resources/qualifications"
-            ><el-icon><Setting /></el-icon>资质档案目录</router-link
-          >
-        </template>
+        </section>
+        <section v-if="auth.canBook" class="navigation-group" aria-labelledby="nav-patient-care">
+          <h2 id="nav-patient-care" class="nav-label">患者服务</h2>
+          <router-link to="/patients"><el-icon><User /></el-icon>患者档案</router-link>
+          <router-link to="/booking"><el-icon><Plus /></el-icon>患者代约</router-link>
+        </section>
+        <section v-if="auth.canManage" class="navigation-group" aria-labelledby="nav-institution">
+          <h2 id="nav-institution" class="nav-label">机构管理</h2>
+          <router-link to="/resources/clinics"><el-icon><OfficeBuilding /></el-icon>门诊机构</router-link>
+          <router-link to="/resources/doctors"><el-icon><FirstAidKit /></el-icon>医生档案</router-link>
+          <router-link to="/resources/services"><el-icon><Setting /></el-icon>预约服务</router-link>
+          <router-link to="/resources/chairs"><el-icon><Setting /></el-icon>牙椅资源</router-link>
+          <router-link to="/resources/qualifications"><el-icon><Setting /></el-icon>资质档案目录</router-link>
+        </section>
+        <section class="navigation-group" aria-labelledby="nav-business">
+          <h2 id="nav-business" class="nav-label">经营管理</h2>
+          <router-link to="/compensation"><el-icon><Coin /></el-icon>{{ compensationTitle }}</router-link>
+        </section>
+        <section class="navigation-group" aria-labelledby="nav-account">
+          <h2 id="nav-account" class="nav-label">账号管理</h2>
+          <router-link v-if="auth.isHq" to="/staff/accounts"><el-icon><User /></el-icon>员工账号与档案</router-link>
+          <router-link to="/change-password"><el-icon><Setting /></el-icon>修改密码</router-link>
+        </section>
       </nav>
       <div class="sidebar-note">
         <span class="live-dot"></span>员工协同工作台
         <p>时区 · 中国标准时间 UTC+8</p>
         <small>服务价格为预约参考价，实际诊疗费用以医生确认的方案为准。</small>
       </div>
-      <button class="account" @click="logout">
+      <button class="account" type="button" @click="logout">
         <span class="avatar">{{ auth.user?.displayName.slice(0, 1) }}</span
         ><span
           >{{ auth.user?.displayName }}<small>{{ auth.roleLabel }}</small></span
@@ -122,7 +119,7 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
     </aside>
     <div class="workspace">
       <header class="topbar">
-        <button class="mobile-menu" aria-label="展开导航" aria-controls="staff-navigation" :aria-expanded="menuOpen" @click="menuOpen = !menuOpen"><span></span><span></span><span></span></button>
+        <button class="mobile-menu" :aria-label="menuOpen ? '收起导航' : '展开导航'" aria-controls="staff-navigation" :aria-expanded="menuOpen" @click="menuOpen = !menuOpen"><span></span><span></span><span></span></button>
         <div class="breadcrumb">
           工作台 <el-icon><ArrowRight /></el-icon><strong>{{ title }}</strong>
         </div>
