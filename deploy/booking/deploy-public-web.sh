@@ -14,7 +14,11 @@ exec 9>/opt/andrew-backups/public-web.lock
 flock -n 9 || { echo 'Another website deployment is active' >&2; exit 1; }
 git -C "$BASE" fetch --quiet origin "$BRANCH"
 test "$(git -C "$BASE" rev-parse FETCH_HEAD)" = "$EXPECTED"
-if test ! -e "$RELEASE"; then git -C "$BASE" worktree add --detach "$RELEASE" "$EXPECTED"; fi
+if test ! -e "$RELEASE"; then
+  # Source files enter the static web image and must be readable by nginx.
+  # Keep backup/config permissions private, while Git uses normal source modes.
+  (umask 022; git -C "$BASE" worktree add --detach "$RELEASE" "$EXPECTED")
+fi
 test "$(git -C "$RELEASE" rev-parse HEAD)" = "$EXPECTED"
 test -z "$(git -C "$RELEASE" status --porcelain)"
 WEB=$(docker ps -q --filter label=com.docker.compose.project=andrew-preview --filter label=com.docker.compose.service=web)
