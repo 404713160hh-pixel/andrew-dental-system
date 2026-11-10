@@ -23,6 +23,16 @@
 
 该文件记录发布包和验证方式。是否已部署需以实际服务器输出和公网检查为准。
 
+## 实际发布结果
+
+2026-11-10 已将 `fc829bd20ce47c44b19fde436b20335d9bacd502` 部署到 `https://andrewdental.top/`。服务器返回 `Website deployed`；公网 `/site-release.json` 返回200及 `andrew-public-20261110-r1`，`/api/v1/health` 返回200、`status=ok`、`database=postgresql`。入口JS与CSS均返回200。
+
+首次发布时，发布标识静态文件因检出权限过严返回403，自动回滚完成。随后将源码检出的umask单独设为022，私有配置与回滚记录继续保持严格权限，重新发布成功。回滚入口：`/opt/andrew-backups/public-web-20261110T100955Z/rollback.sh`。脚本确认API、PostgreSQL和HTTPS容器ID均未改变。
+
+公网Chrome检查：首页、6项服务、8位虚构医生、2家门诊信息均已渲染；环境图片切换、大图打开关闭、下一位医生及预约指引下一步正常。图片加载完整，浏览器未记录Console error。390px视口首页未横向溢出，移动导航可以展开。仅检查公开展示交互，没有创建、取消或修改患者预约。正式小程序码仍待提供。
+
+实际页面截图保存在本机忽略目录 `.booking-data/deployment-web-20261110/`：`home-desktop.jpg`、`home-mobile.jpg`、`environment-desktop.jpg`、`server-deployed.jpg`。
+
 ## 尚缺素材
 
 没有正式小程序码资源，网页保留明确待配置提示；本发布不宣称扫码入口可用。
