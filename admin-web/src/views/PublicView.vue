@@ -1,7 +1,13 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch, type Directive } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import SiteIcp from '../components/SiteIcp.vue';
+import PublicFooter from '../components/PublicFooter.vue';
+import DoctorShowcase from '../components/DoctorShowcase.vue';
+import BookingGuide from '../components/BookingGuide.vue';
+import PublicNavigation from '../components/PublicNavigation.vue';
+import BrandIntroduction from '../components/BrandIntroduction.vue';
+import ServiceGallery from '../components/ServiceGallery.vue';
+import ClinicEnvironment from '../components/ClinicEnvironment.vue';
 import type { Clinic, PublicDoctor, Service } from '@andrew/shared';
 import hero from '../assets/clinic-light-v2.jpg';
 import clinicMotion from '../assets/clinic-motion.mp4';
@@ -9,7 +15,6 @@ import reception from '../assets/reception.jpg';
 import consultation from '../assets/consultation-v2.jpg';
 import treatmentRoom from '../assets/treatment-room.jpg';
 import preventive from '../assets/preventive-care.jpg';
-import patientExperience from '../assets/consultation-v2.jpg';
 import team from '../assets/team.jpg';
 import checkup from '../assets/checkup.jpg';
 import orthodontics from '../assets/care-detail-v2.jpg';
@@ -17,22 +22,25 @@ import demoDoctorsGrid from '../assets/demo-doctors-grid.png';
 import '../public-site.css';
 import '../hero-motion.css';
 import '../card-interaction.css';
+import '../public-navigation.css';
+import '../brand-story-transition.css';
+import '../public-tail.css';
 
 const route = useRoute();
-const menu = ref(false);
-const isMobile = ref(false);
 const motionAllowed = ref(false);
 const videoPlaying = ref(false);
 const userPausedVideo = ref(false);
 const videoFailed = ref(false);
 let motionQuery: MediaQueryList | undefined;
-let navQuery: MediaQueryList | undefined;
 const heroVideo = ref<HTMLVideoElement | null>(null);
 const heroFigure = ref<HTMLElement | null>(null);
+const heroSection = ref<HTMLElement | null>(null);
+let heroPointerQuery: MediaQueryList | undefined;
+let heroPointerX = 0;
+let heroPointerY = 0;
 let videoObserver: IntersectionObserver | undefined;
 let videoInView = true;
 let parallaxFrame = 0;
-const revealFallbackTimers = new WeakMap<HTMLElement, number>();
 function updateVideoPlayback() {
   const video = heroVideo.value;
   if (!video) return;
@@ -41,7 +49,11 @@ function updateVideoPlayback() {
     return;
   }
   void video.play().then(() => {
-    if (motionAllowed.value && !userPausedVideo.value && !document.hidden && videoInView) videoPlaying.value = true;
+    if (heroVideo.value !== video || !motionAllowed.value || videoFailed.value || userPausedVideo.value || document.hidden || !videoInView) {
+      video.pause();
+      return;
+    }
+    videoPlaying.value = true;
   }).catch(() => { videoPlaying.value = false; });
 }
 function toggleHeroVideo() {
@@ -79,77 +91,51 @@ watch(heroVideo, video => {
   }
   updateVideoPlayback();
 });
-function syncNavViewport() {
-  isMobile.value = !!navQuery?.matches;
-  if (!isMobile.value) menu.value = false;
-}
 function syncMotionPreference() {
   motionAllowed.value = !motionQuery?.matches;
   if (!motionAllowed.value) videoPlaying.value = false;
   updateVideoPlayback();
   queueHeroParallax();
 }
-const hasScrolled = ref(false);
-const serviceRail = ref<HTMLElement | null>(null);
-const canScrollBack = ref(false);
-const canScrollForward = ref(false);
-let revealObserver: IntersectionObserver | undefined;
-function revealElement(element: HTMLElement) {
-  element.classList.add('is-revealed');
-  revealObserver?.unobserve(element);
-  const timer = revealFallbackTimers.get(element);
-  if (timer) window.clearTimeout(timer);
-  revealFallbackTimers.delete(element);
-}
-const vReveal: Directive<HTMLElement> = {
-  mounted(element) {
-    // Start with visible content; only hide it once an observer can reveal it.
-    if (typeof IntersectionObserver === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    try {
-      revealObserver ||= new IntersectionObserver(entries => {
-        for (const entry of entries) if (entry.isIntersecting) revealElement(entry.target as HTMLElement);
-      }, { rootMargin: '0px 0px -6% 0px', threshold: 0.05 });
-      const siblingIndex = Array.from(element.parentElement?.children || []).indexOf(element);
-      element.style.setProperty('--reveal-delay', `${Math.min(Math.max(0, siblingIndex) * 75, 240)}ms`);
-      element.classList.add('will-reveal');
-      revealObserver.observe(element);
-      revealFallbackTimers.set(element, window.setTimeout(() => revealElement(element), 1800));
-    } catch {
-      element.classList.remove('will-reveal');
-      element.classList.add('is-revealed');
-    }
-  },
-  unmounted(element) {
-    revealObserver?.unobserve(element);
-    const timer = revealFallbackTimers.get(element);
-    if (timer) window.clearTimeout(timer);
-    revealFallbackTimers.delete(element);
-  },
-};
-function updateRail() {
-  const rail = serviceRail.value;
-  canScrollBack.value = Boolean(rail && rail.scrollLeft > 2);
-  canScrollForward.value = Boolean(rail && rail.scrollLeft + rail.clientWidth < rail.scrollWidth - 2);
-}
-function moveRail(direction: -1 | 1) {
-  const rail = serviceRail.value;
-  if (!rail) return;
-  const firstCard = rail.querySelector<HTMLElement>('.public-service-card');
-  const gap = Number.parseFloat(getComputedStyle(rail).columnGap) || 0;
-  const distance = firstCard ? firstCard.getBoundingClientRect().width + gap : rail.clientWidth * .8;
-  rail.scrollBy({ left: direction * distance, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
-}
-function updateHeader() { hasScrolled.value = window.scrollY > 12; }
 function updateHeroParallax() {
-  const figure = heroFigure.value;
-  if (!figure) return;
-  if (!motionAllowed.value || motionQuery?.matches || videoFailed.value) {
-    figure.style.setProperty('--hero-parallax-y', '0px');
-    return;
-  }
-  const bounds = figure.getBoundingClientRect();
-  const offset = Math.max(-16, Math.min(16, (window.innerHeight / 2 - (bounds.top + bounds.height / 2)) * 0.025));
-  figure.style.setProperty('--hero-parallax-y', `${offset.toFixed(1)}px`);
+  const element = heroSection.value;
+  if (!element) return;
+  const bounds = element.getBoundingClientRect();
+  const progress = Math.max(0, Math.min(1, -bounds.top / Math.max(bounds.height, 1)));
+  const enabled = motionAllowed.value && !document.hidden && !!heroPointerQuery?.matches && bounds.bottom > 0 && bounds.top < window.innerHeight;
+  const clamp = (value: number, limit: number) => Math.max(-limit, Math.min(limit, value));
+  const values = {
+    '--hero-bg-x': enabled ? heroPointerX * 6 : 0,
+    '--hero-bg-y': enabled ? clamp(heroPointerY * 4 - progress * 4, 6) : 0,
+    '--hero-image-x': enabled ? heroPointerX * 4 : 0,
+    '--hero-image-y': enabled ? clamp(heroPointerY * 3 - progress * 3, 4) : 0,
+    '--hero-copy-x': enabled ? heroPointerX * 2 : 0,
+    '--hero-copy-y': enabled ? clamp(heroPointerY - progress * 2, 2) : 0,
+  };
+  for (const [name, value] of Object.entries(values)) element.style.setProperty(name, `${value.toFixed(2)}px`);
+  element.style.setProperty('--hero-cue-opacity', motionAllowed.value ? String(Math.max(0, 1 - progress * 4)) : '1');
+  const exit = motionAllowed.value ? Math.max(0, Math.min(1, (progress - .2) / .65)) : 0;
+  element.style.setProperty('--hero-story-opacity', String(1 - exit * .95));
+  element.style.setProperty('--hero-story-y', `${(-exit * 24).toFixed(2)}px`);
+  element.style.setProperty('--hero-story-zoom', String(1 + exit * .035));
+  element.style.setProperty('--hero-story-line', String(motionAllowed.value ? Math.min(1, progress * 3) : 1));
+}
+function onHeroPointerMove(event: PointerEvent) {
+  const element = heroSection.value;
+  if (!element || !heroPointerQuery?.matches || event.pointerType === 'touch' || !motionAllowed.value) return;
+  const bounds = element.getBoundingClientRect();
+  heroPointerX = Math.max(-1, Math.min(1, (event.clientX - bounds.left) / bounds.width * 2 - 1));
+  heroPointerY = Math.max(-1, Math.min(1, (event.clientY - bounds.top) / bounds.height * 2 - 1));
+  queueHeroParallax();
+}
+function resetHeroPointer() {
+  heroPointerX = 0;
+  heroPointerY = 0;
+  queueHeroParallax();
+}
+function onPublicVisibilityChange() {
+  updateVideoPlayback();
+  queueHeroParallax();
 }
 function queueHeroParallax() {
   if (parallaxFrame) return;
@@ -158,12 +144,28 @@ function queueHeroParallax() {
     updateHeroParallax();
   });
 }
-function onPublicScroll() { updateHeader(); queueHeroParallax(); }
+function onPublicScroll() { queueHeroParallax(); }
 const services = ref<Service[]>([]);
 const doctors = ref<PublicDoctor[]>([]);
 const clinics = ref<Clinic[]>([]);
 const loading = ref(true);
 const failures = ref({ services: false, doctors: false, clinics: false });
+const retrying = ref({ services: false, doctors: false, clinics: false });
+async function retryDirectory(kind: 'services' | 'doctors' | 'clinics') {
+  if (retrying.value[kind]) return;
+  retrying.value[kind] = true;
+  try {
+    const response = await fetch('/api/v1/' + kind, { headers: { Accept: 'application/json' } });
+    if (!response.ok) throw new Error('资料暂时无法加载');
+    const data = (await response.json()).data;
+    if (!Array.isArray(data)) throw new Error('资料格式不正确');
+    if (kind === 'services') services.value = data;
+    else if (kind === 'doctors') doctors.value = data;
+    else clinics.value = data;
+    failures.value[kind] = false;
+  } catch { failures.value[kind] = true; }
+  finally { retrying.value[kind] = false; }
+}
 const section = computed(() => String(route.params.section || 'home'));
 const bookingGuideLocation = { path: '/', hash: '#booking' };
 const error = computed(() => failures.value[section.value === 'home' ? 'services' : section.value as 'services' | 'doctors' | 'clinics'] ? '资料暂时无法加载，请稍后重试。' : '');
@@ -213,63 +215,34 @@ async function load() {
   }
   finally { loading.value = false; }
 }
-onMounted(() => { motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)'); syncMotionPreference(); motionQuery.addEventListener('change', syncMotionPreference); navQuery = window.matchMedia('(max-width: 800px)'); syncNavViewport(); navQuery.addEventListener('change', syncNavViewport); document.addEventListener('visibilitychange', updateVideoPlayback); void load(); updateHeader(); queueHeroParallax(); window.addEventListener('resize', updateRail, { passive: true }); window.addEventListener('resize', queueHeroParallax, { passive: true }); window.addEventListener('scroll', onPublicScroll, { passive: true }); });
-onBeforeUnmount(() => { motionQuery?.removeEventListener('change', syncMotionPreference); navQuery?.removeEventListener('change', syncNavViewport); document.removeEventListener('visibilitychange', updateVideoPlayback); videoObserver?.disconnect(); revealObserver?.disconnect(); if (parallaxFrame) window.cancelAnimationFrame(parallaxFrame); window.removeEventListener('resize', updateRail); window.removeEventListener('resize', queueHeroParallax); window.removeEventListener('scroll', onPublicScroll); });
-watch([services, section, selectedId, loading], () => { void nextTick(updateRail); });
+onMounted(() => { motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)'); heroPointerQuery = window.matchMedia('(min-width: 1025px) and (hover: hover) and (pointer: fine)'); heroPointerQuery.addEventListener('change', resetHeroPointer); syncMotionPreference(); motionQuery.addEventListener('change', syncMotionPreference); document.addEventListener('visibilitychange', onPublicVisibilityChange); void load(); queueHeroParallax(); window.addEventListener('resize', queueHeroParallax, { passive: true }); window.addEventListener('scroll', onPublicScroll, { passive: true }); });
+onBeforeUnmount(() => { motionQuery?.removeEventListener('change', syncMotionPreference); heroPointerQuery?.removeEventListener('change', resetHeroPointer); document.removeEventListener('visibilitychange', onPublicVisibilityChange); videoObserver?.disconnect(); if (parallaxFrame) window.cancelAnimationFrame(parallaxFrame); window.removeEventListener('resize', queueHeroParallax); window.removeEventListener('scroll', onPublicScroll); });
+watch(heroSection, () => { void nextTick(queueHeroParallax); });
 </script>
 
 <template>
-  <div class="public-site" @keyup.esc="menu = false">
+  <div class="public-site">
     <div class="public-notice">课程演示 · 诊所场景素材示意，部分图片为 AI 生成</div>
-    <header class="public-header" :class="{ 'is-scrolled': hasScrolled, 'is-home': section === 'home' }">
-      <router-link to="/" class="public-brand" @click="menu = false">ANDREW <span>DENTAL</span><small>安德鲁牙科</small></router-link>
-      <button class="public-menu-button" type="button" :aria-label="menu ? '收起网站导航' : '展开网站导航'" :aria-expanded="menu" aria-controls="public-nav" @click="menu = !menu">{{ menu ? '关闭' : '菜单' }}</button>
-      <Transition name="public-nav">
-      <nav v-if="!isMobile || menu" id="public-nav" class="public-nav" :class="{ open: menu }" aria-label="网站导航" @click="menu = false">
-        <router-link to="/">首页</router-link>
-        <router-link to="/explore/services">诊疗服务</router-link>
-        <router-link to="/explore/doctors">医生团队</router-link>
-        <router-link to="/explore/clinics">门诊信息</router-link>
-        <router-link to="/#about">关于我们</router-link>
-        <router-link class="public-nav-login" to="/login">员工登录</router-link>
-        <router-link class="public-button public-button-dark" :to="bookingGuideLocation">微信小程序预约 <span aria-hidden="true">↗</span></router-link>
-      </nav>
-      </Transition>
-    </header>
+    <PublicNavigation />
 
     <Transition name="public-page">
-    <main v-if="section === 'home'" :key="route.path">
-      <section class="public-hero public-hero-motion">
-        <div class="public-hero-copy"><p class="public-eyebrow">A MORE THOUGHTFUL DENTAL EXPERIENCE</p>
-          <h1>让每一次就诊，<br><em>从容一点。</em></h1>
-          <p class="public-lead">从选择门诊到预约就诊，让口腔护理的每一步都清晰、安心。</p>
-          <div class="public-actions"><router-link class="public-button public-button-dark" :to="bookingGuideLocation">微信小程序预约 <span aria-hidden="true">↗</span></router-link><router-link class="public-button public-button-outline" to="/explore/services">探索诊疗服务 <span aria-hidden="true">↗</span></router-link></div>
+    <main v-if="section === 'home'" :key="route.path" class="public-story-flow">
+      <section ref="heroSection" class="public-hero public-hero-motion" aria-labelledby="hero-title" @pointermove="onHeroPointerMove" @pointerleave="resetHeroPointer">
+        <div class="public-hero-copy"><div class="hero-intro-motion"><p class="public-eyebrow hero-eyebrow">A MORE THOUGHTFUL DENTAL EXPERIENCE</p>
+          <h1 id="hero-title" aria-label="让每一次就诊，从容一点。"><span class="hero-title-line"><span>让每一次就诊，</span></span><span class="hero-title-line"><em>从容一点。</em></span></h1>
+          <p class="public-lead hero-description">从选择门诊到预约就诊，让口腔护理的每一步都清晰、安心。</p>
+          </div>
+          <div class="public-actions"><span class="hero-action-reveal"><router-link class="public-button public-button-dark" :to="bookingGuideLocation">微信小程序预约 <span aria-hidden="true">↗</span></router-link></span><span class="hero-action-reveal"><router-link class="public-button public-button-outline" to="/explore/services">探索诊疗服务 <span aria-hidden="true">↗</span></router-link></span></div>
+          <router-link class="hero-scroll-cue" to="/#about"><span class="hero-scroll-rule" aria-hidden="true"></span>继续了解<span aria-hidden="true">↓</span></router-link>
         </div>
-        <figure ref="heroFigure" class="public-hero-image"><img :src="hero" alt="" fetchpriority="high"><video v-if="motionAllowed && !videoFailed" ref="heroVideo" :class="{ playing: videoPlaying }" :src="clinicMotion" :poster="hero" muted loop playsinline aria-hidden="true" @playing="videoPlaying = true" @pause="videoPlaying = false" @error="failHeroVideo"></video><button v-if="motionAllowed && !videoFailed" type="button" class="public-video-control" :aria-pressed="videoPlaying" :aria-label="videoPlaying ? '暂停背景影像' : '播放背景影像'" @click="toggleHeroVideo">{{ videoPlaying ? '暂停影像' : '播放影像' }} <span aria-hidden="true">{{ videoPlaying ? 'Ⅱ' : '▶' }}</span></button><figcaption>诊所场景素材示意</figcaption></figure>
+        <figure ref="heroFigure" class="public-hero-image"><div class="hero-image-pan"><div class="hero-media-settle"><img :src="hero" alt="" fetchpriority="high"><video v-if="motionAllowed && !videoFailed" ref="heroVideo" :class="{ playing: videoPlaying }" :src="clinicMotion" :poster="hero" muted loop playsinline aria-hidden="true" @playing="videoPlaying = true" @pause="videoPlaying = false" @error="failHeroVideo"></video></div></div><button v-if="motionAllowed && !videoFailed" type="button" class="public-video-control" :aria-pressed="videoPlaying" :aria-label="videoPlaying ? '暂停背景影像' : '播放背景影像'" @click="toggleHeroVideo">{{ videoPlaying ? '暂停影像' : '播放影像' }} <span aria-hidden="true">{{ videoPlaying ? 'Ⅱ' : '▶' }}</span></button><figcaption>诊所场景素材示意</figcaption></figure>
+        <span class="hero-story-seam" aria-hidden="true"></span>
       </section>
-      <div class="public-values public-container"><div v-reveal><strong>01</strong><span>有序预约<small>选择适合的时间</small></span></div><div v-reveal><strong>02</strong><span>清晰沟通<small>了解服务与安排</small></span></div><div v-reveal><strong>03</strong><span>持续关怀<small>查看与管理预约</small></span></div></div>
-      <section id="about" class="public-about"><div class="public-container public-split"><figure v-reveal class="public-reveal-image"><img :src="reception" alt="牙科诊所接待区，AI 生成示意图" loading="lazy"><figcaption>接待空间 · 示意图</figcaption></figure><div v-reveal class="public-split-copy"><p class="public-eyebrow">ABOUT ANDREW DENTAL</p><h2>关注口腔健康，<br><em>也关注你的感受。</em></h2><p>我们希望让就诊过程更清晰：先了解门诊与服务，再选择合适的医生和时间。每一次到访，都从充分沟通开始。</p><router-link class="public-text-link" to="/explore/clinics">了解门诊 <span>↗</span></router-link></div></div></section>
-      <section class="public-section public-container"><div v-reveal class="public-section-heading"><div><p class="public-eyebrow">OUR SERVICES</p><h2>从日常护理开始</h2></div><div class="public-section-actions"><router-link class="public-text-link" to="/explore/services">查看全部服务 ↗</router-link><div v-if="services.length > 1" class="public-rail-controls" aria-label="服务列表翻页"><button type="button" aria-label="查看前面的服务" :disabled="!canScrollBack" @click="moveRail(-1)">←</button><button type="button" aria-label="查看后面的服务" :disabled="!canScrollForward" @click="moveRail(1)">→</button></div></div></div><p v-reveal class="public-intro">了解可预约的服务项目，选择适合自己的就诊安排。</p><div v-if="loading" class="public-state">正在加载服务信息…</div><div v-else-if="error" class="public-state">{{ error }} <button @click="load">重试</button></div><div v-else-if="!services.length" class="public-state">暂无可展示的服务项目。</div><div v-else ref="serviceRail" class="public-service-rail" tabindex="0" aria-label="诊疗服务，可左右滚动查看更多" @scroll.passive="updateRail"><router-link v-for="(item, index) in services.slice(0, 6)" :key="item.id" v-reveal :to="'/explore/services/' + item.id" class="public-service-card"><figure><img :src="serviceImage(item.name)" alt="牙科服务场景示意图" loading="lazy"><figcaption>场景示意</figcaption></figure><span class="public-number">0{{ index + 1 }}</span><strong>{{ item.name }}</strong><small>{{ serviceSummary(item.description) }}</small><span class="public-text-link">了解详情 ↗</span></router-link></div></section>
-      <section class="public-gallery-section"><div class="public-container"><div v-reveal class="public-section-heading"><div><p class="public-eyebrow">A CLOSER LOOK</p><h2>让照护回归日常</h2></div><p class="public-gallery-note">空间、交流与护理 · AI 生成示意</p></div><div class="public-gallery"><figure v-reveal class="public-gallery-main"><img :src="reception" alt="诊所空间 AI 生成示意图" loading="lazy"><figcaption>01 / 接待空间</figcaption></figure><figure v-reveal><img :src="orthodontics" alt="护理用品 AI 生成示意图" loading="lazy"><figcaption>02 / 日常护理</figcaption></figure><figure v-reveal><img :src="team" alt="牙科团队工作 AI 生成示意图" loading="lazy"><figcaption>03 / 团队协作</figcaption></figure></div></div></section>
-      <section class="public-about public-experience"><div class="public-container public-split"><div v-reveal class="public-split-copy"><p class="public-eyebrow">A MORE PERSONAL EXPERIENCE</p><h2>把时间留给<br><em>沟通与理解。</em></h2><p>口腔护理从了解个人需求开始。关于服务、时间和就诊安排，都可以在预约前仔细查看。</p><router-link class="public-text-link" to="/explore/doctors">认识医生团队 ↗</router-link></div><figure v-reveal class="public-reveal-image"><img :src="patientExperience" alt="医患交流，AI 生成场景示意图" loading="lazy"><figcaption>医患交流 · AI 生成示意图</figcaption></figure></div></section>
-      <section class="public-steps"><div class="public-container"><p v-reveal class="public-eyebrow">YOUR APPOINTMENT</p><h2 v-reveal>预约，简单四步</h2><div class="public-steps-grid"><div v-reveal><b>01</b><h3>选择门诊</h3><p>查看门诊与服务信息。</p></div><div v-reveal><b>02</b><h3>选择时间</h3><p>按医生和可约时段安排。</p></div><div v-reveal><b>03</b><h3>确认预约</h3><p>核对就诊人与预约信息。</p></div><div v-reveal><b>04</b><h3>管理预约</h3><p>随时查看、取消或改期。</p></div></div></div></section>
-      <section id="booking" v-reveal class="public-cta public-container">
-        <p class="public-eyebrow">PATIENT MINI PROGRAM</p>
-        <h2>通过微信小程序，轻松安排就诊</h2>
-        <p>进入安德鲁牙科患者小程序后，选择门诊、预约服务、医生和可预约时段；确认前请核对就诊人及预约规则。</p>
-        <div class="public-booking-guide">
-          <ol class="public-booking-steps">
-            <li><b>01</b><span>进入患者小程序，登录或完善本人资料。</span></li>
-            <li><b>02</b><span>选择门诊、服务、医生与可预约时间。</span></li>
-            <li><b>03</b><span>核对就诊人与规则后确认，并在预约列表查看结果。</span></li>
-          </ol>
-          <aside class="public-mini-code-slot" role="note" aria-label="小程序码待配置">
-            <div class="public-mini-code-outline" aria-hidden="true"><span>小程序码</span><small>待接入</small></div>
-            <p>正式小程序码尚未配置<br><strong>当前不可扫码</strong></p>
-          </aside>
-        </div>
-        <span class="public-booking-note">本演示网站未配置正式小程序码或直达链接；请使用已配置的患者端入口。</span>
-      </section>
+      <BrandIntroduction :image="reception" />
+      <ServiceGallery :services="services" :loading="loading || retrying.services" :error="failures.services ? '资料暂时无法加载，请稍后重试。' : ''" :image-for="serviceImage" @retry="retryDirectory('services')" />
+      <ClinicEnvironment />
+      <DoctorShowcase :doctors="doctors" :loading="loading || retrying.doctors" :error="failures.doctors ? '医生资料暂时无法加载，请稍后重试。' : ''" :portrait="demoPortrait" :clinics-for="doctorClinics" @retry="retryDirectory('doctors')" />
+      <BookingGuide />
     </main>
     <main v-else :key="route.path" class="public-container public-explore">
       <router-link to="/" class="public-back">← 返回首页</router-link>
@@ -293,6 +266,6 @@ watch([services, section, selectedId, loading], () => { void nextTick(updateRail
       </template>
     </main>
     </Transition>
-    <footer class="public-footer"><div class="public-container public-footer-inner"><div><router-link to="/" class="public-brand">ANDREW <span>DENTAL</span><small>安德鲁牙科</small></router-link><p>让每一次就诊，从容一点。</p><small>课程演示项目 · 图片为场景示意</small></div><div><strong>探索</strong><router-link to="/explore/services">诊疗服务</router-link><router-link to="/explore/doctors">医生团队</router-link><router-link to="/explore/clinics">门诊信息</router-link></div><div><strong>预约与协作</strong><router-link :to="bookingGuideLocation">微信小程序预约</router-link><router-link to="/login">员工工作台</router-link></div></div><div class="public-container public-copyright">© ANDREW DENTAL · 课程演示 <SiteIcp /></div></footer>
+    <PublicFooter :clinics="clinics" :loading="loading || retrying.clinics" :error="failures.clinics" @retry="retryDirectory('clinics')" />
   </div>
 </template>

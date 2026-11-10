@@ -1,12 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { nextTick } from 'vue';
 import { useAuth } from './stores/auth';
 export const router = createRouter({
   history: createWebHistory(),
-  scrollBehavior(to, from, savedPosition) {
+  async scrollBehavior(to, from, savedPosition) {
     if (savedPosition) return savedPosition;
     if (to.hash) {
+      await nextTick();
       const target = document.getElementById(to.hash.slice(1));
-      return target ? { el: target, top: 100 } : { top: 0 };
+      return target ? { el: target, top: 100, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' } : { top: 0 };
     }
     return to.path !== from.path ? { top: 0 } : false;
   },

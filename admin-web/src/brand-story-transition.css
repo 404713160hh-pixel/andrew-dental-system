@@ -1,0 +1,51 @@
+/* Only the seams between the existing hero, story and services. */
+.public-site main.public-story-flow { background:#fcfbf9; }
+.public-story-flow .public-hero-motion .public-hero-copy {
+  translate:0 var(--hero-story-y,0px);
+}
+.public-story-flow .public-hero-motion .hero-intro-motion { opacity:var(--hero-story-opacity,1); }
+.public-story-flow .public-hero-motion .public-hero-copy:focus-within { translate:none; }
+.public-story-flow .public-hero-motion .public-hero-copy:focus-within .hero-intro-motion { opacity:1; }
+.public-story-flow .public-hero-motion .hero-image-pan { scale:var(--hero-story-zoom,1); }
+.public-story-flow .hero-story-seam {
+  position:absolute;
+  right:max(56px,calc((100vw - 1280px)/2));
+  bottom:1px;
+  width:32%;
+  height:1px;
+  z-index:2;
+  pointer-events:none;
+  background:rgba(183,154,107,.45);
+  transform:scaleX(var(--hero-story-line,0));
+  transform-origin:left;
+}
+.public-story-flow > .brand-introduction.public-about {
+  position:relative;
+  margin-top:0;
+  padding-top:0;
+}
+.public-story-flow > .story-services { padding-top:44px; }
+.public-story-flow.story-motion-enabled > .story-services .public-section-heading {
+  translate:0 calc((1 - var(--story-services-progress,1))*18px);
+  opacity:calc(.4 + var(--story-services-progress,1)*.6);
+}
+.public-story-flow.story-motion-enabled > .story-services .public-service-card:first-child {
+  translate:0 calc((1 - var(--story-services-progress,1))*16px);
+  opacity:calc(.35 + var(--story-services-progress,1)*.65);
+}
+/* Stay within the rail's existing 18px bottom padding, including late-loaded cards. */
+.public-story-flow > .story-services .public-service-card.will-reveal:not(.is-revealed) { transform:translateY(16px); }
+.public-story-flow.story-motion-enabled > .story-services .public-service-card:first-child:focus-visible { translate:none; opacity:1; }
+@media(max-width:800px) {
+  .public-story-flow > .story-services { padding-top:32px; }
+  .public-story-flow .hero-story-seam { right:20px; width:24%; }
+  .public-story-flow .public-hero-motion .public-hero-image figcaption { bottom:100px; right:20px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .public-story-flow .public-hero-motion .public-hero-copy { translate:none; }
+  .public-story-flow .public-hero-motion .hero-intro-motion { opacity:1; }
+  .public-story-flow .public-hero-motion .hero-image-pan { scale:1; }
+  .public-story-flow .hero-story-seam { transform:none; }
+  .public-story-flow.story-motion-enabled > .story-services .public-section-heading,
+  .public-story-flow.story-motion-enabled > .story-services .public-service-card:first-child { translate:none; opacity:1; }
+}

@@ -15,7 +15,7 @@ function compile(source,modules,expose=''){
 function guardFor(auth){
  let callback;const routes=[];
  const mockRouter={createWebHistory:()=>({}),createRouter(options){routes.push(...options.routes);return {beforeEach(cb){callback=cb;}};}};
- compile(readFileSync(new URL('../src/router.ts',import.meta.url),'utf8'),{'vue-router':mockRouter,'./stores/auth':{useAuth:()=>auth}});
+ compile(readFileSync(new URL('../src/router.ts',import.meta.url),'utf8'),{vue,'vue-router':mockRouter,'./stores/auth':{useAuth:()=>auth}});
  return {callback,routes};
 }
 const target=(path,meta={})=>({path,fullPath:path,meta});
