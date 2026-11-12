@@ -95,9 +95,8 @@
 .booking-step-detail p { color:#777066; font-size:14px; line-height:1.95; max-width:460px; }
 .booking-step-controls { display:flex; gap:14px; margin-top:24px; }
 .mini-program-entry { display:flex; align-items:center; gap:28px; min-width:0; }
-.mini-code-pending { flex-shrink:0; width:140px; height:140px; border:1px dashed #b4a38b; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:#8e795b; }
-.mini-code-pending span { font-size:13px; }
-.mini-code-pending strong { font-size:18px; font-weight:500; }
+.mini-program-code { display:block; flex-shrink:0; width:168px; padding:8px; box-sizing:border-box; background:#fff; border:1px solid #e5ded2; border-radius:10px; }
+.mini-program-code img { display:block; width:100%; height:auto; }
 .public-site .mini-entry-title { font-size:15px; margin-bottom:12px; }
 .mini-entry-note { font-size:12px; line-height:1.9; color:#887d6d; }
 .branded-footer { position:relative; background:#242424; color:#f5f2ed; padding-top:118px; padding-bottom:28px; margin-top:24px; }
@@ -123,7 +122,7 @@
 .footer-clinics button { border:0; background:none; color:#d2b58b; padding:8px; cursor:pointer; }
 .branded-footer .public-text-link { color:#d2b58b; }
 .branded-footer .mini-program-entry { display:block; }
-.branded-footer .mini-code-pending { width:116px; height:116px; margin-bottom:20px; border-color:#776a58; color:#c8ae88; }
+.branded-footer .mini-program-code { width:136px; margin-bottom:20px; }
 .branded-footer .mini-entry-title { color:#ddd1bf; font-size:13px; }
 .branded-footer .mini-entry-note { color:#a9a49d; }
 .branded-footer .compact .public-text-link { margin-top:16px; font-size:12px; }
@@ -151,7 +150,7 @@
  .booking-step-number { grid-row:1/3; font-size:28px; margin:0; }
  .booking-timeline strong { font-size:18px; margin-bottom:8px; }
  .booking-guide-bottom { grid-template-columns:1fr; gap:36px; }
- .mini-code-pending { width:116px; height:116px; }
+ .mini-program-code { width:136px; }
  .mini-program-entry { gap:18px; }
  .mini-entry-title { font-size:13px; }
  .branded-footer { padding-top:96px; margin-top:0; }
