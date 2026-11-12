@@ -1,0 +1,21 @@
+<view class="page education-page">
+  <block wx:if="{{article}}">
+    <view class="education-topic">{{article.topic}}</view>
+    <view class="title">{{article.title}}</view>
+    <view class="card education-section"><view class="section-title">为什么会出现</view><view>{{article.cause}}</view></view>
+    <view class="card education-section"><view class="section-title">日常预防</view><view>{{article.prevention}}</view></view>
+    <view class="card education-section"><view class="section-title">就诊后怎么护理</view><view>{{article.aftercare}}</view></view>
+    <view class="notice">治疗与护理以接诊牙医的个体化建议为准。出现呼吸或吞咽困难，请立即就医。</view>
+    <button class="secondary" bindtap="copySource">复制参考来源</button>
+    <view class="footer-note">{{article.source.label}}</view>
+  </block>
+  <block wx:else>
+    <view class="title">爱牙科普</view>
+    <view class="muted">按就诊项目了解常见原因、日常预防和护理。</view>
+    <view class="card education-list">
+      <navigator wx:for="{{articles}}" wx:key="id" url="/pages/education/index?id={{item.id}}" class="education-row" hover-class="tap-soft">
+        <view><view class="education-topic">{{item.topic}}</view><view>{{item.title}}</view></view><text aria-hidden="true">›</text>
+      </navigator>
+    </view>
+  </block>
+</view>

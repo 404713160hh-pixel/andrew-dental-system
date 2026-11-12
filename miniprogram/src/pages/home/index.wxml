@@ -1,44 +1,52 @@
 <view class="page home-page">
   <view class="home-banner">
-    <image class="banner-image" src="/assets/clinic-hero.jpg" mode="aspectFill" aria-label="门诊场景示意" />
+    <image class="banner-image" src="/assets/clinic-hero-blue-v2.jpg" mode="aspectFill" aria-label="AI 生成的门诊场景示意" />
     <view class="banner-shade"></view>
-    <view class="banner-title">安德鲁牙科</view>
-    <text class="banner-caption">场景示意</text>
+    <view class="banner-content">
+      <view class="banner-title">预约口腔就诊</view>
+      <view class="banner-copy">选择门诊、医生与就诊时间</view>
+      <button class="banner-action" hover-class="banner-action-pressed" bindtap="startBooking">立即预约 <text>→</text></button>
+    </view>
+    <text class="banner-caption">AI 场景示意</text>
   </view>
+
   <view class="entry-panel">
-    <view class="primary-entries">
-      <view class="feature-entry booking-entry" hover-class="card-pressed" bindtap="startBooking" role="button" aria-label="在线预约，选择医生与时段">
-        <image class="feature-icon" src="/assets/tabbar/appointments-active.png" />
-        <view><view class="feature-title">在线预约</view><view class="feature-subtitle">选择医生与时段</view></view>
-      </view>
-      <view class="feature-entry clinic-entry" hover-class="card-pressed" bindtap="clinics" role="button" aria-label="门诊位置，查看地址与电话">
-        <image class="feature-icon" src="/assets/tabbar/clinics-active.png" />
-        <view><view class="feature-title">门诊位置</view><view class="feature-subtitle">地址与电话</view></view>
-      </view>
-    </view>
     <view class="home-shortcuts">
-      <view hover-class="tap-soft" bindtap="doctors" role="button"><view class="shortcut-icon team-icon"><image src="/assets/tabbar/doctors-active.png" /></view><text>医生团队</text></view>
-      <view hover-class="tap-soft" bindtap="prices" role="button"><view class="shortcut-icon project-icon"><image src="/assets/tabbar/treatment-active.png" /></view><text>项目参考</text></view>
-      <view hover-class="tap-soft" bindtap="appointments" role="button"><view class="shortcut-icon appointment-icon"><image src="/assets/tabbar/appointments-active.png" /></view><text>我的预约</text></view>
-      <view hover-class="tap-soft" bindtap="profile" role="button"><view class="shortcut-icon profile-icon"><image src="/assets/tabbar/profile-active.png" /></view><text>就诊资料</text></view>
+      <view hover-class="tap-soft" bindtap="doctors" role="button" aria-label="查看医生团队"><view class="shortcut-icon"><image src="/assets/tabbar/doctors-active.png" /></view><text>医生团队</text></view>
+      <view hover-class="tap-soft" bindtap="clinics" role="button" aria-label="查看门诊位置"><view class="shortcut-icon"><image src="/assets/tabbar/clinics-active.png" /></view><text>门诊位置</text></view>
+      <view hover-class="tap-soft" bindtap="prices" role="button" aria-label="查看项目参考"><view class="shortcut-icon"><image src="/assets/tabbar/treatment-active.png" /></view><text>项目参考</text></view>
+      <view hover-class="tap-soft" bindtap="appointments" role="button" aria-label="查看我的预约"><view class="shortcut-icon"><image src="/assets/tabbar/appointments-active.png" /></view><text>我的预约</text></view>
     </view>
+    <view class="profile-entry" hover-class="tap-soft" bindtap="profile" role="button"><view><view class="profile-entry-title">就诊资料</view></view><text>查看 ›</text></view>
   </view>
+
   <view wx:if="{{demoEnabled}}" class="demo-home-notice">演示数据，请勿填写真实医疗信息。</view>
   <view wx:if="{{error}}" class="error">{{error}}<button class="secondary space" bindtap="load">重试</button></view>
   <view wx:if="{{loading && !doctorsPreview.length}}" class="loading">加载中…</view>
   <view class="home-section">
-    <view class="home-section-heading"><view class="section-title">医生团队</view><view class="section-link" bindtap="doctors" hover-class="tap-soft">全部医生 ›</view></view>
+    <view class="home-section-heading">
+      <view class="section-title">爱牙科普</view>
+      <navigator class="section-link" url="/pages/education/index">全部文章 ›</navigator>
+    </view>
+    <navigator wx:for="{{educationPreview}}" wx:key="id" class="home-service" url="/pages/education/index?id={{item.id}}" hover-class="tap-soft">
+      <view class="service-icon"><image src="/assets/tabbar/treatment-active.png" mode="aspectFit" /></view>
+      <view class="grow"><view class="service-name">{{item.title}}</view><view class="service-meta">{{item.topic}}</view></view>
+      <text class="service-arrow">›</text>
+    </navigator>
+  </view>
+  <view class="home-section">
+    <view class="home-section-heading"><view><view class="section-title">医生团队</view></view><view class="section-link" bindtap="doctors" hover-class="tap-soft">全部医生 ›</view></view>
     <view class="home-doctor-list">
       <view wx:for="{{doctorsPreview}}" wx:key="id" class="home-doctor-card" hover-class="card-pressed" data-id="{{item.id}}" bindtap="doctorDetail">
         <view class="home-portrait"><image wx:if="{{item.hasPortrait}}" class="doctor-sprite" src="/assets/demo-doctors-grid.jpg" mode="scaleToFill" style="left: -{{item.portraitCol * 100}}%; top: -{{item.portraitRow * 100}}%;" aria-label="虚构医生肖像"/><view wx:else class="portrait-initial">{{item.initial}}</view><text wx:if="{{item.isDemo}}">虚构</text></view>
-        <view class="home-doctor-name">{{item.shortName}}</view><view class="home-doctor-specialty">{{item.focusLabels[0] || item.specialty}}</view>
+        <view class="grow"><view class="home-doctor-name">{{item.shortName}}</view><view class="home-doctor-specialty">{{item.focusLabels[0] || item.specialty}}</view></view>
       </view>
     </view>
     <view wx:if="{{!loading && !error && !doctorsPreview.length}}" class="home-empty">暂无医生信息</view>
   </view>
   <view class="home-section">
-    <view class="home-section-heading"><view class="section-title">预约服务</view><view class="section-link" bindtap="book" hover-class="tap-soft">全部服务 ›</view></view>
-    <view wx:for="{{services}}" wx:key="id" class="home-service" hover-class="tap-soft" data-id="{{item.id}}" bindtap="service"><view class="grow"><view class="service-name">{{item.name}}</view><view class="service-meta">约 {{item.durationMinutes}} 分钟 · 参考费 ¥{{item.priceLabel}} / {{item.unit}}</view></view><text class="service-arrow">›</text></view>
+    <view class="home-section-heading"><view><view class="section-title">预约服务</view></view><view class="section-link" bindtap="book" hover-class="tap-soft">全部服务 ›</view></view>
+    <view wx:for="{{services}}" wx:key="id" class="home-service" hover-class="tap-soft" data-id="{{item.id}}" bindtap="service"><view class="service-icon"><image src="/assets/tabbar/treatment-active.png" mode="aspectFit" /></view><view class="grow"><view class="service-name">{{item.name}}</view><view class="service-meta">约 {{item.durationMinutes}} 分钟 · 参考费 ¥{{item.priceLabel}} / {{item.unit}}</view></view><text class="service-arrow">›</text></view>
     <view wx:if="{{!loading && !error && !services.length}}" class="home-empty">暂无预约服务</view>
   </view>
 </view>

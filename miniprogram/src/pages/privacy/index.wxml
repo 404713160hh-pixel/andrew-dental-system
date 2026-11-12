@@ -1,0 +1,37 @@
+<view class="page privacy-page">
+  <view class="title">小程序隐私协议</view>
+  <view wx:if="{{loading}}" class="loading">正在读取协议…</view>
+  <view wx:elif="{{error}}" class="error">{{error}}<button class="secondary space" bindtap="load">重试</button></view>
+  <block wx:elif="{{notice}}">
+    <view class="privacy-meta">
+      <view>版本 {{notice.policyVersion}}</view>
+      <view>信息处理方　{{notice.controller}}</view>
+      <view>联系方式　<text selectable>{{notice.contact}}</text></view>
+    </view>
+    <view class="privacy-section">
+      <view class="section-title">预约与就诊资料</view>
+      <view>注册使用账号、密码和本人就诊资料。就诊资料包括姓名、出生日期、联系电话，以及按表单填写的电子邮箱、地址和紧急联系人。预约时记录门诊、服务、医生、时段及预约状态。</view>
+      <view>{{notice.purpose}}</view>
+      <view>同一就诊档案可用于安德鲁连锁门诊的预约和接诊。资料提交后在系统内保存，员工按职责、授权范围和就诊任务查阅。常规预约和接诊资料用于连锁门诊内部协作。依法需另行提供时，处理方会按实际情形履行相应义务。</view>
+    </view>
+    <view class="privacy-section">
+      <view class="section-title">健康信息与未成年人</view>
+      <view>过敏情况等健康信息用于接诊风险核对，需要单独同意。未满 14 周岁的患者由父母或其他监护人填写并确认，系统记录监护人姓名及关系。</view>
+    </view>
+    <view class="privacy-section">
+      <view class="section-title">头像与账号安全</view>
+      <view>可以自愿上传头像，头像仅在本人账号内显示。可随时在「我的」中更换或移除。系统记录必要的登录、同意和业务操作记录，用于核对账号与业务操作。</view>
+    </view>
+    <view class="privacy-section">
+      <view class="section-title">保存与资料管理</view>
+      <view>保存期限　{{notice.retention}}</view>
+      <view>可在「我的」查看或修改资料，也可联系信息处理方申请查阅、更正或删除。依法应保存的资料按规定处理。</view>
+      <view>可在「我的」撤回隐私同意。撤回后，在线查询和管理预约将暂停，已有预约请联系门诊。</view>
+    </view>
+    <view class="privacy-section">
+      <view class="section-title">同意与版本变更</view>
+      <view>阅读本页后，请返回表单分别确认个人资料使用和健康信息处理。有效版本内，更换门诊沿用已有同意。协议更新时按小程序提示重新确认。</view>
+    </view>
+    <button class="primary space" bindtap="back">返回上一页</button>
+  </block>
+</view>

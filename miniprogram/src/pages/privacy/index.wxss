@@ -1,0 +1,4 @@
+.privacy-meta { display: grid; gap: 8rpx; padding: 22rpx 24rpx; background: #eff6ff; border-radius: 16rpx; color: #334155; overflow-wrap: anywhere; }
+.privacy-section { margin-top: 28rpx; padding-bottom: 18rpx; border-bottom: 1rpx solid #e5eaf2; }
+.privacy-section .section-title { margin-bottom: 8rpx; }
+.privacy-section > view + view { margin-top: 8rpx; line-height: 1.8; }

@@ -14,7 +14,7 @@ function locationView(clinic: Clinic) {
 
 Page({
   requestSequence: 0,
-  data: { loading: false, error: '', clinics: [] as ReturnType<typeof locationView>[] },
+  data: { loading: false, error: '', expandedId: '', clinics: [] as ReturnType<typeof locationView>[] },
   onShow() { void this.load(); },
   onUnload() { this.requestSequence++; },
   async onPullDownRefresh() { await this.load(); wx.stopPullDownRefresh(); },
@@ -38,6 +38,10 @@ Page({
     const clinic = this.data.clinics.find(item => item.id === String(event.currentTarget.dataset.id));
     if (!clinic?.phone || clinic.isDemo) return;
     wx.makePhoneCall({ phoneNumber: clinic.phone });
+  },
+  toggleDetails(event: WechatMiniprogram.BaseEvent) {
+    const id = String(event.currentTarget.dataset.id ?? '');
+    if (this.data.clinics.some(item => item.id === id)) this.setData({ expandedId: this.data.expandedId === id ? '' : id });
   },
   doctors(event: WechatMiniprogram.BaseEvent) {
     const clinic = this.data.clinics.find(item => item.id === String(event.currentTarget.dataset.id));

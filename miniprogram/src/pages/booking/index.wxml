@@ -1,22 +1,70 @@
 <view class="page booking-page">
-  <van-steps custom-class="booking-steps" steps="{{steps}}" active="{{0}}" active-color="#9e8257" inactive-color="#91a4ad" />
+  <view class="journey-progress"><view class="journey-item {{bookingStep === 0 ? 'current' : bookingStep > 0 ? 'passed' : ''}}"><view class="journey-number">1</view><text>门诊项目</text></view><view class="journey-item {{bookingStep === 1 ? 'current' : bookingStep > 1 ? 'passed' : ''}}"><view class="journey-number">2</view><text>选择医生</text></view><view class="journey-item {{bookingStep === 2 ? 'current' : bookingStep > 2 ? 'passed' : ''}}"><view class="journey-number">3</view><text>日期时段</text></view><view class="journey-item {{bookingStep === 3 ? 'current' : bookingStep > 3 ? 'passed' : ''}}"><view class="journey-number">4</view><text>核对资料</text></view><view class="journey-item {{bookingStep === 4 ? 'current' : bookingStep > 4 ? 'passed' : ''}}"><view class="journey-number">5</view><text>预约完成</text></view></view>
   <view class="title">{{oldAppointmentId ? '选择新时段' : isFollowup ? '复诊预约' : '选择号源'}}</view><view class="muted intro">{{oldAppointmentId ? '确认新时段后，原预约自动替换。' : isFollowup ? '核对本次项目，选择下次就诊时间；门诊和医生可调整。' : '选定时段后，请及时确认。'}}</view>
   <view wx:if="{{pending}}" class="notice">有一笔预约操作结果待确认。<view class="link space" bindtap="pendingPage">去核对原操作 →</view></view>
-  <view class="card booking-filter"><view class="filter-heading"><view class="section-title">门诊与项目</view><text class="small muted">时间均为北京时间</text></view><text class="label">门诊</text><picker range="{{clinics}}" range-key="name" value="{{clinicIndex}}" bindchange="clinicChange" disabled="{{loading || searching || holding || !clinics.length}}"><view class="picker">{{clinics[clinicIndex].name || (catalogFailed ? '门诊资料读取未完成' : '暂无开放门诊')}} ▾</view></picker>
-    <text class="label">项目</text><picker range="{{services}}" range-key="name" value="{{serviceIndex}}" bindchange="serviceChange" disabled="{{loading || searching || holding || !services.length}}"><view class="picker">{{serviceUnavailable ? '请选择其他开放咨询服务' : services[serviceIndex].name || (catalogFailed ? '服务资料读取未完成' : '暂无可预约服务')}} ▾</view></picker>
-    <view wx:if="{{services.length && !serviceUnavailable}}" class="service-summary"><view class="space">约 {{services[serviceIndex].durationMinutes}} 分钟</view><view>本次服务参考费 ¥{{services[serviceIndex].priceLabel}} / {{services[serviceIndex].unit}}</view><view class="fee-explanation">后续治疗及材料费用以面诊为准。</view></view>
-    <view class="two-columns"><view><text class="label">日期</text><picker mode="date" start="{{minDate}}" end="{{calendarEndDate}}" value="{{date}}" bindchange="dateChange" disabled="{{loading || searching || holding}}"><view class="picker">{{date}}</view></picker></view><view><text class="label">医生</text><picker range="{{doctorNames}}" value="{{doctorIndex}}" bindchange="doctorChange" disabled="{{loading || searching || holding || catalogFailed}}"><view class="picker">{{doctorUnavailable ? '请重新选择匹配医生' : doctorNames[doctorIndex]}} ▾</view></picker></view></view>
-    <view class="date-heading"><text class="label">选择日期</text><button class="calendar-button" bindtap="openCalendar" disabled="{{loading || searching || holding || catalogFailed || !policy}}">打开日历 <text>▦</text></button></view>
-    <scroll-view scroll-x class="quick-date-scroll"><view class="quick-date-list"><view wx:for="{{quickDates}}" wx:key="date" class="quick-date {{item.date === date ? 'quick-date-selected' : ''}} {{loading || searching || holding ? 'quick-date-disabled' : ''}}" hover-class="date-pressed" data-date="{{item.date}}" bindtap="quickDate"><text>{{item.label}}</text><view>{{item.number}}</view><text class="quick-date-month">{{item.month}}</text></view></view></scroll-view>
-    <view wx:if="{{doctorIndex > 0}}" class="doctor-info"><view class="demo-label-row"><view class="section-title">{{doctors[doctorIndex - 1].name}}</view><text wx:if="{{doctors[doctorIndex - 1].isDemo}}" class="demo-badge">虚构医生</text></view><view class="muted">{{doctors[doctorIndex - 1].specialty}}</view></view>
-    <button class="primary space" bindtap="search" loading="{{searching || loading}}" disabled="{{loading || searching || holding || catalogFailed || !services.length || serviceUnavailable || doctorUnavailable}}">查询号源</button>
+  <view class="card booking-filter">
+    <view wx:if="{{bookingStep === 0}}">
+      <view class="filter-heading">
+        <view class="section-title">门诊与项目</view>
+        <text class="small muted">北京时间</text>
+      </view>
+      <text class="label">门诊</text>
+      <picker range="{{clinics}}" range-key="name" value="{{clinicIndex}}" bindchange="clinicChange" disabled="{{loading || searching || holding || !clinics.length}}">
+        <view class="picker">{{clinics[clinicIndex].name || (catalogFailed ? '门诊资料读取未完成' : '暂无开放门诊')}} ▾</view>
+      </picker>
+      <text class="label">项目</text>
+      <picker range="{{services}}" range-key="name" value="{{serviceIndex}}" bindchange="serviceChange" disabled="{{loading || searching || holding || !services.length}}">
+        <view class="picker">{{serviceUnavailable ? '请选择其他开放咨询服务' : services[serviceIndex].name || (catalogFailed ? '服务资料读取未完成' : '暂无可预约服务')}} ▾</view>
+      </picker>
+      <view wx:if="{{services.length && !serviceUnavailable}}" class="service-summary">
+        <view wx:if="{{services[serviceIndex].description}}" class="service-description">{{services[serviceIndex].description}}</view>
+        <view class="space">约 {{services[serviceIndex].durationMinutes}} 分钟</view>
+        <view>服务参考费 ¥{{services[serviceIndex].priceLabel}} / {{services[serviceIndex].unit}}</view>
+        <view class="fee-explanation">后续治疗及材料费用以面诊为准。</view>
+      </view>
+    </view>
+    <view wx:else class="selection-summary">
+      <text>{{clinics[clinicIndex].name}}</text><text> / </text><text>{{services[serviceIndex].name}}</text>
+    </view>
+    <view wx:if="{{bookingStep === 1}}" class="step-section">
+      <view class="section-title">选择医生</view>
+      <picker class="doctor-picker" range="{{doctorNames}}" value="{{doctorIndex}}" bindchange="doctorChange" disabled="{{loading || searching || holding || catalogFailed}}">
+        <view class="picker">{{doctorUnavailable ? '请重新选择匹配医生' : doctorNames[doctorIndex]}} ▾</view>
+      </picker>
+      <view wx:if="{{doctorIndex > 0}}" class="doctor-info">
+        <view class="demo-label-row"><view class="section-title">{{doctors[doctorIndex - 1].name}}</view><text wx:if="{{doctors[doctorIndex - 1].isDemo}}" class="demo-badge">虚构医生</text></view>
+        <view class="muted">{{doctors[doctorIndex - 1].specialty}}</view>
+      </view>
+    </view>
+    <view wx:if="{{bookingStep === 2}}" class="step-section">
+      <view class="date-heading">
+        <view class="section-title">选择日期</view>
+        <button class="calendar-button" bindtap="openCalendar" disabled="{{loading || searching || holding || catalogFailed || !policy}}">打开日历 <text>▦</text></button>
+      </view>
+      <scroll-view scroll-x class="quick-date-scroll">
+        <view class="quick-date-list">
+          <view wx:for="{{quickDates}}" wx:key="date" class="quick-date {{item.date === date ? 'quick-date-selected' : ''}} {{loading || searching || holding ? 'quick-date-disabled' : ''}}" hover-class="date-pressed" data-date="{{item.date}}" bindtap="quickDate">
+            <text>{{item.label}}</text><view>{{item.number}}</view><text class="quick-date-month">{{item.month}}</text>
+          </view>
+        </view>
+      </scroll-view>
+      <picker mode="date" start="{{minDate}}" end="{{calendarEndDate}}" value="{{date}}" bindchange="dateChange" disabled="{{loading || searching || holding}}">
+        <view class="picker space">{{date}} ▾</view>
+      </picker>
+    </view>
+    <view class="step-controls">
+      <button wx:if="{{bookingStep > 0}}" class="secondary step-back" bindtap="previousBookingStep" disabled="{{loading || searching || holding}}">上一步</button>
+      <button wx:if="{{bookingStep === 0}}" class="primary step-next" bindtap="nextBookingStep" disabled="{{loading || searching || holding || catalogFailed || !clinics.length || !services.length || serviceUnavailable}}">下一步：选择医生</button>
+      <button wx:if="{{bookingStep === 1}}" class="primary step-next" bindtap="nextBookingStep" disabled="{{loading || searching || holding || catalogFailed || doctorUnavailable || !policy}}">下一步：选择时间</button>
+      <button wx:if="{{bookingStep === 2}}" class="primary search-slots-button" bindtap="search" loading="{{searching || loading}}" disabled="{{loading || searching || holding || catalogFailed || !services.length || serviceUnavailable || doctorUnavailable}}">查询号源</button>
+    </view>
   </view>
   <view wx:if="{{error}}" class="error"><view wx:if="{{catalogFailed}}" class="feedback-title">资料加载失败</view>{{error}}<button wx:if="{{catalogFailed}}" class="secondary space" bindtap="retryLoad" disabled="{{loading || searching || holding}}">重试</button></view>
-  <van-loading wx:if="{{loading}}" custom-class="booking-loading" color="#9e8257" size="24px" vertical>正在加载…</van-loading><van-loading wx:if="{{searching}}" custom-class="booking-loading" color="#9e8257" size="24px" vertical>正在查询…</van-loading>
+  <van-loading wx:if="{{loading}}" custom-class="booking-loading" color="#2563EB" size="24px" vertical>正在加载…</van-loading><van-loading wx:if="{{searching}}" custom-class="booking-loading" color="#2563EB" size="24px" vertical>正在查询…</van-loading>
   <van-empty wx:if="{{!loading && !catalogFailed && !error && !clinics.length}}" image="" description="暂未开放门诊"><view slot="image" class="empty-calendar"><view></view><text>＋</text></view><view class="empty-help">请稍后查看或联系门诊。</view></van-empty>
   <van-empty wx:if="{{!loading && !catalogFailed && !error && clinics.length && !services.length}}" image="" description="暂无可预约项目"><view slot="image" class="empty-calendar"><view></view><text>＋</text></view><view class="empty-help">请切换门诊或稍后查看。</view></van-empty>
-  <block wx:if="{{queried && !error}}"><view wx:if="{{!signedIn}}" class="notice">登录后可预约。<view class="link space" bindtap="login">登录 / 注册 →</view></view><view class="row result-heading"><view class="section-title">{{date}} 的时段</view><text class="muted">{{slots.length}} 个可选</text></view><van-empty wx:if="{{!slots.length}}" image="" description="当天暂无匹配时段"><view slot="image" class="empty-calendar"><view></view><text>○</text></view><view class="empty-help">请更换日期、门诊或医生。</view><button class="secondary space" bindtap="openCalendar">更换日期</button></van-empty>
-    <view wx:for="{{slotGroups}}" wx:for-item="group" wx:key="key" class="slot-period"><view class="period-heading"><view class="period-title"><view class="period-dot {{group.key}}"></view>{{group.title}}</view><text>{{group.indices.length}} 个时段</text></view><view class="slot-grid"><view wx:for="{{group.indices}}" wx:for-item="slotIndex" wx:key="*this" class="card slot-card"><view class="slot-time">{{slots[slotIndex].startLabel}}<text>—{{slots[slotIndex].endLabel}}</text></view><view class="muted">{{slots[slotIndex].doctorName}} · {{slots[slotIndex].durationMinutes}} 分钟</view><text wx:if="{{slots[slotIndex].doctorIsDemo}}" class="demo-badge">虚构医生</text><view class="slot-price">本次参考费 ¥{{slots[slotIndex].priceLabel}}</view><button class="secondary" data-index="{{slotIndex}}" bindtap="choose" disabled="{{!signedIn || loading || searching || holding || pending}}" loading="{{holding}}">{{signedIn ? '选择时段' : '登录后预约'}}</button></view></view></view>
-  </block>
-  <van-calendar show="{{calendarVisible}}" title="选择日期" color="#9e8257" min-date="{{calendarMin}}" max-date="{{calendarMax}}" default-date="{{calendarDate}}" first-day-of-week="{{1}}" readonly="{{loading || searching || holding}}" confirm-text="确认日期" bind:close="closeCalendar" bind:confirm="calendarConfirm" />
+  <view hidden="{{bookingStep !== 2}}"><block wx:if="{{queried && !error}}"><view wx:if="{{!signedIn}}" class="notice">登录后可预约。<view class="link space" bindtap="login">登录 / 注册 →</view></view><view class="row result-heading"><view><view class="booking-kicker">查询结果</view><view class="section-title">{{date}} 的时段</view></view><text class="muted">{{slots.length}} 个可选</text></view><van-empty wx:if="{{!slots.length}}" image="" description="当天暂无匹配时段"><view slot="image" class="empty-calendar"><view></view><text>○</text></view><view class="empty-help">请更换日期、门诊或医生。</view><button class="secondary space" bindtap="openCalendar">更换日期</button></van-empty>
+    <view wx:for="{{slotGroups}}" wx:for-item="group" wx:key="key" class="slot-period"><view class="period-heading"><view class="period-title"><view class="period-dot {{group.key}}"></view>{{group.title}}</view><text>{{group.indices.length}} 个时段</text></view><view class="slot-grid"><button wx:for="{{group.indices}}" wx:for-item="slotIndex" wx:key="*this" class="slot-option" data-index="{{slotIndex}}" bindtap="choose" disabled="{{!signedIn || loading || searching || holding || pending}}" loading="{{holding}}"><view class="slot-time">{{slots[slotIndex].startLabel}}<text>—{{slots[slotIndex].endLabel}}</text></view><view class="slot-meta">{{slots[slotIndex].doctorName}} · {{slots[slotIndex].durationMinutes}} 分钟</view><text wx:if="{{slots[slotIndex].doctorIsDemo}}" class="demo-badge">虚构医生</text><view class="slot-price">参考费 ¥{{slots[slotIndex].priceLabel}}</view><view class="slot-action">{{signedIn ? '选择时段' : '登录后预约'}} →</view></button></view></view>
+  </block></view>
+  <van-calendar show="{{calendarVisible}}" title="选择日期" color="#2563EB" min-date="{{calendarMin}}" max-date="{{calendarMax}}" default-date="{{calendarDate}}" first-day-of-week="{{1}}" readonly="{{loading || searching || holding}}" confirm-text="确认日期" bind:close="closeCalendar" bind:confirm="calendarConfirm" />
 </view>

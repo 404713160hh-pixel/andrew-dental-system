@@ -1,15 +1,16 @@
 <view class="page clinics-page">
-  <view class="location-heading"><view class="title">门诊</view><text class="muted small">{{clinics.length}} 家门诊</text></view>
+  <view class="location-heading"><view><view class="title">选择门诊</view><view class="location-subtitle">查看门诊信息与可约号源</view></view><text class="location-count">{{clinics.length}} 家门诊</text></view>
   <view wx:if="{{error}}" class="error">{{error}}<button class="secondary space" bindtap="load">重试</button></view>
   <view wx:if="{{loading && !clinics.length}}" class="loading">加载中…</view>
   <view wx:for="{{clinics}}" wx:key="id" class="location-card">
     <view wx:if="{{item.demoImage}}" class="location-photo"><image src="{{item.demoImage}}" mode="aspectFill" aria-label="虚构门诊场景示意"/><text>AI 场景示意</text></view>
     <view class="location-body">
-      <view class="location-title">{{item.name}}</view>
-      <text wx:if="{{item.isDemo}}" class="location-demo">虚构门诊</text>
+      <view class="location-title-row"><view class="location-title">{{item.name}}</view><text wx:if="{{item.isDemo}}" class="location-demo">虚构门诊</text></view>
       <view class="location-info"><text class="info-label">地址</text><text class="info-value">{{item.address || '暂未公布'}}</text></view>
       <view wx:if="{{item.openingHours}}" class="location-info"><text class="info-label">时间</text><text class="info-value">{{item.openingHours}}</text></view>
       <view wx:if="{{item.phone}}" class="location-info"><text class="info-label">电话</text><text class="info-value">{{item.phone}}</text></view>
+      <button class="details-toggle" data-id="{{item.id}}" bindtap="toggleDetails">{{expandedId === item.id ? '收起门诊介绍' : '查看门诊介绍'}} <text>{{expandedId === item.id ? '−' : '+'}}</text></button>
+      <view wx:if="{{expandedId === item.id}}" class="location-details"><view>{{item.description || '暂无门诊介绍'}}</view><view wx:if="{{item.email}}" class="location-info"><text class="info-label">邮箱</text><text class="info-value">{{item.email}}</text></view></view>
       <view class="contact-actions"><button class="contact-button" data-id="{{item.id}}" bindtap="copyAddress" disabled="{{!item.address}}">复制地址</button><button class="contact-button" data-id="{{item.id}}" bindtap="call" disabled="{{!item.phone || item.isDemo}}">{{item.isDemo ? '演示电话' : '拨打电话'}}</button></view>
       <view class="location-actions"><button class="secondary" data-id="{{item.id}}" bindtap="doctors">查看医生</button><button class="primary" data-id="{{item.id}}" bindtap="book">查看号源</button></view>
     </view>

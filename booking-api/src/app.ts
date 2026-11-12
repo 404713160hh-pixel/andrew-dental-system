@@ -5,7 +5,7 @@ import rateLimit from '@fastify/rate-limit';
 import type pg from 'pg';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
-import type { Principal,Clinic,Doctor,Service,Chair,Qualification,Shift,Appointment,Patient,Page,TreatmentReference } from '@andrew/shared';
+import type { Principal,Clinic,Doctor,Service,Chair,Qualification,Shift,Appointment,Patient,PatientAvatar,Page,TreatmentReference } from '@andrew/shared';
 import type { Config } from './config.js';
 import { one,transaction,iso } from './db.js';
 import { AppError,requireThat,databaseError } from './errors.js';
@@ -21,6 +21,7 @@ import { registerStaffProfileRoutes } from './staff-profiles.js';
 import { registerCompensationRoutes } from './compensation.js';
 import { registerPatientInviteRoutes } from './patient-invites.js';
 import { registerDoctorProfileRoutes } from './doctor-profile.js';
+import { parsePatientAvatar } from './patient-avatar.js';
 import { PRIVACY_VERSION,PRIVACY_PURPOSE,privacyInput,recordConsent,hasCurrentConsent } from './privacy.js';
 type Shape={Params:Record<string,string>;Querystring:Record<string,string>;Body:unknown};
 type Request=FastifyRequest<Shape>;
@@ -40,7 +41,8 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
  });
  app.setNotFoundHandler((req,reply)=>reply.code(404).send({error:{code:'NOT_FOUND',message:'接口不存在'},requestId:req.id}));
  function route(method:HTTPMethods,path:string,auth:'none'|'required'|'optional',handler:Handler){
-  app.route<Shape>({method,url:'/api/v1'+path,config:path.startsWith('/auth/')?{rateLimit:{max:config.NODE_ENV==='test'?1000:30,timeWindow:'1 minute'}}:{},handler:async req=>{
+  app.route<Shape>({method,url:'/api/v1'+path,config:path.startsWith('/auth/')?{rateLimit:{max:config.NODE_ENV==='test'?1000:30,timeWindow:'1 minute'}}:{},handler:async (req,reply)=>{
+   if(path==='/patients/me/avatar')reply.header('Cache-Control','no-store');
    let user=auth==='required'||auth==='optional'&&req.headers.authorization?await authenticate(pool,req.headers.authorization):undefined;
    requireThat(!user?.mustChangePassword || ['/me','/auth/change-password','/auth/logout'].includes(path),403,'PASSWORD_CHANGE_REQUIRED','请先修改临时密码');
    const demoPatient=config.NODE_ENV!=='production'&&demoUsers.some(([name,,portal])=>portal==='patient'&&name===user?.username);
@@ -103,6 +105,24 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
   await db.query('DELETE FROM sessions WHERE token_hash=$1',[tokenHash(req.headers.authorization!.slice(7))]);await audit(db,user!.id,'auth.logout',user!.id,req.id);return {loggedOut:true};
  }));
  route('GET','/patients/me','required',async(_req,user)=>{requireThat(user!.patientId,403,'PATIENT_ONLY','此入口仅用于患者');return getPatient(pool,user!.patientId);});
+ route('GET','/patients/me/avatar','required',async(_req,user):Promise<PatientAvatar|null>=>{
+  const patientId=user!.patientId;requireThat(patientId,403,'PATIENT_ONLY','此入口仅用于患者');
+  const avatar=await one<{mime_type:PatientAvatar['mimeType'];image_bytes:Buffer}>(pool,
+   'SELECT mime_type,image_bytes FROM patient_avatars WHERE patient_id=$1',[patientId]);
+  return avatar ? {mimeType:avatar.mime_type,base64:avatar.image_bytes.toString('base64')} : null;
+ });
+ route('PUT','/patients/me/avatar','required',async(req,user)=>{
+  const patientId=user!.patientId;requireThat(patientId,403,'PATIENT_ONLY','此入口仅用于患者');
+  const avatar=parsePatientAvatar(req.body);
+  return transaction(pool,async db=>{
+   if(avatar)await db.query(`INSERT INTO patient_avatars(patient_id,mime_type,image_bytes) VALUES($1,$2,$3)
+    ON CONFLICT(patient_id) DO UPDATE SET mime_type=EXCLUDED.mime_type,image_bytes=EXCLUDED.image_bytes`,
+    [patientId,avatar.mimeType,avatar.bytes]);
+   else await db.query('DELETE FROM patient_avatars WHERE patient_id=$1',[patientId]);
+   await audit(db,user!.id,avatar?'patient.avatar.updated':'patient.avatar.removed',patientId,req.id);
+   return {mimeType:avatar?.mimeType??null};
+  });
+ });
  route('PUT','/patients/me','required',async(req,user)=>{
   const patientId=user!.patientId;requireThat(patientId,403,'PATIENT_ONLY','此入口仅用于患者');
   const {expectedVersion,...raw}=z.record(z.string(),z.unknown()).parse(req.body);const expected=version.parse(expectedVersion);const input=profile.parse(raw);

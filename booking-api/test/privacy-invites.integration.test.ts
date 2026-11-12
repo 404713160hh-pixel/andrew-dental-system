@@ -44,6 +44,29 @@ test('public doctor directory omits employee contact data while headquarters may
  assert.ok(managed.some(d=>'phone' in d&&'employeeNo' in d));
 });
 
+test('avatar persists for its patient, supports replacement and removal, and requires current consent',async()=>{
+ const first=data<LoginResult>(await req('POST','/auth/register',undefined,{username:'avatar.first',password,profile:adult,consent:adultConsent}));
+ const second=data<LoginResult>(await req('POST','/auth/register',undefined,{username:'avatar.second',password,profile:adult,consent:adultConsent}));
+ const path='/patients/me/avatar';
+ const png='iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jBFsAAAAASUVORK5CYII=';
+ assert.equal((await req('GET',path)).statusCode,401);
+ assert.equal((await req('PUT',path,hq,{base64:png})).statusCode,403);
+ assert.equal((await req('PUT',path,first,{base64:Buffer.from('<svg>invalid avatar</svg>').toString('base64')})).statusCode,400);
+ assert.equal(data(await req('GET',path,first)),null);
+ assert.deepEqual(data(await req('PUT',path,first,{base64:png})),{mimeType:'image/png'});
+ const reauthenticated=await login('avatar.first','patient');
+ const image=await req('GET',path,reauthenticated);
+ assert.equal(image.headers['cache-control'],'no-store');
+ assert.deepEqual(data(image),{mimeType:'image/png',base64:png});
+ assert.equal(data(await req('GET',path,second)),null);
+ assert.ok(!('avatar' in (data<object>(await req('GET','/patients/me',first)))));
+ assert.deepEqual(data(await req('PUT',path,first,{base64:null})),{mimeType:null});
+ assert.equal(data(await req('GET',path,first)),null);
+ data(await req('PUT',path,first,{base64:png}));
+ data(await req('POST','/privacy/withdraw',first,{confirm:true}));
+ assert.equal((await req('GET',path,first)).statusCode,403);
+});
+
 test('current chain notice permits exact reception identity lookup while medical details stay restricted',async()=>{
  const own=await intake(clinicId,front),other=await intake(otherClinicId);
  const list=data<{items:Record<string,unknown>[]}>(await req('GET','/staff/patients?q='+encodeURIComponent(adult.name),front));

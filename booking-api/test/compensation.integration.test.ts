@@ -50,7 +50,7 @@ before(async()=>{
  });
  originalStaff=(await db.query('SELECT to_jsonb(s) AS value FROM staff s ORDER BY id')).rows;
  originalAppointments=(await db.query('SELECT to_jsonb(a) AS value FROM appointments a ORDER BY id')).rows;
- assert.deepEqual(await migrate(db),['008_staff_compensation.sql']);
+ assert.deepEqual(await migrate(db),['008_staff_compensation.sql','009_patient_avatars.sql']);
  app=await createApp(loadConfig({NODE_ENV:'test',DATABASE_URL:url.toString(),ALLOW_DEMO_LOGIN:'false'}),db);await app.ready();
  maker=await login('hq');manager=await login('manager.a');front=await login('front.a');doctor=await login('doctor.a');patient=await login('patient.a','patient');
  clinics=(await db.query('SELECT id,name FROM clinics ORDER BY id')).rows;doctors=(await db.query('SELECT id,employee_no,name FROM staff WHERE is_dentist ORDER BY employee_no')).rows;

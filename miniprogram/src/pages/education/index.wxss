@@ -1,0 +1,8 @@
+.education-topic { color: #1d4ed8; font-size: 23rpx; font-weight: 650; }
+.education-section { line-height: 1.8; }
+.education-section .section-title { margin-bottom: 10rpx; }
+.education-list { margin-top: 24rpx; }
+.education-row { display: flex; align-items: center; justify-content: space-between; gap: 12rpx; padding: 20rpx 0; border-bottom: 1rpx solid #eef2f7; }
+.education-row:first-child { padding-top: 0; }
+.education-row:last-child { padding-bottom: 0; border-bottom: 0; }
+.education-row > text { color: #2563eb; font-size: 38rpx; }

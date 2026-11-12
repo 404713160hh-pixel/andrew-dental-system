@@ -1,3 +1,21 @@
- .success-banner{text-align:center;padding:36rpx 28rpx;margin-bottom:28rpx;background:#fcfbf9;border:1rpx solid #eae7e1;border-radius:16rpx}.success-symbol{width:90rpx;height:90rpx;line-height:90rpx;border:1rpx solid #b79a6b;border-radius:50%;color:#9e8257;font-size:50rpx;margin:0 auto 18rpx}.success-banner .title{font-size:40rpx}.detail-time{font-size:34rpx;font-weight:600;line-height:1.6;margin-top:16rpx;word-break:break-word}.detail-time .muted{font-size:24rpx;font-weight:400}.number{font-size:27rpx;line-height:1.75;letter-spacing:1rpx;font-weight:600;margin-top:10rpx;word-break:break-all}.event{display:flex;gap:20rpx;line-height:1.85;margin:28rpx 0}.event-dot{background:#b79a6b;width:13rpx;height:13rpx;border-radius:50%;margin-top:15rpx;flex-shrink:0}
+ .success-banner{text-align:center;padding:36rpx 28rpx;margin-bottom:28rpx;background:#f8fafc;border:1rpx solid #e5eaf2;border-radius:16rpx}.success-symbol{width:90rpx;height:90rpx;line-height:90rpx;border:1rpx solid #2563eb;border-radius:50%;color:#2563eb;font-size:50rpx;margin:0 auto 18rpx}.success-banner .title{font-size:40rpx}.detail-time{font-size:34rpx;font-weight:600;line-height:1.6;margin-top:16rpx;word-break:break-word}.detail-time .muted{font-size:24rpx;font-weight:400}.number{font-size:27rpx;line-height:1.75;letter-spacing:1rpx;font-weight:600;margin-top:10rpx;word-break:break-all}.event{display:flex;gap:20rpx;line-height:1.85;margin:28rpx 0}.event-dot{background:#2563eb;width:13rpx;height:13rpx;border-radius:50%;margin-top:15rpx;flex-shrink:0}
 
 .detail-page .card>.row{align-items:flex-start;gap:24rpx}.detail-page .card>.row>view{flex:1;min-width:0}.detail-page .detail-value{line-height:1.75;word-break:break-word}.detail-page .card>.muted{line-height:1.85}.detail-page .card>.section-title.space{margin-top:24rpx;margin-bottom:18rpx}.detail-page .event .small{line-height:1.8}
+
+.detail-page .detail-heading{margin-bottom:24rpx}
+.detail-page .detail-heading .title{margin-bottom:0}
+.detail-page .detail-kicker{font-size:21rpx;color:#2563eb;font-weight:600;letter-spacing:1rpx}
+.detail-page .success-banner{background:#eff6ff;border-color:#e5eaf2;border-radius:20rpx}
+.detail-page .success-symbol{border-color:#2563eb;color:#2563eb}
+.detail-page .detail-summary{border-color:#e5eaf2;box-shadow:0 8rpx 28rpx rgba(37,99,235,.05)}
+.detail-page .detail-actions{border-color:#e5eaf2}
+.detail-page .event-dot{background:#2563eb}
+
+/* Five actual stages; only reached stages are highlighted. */
+.journey-progress{display:flex;justify-content:space-between;gap:4rpx;background:#fff;border:1rpx solid #e5eaf2;border-radius:20rpx;padding:20rpx 12rpx 18rpx;margin-bottom:28rpx}
+.journey-item{flex:1;min-width:0;text-align:center;font-size:20rpx;line-height:1.35;color:#64748b;white-space:nowrap}
+.journey-number{width:38rpx;height:38rpx;line-height:38rpx;margin:0 auto 8rpx;border-radius:50%;background:#f8fafc;color:#64748b;font-size:21rpx;font-weight:600}
+.journey-item.passed .journey-number{background:#e8f1ff;color:#1d4ed8}
+.journey-item.current{color:#1d4ed8;font-weight:600}
+.journey-item.current .journey-number{background:#2563eb;color:#fff}
+@media(max-width:350px){.journey-progress{padding-left:4rpx;padding-right:4rpx}.journey-item{font-size:18rpx}}

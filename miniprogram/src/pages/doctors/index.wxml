@@ -5,7 +5,7 @@
   <view wx:for="{{doctors}}" wx:key="id" class="card team-card" hover-class="card-pressed" data-id="{{item.id}}" bindtap="openDoctor">
     <view class="team-top"><view wx:if="{{item.hasPortrait}}" class="doctor-avatar"><image class="doctor-sprite" src="/assets/demo-doctors-grid.jpg" mode="scaleToFill" style="left: -{{item.portraitCol * 100}}%; top: -{{item.portraitRow * 100}}%;" aria-label="AI 生成的虚构医生示意图"/></view><view class="grow"><view class="name-line"><text class="doctor-name">{{item.shortName}}</text></view><view class="doctor-specialty">{{item.specialty}}</view><text wx:if="{{item.isDemo}}" class="demo-badge team-demo">虚构资料</text></view></view>
     <view class="doctor-location">{{item.clinicLabel}}</view>
-    <view class="team-footer"><text class="link">查看排班 →</text></view>
+    <view class="team-footer"><text class="link">查看医生详情 →</text></view>
   </view>
   <view wx:if="{{!loading && !error && !doctors.length}}" class="empty">暂无医生排班，请切换门诊。</view>
 </view>

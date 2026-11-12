@@ -1,28 +1,7 @@
-.doctors-page { padding-top: 32rpx; }
-.doctor-filter { display: flex; align-items: center; justify-content: space-between; padding: 26rpx 28rpx; gap: 24rpx; border: 1rpx solid #e6e2d9; border-radius: 16rpx; margin-bottom: 28rpx; }
-.filter-summary { flex: 1; min-width: 0; }
-.doctor-filter .section-title { font-size: 28rpx; line-height: 1.5; margin: 0 0 6rpx; }
-.doctor-filter .small { font-size: 22rpx; }
-.doctor-filter picker { max-width: 58%; min-width: 0; }
-.filter-choice { display: flex; align-items: center; gap: 14rpx; min-height: 76rpx; background: #f7f5ef; border: 1rpx solid #e6e1d8; border-radius: 10rpx; padding: 16rpx 20rpx; font-size: 24rpx; }
-.filter-value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.filter-arrow { flex-shrink: 0; color: #8a704e; }
-.team-card { padding: 30rpx; margin-bottom: 28rpx; border: 1rpx solid #e6e2d9; border-radius: 18rpx; }
-.team-top { display: flex; align-items: flex-start; gap: 24rpx; }
-.doctor-avatar { width: 144rpx; height: 144rpx; flex-shrink: 0; position: relative; overflow: hidden; border-radius: 12rpx; background: #f4f0e8; }
-.doctor-avatar image { width: 100%; height: 100%; display: block; }
-.doctor-avatar image.doctor-sprite { position: absolute; width: 400%; height: 200%; max-width: none; }
-.name-line { line-height: 1.5; }
-.doctor-name { font-family: "Noto Serif SC","Songti SC",serif; font-size: 31rpx; font-weight: 600; line-height: 1.5; word-break: break-all; }
-.doctor-specialty { font-size: 24rpx; color: #625d55; margin-top: 12rpx; line-height: 1.8; word-break: break-all; }
-.team-demo { margin-top: 14rpx; font-size: 18rpx; padding: 3rpx 9rpx; }
-.doctor-location { margin-top: 24rpx; padding: 16rpx 20rpx; border-radius: 10rpx; background: #f7f5f0; font-size: 23rpx; color: #625d55; line-height: 1.8; word-break: break-all; }
-.team-footer { display: flex; align-items: center; justify-content: flex-end; padding-top: 20rpx; margin-top: 22rpx; border-top: 1rpx solid #ece8e0; }
-.team-footer .link { font-size: 24rpx; line-height: 1.7; }
-@media (max-width: 350px) {
-  .team-card { padding: 26rpx; }
-  .team-top { gap: 20rpx; }
-  .doctor-avatar { width: 132rpx; height: 132rpx; }
-  .doctor-name { font-size: 30rpx; }
-  .doctor-filter { padding: 24rpx 26rpx; gap: 18rpx; }
-}
+.doctors-page{padding-top:32rpx}
+.doctor-filter{display:flex;align-items:center;justify-content:space-between;gap:20rpx;padding:24rpx;margin-bottom:24rpx;border:1rpx solid #dbeafe;border-radius:20rpx;background:#fff;box-shadow:0 6rpx 20rpx rgba(37,99,235,.05)}
+.filter-summary{flex:1;min-width:0}.doctor-filter .section-title{margin:0 0 4rpx;font-size:30rpx;line-height:1.45}.doctor-filter .small{font-size:22rpx}.doctor-filter picker{max-width:62%;min-width:0}
+.filter-choice{display:flex;align-items:center;gap:12rpx;min-height:76rpx;padding:14rpx 18rpx;border:1rpx solid #bfdbfe;border-radius:14rpx;background:#eff6ff;color:#1d4ed8;font-size:24rpx}.filter-value{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.filter-arrow{flex-shrink:0;color:#2563eb}
+.team-card{padding:26rpx;margin-bottom:20rpx;border:1rpx solid #e5eaf2;border-radius:20rpx;background:#fff;box-shadow:0 8rpx 24rpx rgba(15,23,42,.04)}.team-top{display:flex;align-items:center;gap:22rpx}.doctor-avatar{position:relative;flex-shrink:0;width:136rpx;height:136rpx;overflow:hidden;border-radius:18rpx;background:#eff6ff}.doctor-avatar image{display:block;width:100%;height:100%}.doctor-avatar image.doctor-sprite{position:absolute;width:400%;height:200%;max-width:none}.name-line{line-height:1.5}.doctor-name{font-family:inherit;font-size:32rpx;font-weight:700;line-height:1.45;word-break:break-all;color:#111827}.doctor-specialty{margin-top:8rpx;color:#475569;font-size:24rpx;line-height:1.7;word-break:break-all}.team-demo{margin-top:10rpx;font-size:19rpx;padding:4rpx 10rpx}
+.doctor-location{margin-top:22rpx;padding:16rpx 18rpx;border-radius:14rpx;background:#f5f8ff;color:#475569;font-size:23rpx;line-height:1.7;word-break:break-all}.team-footer{display:flex;align-items:center;justify-content:flex-end;margin-top:18rpx;padding-top:16rpx;border-top:1rpx solid #eef2f7}.team-footer .link{font-size:24rpx;line-height:1.6}
+@media(max-width:350px){.doctor-filter{padding:20rpx;gap:14rpx}.team-card{padding:22rpx}.team-top{gap:16rpx}.doctor-avatar{width:116rpx;height:116rpx}.doctor-name{font-size:29rpx}}

@@ -1,5 +1,5 @@
 {
-  "release": "andrew-public-20261110-r1",
-  "branch": "codex/deploy-public-site-20261110",
-  "scope": "public website visual refresh"
+  "release": "andrew-workspace-20261112-r1",
+  "branch": "feat/postgres-booking-20261022",
+  "scope": "staff workspace and patient mini program"
 }

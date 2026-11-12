@@ -8,6 +8,7 @@ export interface LoginResult { token: string; expiresAt: string; user: Principal
 export interface AuthConfig { demoLoginEnabled: boolean; demoAccounts: {username: string; displayName: string; portal: 'patient' | 'staff'}[]; wechatLoginEnabled: boolean }
 export interface Patient { id: string; name: string; birthDate: string; phone: string; email: string | null; billingAddress: string; emergencyName: string; emergencyPhone: string; allergyStatus: AllergyStatus; allergies: string[]; rowVersion: number; isDemo?: boolean }
 export type PatientInput = Omit<Patient, 'id' | 'rowVersion' | 'isDemo'>;
+export interface PatientAvatar { mimeType: 'image/jpeg' | 'image/png'; base64: string }
 export interface PatientCandidate { id:string; name:string; phone:string; birthYear:string; hasAccount:boolean; isDemo?:boolean }
 export interface Clinic { id: string; name: string; address: string; phone: string; email: string; timezone: 'Asia/Shanghai'; active: boolean; rowVersion: number; description?: string | null; openingHours?: string | null }
 export interface Qualification { id: string; name: string; active: boolean; rowVersion: number }

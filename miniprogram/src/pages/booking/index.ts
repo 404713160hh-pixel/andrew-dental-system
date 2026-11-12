@@ -12,7 +12,7 @@ Page({
     clinicIndex: 0, serviceIndex: 0, doctorIndex: 0, date: dateToday(), minDate: dateToday(), calendarEndDate: '',
     calendarVisible: false, calendarMin: calendarTimestamp(dateToday()), calendarMax: calendarTimestamp(dateToday()), calendarDate: calendarTimestamp(dateToday()),
     quickDates: quickDateChoices(dateToday()), slotGroups: [] as SlotGroup[],
-    steps: [{ text: '选择时段', desc: '门诊 · 医生 · 日期' }, { text: '核对确认', desc: '核对就诊人与规则' }, { text: '预约完成', desc: '获取预约编号' }],
+    bookingStep: 0,
     slots: [] as (ReturnType<typeof slotView> & { doctorIsDemo: boolean })[], policy: null as BookingQueryPolicy | null,
     oldAppointmentId: '', oldVersion: 0, isFollowup: false, preferredClinicId: '', preferredServiceId: '', preferredDoctorId: '',
     serviceUnavailable: false, doctorUnavailable: false, pending: false, signedIn: false,
@@ -27,6 +27,20 @@ Page({
     if (this.data.policy && this.data.minDate < dateToday() && !this.data.loading && !this.data.holding) void this.load();
   },
   onUnload() { this.setData({ requestVersion: this.data.requestVersion + 1 }); },
+  nextBookingStep() {
+    if (this.data.loading || this.data.searching || this.data.holding || this.data.catalogFailed) return;
+    if (this.data.bookingStep === 0) {
+      if (!this.data.clinics.length || !this.data.services.length || this.data.serviceUnavailable) return;
+      this.setData({ bookingStep: 1 });
+    } else if (this.data.bookingStep === 1) {
+      if (this.data.doctorUnavailable || !this.data.policy) return;
+      this.setData({ bookingStep: 2 });
+    }
+  },
+  previousBookingStep() {
+    if (this.data.loading || this.data.searching || this.data.holding) return;
+    if (this.data.bookingStep > 0) this.setData({ bookingStep: this.data.bookingStep - 1 });
+  },
   async load() {
     if (this.data.holding) return;
     const version = this.data.requestVersion + 1;

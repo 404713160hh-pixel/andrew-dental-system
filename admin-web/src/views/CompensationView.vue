@@ -1,24 +1,28 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Plus, Refresh } from '@element-plus/icons-vue';
 import type { CompensationContext, FinancialSourceInput, IncentiveAllocation, IncentiveMonth, IncentiveMonthInput, IncentivePayment, IncentiveQuarter, IncentiveQuarterDetail, MyCompensation } from '@andrew/shared';
 import { api, errorText, query } from '../api';
 import { useAuth } from '../stores/auth';
 import { money } from '../utils';
+import FinancialOverview from '../components/FinancialOverview.vue';
 import { centsToYuan, compensationStatuses, independentReviewer, previousQuarter, quarterMonths, yuanToCents } from '../compensation-view';
 
 const auth = useAuth();
 const canManage = computed(() => auth.isHq || !!auth.user?.roles.includes('manager'));
-const tab = ref(auth.isHq ? 'quarters' : canManage.value ? 'months' : 'mine');
-const pageTitle = computed(() => auth.isHq ? '季度业绩与激励' : canManage.value ? '月度业绩与激励' : '我的季度激励');
+const tab = ref(canManage.value ? 'overview' : 'mine');
+const pageTitle = computed(() => canManage.value ? '经营激励工作台' : '我的季度激励');
 const quarter = ref(previousQuarter()), clinicId = ref('');
 const context = ref<CompensationContext | null>(null), months = ref<IncentiveMonth[]>([]), quarters = ref<IncentiveQuarter[]>([]);
 const mine = ref<MyCompensation>({ staffId: null, notice: null, allocations: [] });
 const loading = ref(false), busy = ref(false), error = ref(''), formError = ref('');
+const reportReady = ref(false);
+const history = ref<IncentiveQuarter[]>([]);
 let disposed = false, loadSequence = 0;
 const monthOptions = computed(() => quarterMonths(quarter.value));
-const coverage = computed(() => (context.value?.clinics || []).filter(c => !clinicId.value || c.id === clinicId.value).flatMap(c =>
+const selectedClinics = computed(() => (context.value?.clinics || []).filter(c => !clinicId.value || c.id === clinicId.value));
+const coverage = computed(() => selectedClinics.value.flatMap(c =>
   monthOptions.value.map(month => ({ clinic: c, month, source: months.value.find(item => item.clinicId === c.id && item.month === month) }))));
 const closedCount = computed(() => coverage.value.filter(item => item.source?.status === 'closed').length);
 const status = (value: string) => compensationStatuses[value] || value;
@@ -35,16 +39,17 @@ async function load() {
     const [nextContext, nextMonths, nextQuarters, nextMine] = await Promise.all([
       canManage.value ? api<CompensationContext>('/compensation/context') : Promise.resolve(null),
       canManage.value ? api<IncentiveMonth[]>('/compensation/months' + query({ quarter: quarter.value, clinicId: clinicId.value })) : Promise.resolve([]),
-      auth.isHq ? api<IncentiveQuarter[]>('/compensation/quarters' + query({ quarter: quarter.value })) : Promise.resolve([]),
+      auth.isHq ? api<IncentiveQuarter[]>('/compensation/quarters') : Promise.resolve([]),
       api<MyCompensation>('/compensation/me'),
     ]);
     if (disposed || sequence !== loadSequence) return;
-    context.value = nextContext; months.value = nextMonths; quarters.value = nextQuarters; mine.value = nextMine;
+    context.value = nextContext; months.value = nextMonths; history.value = nextQuarters; quarters.value = nextQuarters.filter(item => item.quarter === quarter.value); mine.value = nextMine;
+    reportReady.value = true;
   } catch (e) {
-    if (!disposed && sequence === loadSequence) { months.value = []; quarters.value = []; mine.value = { staffId: null, notice: null, allocations: [] }; error.value = errorText(e); }
+    if (!disposed && sequence === loadSequence) { reportReady.value = false; months.value = []; quarters.value = []; mine.value = { staffId: null, notice: null, allocations: [] }; error.value = errorText(e); }
   } finally { if (!disposed && sequence === loadSequence) loading.value = false; }
 }
-function filtersChanged() { months.value = []; quarters.value = []; }
+function filtersChanged() { loadSequence++; loading.value = false; reportReady.value = false; months.value = []; quarters.value = []; }
 
 interface SourceForm { doctorId: string; revenue: string; material: string; expense: string; revenueReference: string; materialReference: string; expenseReference: string }
 const monthDialog = ref(false), monthReadOnly = ref(false), editingMonth = ref<IncentiveMonth | null>(null);
@@ -173,29 +178,46 @@ async function resolvePayment() {
     resolveDialog.value = false; ElMessage.success('发放结果已登记。'); await load(); if (detail.value) await showQuarter(detail.value.id);
   } catch (e) { formError.value = errorText(e); } finally { busy.value = false; }
 }
-onMounted(load);
-onUnmounted(() => { disposed = true; loadSequence++; detailSequence++; });
+async function focusFinance(event: Event) {
+  const id = (event as CustomEvent<string>).detail;
+  if (!canManage.value || !['finance-search', 'finance-tasks'].includes(id)) return;
+  tab.value = 'overview';
+  await nextTick();
+  const target = document.getElementById(id);
+  target?.scrollIntoView({ block: 'center' });
+  target?.focus({ preventScroll: true });
+}
+onMounted(() => {
+  window.addEventListener('andrew:finance-section', focusFinance);
+  void load();
+});
+onUnmounted(() => { window.removeEventListener('andrew:finance-section', focusFinance); disposed = true; loadSequence++; detailSequence++; });
 </script>
 
 <template>
   <section class="page-heading">
-    <div><h1>{{ pageTitle }}</h1><p>{{ auth.isHq ? '汇总医生季度收入与成本，查看固定 10% 激励基金、个人分配和发放结果。' : canManage ? '登记门诊月度账证，经独立复核后纳入总部季度核算。' : '查看本人已批准的季度激励及发放记录。' }}</p></div>
+    <div><h1>{{ pageTitle }}</h1><p>{{ canManage ? '查看门诊经营数据，处理账证、季度核算与激励发放。' : '查看本人已批准的季度激励及发放记录。' }}</p></div>
     <el-button :icon="Refresh" :loading="loading" :disabled="busy" @click="load">刷新</el-button>
   </section>
   <el-alert v-if="error" class="mb-16" :title="error" type="error" show-icon :closable="false" />
   <el-alert v-if="canManage && context && !context.actor" class="mb-16" title="请先在员工账号与档案中关联本人档案，再制表或复核。" type="warning" show-icon :closable="false" />
-  <section v-if="canManage" class="panel incentive-rules mb-16" aria-label="季度激励核算口径">
+  <section v-if="canManage && (tab==='quarters' || tab==='months')" class="panel incentive-rules mb-16" aria-label="季度激励核算口径">
     <div class="incentive-rule-heading"><div><h2>净利润的 10% 作为季度激励基金</h2><p>净利润 = 治疗收入净额 − 医疗用品成本 − 医生运营费用</p></div><span class="fixed-rate">固定比例 <strong>10%</strong></span></div>
     <p class="incentive-workflow">月度账证 → 独立复核关闭 → 总部季度快照与批准 → 个人分配与发放。医生登录后从“我的季度激励”查看本人已批准的份额。</p>
     <details class="incentive-basis"><summary>查看核算口径与制度依据</summary><p>原案例第 1 页规定净利润定义及 10% 激励基金，第 2 页要求按季度跟踪每位牙医的收入、成本和运营费用。</p><p>本系统补充制度：先跨店合并，亏损计入全体净利润；基金最低为零，四舍五入到分；个人份额按正净贡献比例分配，余分按固定规则补齐；月度账证和季度结果均须独立复核。案例未给出个人分配、基本工资、税费或社保算法。</p></details>
   </section>
   <div v-if="canManage" class="panel mb-16 compensation-filters">
     <el-form inline @submit.prevent="load"><el-form-item label="季度"><el-input v-model="quarter" aria-label="核算季度" placeholder="2026-Q3" maxlength="7" style="width:130px" @input="filtersChanged" /></el-form-item>
-      <el-form-item v-if="tab==='months'" label="门诊"><el-select v-model="clinicId" placeholder="全部授权门诊" clearable style="width:230px" @change="filtersChanged"><el-option v-for="clinic in context?.clinics || []" :key="clinic.id" :value="clinic.id" :label="clinic.name" /></el-select></el-form-item>
+      <el-form-item v-if="tab==='months' || tab==='overview'" label="门诊"><el-select v-model="clinicId" placeholder="全部授权门诊" clearable style="width:230px" @change="filtersChanged"><el-option v-for="clinic in context?.clinics || []" :key="clinic.id" :value="clinic.id" :label="clinic.name" /></el-select></el-form-item>
       <el-form-item><el-button type="primary" native-type="submit" :disabled="loading || busy">查询</el-button></el-form-item>
     </el-form>
   </div>
   <el-tabs v-model="tab" class="compensation-tabs">
+    <el-tab-pane v-if="canManage" label="经营总览" name="overview">
+      <FinancialOverview v-if="tab==='overview'" :quarter="quarter" :periods="monthOptions" :clinics="selectedClinics"
+        :months="months" :snapshots="quarters" :history="history" :headquarters="auth.isHq" :loading="loading" :ready="reportReady"
+        @months="tab='months'" @quarters="tab='quarters'" @snapshot="showQuarter" />
+    </el-tab-pane>
     <el-tab-pane v-if="canManage" label="月度底稿" name="months">
       <div class="panel" v-loading="loading">
         <div class="panel-heading"><div><h2>来源完整性</h2><p>已关闭 {{ closedCount }} / {{ coverage.length }} 个月份。无业务月份也需确认。</p></div>

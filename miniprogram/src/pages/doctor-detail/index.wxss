@@ -1,26 +1,6 @@
-.doctor-detail-page { padding-top: 32rpx; }
-.doctor-detail-page > .card { padding: 30rpx; margin-bottom: 28rpx; border-radius: 18rpx; }
-.doctor-profile { display: flex; align-items: center; gap: 26rpx; background: #fff; border: 1rpx solid #e6e2d9; border-radius: 20rpx; padding: 30rpx; margin-bottom: 24rpx; }
-.profile-portrait { position: relative; flex-shrink: 0; width: 156rpx; height: 156rpx; overflow: hidden; border-radius: 14rpx; background: #f3efe7; }
-.profile-portrait image { width: 100%; height: 100%; display: block; }
-.profile-portrait image.doctor-sprite { position: absolute; width: 400%; height: 200%; max-width: none; }
-.profile-summary { flex: 1; min-width: 0; }
-.profile-name { font-family: "Noto Serif SC","Songti SC",serif; font-size: 32rpx; font-weight: 600; line-height: 1.6; word-break: break-all; }
-.profile-specialty { font-size: 24rpx; color: #625d55; line-height: 1.8; margin-top: 14rpx; }
-.demo-notice { font-size: 22rpx; color: #786548; line-height: 1.9; background: #f9f6f0; border: 1rpx solid #e6e0d4; border-radius: 12rpx; padding: 20rpx 26rpx; margin-bottom: 28rpx; }
-.section-heading { display: flex; align-items: center; gap: 14rpx; margin-bottom: 24rpx; }
-.section-heading .section-title { margin: 0; font-size: 29rpx; line-height: 1.6; }
-.section-rule { height: 25rpx; width: 5rpx; flex-shrink: 0; border-radius: 3rpx; background: #b79a6b; }
-.bio-paragraph { color: #625d55; font-size: 26rpx; line-height: 1.95; word-break: break-all; }
-.qualification-item { display: flex; align-items: flex-start; gap: 18rpx; padding: 22rpx 0; }
-.qualification-item + .qualification-item { border-top: 1rpx solid #ece8e0; }
-.qualification-name { font-size: 25rpx; line-height: 1.7; margin-bottom: 8rpx; word-break: break-all; }
-.qualification-item .small { font-size: 22rpx; line-height: 1.8; }
-.booking-card .label { margin-top: 26rpx; margin-bottom: 14rpx; }
-.booking-card .picker { font-size: 25rpx; line-height: 1.7; padding: 20rpx; }
-.booking-card .primary { margin-top: 30rpx; }
-.consultation-fee { margin-top: 28rpx; border-radius: 12rpx; background: #f7f5ef; padding: 24rpx; }
-.consultation-fee .row { font-size: 24rpx; color: #77746f; align-items: flex-start; flex-wrap: wrap; gap: 12rpx 20rpx; }
-.fee { font-size: 32rpx; font-weight: 600; line-height: 1.5; white-space: nowrap; color: #292d30; }
-.fee text { font-size: 21rpx; font-weight: 400; color: #77746f; }
-.consultation-fee > .small { font-size: 22rpx; color: #77746f; line-height: 1.9; margin-top: 18rpx; }
+.doctor-detail-page{padding-top:32rpx}.doctor-detail-page>.card{padding:26rpx;margin-bottom:20rpx;border-radius:20rpx;background:#fff;border:1rpx solid #e5eaf2;box-shadow:0 8rpx 24rpx rgba(15,23,42,.04)}
+.doctor-profile{display:flex;align-items:center;gap:22rpx;padding:26rpx;margin-bottom:18rpx;border:1rpx solid #dbeafe;border-radius:22rpx;background:linear-gradient(135deg,#fff 0%,#eff6ff 100%)}.profile-portrait{position:relative;flex-shrink:0;width:140rpx;height:140rpx;overflow:hidden;border-radius:20rpx;background:#dbeafe}.profile-portrait image{display:block;width:100%;height:100%}.profile-portrait image.doctor-sprite{position:absolute;width:400%;height:200%;max-width:none}.profile-summary{flex:1;min-width:0}.profile-name{font-family:inherit;font-size:34rpx;font-weight:700;line-height:1.45;word-break:break-all;color:#111827}.profile-specialty{margin-top:10rpx;color:#475569;font-size:24rpx;line-height:1.75;word-break:break-all}
+.demo-notice{margin-bottom:20rpx;padding:18rpx 22rpx;border:1rpx solid #bfdbfe;border-radius:14rpx;background:#eff6ff;color:#1e40af;font-size:23rpx;line-height:1.8}.section-heading{display:flex;align-items:center;gap:12rpx;margin-bottom:20rpx}.section-heading .section-title{margin:0;font-size:30rpx;line-height:1.5}.section-rule{width:6rpx;height:28rpx;flex-shrink:0;border-radius:4rpx;background:#2563eb}.bio-paragraph{color:#334155;font-size:26rpx;line-height:1.9;word-break:break-all}.qualification-item{display:flex;align-items:flex-start;gap:16rpx;padding:20rpx 0}.qualification-item+.qualification-item{border-top:1rpx solid #eef2f7}.qualification-name{margin-bottom:6rpx;color:#1e293b;font-size:25rpx;line-height:1.7;word-break:break-all}.qualification-item .small{font-size:22rpx;line-height:1.75}
+.booking-card .label{margin-top:22rpx;margin-bottom:10rpx}.booking-card .picker{padding:18rpx 20rpx;border-color:#dbeafe;border-radius:14rpx;background:#f8fbff;color:#1e293b;font-size:25rpx;line-height:1.65}.booking-card .primary{margin-top:24rpx}.consultation-fee{margin-top:22rpx;padding:20rpx;border:1rpx solid #dbeafe;border-radius:16rpx;background:#f5f8ff}.consultation-fee .row{align-items:flex-start;flex-wrap:wrap;gap:8rpx 16rpx;color:#475569;font-size:24rpx}.fee{color:#1d4ed8;font-size:32rpx;font-weight:700;line-height:1.5;white-space:nowrap}.fee text{color:#64748b;font-size:21rpx;font-weight:400}.consultation-fee>.small{margin-top:12rpx;color:#64748b;font-size:22rpx;line-height:1.8}
+.qualification-disclaimer{margin-top:16rpx;padding:14rpx 16rpx;border-radius:12rpx;background:#f8fafc;color:#64748b;font-size:21rpx;line-height:1.75}
+@media(max-width:350px){.doctor-detail-page>.card,.doctor-profile{padding:20rpx}.profile-portrait{width:116rpx;height:116rpx}.profile-name{font-size:30rpx}}

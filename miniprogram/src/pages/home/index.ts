@@ -2,10 +2,12 @@ import type { AuthConfig, PublicDoctor as Doctor, Service } from '../../types';
 import { api, errorMessage } from '../../utils/api';
 import { doctorView } from '../../utils/catalog';
 import { price } from '../../utils/format';
+import { educationArticles } from '../../utils/education';
 import { session } from '../../utils/session';
 Page({
   requestSequence: 0,
   data: {
+    educationPreview: educationArticles.slice(0, 2).map(({ id, title, topic }) => ({ id, title, topic })),
     loading: false, error: '', services: [] as (Service & { priceLabel: string })[],
     doctorsPreview: [] as ReturnType<typeof doctorView>[],
     signedIn: false, demoEnabled: false,

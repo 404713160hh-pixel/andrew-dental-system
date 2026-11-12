@@ -1,19 +1,13 @@
 .clinics-page{padding-top:28rpx}
-.location-heading{display:flex;align-items:center;justify-content:space-between;gap:20rpx;margin-bottom:24rpx}
-.location-heading .title{font-family:inherit;font-size:38rpx;margin:0;font-weight:650}
-.location-card{background:#fff;border:1rpx solid #eae7e1;border-radius:22rpx;overflow:hidden;margin-bottom:28rpx}
-.location-photo{height:250rpx;position:relative;background:#e9e6df;overflow:hidden}
-.location-photo image{display:block;width:100%;height:100%}
-.location-photo>text{position:absolute;right:16rpx;bottom:14rpx;padding:3rpx 10rpx;background:rgba(255,255,255,.92);color:#6d665b;font-size:18rpx;border-radius:5rpx;line-height:1.7}
-.location-body{padding:28rpx}
-.location-title{font-size:31rpx;font-weight:650;line-height:1.5;word-break:break-all}
-.location-demo{display:inline-block;font-size:19rpx;background:#f6f0e6;color:#786548;border-radius:5rpx;padding:3rpx 10rpx;margin:12rpx 0 4rpx}
-.location-info{display:flex;align-items:flex-start;gap:18rpx;margin-top:18rpx;font-size:24rpx;line-height:1.8}
-.info-label{color:#8c877d;flex-shrink:0;width:50rpx}
-.info-value{min-width:0;color:#5f5b54;word-break:break-all}
-.contact-actions{display:flex;gap:18rpx;margin-top:24rpx;padding-bottom:24rpx;border-bottom:1rpx solid #efede7}
-.contact-button{flex:1;margin:0;min-width:0;padding:13rpx 12rpx;font-size:23rpx;color:#6f5a3e;background:#f7f5f0;border-radius:9rpx;line-height:1.7}
-.contact-button::after{border:0}
-.location-actions{display:flex;gap:18rpx;margin-top:24rpx}
-.location-actions>button{flex:1;min-width:0;padding:18rpx 12rpx;font-size:25rpx;border-radius:10rpx}
-@media(max-width:350px){.location-body{padding:26rpx}.location-title{font-size:30rpx}.location-info{gap:14rpx}.location-actions,.contact-actions{gap:14rpx}}
+.location-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:16rpx;margin-bottom:24rpx}
+.location-heading .title{font-family:inherit;font-size:40rpx;margin:0;font-weight:700}.location-subtitle{font-size:23rpx;color:#64748b;margin-top:6rpx}.location-count{flex-shrink:0;background:#e8f1ff;color:#1d4ed8;border-radius:999rpx;padding:8rpx 16rpx;font-size:22rpx}
+.location-card{background:#fff;border:1rpx solid #e5eaf2;border-radius:24rpx;overflow:hidden;margin-bottom:24rpx}
+.location-photo{height:260rpx;position:relative;background:#eff6ff;overflow:hidden}.location-photo image{display:block;width:100%;height:100%}
+.location-photo>text{position:absolute;right:16rpx;bottom:16rpx;padding:4rpx 10rpx;background:rgba(255,255,255,.95);color:#475569;font-size:18rpx;border-radius:6rpx;line-height:1.7}
+.location-body{padding:28rpx}.location-title-row{display:flex;align-items:center;gap:12rpx;flex-wrap:wrap}.location-title{font-size:31rpx;font-weight:700;line-height:1.5;word-break:break-word;color:#111827}
+.location-demo{display:inline-block;font-size:20rpx;background:#fff7ed;color:#92400e;border-radius:8rpx;padding:4rpx 10rpx}
+.location-info{display:flex;align-items:flex-start;gap:16rpx;margin-top:16rpx;font-size:24rpx;line-height:1.8}.info-label{color:#64748b;flex-shrink:0;width:52rpx}.info-value{min-width:0;color:#334155;word-break:break-all}
+.details-toggle{display:flex;justify-content:space-between;align-items:center;width:100%;margin:16rpx 0 0;padding:12rpx 0;background:transparent;color:#2563eb;font-size:24rpx;line-height:1.6;text-align:left}.details-toggle::after{border:0}.location-details{padding:16rpx 20rpx;background:#f8fafc;border-radius:12rpx;color:#64748b;font-size:24rpx;line-height:1.8;word-break:break-word}
+.contact-actions{display:flex;gap:16rpx;margin-top:24rpx;padding-bottom:24rpx;border-bottom:1rpx solid #eef2f7}.contact-button{flex:1;margin:0;min-width:0;padding:16rpx 12rpx;font-size:23rpx;color:#1d4ed8;background:#eff6ff;border-radius:12rpx;line-height:1.7}.contact-button::after{border:0}
+.location-actions{display:flex;gap:16rpx;margin-top:24rpx}.location-actions>button{flex:1;min-width:0;padding:20rpx 12rpx;font-size:25rpx;border-radius:12rpx}
+@media(max-width:350px){.location-body{padding:24rpx}.location-title{font-size:29rpx}.location-info{gap:12rpx}.location-actions,.contact-actions{gap:12rpx}}

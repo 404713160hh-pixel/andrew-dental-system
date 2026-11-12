@@ -1,8 +1,49 @@
-<view class="page profile-page"><view class="profile-hero"><view class="avatar">◎</view><view class="profile-identity"><view class="title">{{signedIn ? displayName : '未登录'}}</view><view class="muted">{{signedIn ? '账号本人' : '登录后管理资料与预约'}}</view></view></view>
+<view class="page profile-page">
+  <view class="profile-hero">
+    <view class="avatar">
+      <image wx:if="{{avatarPath}}" class="avatar-photo" src="{{avatarPath}}" mode="aspectFill" aria-label="当前头像" />
+      <image wx:else class="avatar-placeholder" src="/assets/tabbar/profile-active.png" mode="aspectFit" />
+    </view>
+    <view class="profile-identity">
+      <view class="title">{{signedIn ? displayName : '我的'}}</view>
+      <view wx:if="{{!signedIn}}" class="muted">登录后管理资料与预约</view>
+      <view wx:elif="{{rowVersion && !needsConsent}}" class="avatar-actions">
+        <button class="avatar-action" open-type="chooseAvatar" bindchooseavatar="chooseAvatar" disabled="{{avatarBusy || busy || loading}}">{{avatarBusy ? '处理中…' : avatarPath ? '更换头像' : '上传头像'}}</button>
+        <button wx:if="{{avatarPath}}" class="avatar-action remove-avatar" bindtap="removeAvatar" disabled="{{avatarBusy || busy || loading}}">移除</button>
+      </view>
+      <view wx:if="{{rowVersion && !needsConsent}}" class="avatar-privacy">头像仅在本人账号内显示</view>
+    </view>
+  </view>
+  <view wx:if="{{signedIn && avatarError}}" class="error" role="alert">{{avatarError}}<button class="secondary space" bindtap="loadAvatar" disabled="{{avatarBusy}}">重新读取头像</button></view>
   <view wx:if="{{!signedIn && logoutNotice}}" class="notice">{{logoutNotice}}</view><view wx:if="{{!signedIn}}" class="card profile-guest"><view class="section-title">就诊服务</view><view class="muted">查看预约、改期或取消。</view><button class="primary space" bindtap="login">登录 / 注册</button></view>
   <block wx:if="{{signedIn}}"><view wx:if="{{isDemo}}" class="demo-note space"><text class="demo-badge">虚构患者</text><view>演示资料，请勿填写真实医疗信息。</view></view><view wx:if="{{hasHold}}" class="notice">时段正在保留，保存资料后可继续预约。<button class="secondary space" bindtap="continueHold" disabled="{{busy || loading}}">继续预约</button></view><view class="card nav-card row" hover-class="card-pressed" bindtap="appointments"><view><view class="section-title">我的预约</view><view class="muted">查看、改期、取消</view></view><text class="link">→</text></view>
-    <view wx:if="{{loading}}" class="loading">加载中…</view><view wx:if="{{error}}" class="error">{{error}}<button wx:if="{{needsConsent}}" class="secondary space" bindtap="login">查看并确认隐私告知</button><button wx:else class="secondary space" bindtap="load" disabled="{{busy || loading}}">重新加载</button></view><view wx:if="{{saved}}" class="success">资料已保存。</view>
-    <view wx:if="{{rowVersion}}" class="card"><view class="demo-label-row"><view class="section-title">就诊资料</view></view><view class="muted small">患者编号 {{patientId}}</view><view class="muted small space">资料供安德鲁连锁门诊预约和接诊使用，员工按职责及就诊任务查阅。更换门诊沿用同一档案。</view><patient-form value="{{profile}}" disabled="{{busy || loading}}" bindchange="change" /><button class="primary space" bindtap="save" loading="{{busy}}" disabled="{{busy || loading}}">保存资料</button></view>
+    <view wx:if="{{loading}}" class="loading">加载中…</view><view wx:if="{{error && !editing}}" class="error">{{error}}<button wx:if="{{needsConsent}}" class="secondary space" bindtap="login">查看并确认隐私告知</button><button wx:else class="secondary space" bindtap="load" disabled="{{busy || loading}}">重新加载</button></view>
+    <view wx:if="{{rowVersion}}" class="card profile-record">
+      <view class="row profile-record-heading">
+        <view class="section-title">就诊资料</view>
+        <button wx:if="{{!editing}}" class="secondary inline-button" bindtap="beginEdit" disabled="{{busy || loading}}">修改资料</button>
+      </view>
+      <view wx:if="{{saved}}" class="success" role="status">资料已保存。</view>
+      <view wx:if="{{editing}}">
+        <patient-form value="{{profile}}" disabled="{{busy || loading}}" bindchange="change" />
+        <view wx:if="{{error}}" class="error space">{{error}}<button wx:if="{{versionConflict}}" class="secondary space" bindtap="load" disabled="{{loading || busy}}">读取最新资料</button></view>
+        <view class="buttons space">
+          <button class="secondary" bindtap="cancelEdit" disabled="{{busy}}">取消</button>
+          <button class="primary" bindtap="save" loading="{{busy}}" disabled="{{busy || loading}}">保存资料</button>
+        </view>
+      </view>
+      <view wx:else>
+        <view class="profile-field"><text>姓名</text><text>{{profile.name}}</text></view>
+        <view class="profile-field"><text>出生日期</text><text>{{profile.birthDate}}</text></view>
+        <view class="profile-field"><text>联系电话</text><text>{{profile.phone}}</text></view>
+        <view wx:if="{{profile.email}}" class="profile-field"><text>电子邮箱</text><text>{{profile.email}}</text></view>
+        <view wx:if="{{profile.billingAddress}}" class="profile-field"><text>地址</text><text>{{profile.billingAddress}}</text></view>
+        <view wx:if="{{profile.emergencyName || profile.emergencyPhone}}" class="profile-field"><text>紧急联系人</text><text>{{profile.emergencyName}} {{profile.emergencyPhone}}</text></view>
+        <view class="profile-field"><text>过敏情况</text><text>{{allergyLabels[profile.allergyStatus]}}</text></view>
+        <view wx:if="{{profile.allergies.length}}" class="profile-allergies"><text wx:for="{{profile.allergies}}" wx:key="*this">{{item}}</text></view>
+      </view>
+    </view>
+    <navigator class="profile-privacy-link" url="/pages/privacy/index">查看小程序隐私协议 ›</navigator>
     <button class="secondary" bindtap="withdrawConsent" disabled="{{busy || loading}}">撤回隐私同意</button><button class="secondary space" bindtap="logout" disabled="{{busy}}">退出登录</button><view class="footer-note">过敏信息为本人声明，不能代替医生的临床核对。</view>
   </block>
 </view>

@@ -48,6 +48,9 @@ watch(
 watch(() => route.fullPath, () => { menuOpen.value = false; });
 const title = computed(() => route.path === '/compensation' ? compensationTitle.value : doctorView.value && route.path === '/appointments' ? '我的预约'
   : doctorView.value && route.path === '/shifts' ? '我的排班' : String(route.meta.title || '员工工作台'));
+function focusFinance(id: string) {
+  window.dispatchEvent(new CustomEvent('andrew:finance-section', { detail: id }));
+}
 async function logout() {
   try {
     await auth.logout();
@@ -68,41 +71,44 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
   <div v-else class="app-shell" :class="{ 'is-compact': compact, 'is-doctor': doctorView }" @keyup.esc="menuOpen = false">
     <button v-if="menuOpen" type="button" class="navigation-backdrop" aria-label="收起导航" @click="menuOpen = false"></button>
     <aside id="staff-navigation" class="sidebar" :class="{ 'is-open': menuOpen }">
-      <router-link class="brand" to="/appointments"
-        ><span class="brand-mark">A<span>+</span></span
-        ><span>ANDREW<span class="brand-sub">安德鲁牙科 · 员工工作台</span></span></router-link
-      >
+      <router-link class="workspace-brand" to="/appointments" aria-label="安德鲁牙科 · 员工工作台">
+        <span class="workspace-brand-name">ANDREW DENTAL</span>
+        <span class="workspace-brand-caption">
+          <span class="workspace-brand-smile" aria-hidden="true"></span>
+          <span>安德鲁牙科</span>
+        </span>
+      </router-link>
       <nav class="sidebar-navigation" aria-label="主导航">
         <section class="navigation-group" aria-labelledby="nav-workspace">
           <h2 id="nav-workspace" class="nav-label">工作空间</h2>
           <router-link to="/appointments"
-            ><el-icon><Calendar /></el-icon>{{ doctorView ? '我的预约' : '预约总览' }}</router-link
+            ><el-icon><Calendar /></el-icon><span class="navigation-text">{{ doctorView ? '我的预约' : '预约总览' }}</span></router-link
           >
           <router-link to="/shifts"
-            ><el-icon><Clock /></el-icon>{{ doctorView ? '我的排班' : '医生排班' }}</router-link
+            ><el-icon><Clock /></el-icon><span class="navigation-text">{{ doctorView ? '我的排班' : '医生排班' }}</span></router-link
           >
         </section>
         <section v-if="auth.canBook" class="navigation-group" aria-labelledby="nav-patient-care">
           <h2 id="nav-patient-care" class="nav-label">患者服务</h2>
-          <router-link to="/patients"><el-icon><User /></el-icon>患者档案</router-link>
-          <router-link to="/booking"><el-icon><Plus /></el-icon>患者代约</router-link>
+          <router-link to="/patients"><el-icon><User /></el-icon><span class="navigation-text">患者档案</span></router-link>
+          <router-link to="/booking"><el-icon><Plus /></el-icon><span class="navigation-text">患者代约</span></router-link>
         </section>
         <section v-if="auth.canManage" class="navigation-group" aria-labelledby="nav-institution">
           <h2 id="nav-institution" class="nav-label">机构管理</h2>
-          <router-link to="/resources/clinics"><el-icon><OfficeBuilding /></el-icon>门诊机构</router-link>
-          <router-link to="/resources/doctors"><el-icon><FirstAidKit /></el-icon>医生档案</router-link>
-          <router-link to="/resources/services"><el-icon><Setting /></el-icon>预约服务</router-link>
-          <router-link to="/resources/chairs"><el-icon><Setting /></el-icon>牙椅资源</router-link>
-          <router-link to="/resources/qualifications"><el-icon><Setting /></el-icon>资质档案目录</router-link>
+          <router-link to="/resources/clinics"><el-icon><OfficeBuilding /></el-icon><span class="navigation-text">门诊机构</span></router-link>
+          <router-link to="/resources/doctors"><el-icon><FirstAidKit /></el-icon><span class="navigation-text">医生档案</span></router-link>
+          <router-link to="/resources/services"><el-icon><Setting /></el-icon><span class="navigation-text">预约服务</span></router-link>
+          <router-link to="/resources/chairs"><el-icon><Setting /></el-icon><span class="navigation-text">牙椅资源</span></router-link>
+          <router-link to="/resources/qualifications"><el-icon><Setting /></el-icon><span class="navigation-text">资质档案目录</span></router-link>
         </section>
         <section class="navigation-group" aria-labelledby="nav-business">
           <h2 id="nav-business" class="nav-label">经营管理</h2>
-          <router-link to="/compensation"><el-icon><Coin /></el-icon>{{ compensationTitle }}</router-link>
+          <router-link to="/compensation"><el-icon><Coin /></el-icon><span class="navigation-text">{{ compensationTitle }}</span></router-link>
         </section>
         <section class="navigation-group" aria-labelledby="nav-account">
           <h2 id="nav-account" class="nav-label">账号管理</h2>
-          <router-link v-if="auth.isHq" to="/staff/accounts"><el-icon><User /></el-icon>员工账号与档案</router-link>
-          <router-link to="/change-password"><el-icon><Setting /></el-icon>修改密码</router-link>
+          <router-link v-if="auth.isHq" to="/staff/accounts"><el-icon><User /></el-icon><span class="navigation-text">员工账号与档案</span></router-link>
+          <router-link to="/change-password"><el-icon><Setting /></el-icon><span class="navigation-text">修改密码</span></router-link>
         </section>
       </nav>
       <div class="sidebar-note">
@@ -124,9 +130,18 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
           工作台 <el-icon><ArrowRight /></el-icon><strong>{{ title }}</strong>
         </div>
         <div class="topbar-right">
+          <a v-if="route.path === '/compensation' && auth.isHq" class="finance-top-link" href="#finance-search" @click.prevent="focusFinance('finance-search')">查找核算记录</a>
+          <a v-if="route.path === '/compensation' && auth.canManage" class="finance-top-link" href="#finance-tasks" @click.prevent="focusFinance('finance-tasks')">待办</a>
           <button class="density-toggle" :aria-pressed="compact" @click="toggleDensity"><span class="density-icon" aria-hidden="true">☷</span>{{ compact ? '舒适视图' : '紧凑视图' }}</button>
-          <span class="role-pill">{{ auth.roleLabel }}</span
-          ><el-button
+          <details v-if="auth.user" :key="route.path" class="workspace-account">
+            <summary aria-label="账号菜单"><span class="workspace-account-initial" aria-hidden="true">{{ auth.user.displayName.slice(0, 1) }}</span><span>{{ auth.roleLabel }}</span></summary>
+            <div class="workspace-account-menu">
+              <strong>{{ auth.user.displayName }}</strong>
+              <router-link to="/change-password">修改密码</router-link>
+              <button type="button" @click="logout">退出登录</button>
+            </div>
+          </details>
+          <el-button
             v-if="auth.canBook && route.path !== '/booking'"
             type="primary"
             :icon="Plus"

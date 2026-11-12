@@ -46,6 +46,7 @@ BEGIN
   EXECUTE format('GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA public TO %I', runtime_user);
   -- These relationships are replaced transactionally or represent revocable sessions.
   EXECUTE format('GRANT DELETE ON public.sessions, public.patient_allergies, public.role_assignments, public.dentist_qualifications, public.clinic_services, public.service_qualifications TO %I', runtime_user);
+  EXECUTE format('GRANT DELETE ON public.patient_avatars TO %I', runtime_user);
   EXECUTE format('GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO %I', runtime_user);
   EXECUTE format('REVOKE INSERT, UPDATE ON public.schema_migrations FROM %I', runtime_user);
   EXECUTE format('REVOKE UPDATE ON public.audit_events, public.patient_privacy_consents FROM %I', runtime_user);

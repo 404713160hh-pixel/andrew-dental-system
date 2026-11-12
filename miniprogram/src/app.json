@@ -1,9 +1,9 @@
 {
-  "pages": ["pages/home/index", "pages/login/index", "pages/booking/index", "pages/confirm/index", "pages/appointments/index", "pages/detail/index", "pages/profile/index", "pages/doctors/index", "pages/doctor-detail/index", "pages/prices/index", "pages/clinics/index"],
-  "window": {"navigationBarTitleText": "安德鲁牙科", "navigationBarBackgroundColor": "#ffffff", "navigationBarTextStyle": "black", "backgroundColor": "#ffffff", "backgroundTextStyle": "dark"},
+  "pages": ["pages/home/index", "pages/login/index", "pages/booking/index", "pages/confirm/index", "pages/appointments/index", "pages/detail/index", "pages/profile/index", "pages/doctors/index", "pages/doctor-detail/index", "pages/prices/index", "pages/clinics/index", "pages/privacy/index", "pages/education/index"],
+  "window": {"navigationBarTitleText": "安德鲁牙科", "navigationBarBackgroundColor": "#ffffff", "navigationBarTextStyle": "black", "backgroundColor": "#f5f8ff", "backgroundTextStyle": "dark"},
   "sitemapLocation": "sitemap.json",
   "tabBar": {
-    "color": "#77746f", "selectedColor": "#292d30", "backgroundColor": "#fffdf9", "borderStyle": "white",
+    "color": "#64748b", "selectedColor": "#2563eb", "backgroundColor": "#ffffff", "borderStyle": "white",
     "list": [
       {"pagePath": "pages/home/index", "text": "首页", "iconPath": "assets/tabbar/home.png", "selectedIconPath": "assets/tabbar/home-active.png"},
       {"pagePath": "pages/clinics/index", "text": "门诊", "iconPath": "assets/tabbar/clinics.png", "selectedIconPath": "assets/tabbar/clinics-active.png"},

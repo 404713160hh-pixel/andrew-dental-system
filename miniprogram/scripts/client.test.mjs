@@ -131,7 +131,7 @@ test('existing account must accept privacy notice before entering patient pages'
 });
 test('native build includes all configured pages, assets and callable WXML handlers', () => {
   const app = JSON.parse(readFileSync(join(root, 'dist/app.json'), 'utf8'));
-  assert.deepEqual([...app.pages].sort(), ['home', 'login', 'booking', 'confirm', 'appointments', 'detail', 'profile', 'doctors', 'doctor-detail', 'prices', 'clinics'].map(name => 'pages/' + name + '/index').sort());
+  assert.deepEqual([...app.pages].sort(), ['home', 'login', 'booking', 'confirm', 'appointments', 'detail', 'profile', 'doctors', 'doctor-detail', 'prices', 'clinics', 'privacy', 'education'].map(name => 'pages/' + name + '/index').sort());
   const r = runtime();
   for (const page of app.pages) {
     for (const extension of ['.js', '.json', '.wxml', '.wxss']) assert.ok(existsSync(join(root, 'dist', page + extension)), page + extension);
@@ -297,7 +297,9 @@ test('read-only patient demo metadata stays visible and is never submitted as ed
   const patient = { id: 'patient-one', rowVersion: 1, name: '合成患者', birthDate: '2000-01-01', phone: '01000000000', email: null, billingAddress: '虚构地址', emergencyName: '合成联系人', emergencyPhone: '01000000001', allergyStatus: 'unknown', allergies: [], isDemo: true };
   r.respond(options => options.success({ statusCode: 200, data: { data: options.url.endsWith('/me') && !options.url.endsWith('/patients/me') ? login('one').user : { ...patient, rowVersion: options.method === 'PUT' ? 2 : 1 } } }));
   await page.load(); assert.equal(page.data.isDemo, true); assert.equal(Object.hasOwn(page.data.profile, 'isDemo'), false);
-  await page.save(); const update = r.requests.find(item => item.method === 'PUT'); assert.ok(update);
+  await page.save(); assert.ok(!r.requests.some(item => item.method === 'PUT'));
+  page.beginEdit(); assert.equal(page.data.editing, true);
+  await page.save(); assert.equal(page.data.editing, false); const update = r.requests.find(item => item.method === 'PUT'); assert.ok(update);
   assert.equal(Object.hasOwn(update.data, 'isDemo'), false); assert.equal(Object.hasOwn(update.data, 'id'), false); assert.equal(Object.hasOwn(update.data, 'rowVersion'), false);
   assert.equal(update.data.expectedVersion, 1); assert.equal(page.data.rowVersion, 2); assert.equal(page.data.isDemo, true); assert.equal(page.data.saved, true);
 });
