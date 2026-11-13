@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import CourseDemoLogin from '../components/CourseDemoLogin.vue';
 import SiteIcp from '../components/SiteIcp.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Lock, User, ArrowRight } from '@element-plus/icons-vue';
@@ -88,6 +89,7 @@ async function login(demo = false) {
         <span class="overline">STAFF WORKSPACE <span> / </span> 工作人员入口</span>
         <h2>欢迎回来</h2>
         <p class="muted">登录预约工作台，开始今天的门诊协作。</p>
+        <CourseDemoLogin v-model="username" :disabled="busy" />
         <el-alert
           v-if="error"
           :title="error"

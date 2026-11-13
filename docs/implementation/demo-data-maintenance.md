@@ -10,6 +10,8 @@
 
 ## 本地维护
 
+课程演示登录页可在构建时设置 `VITE_COURSE_DEMO_PASSWORD`，Docker Compose 对应变量为 `COURSE_DEMO_PASSWORD`。页面列出四个虚构员工角色，点击角色填入账号，登录仍由账号密码接口验证。此变量会把演示密码放进浏览器可读取的构建产物，仅在隔离演示环境设置，公开网站默认留空。
+
 确认连接的是演示库并完成备份后，在非 production 维护进程中执行：
 
 ```powershell

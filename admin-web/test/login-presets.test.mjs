@@ -29,6 +29,7 @@ function fixture({ config = null, next = undefined, loginError = null, dev = tru
       useRoute: () => ({ query: { next } }),
       useRouter: () => ({ replace: async (path) => navigation.push(path) }),
     },
+    '../components/CourseDemoLogin.vue': {},
     '../components/SiteIcp.vue': {},
     '@element-plus/icons-vue': {},
     '../stores/auth': { useAuth: () => auth },

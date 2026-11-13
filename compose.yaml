@@ -76,6 +76,7 @@ services:
       dockerfile: deploy/booking/web.Dockerfile
       args:
         VITE_ICP_RECORD: ${ICP_RECORD:-}
+        VITE_COURSE_DEMO_PASSWORD: ${COURSE_DEMO_PASSWORD:-}
     restart: unless-stopped
     environment:
       TRUSTED_EDGE_IP: ${BOOKING_HTTPS_IP:-172.30.87.11}

@@ -1,5 +1,5 @@
 {
-  "release": "andrew-workspace-20261112-r1",
+  "release": "andrew-course-demo-20261113-r1",
   "branch": "feat/postgres-booking-20261022",
-  "scope": "staff workspace and patient mini program"
+  "scope": "staff course demo login hints"
 }
