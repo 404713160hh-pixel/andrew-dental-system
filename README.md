@@ -1,106 +1,30 @@
-# 安德鲁牙科系统
+# 安德鲁牙科
 
-系统采用 **微信原生小程序 + Vue 3 工作台 + TypeScript/Fastify API + PostgreSQL 17**。患者端办理预约，员工端管理就诊资源、员工账号以及医生季度业绩与激励。两端使用同一 `/api/v1` 后端和 PostgreSQL。
+这是一个连锁牙科诊所的演示项目。官网介绍门诊、医生和服务，引导顾客扫码进入微信小程序。顾客在小程序里预约、取消或改期，员工在工作台处理预约、排班和患者档案。总部和店长还可以按权限查看业绩与激励。小程序和工作台使用同一套 API 和数据库。
 
-2026-10-25 界面优化：小程序接入 Vant 日历与分时段号源，网站增加日期导航、医生分组日程、本人视角和紧凑/手机布局；[参考与改动对照](docs/implementation/reference-ui-20261025.md)列出 DentalPin、Open Dental 和 Vant 的实际参考范围及测试记录。
+[打开官网](https://andrewdental.top/) · [查看设计文档 PDF](docs/design/1602240215.pdf)
 
-完整设计见 [设计文档](docs/design/1602240215.pdf)，页数和校验值见[交付清单](docs/design/delivery-manifest.json)。业务与实现对应关系见[设计与开发核对](docs/implementation/design-implementation-status.md)，季度激励接口和核算规则见[薪酬与激励契约](docs/implementation/compensation-contract-20261105.md)。
+## 目录
+
+| 文件夹 | 里面是什么 |
+| --- | --- |
+| `admin-web/` | 官网、员工登录页和员工工作台，用 Vue 写。 |
+| `miniprogram/` | 患者端微信小程序，包含门诊、医生、预约和个人资料。 |
+| `booking-api/` | Fastify 后端，处理登录、排班、预约和业绩核算。 |
+| `shared/` | 前后端共用的数据类型。 |
+| `database/` | PostgreSQL 建表和升级脚本。 |
+| `scripts/` | 本地数据库启动、演示账号管理和微信工程同步工具。 |
+| `deploy/` | Docker 镜像、Nginx 和服务器部署脚本。 |
+| `docs/` | 最新设计文档、可编辑 TeX 源稿和配图。 |
+| `.github/` | GitHub 上的自动构建配置。 |
 
 ## 本地运行
 
-需要 Node.js 24、npm 11。先在此仓库执行 `npm ci`。以下终端均在仓库根目录：
+安装 Node.js 24 和 npm 11，在仓库根目录运行 `npm ci`。
 
-```powershell
-# 终端1：独立、持久的真实 PostgreSQL，只监听127.0.0.1:55432
-npm run dev:postgres
-```
+1. 开一个终端运行 `npm run dev:postgres`，让本地 PostgreSQL 保持运行。
+2. 开第二个终端，依次运行 `npm run db:migrate`、`npm run db:seed` 和 `npm run db:demo`，然后运行 `npm run dev:api`。
+3. 开第三个终端运行 `npm run dev:admin`，浏览器打开 `http://127.0.0.1:5173`。
+4. 运行 `npm run build -w @andrew/miniprogram`，再用微信开发者工具导入 `miniprogram/`。[小程序运行说明](miniprogram/README.md)
 
-首次运行生成未入库的 `.env.booking`，含随机数据库及演示密码；已有数据与凭据保留。Windows中文路径的原生PG二进制和数据放入ASCII缓存目录，具体位置记录于 `.booking-data/postgres-location.json`。可用环境变量 `ANDREW_PG_HOME` 指定ASCII目录。**保持该终端运行**，Ctrl+C安全停库，重新执行后数据仍在。该工具只供本地开发，不用于公网部署。
-
-```powershell
-# 终端2：迁移、合成演示数据和新API
-npm run db:migrate
-npm run db:seed
-npm run db:demo
-npm run dev:api
-```
-
-```powershell
-# 终端3：员工工作台
-npm run dev:admin
-```
-
-访问 **http://127.0.0.1:5173**。API健康检查：`http://127.0.0.1:3310/api/v1/health`。工作台开发快捷登录选总部、前台、店长或医生；账号由后端动态给出，非前端绕过鉴权。脚本生成的开发配置允许演示登录，生产配置默认关闭且禁止开启。密码登录使用本地 `.env.booking` 中的 `SEED_PASSWORD`，不要公开该值。
-
-```powershell
-# 微信原生小程序：构建后同步到本机已打开的 D:\AndrewDentalMiniProgram
-npm run build -w @andrew/miniprogram
-```
-
-在仓库构建后执行 `npm run sync:wechat`，备份并同步至本机已打开的 `D:\AndrewDentalMiniProgram`，保留该工程的工具配置。其他电脑也可直接导入仓库 `miniprogram`。AppID/API地址、开发域名设置、真机局域网连接及正式HTTPS域名见[小程序说明](miniprogram/README.md)。当前使用后端账号会话，微信授权登录需单独配置和验收。
-
-### 演示数据
-
-`db:seed` 建立原有基础夹具；`db:demo` 在已登记的演示数据上增量补充为两家门诊、六位虚构医生、八份虚构患者档案、六种检查/评估/咨询服务和未来14天演示班次。重复运行沿用登记的记录，不清库、不覆盖普通业务档案；生产环境拒绝执行。长期演示可以重跑增量工具补齐后续日期，或由工作台发布班次。以实际回执为准，同名普通资料不会被认领为演示数据。
-
-小程序新增医生列表、医生详情与参考价格页。医生简介、关注方向、资格示例与本人患者档案均明确标注虚构。没有公开患者名录；其他六份档案供有权限的员工核对使用，不增加无需口令的患者快捷登录入口。
-
-参考价整理自用户提供的2026年资料，逐项保留区间、单位和“用户提供的价格资料（未独立核验）”标签。它们不是门诊报价或预约费；治疗是否适合、费用包含哪些项目，需面诊确认。种植、正畸等入口预约的是独立定价的评估/咨询，不直接预约手术或把整个疗程金额当作一次预约费。没有写入未核实的品牌疗效、医保报销或市场降价断言。
-
-账号：患者 `patient.a`、`patient.b`；员工 `hq`、`front.a`、`manager.a`、`doctor.a`。这些是合成账号标识，口令从环境配置获得。无账号情况下可在患者端注册完整资料，手机号仅用于联系，不承担患者唯一身份。
-
-## 已实现范围
-
-- 患者后端注册/登录/退出、本人资料、联系方式、三态过敏与逐项明细、版本冲突检查。
-- 医生资料浏览、按门诊筛选、查看专业经历、擅长方向和可预约项目；参考价格按类别/关键词查阅，并跳转匹配的评估咨询预约。
-- 门诊、服务、医生档案与牙椅维护；所有在岗医生可预约门诊全部项目，班次默认全选门诊项目，后台统一校验时间、牙椅和跨店转场。
-- 后端按门诊/服务/日期/医生计算号源，计入服务时长、缓冲、牙椅停用、正式预约与有效占位。
-- 服务器短时占位、带幂等键的正式确认、本人查询、带原因取消、原子改期与前后记录追溯。
-- 前台核对患者后代约/取消/改期；总部共享资源权限，店长本院管理，医生仅本人班次和预约。
-- 总部维护全体员工档案与账号关联；总部、店长按权限登记医生月度财务底稿，独立人员复核，缺失来源和未确认的零业务月份阻止季度核算。
-- 按同一医生跨店汇总季度净利润，计算10%激励基金并按正净贡献和最大余数法分配；总部独立批准，登记发放及待确认结果，员工仅查看本人已批准份额。
-- SQL事务、固定顺序资源锁、三类时间排斥约束、跨表一致性约束、审计及操作回执。
-- 网络写入结果未知时保留原请求和原键，核对或重试同一操作，不能生成假成功记录。
-
-默认保留300秒、取消/改期提前120分钟、跨店转场30分钟；它们是可配置的演示规则，不是调研得出的统一行业规定。取消规则随预约保存快照。过敏未知不自动拒绝预约，不能被解释为“明确无过敏”。同一账号当前只管理本人，家庭成员共享账号、微信授权、正式通知等未实现。
-
-诊疗病历、患者支付/退款、发票、药品/耗材库存和日结的原有代码保留在 legacy。季度激励使用新 PostgreSQL 财务底稿及账证引用，预约价格不作为实际诊疗收入。
-
-## 验证
-
-```powershell
-npm run check:booking
-npm run build:booking
-npm run test:booking
-npm run test -w @andrew/admin-web
-npm run test -w @andrew/miniprogram
-npm test
-```
-
-预约集成测试创建独立随机 `andrew_test_*` PostgreSQL数据库，结束只清理自己新建的测试库，绝不清空开发库。需要本地测试服务器创建数据库权限；没有PostgreSQL时明确失败，不回退成Mock。新建开发库、迁移与测试均不接触原SQLite。
-
-[验收记录](docs/implementation/acceptance.md)区分真实PG/API、浏览器、原生模块HTTP以及真实微信模拟器联动验证；真机、Docker与TLS另行验收。[测试设计](docs/implementation/test-design.md)列出并发、幂等、回滚和权限断言。
-
-小程序结果见[小程序验收](docs/implementation/miniprogram-acceptance.md)，核心链路的实际工程路径、预约编号、SQL核对和截图位置见[跨端验收记录](docs/implementation/qa/cross-client.json)。后续手机和部署操作见[开发者工具与部署准备](docs/implementation/DEMO-NEXT-STEPS.md)。
-
-## 目录与接口
-
-```text
-miniprogram/           微信原生TS/WXML/WXSS（导入本目录，构建到dist）
-admin-web/             Vue3 + Router + Pinia + Vite + Element Plus
-booking-api/src/       DTO验证、路由、Service、Repository与事务
-shared/src/index.ts   两端和API共享的传输类型
-database/migrations/   版本化PostgreSQL迁移（带checksum，已应用文件不可改）
-scripts/               本地PG工具与可复现验证
-deploy/booking/        API/Web镜像、Nginx HTTP/HTTPS
-docs/implementation/   审查、API、架构、运行和验收记录
-server/ public/ test/  原SQLite/Web实现与回归参照，完整保留
-```
-
-新入口放在 `booking-api`，以免迁移前移动或覆盖 `server`。新架构只运行PostgreSQL，两套数据库之间不做双写，也不默认迁移业务数据。详见[API契约](docs/implementation/api.md)、[架构与迁移边界](docs/implementation/architecture.md)。
-
-## Docker、HTTPS与Linux迁移
-
-见[部署步骤](docs/implementation/deployment.md)。默认 `compose.yaml` 现指向新PostgreSQL/API/Web，数据库没有宿主端口映射。生产不自动Seed，不自动开启测试登录。旧Compose备份在 `deploy/legacy/compose.yaml`，旧运行说明在[legacy README](docs/legacy/README-3.1.md)；旧代码仍可用 `npm start` 在3210端口运行，但与新客户端无业务连接。
-
-首次部署生产空库可用环境变量 `ADMIN_USERNAME`、`ADMIN_PASSWORD` 运行后端 `cli.js create-admin` 初始化总部账号；不存在公开员工注册接口。不要使用合成演示库承载实际患者数据。
+本地演示账号的密码在首次启动数据库时生成，见本机 `.env.booking` 的 `SEED_PASSWORD`。一次构建后端、网站和小程序可以运行 `npm run build:booking`。服务器部署从根目录的 `compose.yaml` 和 `.env.compose.example` 开始。

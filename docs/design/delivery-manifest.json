@@ -1,16 +1,16 @@
 {
-  "revisedAt": "2026-11-06",
-  "revision": "小程序预约与到店业务梳理、医生专长和项目规则简化",
+  "revisedAt": "2026-11-13",
+  "revision": "简体中文版案例 W44694 核对与三端开发设计",
   "file": "1602240215.pdf",
-  "sha256": "57c95b7169b16da7c89865685bf5004c602b7435c71ea93f71910115daec6a1c",
-  "pages": 301,
-  "figures": 108,
-  "numberedTables": 268,
+  "sha256": "734dc90f3c99b59fe0db5d9b1adb5cfde0c3d94f9282abd66df16a5d123171bb",
+  "pages": 309,
+  "figures": 109,
+  "numberedTables": 279,
   "systemUseCases": 24,
   "businessProcesses": 12,
   "database": {
-    "documentedTables": 62,
-    "documentedFields": 857
+    "documentedTables": 67,
+    "documentedFields": 897
   },
   "verification": {
     "allPagesRendered": true,
@@ -19,11 +19,12 @@
     "unresolvedReferences": false,
     "overfullLines": false,
     "outsideText": false,
-    "visualReview": "passed",
+    "visualReview": "术语表、现状业务、预约物理模型、三端界面及交付验收",
     "systemUseCasesWithInternalDesign": 24,
-    "redrawnFigures": 33,
+    "redrawnFigures": 1,
     "compensationSchemaTables": 10,
-    "compensationSchemaFields": 124
+    "compensationSchemaFields": 124,
+    "addedFigures": 1
   },
   "source": "source-current/main.tex"
 }

@@ -13,7 +13,6 @@
     "demo": "tsx src/cli.ts demo",
     "demo:scenarios": "tsx src/cli.ts demo-scenarios",
     "demo:compensation": "tsx src/cli.ts demo-compensation",
-    "test": "tsx --test --test-concurrency=1 test/*.test.ts",
     "admin:create": "tsx src/cli.ts create-admin"
   },
   "dependencies": {

@@ -1,7 +1,7 @@
 """Rebuild the monochrome compensation diagrams used by main.tex.
 
-Run with Python + reportlab. All amounts and API names follow
-docs/implementation/compensation-contract-20261105.md.
+Run with Python and ReportLab. The diagrams accompany the
+compensation design in main.tex.
 """
 from pathlib import Path
 import math

@@ -115,7 +115,8 @@
 \sloppy
 \setlength{\emergencystretch}{2em}\clubpenalty=10000\widowpenalty=10000\displaywidowpenalty=10000
 \setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
-\newcommand{\Cell}[1]{\begin{minipage}[t]{\linewidth}\raggedright\strut #1\strut\end{minipage}}
+\newcommand{\Cell}[1]{\begin{minipage}[t]{\linewidth}\raggedright\strut
+  \ifstrequal{#1}{TIMESTAMPTZ}{\scalebox{0.72}[1]{#1}}{#1}\strut\end{minipage}}
 
 \begin{document}
 \fontsize{12pt}{20pt}\selectfont
@@ -163,7 +164,7 @@
 \begin{center}{\sffamily\bfseries\fontsize{18pt}{26pt}\selectfont 安德鲁牙科系统设计文档\par}\end{center}
 \begin{center}{\sffamily\bfseries\large 摘\quad 要}\end{center}
 \noindent\hspace*{2em}安德鲁牙科连锁在广东经营15家门诊，计划三年内将门诊数量翻一番。门诊扩张需要统一患者资料、预约安排和治疗计价，并让总部掌握每位医生的季度经营贡献。目标系统以小程序预约为主要入口：患者选择门诊、项目、医生和时间，到店后由前台核对并登记到诊，医生接诊和记录治疗，前台依据实际治疗明细核对费用、办理结账。电话和现场预约由前台协助，使用同一套排班和号源。\par
-所有在职医生均可开展目录中的全部项目，特长介绍供患者选择。患者在各门诊沿用同一份档案，预约、就诊、治疗和账单连续关联。总部按医生跨店汇总季度收入、医疗用品成本及运营费用，计算净利润，合计大于零时提取10\%作为激励基金，分配给各医生的奖金相加与基金一致。文档依次给出业务现状、需求研究、目标流程、用例规约，以及分析模型、数据库、界面和服务设计，为患者小程序和员工工作台开发提供依据。\par
+所有在岗医生按门诊开放项目和班次提供预约，特长供患者选医。患者在各门诊沿用同一份档案，预约、就诊、治疗和账单连续关联。总部按医生跨店汇总季度收入、医疗用品成本及运营费用，计算净利润，合计大于零时提取10\%作为激励基金，分配给各医生的奖金相加与基金一致。官网集中展示门诊、医生和服务，并将患者引导至微信小程序。小程序与员工工作台使用同一预约服务，排班、占位和预约结果以服务端保存的记录为准。\par
 关键词：牙科连锁；业务用例；跨店预约；单位计价；季度业绩；激励基金\par
 \Needspace{459pt}
 \section*{术语与业务对象}
@@ -178,7 +179,7 @@
 \Cell{门诊、店长与总部} & \Cell{门诊是服务发生地点；店长承担本店运营和复核；总部负责统一规则、跨店协调及经营核算。}\\[1pt]
 \Cell{治疗意向、计划与执行} & \Cell{意向用于预约；计划是医生提出并经患者选择的安排；执行是本次已经实施的事实。}\\[1pt]
 \Cell{标准单位} & \Cell{治疗项目约定的计量单位，如次或牙；每项费用按该项目的数量乘以单位价格计算。}\\[1pt]
-\Cell{Invoice} & \Cell{一次就诊的结算单，列出治疗项目、数量、单位价格及合计金额。}\\[1pt]
+\Cell{结算单} & \Cell{一次就诊的费用单据，列明实际治疗、数量、单位价格、各项小计和合计金额。}\\[1pt]
 \Cell{应收、收款与收入} & \Cell{应收是患者应付的服务费用；收款是实际成功资金交易；收入用于已确认服务的经营归属，三者分别记录。}\\[1pt]
 \Cell{业务日与季度} & \Cell{业务日按门诊营业日期核对资金；季度按服务与费用的获准归属期间汇总医生业绩。}\\[1pt]
 \Cell{激励基金} & \Cell{全体医生季度净利润合计大于零时，提取10\%作为基金；按各医生正净利润占比分配奖金。}\\[1pt]
@@ -189,9 +190,9 @@
 \section{组织现状与升级目标}
 \Needspace{3\baselineskip}
 \subsection{连锁规模与经营诉求}
-Andrew Chen兼任首席执行官与首席牙医。公司已有15家门诊，计划在三年内将门诊数量翻倍。各门诊相对独立，总部主要依靠人工监督。门诊扩张后，需要统一患者资料和治疗计价，掌握预约取消情况，并按医生汇总季度经营贡献。[资料1]\par
+Andrew Chen兼任首席执行官与首席牙医。案例中，公司在广东有15家门诊，计划三年内将门诊数量翻倍。各店相对独立，总部主要靠人工监督。扩张前，总部关心各店治疗标准、取消情况以及医生专业资格的组合，并提出按季度核算医生贡献。[资料1]\par
 目标系统以小程序预约为主要入口。患者在小程序中选择就诊人、门诊和治疗项目，查看医生介绍及可预约时间后提交预约。患者到店后，前台核对身份和预约并登记到诊，医生接诊和记录治疗，前台根据实际治疗核对费用、办理结账。总部按季度汇总医生在各店的收入与成本，计算业绩和激励。电话或现场预约由前台协助办理，使用同一套排班和号源。\par
-所有在职医生均可开展目录中的全部治疗项目，特长介绍帮助患者选择医生。店长主要根据医生出诊时间、门诊营业安排和治疗位编排班次，跨店出诊需要留出路程时间。患者和医生在各店沿用统一编号，患者既往就诊资料与医生季度账目可以连续查询。每次就诊按实际完成的治疗记录数量和单价，形成一张明细清楚的结算单。\par
+演示系统按门诊开放项目和班次安排放号，在岗医生的特长供患者选医。店长按医生出诊时间、门诊营业安排和牙椅编排班次，跨店出诊预留转场时间。患者与医生跨店沿用统一编号。\par
 \Needspace{522pt}
 \subsection{业务问题与目标改变}
 \par\noindent\begin{minipage}{\textwidth}
@@ -204,7 +205,7 @@ Andrew Chen兼任首席执行官与首席牙医。公司已有15家门诊，计�
 \Cell{医生与患者都可能跨店就诊} & \Cell{患者和医生沿用统一编号，各门诊共用出诊日历} & \Cell{店长协作排班，检查时间冲突并保留跨店路程时间。}\\[1pt]
 \Cell{需要了解预约是否履行及变更原因} & \Cell{取消或改期填写原因，到诊和未到分别登记结果} & \Cell{前台核实到诊情况，店长可按门诊和医生查看预约记录。}\\[1pt]
 \Cell{一次就诊多项治疗，治疗中可能增项} & \Cell{计划确认、实际执行、单位价格和结算明细连续关联} & \Cell{医生负责执行事实，患者确认增项，前台核对费用。}\\[1pt]
-\Cell{需要一就诊一Invoice的标准化开单} & \Cell{每次就诊使用一张结算单，列清实际治疗、数量和价格，收费变更保留记录} & \Cell{同一次就诊重复开单时，返回原结算单号。}\\[1pt]
+\Cell{需要按就诊统一开单} & \Cell{每次就诊使用一张结算单，列清实际治疗、数量和价格，收费变更保留记录} & \Cell{同一次就诊重复开单时，返回原结算单号。}\\[1pt]
 \Cell{总部人工监督，需掌握医生季度价值} & \Cell{医生跨店汇总收入、用品成本、运营费用和净利润} & \Cell{总部制表与复核分开；季度结果可查到对应账证和费用凭据。}\\[1pt]
 \Cell{净利润10\%构成激励基金} & \Cell{按季度核算基金与各医生奖金，保留计算明细} & \Cell{分配给各医生的奖金相加与基金一致，发放金额不超过批准额度。}\\[1pt]
 \bottomrule\end{tabular}
@@ -248,17 +249,18 @@ Andrew Chen兼任首席执行官与首席牙医。公司已有15家门诊，计�
 \section{需求获取与行业调研}
 \Needspace{3\baselineskip}
 \subsection{资料研究与需求判断}
-需求分析以安德鲁案例资料为起点，整理组织规模、岗位职责及预约、诊疗、计价和季度核算要求。公开牙科管理系统资料用于研究线上预约、治疗计划和收退款的处理方式，再通过设计走查核对各环节的输入、交接与异常处理。\par
+案例的需求调查从电话约诊开始。患者档案保存基本资料和逐项过敏，牙医档案保存人事资料和多项资格，门诊档案保存地址、负责人、电话、邮箱和面积。每次就诊发生在一家门诊，患者可跨店就诊，牙医按所需和可用技能跨店出诊。就诊记录保存约定时间、特殊需求和治疗明细。\par
+案例用到诊标记记录患者是否出现，要求一次就诊一张结算单，并按医生季度统计收入、医疗用品成本和运营费用。激励基金采用净利润的10\%。目标模型分别记录到诊、未到、取消和改期，个人分配与金额取整按第6章计算。[资料1]\par
 \par\noindent\begin{minipage}{\textwidth}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{需求获取方法及适用性}\label{tab23}
+\captionof{table}{需求来源与设计决策}\label{tab23}
 \begin{tabular}{@{}p{2.840cm}@{\hspace{0.16cm}}p{5.840cm}@{\hspace{0.16cm}}p{6.440cm}@{}}
 \toprule
 \bfseries \Cell{方法} & \bfseries \Cell{所用资料或过程} & \bfseries \Cell{形成的设计依据}\\\midrule
 \Cell{案例资料研究} & \Cell{阅读安德鲁牙科案例，梳理组织关系、业务过程和需要保存的资料} & \Cell{确定患者、医生、门诊和治疗等业务对象，明确统一计价与季度业绩要求。}\\[1pt]
 \Cell{公开系统研究} & \Cell{查阅Curve Dental、Dentally、领健、Open Dental和Dentrix Ascend的官方资料} & \Cell{比较自助预约、候补、治疗计划和跨店对账方式，形成目标流程。}\\[1pt]
 
-\Cell{设计走查} & \Cell{沿预约、到诊、诊疗、结账和季度核算顺序检查用例、图示及页面} & \Cell{检查岗位交接、必填资料、重复提交和异常处理，使各部分采用一致的规则。}\\[1pt]
+\Cell{岗位交接} & \Cell{按预约、到诊、诊疗、结账和季度核算顺序交接业务记录} & \Cell{明确各岗位何时接手、需要哪些资料，以及失败时由谁处理。}\\[1pt]
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
 \Needspace{9\baselineskip}
@@ -266,20 +268,20 @@ Andrew Chen兼任首席执行官与首席牙医。公司已有15家门诊，计�
 \subsection{公开产品能力与设计取舍}
 \Needspace{3\baselineskip}
 \subsubsection{R1 Curve Dental：Multisite Success: Streamline Your Front Office}
-Curve Dental的公开资料介绍了跨门诊日历、患者自助预约和复诊短信提醒。目标设计让小程序与前台共用医生日历，患者可查看各门诊的医生和可预约时间。[R1]\par
+Curve Dental提供跨门诊日历、患者自助预约与双向短信沟通。目标设计让小程序与前台共用医生日历，患者可查看各门诊的医生和可预约时间。[R1]\par
 \subsubsection{R2 Dentally Help Centre：How to use waiting lists}
 Dentally候补记录包含门诊、预约原因和所需时长。目标设计在取消后释放时段，按患者的地点与时间意愿发送候补邀请，患者接受后再确认预约。[R2]\par
 \subsubsection{R3 领健 e看牙帮助中心：【治疗计划】功能介绍}
-领健治疗计划关联诊断、牙位、方案步骤、收费项目和同意文件，支持分步骤执行。目标设计分别保存治疗计划、患者确认和实际治疗，治疗中增项先向患者说明并确认，再记录执行与费用。[R3]\par
+领健治疗计划把治疗步骤和收费项目连接到预约、执行及报表。目标设计分别保存治疗计划、患者确认和实际治疗，治疗中增项先向患者说明并确认，再记录执行与费用。[R3]\par
 \subsubsection{R4 Open Dental：Payment}
 Open Dental收款功能将款项分配到欠费项目，并保留医生、门诊及未分配余额。目标设计分别保存收款和账单支付明细，记录收款门诊与服务门诊，部分付款后继续显示欠款。[R4]\par
 \subsubsection{R5 Open Dental：Refund}
-Open Dental退款功能保留原付款及款项分配，支持部分退款和退款原因。目标设计将费用更正与实际退款分别记录，退款经过复核并关联原交易。[R5]\par
+Open Dental支持从原付款发起部分退款，并核对退款的项目分配。目标设计将费用更正与实际退款分别记录，退款经过复核并关联原交易。[R5]\par
 \subsubsection{R6 Dentrix Ascend Academy：Payment Location Cross-Reconciliation Report}
 Dentrix Ascend跨地点核对报告区分服务地点和收款地点。目标设计按实际提供服务的门诊和医生归集收入，单独核对跨店代收及内部划转。[R6]\par
 \Needspace{378pt}
 \subsubsection{R7 Dentally Help Centre：How appointment slots are held during online booking with Portal}
-Dentally线上预约支持短时保留所选时段，确认后转为预约，到期未完成则释放。目标设计采用相同顺序，患者确认时重新检查排班和资源，保留期限由门诊统一设置。[R7]\par
+Dentally线上预约支持短时保留所选时段，确认后转为预约，到期未完成则释放。安德鲁采用先占位后确认的顺序。服务端设置占位时限，并在确认时重新检查排班和资源。[R7]\par
 \par\noindent\begin{minipage}{\textwidth}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
 \captionof{table}{业务关注点与调研启示的联系}\label{tab39}
@@ -330,11 +332,10 @@ Dentally线上预约支持短时保留所选时段，确认后转为预约，到
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
 \subsection{现状业务序列}
-患者先通过电话表达需求并约定医生和时间，到诊后由医生处理问题、特殊需求及实际治疗。下面两张现状序列图呈现这些业务工人与业务实体的交接；统一开单、取消原因分析和医生季度核算在目标蓝图中展开。\par
-患者致电提出治疗需求，并约定接诊牙医、门诊和具体时间。就诊安排作为业务实体表达双方形成的服务约定。\par
+患者致电说明治疗意向和特殊需求，接待人员登记资料，协调牙医、门诊和就诊时间。[资料1]\par
 \begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/AS01.pdf}
 \caption{AS01 现状业务序列：电话提出需求与协调就诊}\label{AS01}\end{figure}
-患者按具体日期时间前来，向牙医说明问题或特殊需求并接受治疗。标准单位记录、统一结算单和季度业绩属于进一步提出的信息要求，在目标蓝图中落实。\par
+患者按约到诊。一次就诊可执行多个治疗项目，医生可在治疗中增项并记录各项实际用量。[资料1]\par
 \begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/AS02.pdf}
 \caption{AS02 现状业务序列：到诊与牙医提供服务}\label{AS02}\end{figure}
 \Needspace{442pt}
@@ -456,8 +457,8 @@ Dentally线上预约支持短时保留所选时段，确认后转为预约，到
 \toprule
 \bfseries \Cell{项目} & \bfseries \Cell{内容}\\\midrule
 \Cell{执行者} & \Cell{顾客、前台、医生}\\[1pt]
-\Cell{触发} & \Cell{患者在小程序登记就诊人，或前台协助首次预约、更新资料。}\\[1pt]
-\Cell{涉众利益} & \Cell{患者：跨店就诊沿用同一档案，过敏信息不遗漏。\\前台：能处理同名和家庭共用电话，避免串档。\\医生：能区分患者自述、待核实与已核对过敏。}\\[1pt]
+\Cell{触发} & \Cell{患者在小程序注册、关联线下档案或维护资料，前台可协助首次建档。}\\[1pt]
+\Cell{涉众利益} & \Cell{患者：跨店就诊沿用同一档案，过敏信息不遗漏。\\前台：可依据出生日期和联系方式区分同名患者。\\医生：能区分患者自述、待核实与已核对过敏。}\\[1pt]
 \Cell{前置条件} & \Cell{1.\allowbreak{} 办理者为本人、获核实的监护人或有任务权限的员工。\\2.\allowbreak{} 资料收集用途与必要范围已向患者说明。}\\[1pt]
 \Cell{成功后置条件} & \Cell{1.\allowbreak{} 生成或沿用唯一患者编号；姓名、出生日期及必要联系资料可查询。\\2.\allowbreak{} 每种已知过敏单独保存，过敏声明及核对人、时间可追溯；疑似重复保持待核对。}\\[1pt]
 \bottomrule\end{tabular}
@@ -477,6 +478,7 @@ Dentally线上预约支持短时保留所选时段，确认后转为预约，到
 \Cell{2a} & \Cell{[仅电话相同或存在多个同名候选] 前台进一步核对身份，确认后沿用对应档案；尚未确认的申请保留待核对状态。}\\[1pt]
 \Cell{3b} & \Cell{[患者无法说明过敏史] 记录未知并向接诊医生提示，不根据空列表生成无过敏结论。}\\[1pt]
 \Cell{6c} & \Cell{[患者新报告与既有记录矛盾] 医生登记来源及解释，保存修订记录和原过敏资料。}\\[1pt]
+\Cell{4a} & \Cell{[前台已建档且尚无账号] 前台核对身份后发放十分钟有效的凭证。患者在小程序填写凭证、原档案出生日期及账号资料，确认隐私事项后关联原档案。}\\[1pt]
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
 \par\noindent\begin{minipage}{\textwidth}
@@ -554,7 +556,7 @@ Dentally线上预约支持短时保留所选时段，确认后转为预约，到
 \begin{tabular}{@{}p{2.440cm}@{\hspace{0.16cm}}p{12.840cm}@{}}
 \toprule
 \bfseries \Cell{类别} & \bfseries \Cell{约定}\\\midrule
-\Cell{业务规则} & \Cell{1.\allowbreak{} 员工号在跨店出诊时保持不变。\\2.\allowbreak{} 所有在职医生均可开展目录中的全部项目，特长介绍供患者选择参考。\\3.\allowbreak{} 证书信息作为医生资料登记，预约按班次、时长及治疗位安排。}\\[1pt]
+\Cell{业务规则} & \Cell{1.\allowbreak{} 员工号在跨店出诊时保持不变。\\2.\allowbreak{} 预约候选由门诊开放项目、班次及资源决定，特长介绍供患者选医。\\3.\allowbreak{} 证书信息作为医生资料登记，预约按班次、时长及治疗位安排。}\\[1pt]
 \Cell{质量要求} & \Cell{1.\allowbreak{} 医生介绍更新后，小程序展示最新发布内容。\\2.\allowbreak{} 小程序只展示姓名、介绍、特长和出诊安排，人事联系资料供内部授权人员查询。}\\[1pt]
 \Cell{设计约束} & \Cell{1.\allowbreak{} 证书日期按实际资料登记。\\2.\allowbreak{} 资料修改、发布及在职状态变更保留办理人和时间。}\\[1pt]
 \bottomrule\end{tabular}
@@ -655,7 +657,7 @@ Dentally线上预约支持短时保留所选时段，确认后转为预约，到
 \bfseries \Cell{字段} & \bfseries \Cell{类型与限制} & \bfseries \Cell{业务含义}\\\midrule
 \Cell{班次编号} & \Cell{UUID；医生和门诊外键必填} & \Cell{标识一次出诊安排}\\[1pt]
 \Cell{起止时间} & \Cell{带时区时间，起点小于终点} & \Cell{采用半开区间判断占用}\\[1pt]
-\Cell{可提供项目} & \Cell{采用统一治疗目录} & \Cell{所有在职医生均可开展目录项目}\\[1pt]
+\Cell{可提供项目} & \Cell{采用统一治疗目录} & \Cell{按门诊开放项目配置本班次}\\[1pt]
 \Cell{资源容量} & \Cell{治疗位及可接诊时长} & \Cell{限制可承诺预约}\\[1pt]
 \Cell{转场缓冲} & \Cell{非负分钟及规则版本} & \Cell{约束不同地点连续班次}\\[1pt]
 \bottomrule\end{tabular}
@@ -722,7 +724,7 @@ Dentally线上预约支持短时保留所选时段，确认后转为预约，到
 \begin{tabular}{@{}p{2.440cm}@{\hspace{0.16cm}}p{12.840cm}@{}}
 \toprule
 \bfseries \Cell{类别} & \bfseries \Cell{约定}\\\midrule
-\Cell{业务规则} & \Cell{1.\allowbreak{} 同一医生在各门诊共用出诊日历。\\2.\allowbreak{} 所有在职医生均可预约目录项目，特长供患者选择。\\3.\allowbreak{} 可用时间按项目时长查询，患者确认后才保留正式预约。}\\[1pt]
+\Cell{业务规则} & \Cell{1.\allowbreak{} 同一医生在各门诊共用出诊日历。\\2.\allowbreak{} 仅查询已发布班次开放的门诊项目，特长供患者选医。\\3.\allowbreak{} 可用时间按项目时长查询，患者确认后才保留正式预约。}\\[1pt]
 \Cell{质量要求} & \Cell{1.\allowbreak{} 在30门诊100牙医、近90天排班的验收集上，50并发查询95\%应在2秒内返回。\\2.\allowbreak{} 候选查询结果不含其他患者姓名、联系方式或诊疗信息。}\\[1pt]
 \Cell{设计约束} & \Cell{1.\allowbreak{} 使用分页与限定日期范围；界面以门诊当地时间展示。\\2.\allowbreak{} 前台代约读取同一查询服务，不维护离线独立号源。}\\[1pt]
 \bottomrule\end{tabular}
@@ -2004,7 +2006,7 @@ Dentally线上预约支持短时保留所选时段，确认后转为预约，到
 \toprule
 \bfseries \Cell{项目} & \bfseries \Cell{设计}\\\midrule
 \Cell{界面} & \Cell{以实际患者为页首；联系资料与逐项过敏分区，未知选项明确显示；复核动作只对接诊医生开放。}\\[1pt]
-\Cell{接口} & \Cell{POST /\allowbreak{}auth/\allowbreak{}register 建立患者账号与资料；GET、PUT /\allowbreak{}patients/\allowbreak{}me 读取和更新本人资料，更新携带 expected\allowbreak{}Version；前台通过 GET、POST /\allowbreak{}staff/\allowbreak{}patients 核对或建档。}\\[1pt]
+\Cell{接口} & \Cell{POST /\allowbreak{}auth/\allowbreak{}register 新建账号和档案。前台通过 GET、POST /\allowbreak{}staff/\allowbreak{}patients 核对或建档，通过 POST /\allowbreak{}staff/\allowbreak{}patients/\allowbreak{}\{id\}/\allowbreak{}invitations 发凭证；POST /\allowbreak{}auth/\allowbreak{}register-linked 消耗凭证并绑定原档案。本人资料、头像及隐私接口见表\ref{tab_patient_account_api}。}\\[1pt]
 \Cell{验收场景} & \Cell{1.\allowbreak{} 家庭成员共用电话→生成不同患者编号。\\2.\allowbreak{} 同时更新同一档案→一个成功，另一得到版本冲突。\\3.\allowbreak{} 未知过敏→显示待核实，不生成无过敏结论。}\\[1pt]
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
@@ -2025,7 +2027,7 @@ Dentally线上预约支持短时保留所选时段，确认后转为预约，到
 \Cell{输入} & \Cell{医生基本资料、必要人事信息、对外简介和展示特长}\\[1pt]
 \Cell{执行前检查} & \Cell{办理人具有医生档案维护权限；员工号唯一；医生仅提交本人资料}\\[1pt]
 \Cell{成功结果} & \Cell{医生资料与展示特长保存，患者查询只返回公开资料}\\[1pt]
-\Cell{领域算法} & \Cell{按员工号定位医生并核对版本，校验必填资料和展示文字后保存；所有医生可开展目录内全部项目，特长不参与排班或预约准入判断。}\\[1pt]
+\Cell{领域算法} & \Cell{按员工号定位医生并核对版本，校验必填资料和展示文字后保存；专业资格与特长分别用于人员资料和患者选医，预约按门诊开放项目及班次提供候选。}\\[1pt]
 \Cell{数据访问} & \Cell{医生仓储保存staff及医生特长关联；公开查询只投影姓名、简介、特长与出诊信息，必要人事资料不进入患者接口。}\\[1pt]
 \Cell{事务与并发} & \Cell{医生档案、展示特长和变更记录一起提交；旧版本修改提示重新读取。}\\[1pt]
 \Cell{失败及恢复} & \Cell{员工号重复提示沿用既有档案；必填项缺失返回具体字段；版本冲突保留输入并重新核对。}\\[1pt]
@@ -2093,7 +2095,7 @@ Dentally线上预约支持短时保留所选时段，确认后转为预约，到
 \Cell{输入} & \Cell{医生、门诊、出诊起止时间和转场规则版本}\\[1pt]
 \Cell{执行前检查} & \Cell{排班任务权限有效；涉及旧预约的调整有协调依据}\\[1pt]
 \Cell{成功结果} & \Cell{发布不重叠且满足营业时间与治疗位条件的出诊班次}\\[1pt]
-\Cell{领域算法} & \Cell{按医生读取全连锁班次，核对在职、出诊门诊、时间重叠及相邻异店转场间隔；再检查本店营业和治疗位条件。所有医生均可提供全部项目，特长不参与发布检查。}\\[1pt]
+\Cell{领域算法} & \Cell{按医生读取全连锁班次，核对在职、出诊门诊、时间重叠及相邻异店转场间隔；再检查本店营业和治疗位条件。班次项目从本店有效目录选取。}\\[1pt]
 \Cell{数据访问} & \Cell{排班仓储按医生和时间查询doctor\_\allowbreak{}shifts及资源占用；受影响的原预约保留并列入协调任务。}\\[1pt]
 \Cell{事务与并发} & \Cell{同一医生的跨店排班以一致锁顺序提交；班次版本与容量一起生效，通知在事务后发送}\\[1pt]
 \Cell{失败及恢复} & \Cell{时间重叠或转场间隔不足时不发布；缩班影响预约时先协调，不能删除原预约事实。}\\[1pt]
@@ -2174,7 +2176,7 @@ Dentally线上预约支持短时保留所选时段，确认后转为预约，到
 \toprule
 \bfseries \Cell{项目} & \bfseries \Cell{设计}\\\midrule
 \Cell{界面} & \Cell{确认页显示患者姓名、医生、门诊地址、准确时段和暂占倒计时；成功页以可查询预约号证明成立。}\\[1pt]
-\Cell{接口} & \Cell{POST /\allowbreak{}booking-\allowbreak{}holds 取得临时占位；POST /\allowbreak{}appointments/\allowbreak{}confirm 携带 hold\allowbreak{}Id、hold\allowbreak{}Version 和 Idempotency-\allowbreak{}Key 确认；GET /\allowbreak{}appointments/\allowbreak{}\{id\} 查询结果。}\\[1pt]
+\Cell{接口} & \Cell{POST /\allowbreak{}booking-\allowbreak{}holds 取得临时占位；POST /\allowbreak{}appointments/\allowbreak{}confirm 携带 hold\allowbreak{}Id、hold\allowbreak{}Version、就诊人及规则确认标记和 Idempotency-\allowbreak{}Key 确认；GET /\allowbreak{}appointments/\allowbreak{}\{id\} 查询结果。}\\[1pt]
 \Cell{验收场景} & \Cell{1.\allowbreak{} 顾客与前台同时确认同资源→仅一个预约成立。\\2.\allowbreak{} 同键重试十次→返回同一预约号。\\3.\allowbreak{} 回执通知失败→预约仍有效且前台出现待联系任务。}\\[1pt]
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
@@ -2497,7 +2499,7 @@ Dentally线上预约支持短时保留所选时段，确认后转为预约，到
 \begin{tabular}{@{}p{2.640cm}@{\hspace{0.16cm}}p{12.640cm}@{}}
 \toprule
 \bfseries \Cell{项目} & \bfseries \Cell{详细设计}\\\midrule
-\Cell{签名} & \Cell{prepare\allowbreak{}Visit\allowbreak{}Invoice(\allowbreak{}visit\allowbreak{}Id,\allowbreak{} expected\allowbreak{}Version,\allowbreak{} request\allowbreak{}Id)\allowbreak{}:\allowbreak{} Invoice}\\[1pt]
+\Cell{签名} & \Cell{prepare\allowbreak{}Visit\allowbreak{}Invoice(\allowbreak{}visit\allowbreak{}Id,\allowbreak{} expected\allowbreak{}Version,\allowbreak{} request\allowbreak{}Id)\allowbreak{}:\allowbreak{} VisitInvoice}\\[1pt]
 \Cell{输入} & \Cell{就诊号、执行签署版本和已核对费用依据}\\[1pt]
 \Cell{执行前检查} & \Cell{实际执行已签署；有效已确认报价，或无预报价时服务日适用价已说明确认}\\[1pt]
 \Cell{成功结果} & \Cell{唯一结算单含可追溯明细}\\[1pt]
@@ -2853,7 +2855,7 @@ Dentally线上预约支持短时保留所选时段，确认后转为预约，到
 \toprule
 \bfseries \Cell{项目} & \bfseries \Cell{设计}\\\midrule
 \Cell{界面} & \Cell{授权预览同时展示动作、门诊范围、有效期及冲突；离岗页面列明待交接任务。}\\[1pt]
-\Cell{接口} & \Cell{POST /\allowbreak{}assignments；POST /\allowbreak{}assignments/\allowbreak{}\{id\}/\allowbreak{}revoke；POST /\allowbreak{}staff/\allowbreak{}\{id\}/\allowbreak{}deactivation。}\\[1pt]
+\Cell{接口} & \Cell{GET、POST /\allowbreak{}staff/\allowbreak{}accounts 查询与创建员工账号；PUT /\allowbreak{}staff/\allowbreak{}accounts/\allowbreak{}\{id\} 更新账号资料与授权；POST /\allowbreak{}staff/\allowbreak{}accounts/\allowbreak{}\{id\}/\allowbreak{}reset-password 重置临时密码；POST /\allowbreak{}auth/\allowbreak{}change-password 修改本人密码。}\\[1pt]
 \Cell{验收场景} & \Cell{1.\allowbreak{} 店长授总部权限→拒绝且原授权不变。\\2.\allowbreak{} 医生离岗后旧会话继续签署→拒绝，历史签名保留。\\3.\allowbreak{} 同一人制表并复核同一季度分配→拒绝通过。}\\[1pt]
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
@@ -2874,7 +2876,7 @@ Dentally线上预约支持短时保留所选时段，确认后转为预约，到
 \Cell{合计} & \Cell{—} & \Cell{—} & \Cell{—} & \Cell{500.\allowbreak{}00}\\[1pt]
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
-结算单只能包含本次实际实施且已签署的项目。同一就诊重复请求开单时返回同一结算单；费用差错追加关联调整记录。患者预付款属于资金记录，在实际治疗产生应收后核销，不预造治疗明细。\par
+结算单只能包含本次实际实施且已签署的项目。同一次就诊重复开单时返回原结算单，费用差错追加调整记录。患者预付款在实际治疗形成应收后核销。\par
 \Needspace{355pt}
 \subsection{收入、现金与跨店归属}
 \par\noindent\begin{minipage}{\textwidth}
@@ -2914,7 +2916,7 @@ Dentally线上预约支持短时保留所选时段，确认后转为预约，到
 基金比例、利润合计、个人占比、补分顺序以及获批版本都保存，以便重新核对个人金额及其合计。股权60\%与其余合伙人的持股安排不进入医生贡献权重。审批后再按实际凭据登记发放，累计发放不能超过获批个人额度；医生查看本人明细，总部复核人核对月度来源。\par
 \subsection{取消改期原因、到诊与排班概览}
 患者取消或改期时填写原因，系统保留原预约、变更时间及新安排。店长按日期和门诊查看原因分类数量，识别需要联系患者或调整出诊时间的情况；改期失败时仍保留原预约，不释放原时段。\par
-到店后由前台核对预约和就诊人，登记实际到诊时间。统计页面分别显示有效预约、实际到诊及待核实数量；未来排班显示医生、门诊和出诊时间。所有医生均可开展全部目录项目，特长帮助患者选医生。\par
+到店后由前台核对预约和就诊人，登记实际到诊时间。统计页面分别显示有效预约、实际到诊及待核实数量；未来排班显示医生、门诊和出诊时间。\par
 \Needspace{9\baselineskip}
 \Needspace{9\baselineskip}
 \section{数据库与数据访问设计}
@@ -2932,7 +2934,7 @@ Dentally线上预约支持短时保留所选时段，确认后转为预约，到
 \endhead
 \bottomrule\endlastfoot
 \Cell{患者与多种过敏} & \Cell{patients—patient\_\allowbreak{}allergies—allergens，患者另有unknown/\allowbreak{}none\_\allowbreak{}reported/\allowbreak{}known状态} & \Cell{多对多逐项表达已知过敏，空集合不被错误解释为无过敏。}\\[1pt]
-\Cell{医生与专长档案} & \Cell{staff—dentist\_\allowbreak{}qualifications—qualifications} & \Cell{一名医生可登记多项专业经历与特长，患者可据此了解医生。所有在岗医生均可承接门诊开展的项目。}\\[1pt]
+\Cell{医生与专长档案} & \Cell{staff—dentist\_\allowbreak{}qualifications—qualifications} & \Cell{一名医生可登记多项资格，一项资格可关联多名医生。特长用于公开展示。}\\[1pt]
 \Cell{预约改期链} & \Cell{appointments.\allowbreak{}supersedes\_\allowbreak{}appointment\_\allowbreak{}id与root\_\allowbreak{}appointment\_\allowbreak{}id自反关联} & \Cell{保留旧承诺和替代关系；自外键防悬空，应用规则防环和同患者错误关联。}\\[1pt]
 \Cell{治疗阶段依赖} & \Cell{plan\_\allowbreak{}items.\allowbreak{}predecessor\_\allowbreak{}item\_\allowbreak{}id自反关联} & \Cell{表达前置项目；需在同版本内防环，阶段号不能替代临床放行。}\\[1pt]
 \Cell{一次就诊一张结算单} & \Cell{invoices.\allowbreak{}visit\_\allowbreak{}id NOT NULL UNIQUE；invoice\_\allowbreak{}lines按唯一execution\_\allowbreak{}item\_\allowbreak{}id取实际治疗} & \Cell{一对一身份清楚，费用更正追加调整而不生成第二张同次结算单。}\\[1pt]
@@ -2947,7 +2949,7 @@ Dentally线上预约支持短时保留所选时段，确认后转为预约，到
 一对多在明细表保存外键，多对多通过关联表连接。一对一的结算单使用非空且唯一的就诊外键。员工身份、专业经历和岗位分别保存，一人兼任多个岗位时沿用同一份员工档案。\par
 \Needspace{575pt}
 \subsection{关系模型图与外键}
-以下ER关系视图按业务域分组，矩形列出表名和关键键；R编号对应随图关系表，端点表示数量。统一资源占用和治疗价格参考作为预约及服务域的补充，其字段和关联在后续字段字典与外键表列明。跨图关系及未在图中展开的外键在外键表列明。已发生业务记录不通过删除主档而丢失，停用与归档由状态表达。\par
+以下ER关系视图按业务域分组，矩形列出表名和关键键；R编号对应随图关系表，端点表示数量。预约占用、隐私同意、档案关联凭证和头像的存储关系见第\ref{sec_booking_physical}节。跨图关系在外键表中列明。已发生业务记录不通过删除主档而丢失，停用与归档由状态表达。\par
 \begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/er_concept_1.pdf}
 \caption{患者与逐项过敏}\label{er_concept_1}\end{figure}
 \par\noindent\begin{minipage}{\textwidth}
@@ -3490,6 +3492,8 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \Cell{name} & \Cell{TEXT} & \Cell{NN} & \Cell{门诊名称}\\[1pt]
 \Cell{address} & \Cell{TEXT} & \Cell{NN} & \Cell{邮政地址}\\[1pt]
 \Cell{manager\_\allowbreak{}staff\_\allowbreak{}id} & \Cell{UUID} & \Cell{NN；FK→\\staff.\allowbreak{}id} & \Cell{负责本门诊的主管员工}\\[1pt]
+\Cell{description} & \Cell{TEXT} & \Cell{NULL} & \Cell{对外展示的门诊简介}\\[1pt]
+\Cell{opening\_\allowbreak{}hours} & \Cell{TEXT} & \Cell{NULL} & \Cell{面向患者展示的营业时间文字}\\[1pt]
 \Cell{phone} & \Cell{TEXT} & \Cell{NN} & \Cell{门诊联系电话}\\[1pt]
 \Cell{email} & \Cell{TEXT} & \Cell{NN} & \Cell{门诊联系邮箱}\\[1pt]
 \Cell{floor\_\allowbreak{}area\_\allowbreak{}m2} & \Cell{NUMERIC(\allowbreak{}18,\allowbreak{}4)\allowbreak{}} & \Cell{NN} & \Cell{办公面积，平方米}\\[1pt]
@@ -3504,7 +3508,7 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \Cell{row\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{并发版本，成功修改递增}\\[1pt]
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
-约束：UNIQUE(\allowbreak{}clinic\_\allowbreak{}no)\allowbreak{}；row\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；floor\_\allowbreak{}area\_\allowbreak{}m2>\allowbreak{}0；opens\_\allowbreak{}at<\allowbreak{}closes\_\allowbreak{}at；closed\_\allowbreak{}on IS NULL OR closed\_\allowbreak{}on>\allowbreak{}=\allowbreak{}opened\_\allowbreak{}on；主管任职和manager权限须覆盖门诊及生效期间。停业不删除历史业务。；激励季度范围包含全部登记门诊的三个自然月，停用或无业务门诊也须提供经复核的月度依据。\par
+约束：UNIQUE(\allowbreak{}clinic\_\allowbreak{}no)\allowbreak{}；row\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；floor\_\allowbreak{}area\_\allowbreak{}m2>\allowbreak{}0；opens\_\allowbreak{}at<\allowbreak{}closes\_\allowbreak{}at；closed\_\allowbreak{}on IS NULL OR closed\_\allowbreak{}on>\allowbreak{}=\allowbreak{}opened\_\allowbreak{}on；主管任职和manager权限须覆盖门诊及生效期间。停业门诊保留历史记录，并按登记范围提供季度所需的月度核对依据。\par
 \Needspace{552pt}
 \subsubsection{员工与医生档案（staff）}
 员工档案保存稳定员工编号和可选唯一账号关联，医生与非医生共享员工主体。出生日期、家庭住址和电子邮箱用于内部人事管理；公开医生资料不返回这三项。\par
@@ -4186,7 +4190,7 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 约束：UNIQUE(\allowbreak{}id,\allowbreak{}visit\_\allowbreak{}id)\allowbreak{}；UNIQUE(\allowbreak{}request\_\allowbreak{}key)\allowbreak{}；row\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；签署前核对接诊医生、就诊记录、牙位、过敏信息及患者确认内容。签后追加更正，不删除真实治疗；临时增项先补充解释及相应同意。\par
 \Needspace{216pt}
 \subsubsection{实际治疗明细（execution\_items）}
-保存患者实际接受的治疗、单位数量及历史单价，成为Invoice来源。\par
+保存实际治疗、完成数量及历史单价，供结算单逐项取数。\par
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
 \begin{longtable}{@{}p{3.940cm}@{\hspace{0.16cm}}p{2.740cm}@{\hspace{0.16cm}}p{3.140cm}@{\hspace{0.16cm}}p{5.140cm}@{}}
 \caption{execution\_items字段}\label{tab560}\\
@@ -4218,7 +4222,7 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{创建时间，UTC保存}\\[1pt]
 \end{longtable}
 }
-约束：UNIQUE(\allowbreak{}execution\_\allowbreak{}id,\allowbreak{}line\_\allowbreak{}no)\allowbreak{}；UNIQUE(\allowbreak{}id,\allowbreak{}visit\_\allowbreak{}id)\allowbreak{}；line\_\allowbreak{}no>\allowbreak{}0；unit\_\allowbreak{}price\_\allowbreak{}snapshot\_\allowbreak{}cents>\allowbreak{}=\allowbreak{}0；completed\_\allowbreak{}quantity>\allowbreak{}=\allowbreak{}0；quantity\_\allowbreak{}scale\_\allowbreak{}snapshot BETWEEN 0 AND 4；(\allowbreak{}outcome=\allowbreak{}'not\_\allowbreak{}performed' AND completed\_\allowbreak{}quantity=\allowbreak{}0)\allowbreak{} OR (\allowbreak{}outcome IN (\allowbreak{}'completed',\allowbreak{}'partial')\allowbreak{} AND completed\_\allowbreak{}quantity>\allowbreak{}0)\allowbreak{}；visit\_\allowbreak{}id必须等于所属执行单的visit\_\allowbreak{}id；实际医生须是签署执行单的医生。只保存实际完成数量，未实施计划不作为收费或收入依据。价格快照从已确认报价及获准价格规则取得。；not\_\allowbreak{}performed只保留未实施结论和原因，不能进入Invoice。部分执行仅就实际完成数量计费；实际医生姓名由冻结快照展示，业绩按稳定医生标识归集。；FOREIGN KEY(\allowbreak{}execution\_\allowbreak{}id,\allowbreak{}visit\_\allowbreak{}id)\allowbreak{} REFERENCES treatment\_\allowbreak{}executions(\allowbreak{}id,\allowbreak{}visit\_\allowbreak{}id)\allowbreak{}\par
+约束：UNIQUE(\allowbreak{}execution\_\allowbreak{}id,\allowbreak{}line\_\allowbreak{}no)\allowbreak{}；UNIQUE(\allowbreak{}id,\allowbreak{}visit\_\allowbreak{}id)\allowbreak{}；line\_\allowbreak{}no>\allowbreak{}0；unit\_\allowbreak{}price\_\allowbreak{}snapshot\_\allowbreak{}cents>\allowbreak{}=\allowbreak{}0；completed\_\allowbreak{}quantity>\allowbreak{}=\allowbreak{}0；quantity\_\allowbreak{}scale\_\allowbreak{}snapshot BETWEEN 0 AND 4；(\allowbreak{}outcome=\allowbreak{}'not\_\allowbreak{}performed' AND completed\_\allowbreak{}quantity=\allowbreak{}0)\allowbreak{} OR (\allowbreak{}outcome IN (\allowbreak{}'completed',\allowbreak{}'partial')\allowbreak{} AND completed\_\allowbreak{}quantity>\allowbreak{}0)\allowbreak{}；visit\_\allowbreak{}id必须等于所属执行单的visit\_\allowbreak{}id；实际医生须是签署执行单的医生。只保存实际完成数量，未实施计划不作为收费或收入依据。价格快照从已确认报价及获准价格规则取得。；not\_\allowbreak{}performed只保留未实施结论和原因，不能进入结算单。部分执行仅就实际完成数量计费；实际医生姓名由冻结快照展示，业绩按稳定医生标识归集。；FOREIGN KEY(\allowbreak{}execution\_\allowbreak{}id,\allowbreak{}visit\_\allowbreak{}id)\allowbreak{} REFERENCES treatment\_\allowbreak{}executions(\allowbreak{}id,\allowbreak{}visit\_\allowbreak{}id)\allowbreak{}\par
 \Needspace{529pt}
 \subsubsection{签署病历（clinical\_records）}
 保留每次就诊的诊断、处置及医疗责任。\par
@@ -4355,7 +4359,7 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 约束：quantity>\allowbreak{}0；(\allowbreak{}entry\_\allowbreak{}type=\allowbreak{}'consume' AND reverses\_\allowbreak{}consumption\_\allowbreak{}id IS NULL)\allowbreak{} OR (\allowbreak{}entry\_\allowbreak{}type=\allowbreak{}'reverse' AND reverses\_\allowbreak{}consumption\_\allowbreak{}id IS NOT NULL)\allowbreak{}；unit\_\allowbreak{}cost\_\allowbreak{}snapshot\_\allowbreak{}cents IS NULL OR unit\_\allowbreak{}cost\_\allowbreak{}snapshot\_\allowbreak{}cents>\allowbreak{}=\allowbreak{}0；cost\_\allowbreak{}cents IS NULL OR cost\_\allowbreak{}cents>\allowbreak{}=\allowbreak{}0；row\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；cost\_\allowbreak{}status<\allowbreak{}>\allowbreak{}'priced' OR (\allowbreak{}cost\_\allowbreak{}cents IS NOT NULL AND unit\_\allowbreak{}cost\_\allowbreak{}snapshot\_\allowbreak{}cents IS NOT NULL AND priced\_\allowbreak{}by IS NOT NULL AND priced\_\allowbreak{}at IS NOT NULL)\allowbreak{}；批次门诊须与执行就诊门诊一致。净耗用不超过批次数量；冲回不超过原行未冲数量及成本。各次分配成本相加等于批次总成本，余下几分钱计入最后一份分配。医疗用品成本只从此表进入业绩，不再次记入运营费用。；实际执行签署先固定用品、数量、批次和责任；缺已核验成本时保留pending，不补0。后续获授权核价只补成本及证据，不覆盖已签数量。任何应纳入期间的pending耗用均阻断关账与正式季度计算。\par
 \Needspace{540pt}
 \subsubsection{就诊结算单（invoices）}
-每次就诊生成唯一稳定Invoice，明细来自实际治疗。\par
+每次就诊生成唯一稳定结算单，明细来自实际治疗。\par
 \par\noindent\begin{minipage}{\textwidth}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
 \captionof{table}{invoices字段}\label{tab584}
@@ -4376,7 +4380,7 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \Cell{row\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{并发版本，成功修改递增}\\[1pt]
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
-约束：UNIQUE(\allowbreak{}invoice\_\allowbreak{}no)\allowbreak{}；UNIQUE(\allowbreak{}visit\_\allowbreak{}id)\allowbreak{}；UNIQUE(\allowbreak{}id,\allowbreak{}visit\_\allowbreak{}id)\allowbreak{}；row\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；original\_\allowbreak{}total\_\allowbreak{}cents>\allowbreak{}=\allowbreak{}0；visit\_\allowbreak{}id NOT NULL UNIQUE。患者及门诊必须等于就诊；当前应收=\allowbreak{}原明细总额+\allowbreak{}全部有效调整，不另造第二张就诊Invoice。预收独立登记，不虚造未实施治疗。；FOREIGN KEY(\allowbreak{}visit\_\allowbreak{}id,\allowbreak{}patient\_\allowbreak{}id,\allowbreak{}clinic\_\allowbreak{}id)\allowbreak{} REFERENCES visits(\allowbreak{}id,\allowbreak{}patient\_\allowbreak{}id,\allowbreak{}clinic\_\allowbreak{}id)\allowbreak{}\par
+约束：UNIQUE(\allowbreak{}invoice\_\allowbreak{}no)\allowbreak{}；UNIQUE(\allowbreak{}visit\_\allowbreak{}id)\allowbreak{}；UNIQUE(\allowbreak{}id,\allowbreak{}visit\_\allowbreak{}id)\allowbreak{}；row\_\allowbreak{}version>\allowbreak{}=\allowbreak{}1；original\_\allowbreak{}total\_\allowbreak{}cents>\allowbreak{}=\allowbreak{}0；visit\_\allowbreak{}id NOT NULL UNIQUE。患者及门诊必须等于就诊；当前应收=\allowbreak{}原明细总额+\allowbreak{}全部有效调整，不另造第二张就诊结算单。预收独立登记，不虚造未实施治疗。；FOREIGN KEY(\allowbreak{}visit\_\allowbreak{}id,\allowbreak{}patient\_\allowbreak{}id,\allowbreak{}clinic\_\allowbreak{}id)\allowbreak{} REFERENCES visits(\allowbreak{}id,\allowbreak{}patient\_\allowbreak{}id,\allowbreak{}clinic\_\allowbreak{}id)\allowbreak{}\par
 \Needspace{604pt}
 \subsubsection{结算治疗逐行明细（invoice\_lines）}
 逐项保存治疗名称、标准单位、数量、单价、小计及来源。\par
@@ -4488,7 +4492,7 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{创建时间，UTC保存}\\[1pt]
 \end{longtable}
 }
-约束：amount\_\allowbreak{}cents>\allowbreak{}0；(\allowbreak{}entry\_\allowbreak{}type=\allowbreak{}'apply' AND reverses\_\allowbreak{}allocation\_\allowbreak{}id IS NULL)\allowbreak{} OR (\allowbreak{}entry\_\allowbreak{}type=\allowbreak{}'release' AND reverses\_\allowbreak{}allocation\_\allowbreak{}id IS NOT NULL)\allowbreak{}；原款和Invoice患者必须一致。成功原款-\allowbreak{}成功退款-\allowbreak{}净核销不得为负；单据净核销不超过当前应收。release不超过原核销未释放额。跨店分配保留服务店与收款店差额来源，形成内部往来，不产生第二次患者收款。；每行核销到Invoice项目；项目净核销不超过其原额及有效调整后的应收。整单余额由各项目计算，不以患者总余额代替项目状态。；费用调减导致原核销超过新应收时，审批事务按确定顺序追加release将超额转回同患者预收；它不产生现金退款。释放引用原核销及invoice\_\allowbreak{}adjustment\_\allowbreak{}id。；release必须指向原apply且收款、Invoice和项目一致，并说明退款成功或获批费用调整来源；同一来源释放不能超其尚未释放部分。；FOREIGN KEY(\allowbreak{}invoice\_\allowbreak{}line\_\allowbreak{}id,\allowbreak{}invoice\_\allowbreak{}id)\allowbreak{} REFERENCES invoice\_\allowbreak{}lines(\allowbreak{}id,\allowbreak{}invoice\_\allowbreak{}id)\allowbreak{}\par
+约束：amount\_\allowbreak{}cents>\allowbreak{}0；(\allowbreak{}entry\_\allowbreak{}type=\allowbreak{}'apply' AND reverses\_\allowbreak{}allocation\_\allowbreak{}id IS NULL)\allowbreak{} OR (\allowbreak{}entry\_\allowbreak{}type=\allowbreak{}'release' AND reverses\_\allowbreak{}allocation\_\allowbreak{}id IS NOT NULL)\allowbreak{}；原款和结算单患者必须一致。成功原款-\allowbreak{}成功退款-\allowbreak{}净核销不得为负；单据净核销不超过当前应收。release不超过原核销未释放额。跨店分配保留服务店与收款店差额来源，形成内部往来，不产生第二次患者收款。；每行核销到结算单项目；项目净核销不超过其原额及有效调整后的应收。整单余额由各项目计算，不以患者总余额代替项目状态。；费用调减导致原核销超过新应收时，审批事务按确定顺序追加release将超额转回同患者预收；它不产生现金退款。释放引用原核销及invoice\_\allowbreak{}adjustment\_\allowbreak{}id。；release必须指向原apply且收款、结算单和项目一致，并说明退款成功或获批费用调整来源；同一来源释放不能超其尚未释放部分。；FOREIGN KEY(\allowbreak{}invoice\_\allowbreak{}line\_\allowbreak{}id,\allowbreak{}invoice\_\allowbreak{}id)\allowbreak{} REFERENCES invoice\_\allowbreak{}lines(\allowbreak{}id,\allowbreak{}invoice\_\allowbreak{}id)\allowbreak{}\par
 \Needspace{216pt}
 \subsubsection{退款申请与批准（refund\_requests）}
 冻结独立获批的可退金额并保留临床、财务核实依据。\par
@@ -4696,7 +4700,7 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \Cell{unresolved\_\allowbreak{}funds\_\allowbreak{}count} & \Cell{INTEGER} & \Cell{NN} & \Cell{未查明收款、退款或跨店资金结果的数量}\\[1pt]
 \Cell{unexplained\_\allowbreak{}difference\_\allowbreak{}count} & \Cell{INTEGER} & \Cell{NN} & \Cell{尚未解释并处理的资金差异数量}\\[1pt]
 \Cell{blocker\_\allowbreak{}manifest\_\allowbreak{}ref} & \Cell{TEXT} & \Cell{NN} & \Cell{逐项阻断、核实依据及结果清单的受控引用}\\[1pt]
-\Cell{incomplete\_\allowbreak{}business\_\allowbreak{}count} & \Cell{INTEGER} & \Cell{NN} & \Cell{缺签署、缺Invoice、缺材料计价或缺费用分配等阻断数}\\[1pt]
+\Cell{incomplete\_\allowbreak{}business\_\allowbreak{}count} & \Cell{INTEGER} & \Cell{NN} & \Cell{缺签署、缺结算单、缺材料计价或缺费用分配等阻断数}\\[1pt]
 \Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{创建时间，UTC保存}\\[1pt]
 \Cell{updated\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{NN} & \Cell{当前草稿或状态最后变更时间}\\[1pt]
 \Cell{row\_\allowbreak{}version} & \Cell{INTEGER} & \Cell{NN} & \Cell{并发版本，成功修改递增}\\[1pt]
@@ -5180,6 +5184,143 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 }\end{minipage}\par\vspace{6pt}
 约束：参考编码唯一；价格上下限以整数分保存，上限不小于下限；参考年份、来源、单位和解释随记录一同展示。关联服务失效或删除时可保留参考资料而清空关联，关联项目不保证存在可预约号源。\par
 \Needspace{297pt}
+\subsection{预约服务的物理关系}\label{sec_booking_physical}
+演示环境按数据库迁移001至009建立表。第7章前述概念和关系模型为完整业务设计；演示环境的核心关系以下表为准。预约、患者与经营表共用门诊、员工及患者编号。\par
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{2.94cm}@{\hspace{0.16cm}}p{7.14cm}@{\hspace{0.16cm}}p{5.04cm}@{}}
+\caption{演示环境的数据表与来源}\label{tab_delivered_tables}\\
+\toprule
+\Cell{\bfseries 领域} & \Cell{\bfseries 迁移中的关键关系} & \Cell{\bfseries 使用规则}\\\midrule
+\endfirsthead
+\toprule
+\Cell{\bfseries 领域} & \Cell{\bfseries 迁移中的关键关系} & \Cell{\bfseries 使用规则}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{会话与组织} & \Cell{{users}、{sessions}、{role\_\allowbreak{}assignments}、{staff}、{clinics}} & \Cell{员工岗位以门诊授权定范围，员工与患者共享账号机制。}\\[1pt]
+\Cell{资源与预约} & \Cell{{doctor\_\allowbreak{}shifts}、{doctor\_\allowbreak{}shift\_\allowbreak{}services}、{chair\_\allowbreak{}blocks}、{resource\_\allowbreak{}reservations}、{booking\_\allowbreak{}holds}、{appointments}、{appointment\_\allowbreak{}events}、{command\_\allowbreak{}receipts}} & \Cell{班次发布后派生号源；预约通过唯一占用和占位关联，改期通过旧预约外键串联。}\\[1pt]
+\Cell{患者资料} & \Cell{{patients}、{patient\_\allowbreak{}allergies}、{patient\_\allowbreak{}clinic\_\allowbreak{}access}、{patient\_\allowbreak{}privacy\_\allowbreak{}consents}、{patient\_\allowbreak{}registration\_\allowbreak{}invites}、{patient\_\allowbreak{}avatars}} & \Cell{过敏项存于患者关联行；绑定、授权及头像使用同一患者主键。}\\[1pt]
+\Cell{公开价格} & \Cell{{services}、{clinic\_\allowbreak{}services}、{treatment\_\allowbreak{}references}} & \Cell{预约项目参考费取服务目录；独立价格区间保留单位、年份和来源。}\\[1pt]
+\Cell{月度与季度} & \Cell{{incentive\_\allowbreak{}months}、{doctor\_\allowbreak{}financial\_\allowbreak{}sources}、{incentive\_\allowbreak{}pools}、{incentive\_\allowbreak{}pool\_\allowbreak{}sources}、{doctor\_\allowbreak{}quarter\_\allowbreak{}results}、{incentive\_\allowbreak{}allocations}、{incentive\_\allowbreak{}payments}} & \Cell{按关闭版本汇总，保存季度来源与医生额度，发放记录关联批准份额。}\\[1pt]
+\end{longtable}
+}
+患者临时占位与正式预约共用资源占用表。占位创建一条占用记录，确认后将该记录转为正式占用并关联唯一预约。医生、牙椅和患者分别使用同一组区间约束，比较区间为从开始时刻到含缓冲的占用截止时刻，右端点开放。取消或改期释放旧占用；到期占位先标为过期，再重新判断号源。\par
+在预约服务中，预约单保存业务编号、预约状态和服务快照，通过唯一外键读取门诊、医生、牙椅和时段。班次与门诊、医生使用组合外键，牙椅与门诊使用组合外键。预约事件记录操作者、原因及替代关系，命令回执以操作者和命令标识为键。\par
+门诊档案访问记录保存授权范围和创建账号。图\ref{fig_patient_privacy_relations}给出患者档案与各记录的键和数量关系。\par
+\begin{figure}[H]
+\centering
+\begin{tabular}{@{}p{3.9cm}p{3.1cm}p{6.7cm}@{}}
+\multicolumn{3}{c}{\fbox{\textbf{患者档案}\quad {patients.id}}}\\[7pt]
+\toprule
+\textbf{关联对象} & \textbf{每名患者} & \textbf{关联键与约束}\\
+\midrule
+门诊访问 & 零至多条 & 患者与门诊组成联合主键\\
+隐私同意 & 零至多条 & 患者外键、确认账号、指引版本\\
+档案关联凭证 & 零至多条 & 患者外键，凭证摘要唯一\\
+患者头像 & 零或一条 & 患者外键同时作为主键\\
+\bottomrule
+\end{tabular}
+\caption{患者档案与门诊访问、同意、凭证及头像的关系}
+\label{fig_patient_privacy_relations}
+\end{figure}
+
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{4.04cm}@{\hspace{0.16cm}}p{2.44cm}@{\hspace{0.16cm}}p{3.04cm}@{\hspace{0.16cm}}p{5.60cm}@{}}
+\caption{资源占用字段（resource\_reservations）}\label{tab_resource_reservations}\\
+\toprule
+\Cell{\bfseries 字段} & \Cell{\bfseries 类型} & \Cell{\bfseries 键与空值} & \Cell{\bfseries 用途}\\\midrule
+\endfirsthead
+\toprule
+\Cell{\bfseries 字段} & \Cell{\bfseries 类型} & \Cell{\bfseries 键与空值} & \Cell{\bfseries 用途}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{id} & \Cell{UUID} & \Cell{PK} & \Cell{占用记录标识}\\[1pt]
+\Cell{patient\_\allowbreak{}id} & \Cell{UUID} & \Cell{FK，非空} & \Cell{实际就诊患者}\\[1pt]
+\Cell{clinic\_\allowbreak{}id} & \Cell{UUID} & \Cell{FK，非空} & \Cell{占用所属门诊}\\[1pt]
+\Cell{service\_\allowbreak{}id} & \Cell{UUID} & \Cell{FK，非空} & \Cell{服务项目}\\[1pt]
+\Cell{doctor\_\allowbreak{}id} & \Cell{UUID} & \Cell{FK，非空} & \Cell{接诊医生}\\[1pt]
+\Cell{chair\_\allowbreak{}id} & \Cell{UUID} & \Cell{组合FK，非空} & \Cell{与门诊匹配的牙椅}\\[1pt]
+\Cell{shift\_\allowbreak{}id} & \Cell{UUID} & \Cell{组合FK，非空} & \Cell{与门诊及医生匹配的班次}\\[1pt]
+\Cell{starts\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{非空} & \Cell{服务开始}\\[1pt]
+\Cell{ends\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{非空} & \Cell{服务结束}\\[1pt]
+\Cell{occupied\_\allowbreak{}until} & \Cell{TIMESTAMPTZ} & \Cell{非空} & \Cell{服务结束及缓冲后的占用截止}\\[1pt]
+\Cell{status} & \Cell{TEXT} & \Cell{非空} & \Cell{占位、已约、已释放或已过期}\\[1pt]
+\Cell{expires\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{可空} & \Cell{占位截止时间，处于占位状态时必填}\\[1pt]
+\end{longtable}
+}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{4.04cm}@{\hspace{0.16cm}}p{2.44cm}@{\hspace{0.16cm}}p{3.04cm}@{\hspace{0.16cm}}p{5.60cm}@{}}
+\caption{门诊档案访问记录字段（patient\_clinic\_access）}\label{tab_patient_clinic_access}\\
+\toprule
+\Cell{\bfseries 字段} & \Cell{\bfseries 类型} & \Cell{\bfseries 键与空值} & \Cell{\bfseries 用途}\\\midrule
+\endfirsthead
+\toprule
+\Cell{\bfseries 字段} & \Cell{\bfseries 类型} & \Cell{\bfseries 键与空值} & \Cell{\bfseries 用途}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{patient\_\allowbreak{}id} & \Cell{UUID} & \Cell{联合PK、FK} & \Cell{患者档案}\\[1pt]
+\Cell{clinic\_\allowbreak{}id} & \Cell{UUID} & \Cell{联合PK、FK} & \Cell{授权门诊}\\[1pt]
+\Cell{created\_\allowbreak{}by} & \Cell{UUID} & \Cell{FK，非空} & \Cell{登记该关系的账号}\\[1pt]
+\Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{非空} & \Cell{登记时间}\\[1pt]
+\end{longtable}
+}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{4.04cm}@{\hspace{0.16cm}}p{2.44cm}@{\hspace{0.16cm}}p{3.04cm}@{\hspace{0.16cm}}p{5.60cm}@{}}
+\caption{隐私同意字段（patient\_privacy\_consents）}\label{tab_patient_privacy_consents}\\
+\toprule
+\Cell{\bfseries 字段} & \Cell{\bfseries 类型} & \Cell{\bfseries 键与空值} & \Cell{\bfseries 用途}\\\midrule
+\endfirsthead
+\toprule
+\Cell{\bfseries 字段} & \Cell{\bfseries 类型} & \Cell{\bfseries 键与空值} & \Cell{\bfseries 用途}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{id} & \Cell{UUID} & \Cell{PK} & \Cell{同意记录标识}\\[1pt]
+\Cell{patient\_\allowbreak{}id} & \Cell{UUID} & \Cell{FK，非空} & \Cell{患者档案}\\[1pt]
+\Cell{actor\_\allowbreak{}id} & \Cell{UUID} & \Cell{FK，非空} & \Cell{确认账号}\\[1pt]
+\Cell{policy\_\allowbreak{}version} & \Cell{TEXT} & \Cell{非空} & \Cell{同意对应的指引版本}\\[1pt]
+\Cell{notice\_\allowbreak{}accepted} & \Cell{BOOLEAN} & \Cell{非空} & \Cell{一般资料同意}\\[1pt]
+\Cell{sensitive\_\allowbreak{}accepted} & \Cell{BOOLEAN} & \Cell{非空} & \Cell{健康信息单独同意}\\[1pt]
+\Cell{guardian\_\allowbreak{}name} & \Cell{TEXT} & \Cell{可空} & \Cell{监护人姓名}\\[1pt]
+\Cell{guardian\_\allowbreak{}relationship} & \Cell{TEXT} & \Cell{可空} & \Cell{监护人关系}\\[1pt]
+\Cell{guardian\_\allowbreak{}accepted} & \Cell{BOOLEAN} & \Cell{非空} & \Cell{监护人同意标记}\\[1pt]
+\Cell{accepted\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{非空} & \Cell{确认时间}\\[1pt]
+\Cell{revoked\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{可空} & \Cell{撤回时间}\\[1pt]
+\end{longtable}
+}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{4.04cm}@{\hspace{0.16cm}}p{2.44cm}@{\hspace{0.16cm}}p{3.04cm}@{\hspace{0.16cm}}p{5.60cm}@{}}
+\caption{档案关联凭证字段（patient\_registration\_invites）}\label{tab_patient_registration_invites}\\
+\toprule
+\Cell{\bfseries 字段} & \Cell{\bfseries 类型} & \Cell{\bfseries 键与空值} & \Cell{\bfseries 用途}\\\midrule
+\endfirsthead
+\toprule
+\Cell{\bfseries 字段} & \Cell{\bfseries 类型} & \Cell{\bfseries 键与空值} & \Cell{\bfseries 用途}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{id} & \Cell{UUID} & \Cell{PK} & \Cell{凭证记录标识}\\[1pt]
+\Cell{patient\_\allowbreak{}id} & \Cell{UUID} & \Cell{FK，非空} & \Cell{待关联患者档案}\\[1pt]
+\Cell{code\_\allowbreak{}hash} & \Cell{TEXT} & \Cell{U，非空} & \Cell{凭证的 SHA-256 摘要，64位十六进制字符}\\[1pt]
+\Cell{issued\_\allowbreak{}by} & \Cell{UUID} & \Cell{FK，非空} & \Cell{签发员工账号}\\[1pt]
+\Cell{expires\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{非空} & \Cell{凭证到期时间}\\[1pt]
+\Cell{consumed\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{可空} & \Cell{成功绑定时间}\\[1pt]
+\Cell{revoked\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{可空} & \Cell{凭证撤销时间}\\[1pt]
+\Cell{created\_\allowbreak{}at} & \Cell{TIMESTAMPTZ} & \Cell{非空} & \Cell{签发时间}\\[1pt]
+\end{longtable}
+}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{4.04cm}@{\hspace{0.16cm}}p{2.44cm}@{\hspace{0.16cm}}p{3.04cm}@{\hspace{0.16cm}}p{5.60cm}@{}}
+\caption{患者头像字段（patient\_avatars）}\label{tab_patient_avatars}\\
+\toprule
+\Cell{\bfseries 字段} & \Cell{\bfseries 类型} & \Cell{\bfseries 键与空值} & \Cell{\bfseries 用途}\\\midrule
+\endfirsthead
+\toprule
+\Cell{\bfseries 字段} & \Cell{\bfseries 类型} & \Cell{\bfseries 键与空值} & \Cell{\bfseries 用途}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{patient\_\allowbreak{}id} & \Cell{UUID} & \Cell{PK、FK} & \Cell{唯一所属患者；删除档案时级联删除}\\[1pt]
+\Cell{mime\_\allowbreak{}type} & \Cell{TEXT} & \Cell{非空} & \Cell{JPEG 或 PNG}\\[1pt]
+\Cell{image\_\allowbreak{}bytes} & \Cell{BYTEA} & \Cell{非空} & \Cell{图片字节，16至92160字节}\\[1pt]
+\end{longtable}
+}
 \subsection{查询、索引与数据访问方式}
 \par\noindent\begin{minipage}{\textwidth}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
@@ -5252,23 +5393,54 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 激励月度查询利用incentive\_\allowbreak{}month\_\allowbreak{}period(month,clinic\_\allowbreak{}id,status)；季度有效版本由incentive\_\allowbreak{}one\_\allowbreak{}live\_\allowbreak{}quarter部分唯一索引保证；来源引用检索使用incentive\_\allowbreak{}sources\_\allowbreak{}month(month\_\allowbreak{}id,pool\_\allowbreak{}id)，付款汇总使用incentive\_\allowbreak{}payments\_\allowbreak{}allocation(allocation\_\allowbreak{}id,status)。创建、关闭、重开及季度状态变更使用同一期间事务序列锁；付款触发器锁定个人份额并核对批准状态与累计占用。\par
 \section{业务逻辑、接口与表示层}
 \Needspace{3\baselineskip}
+\subsection{交付范围与业务衔接}\label{sec_delivery_scope}
+课程演示由品牌官网、患者小程序和员工工作台组成。官网承接浏览与微信扫码，小程序办理本人预约，员工工作台发布排班、办理患者服务并核算季度业绩。第8章的页面与接口按表\ref{tab_delivery_scope}落地。第3至7章保留完整业务模型，为后续接诊与结算定义记录、职责和约束。\par
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{3.04cm}@{\hspace{0.16cm}}p{5.84cm}@{\hspace{0.16cm}}p{6.24cm}@{}}
+\caption{三端交付与业务模型的衔接}\label{tab_delivery_scope}\\
+\toprule
+\Cell{\bfseries 业务环节} & \Cell{\bfseries 课程演示的交付设计} & \Cell{\bfseries 完整业务模型的接续}\\\midrule
+\endfirsthead
+\toprule
+\Cell{\bfseries 业务环节} & \Cell{\bfseries 课程演示的交付设计} & \Cell{\bfseries 完整业务模型的接续}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{公开入口} & \Cell{官网与小程序读取同一门诊、医生和服务目录。官网预约按钮跳至小程序码。} & \Cell{患者进入小程序预约，电话及现场需求由员工代约。}\\[1pt]
+\Cell{预约与患者资料} & \Cell{交付UC-01至UC-07、UC-24及预约清单。预约状态为已确认、已取消、已改期。} & \Cell{UC-08、UC-09及UC-23的到诊部分接续预约结果，处理候补、提醒、到诊与未到统计。}\\[1pt]
+\Cell{诊疗与结算} & \Cell{预约详情展示项目及预约参考费用。复诊入口按原预约带入门诊、项目和医生，重新查询时段。} & \Cell{UC-10至UC-18接续实际就诊，生成治疗记录、结算单、资金和日结记录。}\\[1pt]
+\Cell{季度业绩与激励} & \Cell{交付UC-19至UC-22。月度底稿录入已归属医生的收入、用品成本和运营费用，逐项保留来源编号。} & \Cell{后续诊疗结算模块向月度底稿提供已核对的来源；季度继续按已关闭月度版本核算。}\\[1pt]
+\end{longtable}
+}
 \subsection{总体架构与技术选择}
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/architecture.pdf}
-\caption{系统分层与依赖}\label{architecture}\end{figure}
+\begin{figure}[H]
+\centering
+\setlength{\fboxsep}{8pt}
+\begin{tabular}{@{}ccc@{}}
+\fbox{\parbox[c][34pt][c]{0.26\textwidth}{\centering\bfseries 品牌官网\\公开目录与预约指引}} &
+\fbox{\parbox[c][34pt][c]{0.26\textwidth}{\centering\bfseries 患者小程序\\本人资料与预约}} &
+\fbox{\parbox[c][34pt][c]{0.26\textwidth}{\centering\bfseries 员工工作台\\排班、代约与经营}}\\[5pt]
+$\downarrow$ & $\downarrow$ & $\downarrow$\\[5pt]
+\multicolumn{3}{c}{\fbox{\parbox{0.88\textwidth}{\centering HTTPS 应用接口\\公开查询、会话与授权、预约事务、经营服务}}}\\[5pt]
+\multicolumn{3}{c}{$\downarrow$}\\[5pt]
+\multicolumn{3}{c}{\fbox{\parbox{0.88\textwidth}{\centering PostgreSQL\\门诊与医生目录、患者资料、资源占用、预约和经营账证}}}
+\end{tabular}
+\caption{品牌官网、小程序和员工工作台的分层架构}\label{architecture}
+\end{figure}
 \par\noindent\begin{minipage}{\textwidth}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
 \captionof{table}{分层架构}\label{tab701}
 \begin{tabular}{@{}p{2.540cm}@{\hspace{0.16cm}}p{8.240cm}@{\hspace{0.16cm}}p{4.340cm}@{}}
 \toprule
 \bfseries \Cell{层} & \bfseries \Cell{职责与技术选择} & \bfseries \Cell{依赖方向}\\\midrule
-\Cell{患者表示层} & \Cell{微信原生小程序与Type\allowbreak{}Script，结合Vant Weapp组件组织预约、就诊人和复诊入口} & \Cell{通过HTTPS调用公开应用接口，不直连数据库。}\\[1pt]
+\Cell{官网表示层} & \Cell{Vue 3 展示诊疗项目、医生、门诊环境与联系方式，提供小程序预约指引和员工登录入口} & \Cell{读取公开门诊、医生与服务目录。}\\[1pt]
+\Cell{患者表示层} & \Cell{微信原生小程序与Type\allowbreak{}Script，使用Vant Weapp日历和自定义步骤条组织预约} & \Cell{公开目录供访客浏览，患者会话用于本人资料和预约。}\\[1pt]
 \Cell{员工表示层} & \Cell{Vue 3、Type\allowbreak{}Script与Element Plus组件化后台；按前台、医生、店长和总部授权呈现工作台} & \Cell{页面调用独立API模块，表单状态与业务数据分开。}\\[1pt]
 \Cell{应用层} & \Cell{Node.\allowbreak{}js与Type\allowbreak{}Script模块化服务，使用Fastify组织HTTP接口、认证、命令和查询} & \Cell{调用领域服务与仓储接口，不把校验复制到每个页面。}\\[1pt]
-\Cell{领域层} & \Cell{患者、预约、诊疗、结算、季度核算六个业务模块} & \Cell{领域对象维护不变量，跨聚合规则由领域服务协调。}\\[1pt]
+\Cell{领域层} & \Cell{身份与组织、预约、诊疗、结算、经营核算与激励} & \Cell{领域对象维护不变量，跨聚合规则由领域服务协调。}\\[1pt]
 \Cell{基础设施层} & \Cell{Postgre\allowbreak{}SQL、数据映射器、对象存储、异步任务和外部渠道适配器} & \Cell{实现仓储及消息端口，外部细节不渗入领域规则。}\\[1pt]
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
-15家门诊到约30家的目标适合先采用模块化单体和统一事务数据库。按业务边界组织代码与数据访问接口，可以保留清晰的职责而不引入分布式事务负担。通知和报表导出通过后台任务处理；缓存仅用于可重建的读取结果，预约可用性及资金余额最终以事务数据库为准。\par
+系统采用模块化单体和统一事务数据库，面向约30家门诊的规划规模。两端的预约写入使用同一事务服务，医生、患者和牙椅的占用由同一数据库约束。通知和报表导出通过后台任务处理；缓存仅用于可重建的读取结果，预约可用性及资金余额最终以事务数据库为准。\par
 \Needspace{378pt}
 \subsection{领域边界与事务}
 \par\noindent\begin{minipage}{\textwidth}
@@ -5296,11 +5468,11 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \endhead
 \bottomrule\endlastfoot
 \Cell{发布医生跨店班次} & \Cell{doctor\_\allowbreak{}shifts及审计} & \Cell{医生行；检查医生在岗及门诊授权，数据库排斥约束检查时段重叠；同一医生全连锁有效班次不得时间重叠，区间按[开始,\allowbreak{}结束)\allowbreak{}处理} & \Cell{整体回滚，原班次及已约安排保持；资源变化另产生协调任务。}\\[1pt]
-\Cell{号源占位与正式确认} & \Cell{booking\_\allowbreak{}holds、appointments、appointment\_\allowbreak{}events、notification\_\allowbreak{}tasks} & \Cell{按稳定编号顺序锁患者、医生、牙椅，再读班次、停用、占位及预约；统一处理已到期占位；患者、医生、牙椅不重叠；资源组一并承诺；确认时复核开放项目、班次、时长与剩余资源} & \Cell{不生成半个预约；占位到期后收到的付款保持真实预收并转人工处置，不反向抢占已给他人的号源。}\\[1pt]
+\Cell{号源占位与正式确认} & \Cell{resource\_\allowbreak{}reservations、booking\_\allowbreak{}holds、appointments、appointment\_\allowbreak{}events} & \Cell{按稳定编号顺序锁患者、医生、牙椅，再读班次、停用、占位及预约；将到期占位标为过期；患者、医生和牙椅在统一占用表中分别约束；同一事务确认全部资源；确认时复核开放项目、班次、时长与剩余资源} & \Cell{确认失败则回滚本次预约；占位到期后返回重新选时段。}\\[1pt]
 \Cell{改约与候补补位} & \Cell{新旧预约、占位、事件及通知} & \Cell{旧预约版本及新旧医生牙椅，按统一顺序取得；新约创建与旧约标记rescheduled同事务；候补接受前不确认} & \Cell{新资源失败则保留旧约和资金归属；通知失败不回滚成功改约。}\\[1pt]
-\Cell{医生签署实际治疗及计费} & \Cell{执行单、执行项目、临床记录、唯一Invoice及明细} & \Cell{就诊、适用方案版本及执行；唯一visit\_\allowbreak{}id与execution\_\allowbreak{}item\_\allowbreak{}id限制重复；患者、就诊、接诊医生、牙位及患者确认内容一致；费用仅来自实际完成数量；一就诊一个Invoice身份} & \Cell{缺临床条件不签署；重复请求返回同一已存在单据，数据库冲突不产生第二张账。}\\[1pt]
-\Cell{部分付款及跨店核销} & \Cell{成功收款、payment\_\allowbreak{}allocations及审计} & \Cell{原款、涉及Invoice按编号排序；重算成功退款和已批准冻结；净核销不超净原款和净应收；患者一致，跨店具备授权且保留往来来源} & \Cell{金额或范围不符整批回滚，既有核销和预收不被覆盖。}\\[1pt]
-\Cell{费用减免与退款} & \Cell{费用调整独立提交；退款批准与实际执行分别提交} & \Cell{调整锁Invoice；批准锁原款及原核销；成功回执锁申请、退付和需释放的核销；获批冻结及成功未决退付不超来源；退款成功与核销释放原子完成；费用调整不改变现金事实} & \Cell{外部失败或未知保留待查，不能重发新交易或假记成功；拒绝审批不改变原款。}\\[1pt]
+\Cell{医生签署实际治疗及计费} & \Cell{执行单、执行项目、临床记录、唯一结算单及明细} & \Cell{就诊、适用方案版本及执行；唯一visit\_\allowbreak{}id与execution\_\allowbreak{}item\_\allowbreak{}id限制重复；患者、就诊、接诊医生、牙位及患者确认内容一致；费用仅来自实际完成数量；一就诊一个结算单身份} & \Cell{缺临床条件不签署；重复请求返回同一已存在单据，数据库冲突不产生第二张账。}\\[1pt]
+\Cell{部分付款及跨店核销} & \Cell{成功收款、payment\_\allowbreak{}allocations及审计} & \Cell{原款、涉及结算单按编号排序；重算成功退款和已批准冻结；净核销不超净原款和净应收；患者一致，跨店具备授权且保留往来来源} & \Cell{金额或范围不符整批回滚，既有核销和预收不被覆盖。}\\[1pt]
+\Cell{费用减免与退款} & \Cell{费用调整独立提交；退款批准与实际执行分别提交} & \Cell{调整锁结算单；批准锁原款及原核销；成功回执锁申请、退付和需释放的核销；获批冻结及成功未决退付不超来源；退款成功与核销释放原子完成；费用调整不改变现金事实} & \Cell{外部失败或未知保留待查，不能重发新交易或假记成功；拒绝审批不改变原款。}\\[1pt]
 \Cell{实际材料成本归属} & \Cell{材料批次、耗用与冲回行} & \Cell{来源批次及原耗用行；数量和分值不超来源，余下几分钱计入最后一份；用品成本按耗用来源单独核算} & \Cell{实际已用但缺成本依据时保存待补记录，核价后归集成本；更正追加反向记录。}\\[1pt]
 \Cell{运营费分摊} & \Cell{费用凭据及全部cost\_\allowbreak{}allocations} & \Cell{费用凭据、核验工时快照；审批校验不同账号及不同员工ID；直接归属有明确医生；共同费用按已核验工时比例分摊；分配合计等于来源分值} & \Cell{工时依据、凭据编号和分配合计核对一致后，整单批准。}\\[1pt]
 \Cell{跨店内部清算} & \Cell{清算单、来源分配和外部事件} & \Cell{按门诊对及来源核销编号锁定未清余额；成功和未决指令不超未清来源；只有核实成功才减少内部往来} & \Cell{银行未知保留预占并查询原指令；失败释放，不新增患者收入。}\\[1pt]
@@ -5313,7 +5485,10 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 }
 Postgre\allowbreak{}SQL时间范围与排斥约束用于同一资源区间冲突，数据库唯一约束保证一就诊一单。款项分配、费用分摊和激励额度由事务中的行锁与合计校验共同维护；对高冲突操作采用行锁或可串行化事务并处理重试。事务失败时回滚本次操作，并向调用者说明冲突和可重试步骤。[R8]\par
 \Needspace{412pt}
+
 \subsection{公共接口契约}
+接口统一使用 HTTPS 和路径前缀 {/api/v1}。登录提交账号、密码及入口类型 {staff} 或 {patient}，服务端核对入口与岗位后返回会话令牌、到期时间与身份。受保护请求在 Authorization 中携带 Bearer 令牌。\par
+表\ref{tab709}给出用例与接口的对应关系，模块接续顺序见表\ref{tab_delivery_scope}。预约清单分别按患者本人和员工权限查询。\par
 \par\noindent\begin{minipage}{\textwidth}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
 \captionof{table}{接口公共约定}\label{tab708}
@@ -5330,7 +5505,7 @@ Postgre\allowbreak{}SQL时间范围与排斥约束用于同一资源区间冲突
 }\end{minipage}\par\vspace{6pt}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
 \begin{longtable}{@{}p{2.140cm}@{\hspace{0.16cm}}p{13.140cm}@{}}
-\caption{用例到接口的追踪}\label{tab709}\\
+\caption{用例到接口的追踪（交付接口及接续契约）}\label{tab709}\\
 \toprule
 \bfseries \Cell{用例} & \bfseries \Cell{接口设计}\\\midrule
 \endfirsthead
@@ -5338,12 +5513,12 @@ Postgre\allowbreak{}SQL时间范围与排斥约束用于同一资源区间冲突
 \bfseries \Cell{用例} & \bfseries \Cell{接口设计}\\\midrule
 \endhead
 \bottomrule\endlastfoot
-\Cell{\mbox{UC-01}} & \Cell{POST /\allowbreak{}auth/\allowbreak{}register 建立患者账号与资料；GET、PUT /\allowbreak{}patients/\allowbreak{}me 读取和更新本人资料，更新携带 expected\allowbreak{}Version；前台通过 GET、POST /\allowbreak{}staff/\allowbreak{}patients 核对或建档。}\\[1pt]
+\Cell{\mbox{UC-01}} & \Cell{POST /\allowbreak{}auth/\allowbreak{}register 新建账号和档案。前台通过 GET、POST /\allowbreak{}staff/\allowbreak{}patients 核对或建档，通过 POST /\allowbreak{}staff/\allowbreak{}patients/\allowbreak{}\{id\}/\allowbreak{}invitations 发凭证；POST /\allowbreak{}auth/\allowbreak{}register-linked 消耗凭证并绑定原档案。本人资料、头像及隐私接口见表\ref{tab_patient_account_api}。}\\[1pt]
 \Cell{\mbox{UC-02}} & \Cell{GET /\allowbreak{}doctors、GET /\allowbreak{}qualifications 查询医生与资格；POST、PUT /\allowbreak{}staff/\allowbreak{}doctors 和 /\allowbreak{}staff/\allowbreak{}qualifications 维护授权范围内的医生与资格资料。}\\[1pt]
 \Cell{\mbox{UC-03}} & \Cell{GET /\allowbreak{}services 查询服务；POST、PUT /\allowbreak{}staff/\allowbreak{}services 维护项目、时长、费用与介绍；GET /\allowbreak{}treatment-\allowbreak{}references 提供独立的治疗参考价。}\\[1pt]
 \Cell{\mbox{UC-04}} & \Cell{GET /\allowbreak{}shifts 查询排班；POST /\allowbreak{}staff/\allowbreak{}shifts 发布班次，POST /\allowbreak{}staff/\allowbreak{}shifts/\allowbreak{}\{id\}/\allowbreak{}cancel 撤销班次。服务端校验医生在岗、门诊授权、班次时间及跨店转场间隔。}\\[1pt]
 \Cell{\mbox{UC-05}} & \Cell{GET /\allowbreak{}booking-\allowbreak{}policy 返回规则与日期查询范围；GET /\allowbreak{}booking-\allowbreak{}slots 按 clinic\allowbreak{}Id、service\allowbreak{}Id、date 及可选 doctor\allowbreak{}Id 查询候选时段。}\\[1pt]
-\Cell{\mbox{UC-06}} & \Cell{POST /\allowbreak{}booking-\allowbreak{}holds 取得临时占位；POST /\allowbreak{}appointments/\allowbreak{}confirm 携带 hold\allowbreak{}Id、hold\allowbreak{}Version 和 Idempotency-\allowbreak{}Key 确认；GET /\allowbreak{}appointments/\allowbreak{}\{id\} 查询结果。}\\[1pt]
+\Cell{\mbox{UC-06}} & \Cell{POST /\allowbreak{}booking-\allowbreak{}holds 取得临时占位；POST /\allowbreak{}appointments/\allowbreak{}confirm 携带 hold\allowbreak{}Id、hold\allowbreak{}Version、就诊人及规则确认标记和 Idempotency-\allowbreak{}Key 确认；GET /\allowbreak{}appointments/\allowbreak{}\{id\} 查询结果。}\\[1pt]
 \Cell{\mbox{UC-07}} & \Cell{改期先通过 POST /\allowbreak{}booking-\allowbreak{}holds 取得新占位；POST /\allowbreak{}appointments/\allowbreak{}\{id\}/\allowbreak{}changes 携带 intent、reason、expected\allowbreak{}Version 和 Idempotency-\allowbreak{}Key，改期另传 hold\allowbreak{}Id、hold\allowbreak{}Version。}\\[1pt]
 \Cell{\mbox{UC-08}} & \Cell{POST /\allowbreak{}contact-\allowbreak{}tasks；POST /\allowbreak{}waitlist-\allowbreak{}invitations/\allowbreak{}\{id\}/\allowbreak{}responses；回执入口校验来源与事件唯一号。}\\[1pt]
 \Cell{\mbox{UC-09}} & \Cell{POST /\allowbreak{}appointments/\allowbreak{}\{id\}/\allowbreak{}attendance；POST /\allowbreak{}attendance-\allowbreak{}events/\allowbreak{}\{id\}/\allowbreak{}corrections。更正带证据、理由与版本。}\\[1pt]
@@ -5361,52 +5536,163 @@ Postgre\allowbreak{}SQL时间范围与排斥约束用于同一资源区间冲突
 \Cell{\mbox{UC-21}} & \Cell{GET/\allowbreak{}POST /\allowbreak{}compensation/\allowbreak{}quarters；GET /\allowbreak{}compensation/\allowbreak{}quarters/\allowbreak{}\{id\}。}\\[1pt]
 \Cell{\mbox{UC-22}} & \Cell{POST /\allowbreak{}compensation/\allowbreak{}quarters/\allowbreak{}\{id\}/\allowbreak{}submit、/\allowbreak{}approve、/\allowbreak{}void；POST /\allowbreak{}compensation/\allowbreak{}allocations/\allowbreak{}\{id\}/\allowbreak{}payments；POST /\allowbreak{}compensation/\allowbreak{}payments/\allowbreak{}\{id\}/\allowbreak{}resolve；GET /\allowbreak{}compensation/\allowbreak{}me。}\\[1pt]
 \Cell{\mbox{UC-23}} & \Cell{GET /\allowbreak{}reports/\allowbreak{}appointments 按门诊、医生和日期查看预约及原因统计；GET /\allowbreak{}shifts 查看已发布排班。}\\[1pt]
-\Cell{\mbox{UC-24}} & \Cell{POST /\allowbreak{}assignments；POST /\allowbreak{}assignments/\allowbreak{}\{id\}/\allowbreak{}revoke；POST /\allowbreak{}staff/\allowbreak{}\{id\}/\allowbreak{}deactivation。}\\[1pt]
+\Cell{\mbox{UC-24}} & \Cell{GET、POST /\allowbreak{}staff/\allowbreak{}accounts 查询与创建员工账号；PUT /\allowbreak{}staff/\allowbreak{}accounts/\allowbreak{}\{id\} 更新账号资料与授权；POST /\allowbreak{}staff/\allowbreak{}accounts/\allowbreak{}\{id\}/\allowbreak{}reset-password 重置临时密码；POST /\allowbreak{}auth/\allowbreak{}change-password 修改本人密码。}\\[1pt]
 \end{longtable}
 }
-\Needspace{483pt}
-\subsection{患者小程序}
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{figures/booking_wireframe.pdf}
-\caption{预约小程序页面草图（示例）}\label{booking_wireframe}\end{figure}
-\par\noindent\begin{minipage}{\textwidth}
+\subsection{品牌官网与预约入口}\label{sec_public_site}
+首页按首屏、品牌介绍、诊疗服务、门诊环境、医生团队、预约指引和页脚排列。首屏双栏呈现标题与门诊视频，预约为主按钮，探索服务为次按钮。品牌与门诊环境段用接待区、诊疗室及照护细节图片连接；服务卡片进入目录详情；医生团队由公开医生列表生成。窄屏将双栏排为上下阅读顺序。\par
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{患者页面及交互}\label{tab712}
-\begin{tabular}{@{}p{3.040cm}@{\hspace{0.16cm}}p{6.840cm}@{\hspace{0.16cm}}p{5.240cm}@{}}
+\begin{longtable}{@{}p{3.94cm}@{\hspace{0.16cm}}p{6.24cm}@{\hspace{0.16cm}}p{4.94cm}@{}}
+\caption{官网页面与数据绑定}\label{tab_public_routes}\\
 \toprule
-\bfseries \Cell{页面} & \bfseries \Cell{主要信息与动作} & \bfseries \Cell{异常或等待状态}\\\midrule
-\Cell{首页与门诊选择} & \Cell{展示地址、联系方式和可预约服务，选择患者及日期} & \Cell{尚未建档时引导补资料，不能默认账号本人就是就诊人。}\\[1pt]
-\Cell{号源与确认} & \Cell{展示门诊、医生、时长及可约时段，说明临时保留和最终确认区别} & \Cell{占位到期或竞争失败保留输入，提供替代时段或前台联系。}\\[1pt]
-\Cell{我的预约} & \Cell{查看安排、准备事项、取消及改期入口} & \Cell{未确认申请、已取消、已改期和已到诊使用不同提示。}\\[1pt]
-\Cell{治疗方案与费用} & \Cell{查看医生解释、方案版本、增项及当次结算明细} & \Cell{未确认不能呈现为已执行；费用异议提供原单申请入口。}\\[1pt]
-\Cell{付款与退款} & \Cell{显示原交易、已分配、欠款及退款处理状态} & \Cell{支付回跳后仍向服务端查询，未知状态提示处理中并避免再次扣款。}\\[1pt]
-\Cell{复诊与资料} & \Cell{维护就诊人、逐项过敏、复诊任务及跨店授权} & \Cell{更改健康资料提示医生复核，授权可以按范围和用途管理。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-患者预约页面按门诊、服务、日期和医生组织筛选，提供七日快捷日期和弹出日历。可查询日期范围由预约策略统一返回，选择日期后再请求实际号源；页面按门诊当地时间将返回时段归入上午、下午和晚间，并保留时段对应的医生、牙椅、班次和起止信息。日期可选后还需查询实际号源；选择时段后通过服务端短时占位保留资源。\par
-号源页分别呈现加载中、查询失败和查询成功但无匹配时段的状态，查询失败可重试。患者改变筛选条件或离开页面后，过期响应不得覆盖当前结果。预约确认、取消和改期均以服务端返回的结果更新页面；网络中断导致结果未明时，保留原操作标识并核对结果，避免再次提交产生重复预约。\par
-患者可浏览医生介绍、擅长方向和可预约的咨询服务，并按项目类别查看价格参考区间、单位、年份及资料来源。参考区间用于就诊前了解费用，具体诊疗方案和实际费用经面诊确认；种植、正畸等复杂项目可先预约评估或咨询，不把参考疗程价格作为一次预约收费。\par
-\Needspace{338pt}
-\subsection{员工工作台与组件}
-员工工作台设置“薪酬与激励”。总部按月登记账证、查看完整季度来源、生成和提交基金快照，由另一名已关联员工身份的总部人员批准后登记发放；店长管理所属门诊月度底稿。每名员工通过本人入口查询已批准季度份额、付款状态及余额。员工档案与账号关联采用唯一员工号，财务金额不进入公开医生展示。\par
+\Cell{\bfseries 入口} & \Cell{\bfseries 页面与操作} & \Cell{\bfseries 数据来源}\\\midrule
+\endfirsthead
+\toprule
+\Cell{\bfseries 入口} & \Cell{\bfseries 页面与操作} & \Cell{\bfseries 数据来源}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{{/\allowbreak{}}} & \Cell{首屏、品牌介绍、诊疗服务、门诊环境、医生团队、预约指引与页脚。} & \Cell{品牌场景与视频使用静态素材；门诊、医生、项目目录独立加载。}\\[1pt]
+\Cell{{/\allowbreak{}explore/\allowbreak{}services}、{/\allowbreak{}explore/\allowbreak{}services/\allowbreak{}\{id\}}} & \Cell{服务列表与详情显示简介、预约时长及相关服务，详情可跳预约指引。} & \Cell{GET {/\allowbreak{}services}；按项目名称匹配场景图。}\\[1pt]
+\Cell{{/\allowbreak{}explore/\allowbreak{}doctors}、{/\allowbreak{}explore/\allowbreak{}doctors/\allowbreak{}\{id\}}} & \Cell{显示姓名、专业方向、介绍、擅长及出诊门诊；虚构医生头像带示意标记。} & \Cell{GET {/\allowbreak{}doctors} 与 {/\allowbreak{}clinics}；示意头像由前端图集提供。}\\[1pt]
+\Cell{{/\allowbreak{}explore/\allowbreak{}clinics}、{/\allowbreak{}explore/\allowbreak{}clinics/\allowbreak{}\{id\}}} & \Cell{显示门诊照片、简介、地址、电话、邮箱、营业时间和排班医生。} & \Cell{GET {/\allowbreak{}clinics} 与 {/\allowbreak{}doctors}；按医生的门诊标识关联。}\\[1pt]
+\Cell{{/\allowbreak{}\#booking}、{/\allowbreak{}login}} & \Cell{预约入口滚动到扫码指引；预约区与页脚共用微信小程序码，点图可查看大图。员工入口进入账号登录页。} & \Cell{小程序码作为站点静态资源随网页发布。}\\[1pt]
+\end{longtable}
+}
+网站采用暖白、深灰和浅金，标签页使用深灰底的金色微笑弧线图标。首屏提供静态封面和可暂停的静音视频。页面隐藏、视频离开视口或用户选择减少动态效果时暂停，视频不可用时保留静态封面。滚动进入时显示各章节内容，动效遵循系统的减少动态效果设置。导航支持触屏和键盘；目录分别提示加载、失败与空列表，详情标识无效时提示返回目录。\par
+\subsection{患者小程序}\label{sec_mini_design}
+小程序采用蓝白配色，页面背景为淡蓝白（{\#F5F8FF}），卡片为白色，主要按钮及选中导航用蓝色（{\#2563EB}）。正文采用系统中文无衬线字体，正文28 rpx、页面标题44 rpx，卡片内边距32 rpx。底栏依次为首页、门诊、预约、我的；二级页面使用微信原生返回。访客可浏览公开目录及查询号源，选择时段办理预约、管理本人预约与维护资料须登录。\par
+\begin{figure}[H]
+\centering
+\setlength{\fboxsep}{7pt}
+\newcommand{\BookingSketch}[2]{\fbox{\parbox[t][132pt][t]{0.27\textwidth}{\small\raggedright\textbf{#1}\par\smallskip\hrule\smallskip #2}}}
+\BookingSketch{选择号源}{门诊项目 $\to$ 医生 $\to$ 时间\par\smallskip
+门诊与项目保留在摘要栏。\par
+日期快选或打开日历。\par
+查询号源后，点击可约时段。}
+\hfill
+\BookingSketch{确认预约}{短时占位倒计时\par\smallskip
+门诊、项目、医生、时间\par
+就诊人及联系信息\par
+\fbox{\rule{0pt}{4pt}\rule{4pt}{0pt}} 核对就诊人\par
+\fbox{\rule{0pt}{4pt}\rule{4pt}{0pt}} 确认预约规则\par
+\textbf{确认预约}}
+\hfill
+\BookingSketch{预约详情}{预约成功及预约编号\par\smallskip
+项目、门诊、医生、时间\par
+状态与参考费用\par
+有效预约可改期或取消。\par
+\textbf{返回预约列表}}
+\caption{患者选时、确认与预约详情布局}\label{booking_wireframe}
+\end{figure}
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{3.04cm}@{\hspace{0.16cm}}p{6.84cm}@{\hspace{0.16cm}}p{5.24cm}@{}}
+\caption{患者端页面与操作（路由为 pages/页面标识/index）}\label{tab712}\\
+\toprule
+\Cell{\bfseries 页面} & \Cell{\bfseries 信息与操作} & \Cell{\bfseries 状态与反馈}\\\midrule
+\endfirsthead
+\toprule
+\Cell{\bfseries 页面} & \Cell{\bfseries 信息与操作} & \Cell{\bfseries 状态与反馈}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{首页、门诊与医生\newline home、clinics、doctors、doctor-detail} & \Cell{首页放置主预约按钮、门诊、医生团队、项目和科普。门诊介绍在列表展开，可复制地址和拨号；查看医生与号源时带入门诊。医生详情显示擅长、出诊门诊和预约入口。} & \Cell{目录加载失败时可重试。门诊地址可复制；演示门诊标明示例资料。}\\[1pt]
+\Cell{参考价格与口腔科普\newline prices、education} & \Cell{演示价格资料按项目列出区间、单位、年份及来源。科普按常见原因、日常预防和诊后护理组织，文章可复制参考来源。} & \Cell{预约页显示项目参考费用，实际项目和收费在门诊确认。}\\[1pt]
+\Cell{登录、注册与档案关联\newline login} & \Cell{使用患者账号和密码登录。首次注册建档；已有线下档案时输入前台凭证及出生日期，绑定原患者编号。} & \Cell{凭证过期、已使用或资料不符时提示联系前台重新核对。}\\[1pt]
+\Cell{预约与确认\newline booking、confirm} & \Cell{先选择门诊及项目，再选医生、日期与时段；确认页展示就诊人、项目、时间和临时保留倒计时。} & \Cell{加载、失败、无号源分开显示。占位过期或冲突时回到选时段。}\\[1pt]
+\Cell{我的预约\newline appointments、detail} & \Cell{列表与详情展示预约编号、项目、医生、门诊和状态；有效预约可填写原因后改期或取消。} & \Cell{按全部、已确认、已取消、已改期筛选。确认后在详情页展示成功反馈；改期后旧详情可打开替代预约。}\\[1pt]
+\Cell{我的与隐私协议\newline profile、privacy} & \Cell{展示本人资料，允许修改、保存、选择或移除头像。协议单独成页；账号区提供撤回隐私同意及退出登录。} & \Cell{保存成功后回到资料浏览状态；版本冲突时提示重新读取。退出后清理本机的本人资料、头像及预约状态。}\\[1pt]
+\end{longtable}
+}
 
-\par\noindent\begin{minipage}{\textwidth}
+日期页提供七日快选和日历，查询范围由预约策略接口返回。小程序将号源按北京时间分组；服务端根据已发布班次、项目时长、清洁缓冲和患者、医生、牙椅的占用计算可约时段。筛选条件变更后只接收最新请求的结果。\par
+选中时段后取得短时占位。确认页显示就诊人、医生、门诊、时段与参考费，勾选就诊人核对及预约规则后提交。提交成功后跳转详情并显示预约编号。改期先占用新时段，事务内创建替代预约并释放旧时段；新时段提交失败时保留原预约。取消、改期或确认的响应丢失时，客户端保留原操作标识，查询回执或使用同一标识重试。\par
+\subsubsection{档案关联、隐私与头像}
+登录页提供账号登录、新建档案注册和关联已有档案。课程演示可快捷填入患者A（patient.a）或患者B（patient.b）的账号，体验者按页面提示手动填写密码。新账号使用3至80位字母、数字、点、下划线或连字符，密码至少12位。首次注册将账号、患者档案和隐私同意一并保存。关联已有档案时，前台确认身份并发放有效期10分钟的一次性凭证；服务端锁定档案和凭证，验证出生日期，创建账号、保存同意并标记凭证已使用。重新签发时撤销该档案未使用的旧凭证。\par
+隐私协议展示处理方、联系方式、用途、保存期限和版本。患者分别确认就诊资料及健康信息的用途。未满14周岁时记录监护人姓名、关系和同意。有效同意按患者、账号和协议版本核对，同一版本适用于连锁门诊。撤回后公开目录仍可浏览，本人预约和资料操作需重新取得同意。\par
+头像由患者自行选择、更换或移除。服务端按会话中的患者标识读取及保存头像，校验 JPEG 或 PNG 文件内容和大小，上限为90 KiB。头像数据单独存放，读取响应禁止缓存，操作审计记录修改或移除事件。\par
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{工作台与可复用组件}\label{tab717}
-\begin{tabular}{@{}p{2.840cm}@{\hspace{0.16cm}}p{6.140cm}@{\hspace{0.16cm}}p{6.140cm}@{}}
+\begin{longtable}{@{}p{2.74cm}@{\hspace{0.16cm}}p{5.54cm}@{\hspace{0.16cm}}p{6.84cm}@{}}
+\caption{账号、隐私与头像接口}\label{tab_patient_account_api}\\
 \toprule
-\bfseries \Cell{对象} & \bfseries \Cell{组成} & \bfseries \Cell{职责}\\\midrule
-\Cell{前台} & \Cell{日历、候诊队列、待收费、日结和通知待办} & \Cell{预约列表分页，成功动作局部刷新，未保存编辑有离开提示。}\\[1pt]
-\Cell{医生} & \Cell{今日接诊、风险摘要、计划版本、执行行和签署} & \Cell{牙位与单位输入独立组件；签署前检查新增项目确认和用品耗用。}\\[1pt]
-\Cell{店长} & \Cell{班次冲突、门诊容量、日结差异和成本来源} & \Cell{批量变更先预览影响，不允许静默取消其他店预约。}\\[1pt]
-\Cell{总部} & \Cell{医生档案及组织、跨店代收、期间复核、医生季度结果和基金} & \Cell{查看汇总对应的账单和费用凭据，由不同人员制表、复核。}\\[1pt]
-\Cell{共享组件} & \Cell{患者选择、单位金额、状态标签、时间范围、证据附件与版本冲突提示} & \Cell{组件只处理表示逻辑，最终业务校验由服务端执行。}\\[1pt]
-\bottomrule\end{tabular}
-}\end{minipage}\par\vspace{6pt}
-前端按患者、预约、诊疗、结算和经营模块组织，分别管理接口调用、查询缓存、表单和页面组件。菜单按角色展示，服务端逐次校验身份、角色及门诊范围。\par
-预约与排班工作区提供前一天、今天、后一天及七日日期导航。员工可在预约列表与按医生分组的单日日程之间切换，排班可按医生卡片查看；医生工作区以本人预约和排班为中心，其他岗位按机构与岗位授权查看相应范围。选中日期及门诊变化时重新查询，窄屏可横向浏览日期与展开导航；页面处于可见状态时定期刷新预约，显示最新改期或取消结果。\par
-按医生分组的日程按页获取选定日期的预约，并检查总数、重复记录及首批数据版本。查询期间数据变化时提示刷新；记录加载完成后显示该日日程。排班卡片标明查询范围，实际可预约时间由号源查询返回。\par
-资源维护页按门诊筛选医生、项目及牙椅。医生资料展示照片、简介、专业经历和擅长方向；店长维护出诊门诊与班次。发布班次默认选择门诊全部项目，号源由当班项目、服务时长和空闲资源计算。页面在筛选或账号变更后重新查询。\par
+\Cell{\bfseries 操作} & \Cell{\bfseries 接口} & \Cell{\bfseries 行为}\\\midrule
+\endfirsthead
+\toprule
+\Cell{\bfseries 操作} & \Cell{\bfseries 接口} & \Cell{\bfseries 行为}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{登录与退出} & \Cell{POST /\allowbreak{}auth/\allowbreak{}login；POST /\allowbreak{}auth/\allowbreak{}logout} & \Cell{按患者端或员工端签发会话；退出时撤销当前会话。}\\[1pt]
+\Cell{就诊资料} & \Cell{GET、PUT /\allowbreak{}patients/\allowbreak{}me} & \Cell{读取本人资料。修改携带版本，服务端锁定档案后核对版本、保存资料与过敏项并返回新版本。}\\[1pt]
+\Cell{隐私指引} & \Cell{GET /\allowbreak{}privacy/\allowbreak{}notice；GET /\allowbreak{}privacy/\allowbreak{}status} & \Cell{公开读取指引；登录后核对本人是否已有当前版本的有效同意。}\\[1pt]
+\Cell{确认或撤回} & \Cell{POST /\allowbreak{}privacy/\allowbreak{}consent；POST /\allowbreak{}privacy/\allowbreak{}withdraw} & \Cell{保存告知版本和分项同意；撤回时给有效记录写入撤回时间。}\\[1pt]
+\Cell{头像管理} & \Cell{GET、PUT /\allowbreak{}patients/\allowbreak{}me/\allowbreak{}avatar} & \Cell{读取头像类型和内容。提交 Base64 内容更换头像，提交空值移除头像。}\\[1pt]
+\end{longtable}
+}
+\subsection{员工工作台与组件}\label{sec_staff_design}
+员工登录页在桌面以诊所场景和表单双栏呈现，窄屏以表单为先。演示版本显示总部、店长、前台、医生四个账号（hq、manager.a、front.a、doctor.a）及统一演示密码，点击角色只填入账号，提交时仍校验账号、密码和员工身份。员工会话恢复后从预约总览进入工作台；带有站内返回地址的登录回到原页面。临时密码账号先进入修改密码页。\par
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{3.74cm}@{\hspace{0.16cm}}p{5.94cm}@{\hspace{0.16cm}}p{5.44cm}@{}}
+\caption{员工页面、接口与主要操作}\label{tab_staff_routes}\\
+\toprule
+\Cell{\bfseries 入口} & \Cell{\bfseries 查询或操作接口} & \Cell{\bfseries 页面行为}\\\midrule
+\endfirsthead
+\toprule
+\Cell{\bfseries 入口} & \Cell{\bfseries 查询或操作接口} & \Cell{\bfseries 页面行为}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{{/\allowbreak{}login}、{/\allowbreak{}change-\allowbreak{}password}} & \Cell{POST {/\allowbreak{}auth/\allowbreak{}login}、{/\allowbreak{}auth/\allowbreak{}change-\allowbreak{}password}；GET {/\allowbreak{}me}。} & \Cell{登录失败保留账号并显示原因。密码修改后保留当前会话，撤销其他会话。}\\[1pt]
+\Cell{{/\allowbreak{}appointments}} & \Cell{GET {/\allowbreak{}staff/\allowbreak{}appointments}、{/\allowbreak{}appointments/\allowbreak{}\{id\}}；POST {/\allowbreak{}appointments/\allowbreak{}\{id\}/\allowbreak{}changes}。} & \Cell{日期导航、分页列表、按医生分组的日程和详情抽屉。仅授权员工可办理改期、取消。}\\[1pt]
+\Cell{{/\allowbreak{}shifts}} & \Cell{GET {/\allowbreak{}shifts}；POST {/\allowbreak{}staff/\allowbreak{}shifts}、{/\allowbreak{}staff/\allowbreak{}shifts/\allowbreak{}\{id\}/\allowbreak{}cancel}。} & \Cell{按门诊和日期查看班次，日程按医生分组。发布时选择门诊、医生、时段和项目；撤销时带版本。}\\[1pt]
+\Cell{{/\allowbreak{}patients}} & \Cell{GET、POST {/\allowbreak{}staff/\allowbreak{}patients}；POST {/\allowbreak{}staff/\allowbreak{}patients/\allowbreak{}\{id\}/\allowbreak{}invitations}。} & \Cell{搜索、核对、新建档案与签发关联凭证；选择患者进入代约。}\\[1pt]
+\Cell{{/\allowbreak{}booking}} & \Cell{GET {/\allowbreak{}booking-\allowbreak{}policy}、{/\allowbreak{}booking-\allowbreak{}slots}；POST {/\allowbreak{}booking-\allowbreak{}holds}、{/\allowbreak{}appointments/\allowbreak{}confirm}。} & \Cell{核对患者后选门诊、项目、医生与时段，按占位倒计时确认。改期带原预约编号及版本。}\\[1pt]
+\Cell{{/\allowbreak{}resources/\allowbreak{}\{kind\}}} & \Cell{读取目录；POST {/\allowbreak{}staff/\allowbreak{}\{kind\}}；PUT {/\allowbreak{}staff/\allowbreak{}\{kind\}/\allowbreak{}\{id\}}。} & \Cell{按门诊维护门诊、医生、服务、牙椅及资质。编辑已有记录时提交版本。}\\[1pt]
+\Cell{{/\allowbreak{}compensation}} & \Cell{GET {/\allowbreak{}compensation/\allowbreak{}context}、{/\allowbreak{}compensation/\allowbreak{}months}、{/\allowbreak{}compensation/\allowbreak{}quarters}、{/\allowbreak{}compensation/\allowbreak{}me}。} & \Cell{总部查看季度和来源，店长查看授权门诊月份，医生查看本人奖金与发放。}\\[1pt]
+\Cell{{/\allowbreak{}staff/\allowbreak{}accounts}} & \Cell{员工账号使用 {/\allowbreak{}staff/\allowbreak{}accounts}，员工档案使用 {/\allowbreak{}staff/\allowbreak{}profiles}，均支持查询、新建和更新。} & \Cell{总部维护账号、人员资料及岗位授权，支持停用和重置临时密码。}\\[1pt]
+\end{longtable}
+}
+工作台以深灰侧栏组织预约、排班、患者档案、机构资源、经营和账号管理，浅金强调当前入口。顶栏显示岗位与当前页面，主区以暖白背景和浅边框区分查询、统计和数据表。窄屏采用可收起的导航，表格保留横向浏览；员工可切换紧凑或舒适视图。服务端按账号、岗位和门诊逐次核对访问权限。\par
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{2.24cm}@{\hspace{0.16cm}}p{6.34cm}@{\hspace{0.16cm}}p{6.54cm}@{}}
+\caption{员工岗位与工作入口}\label{tab717}\\
+\toprule
+\Cell{\bfseries 岗位} & \Cell{\bfseries 工作入口} & \Cell{\bfseries 操作范围}\\\midrule
+\endfirsthead
+\toprule
+\Cell{\bfseries 岗位} & \Cell{\bfseries 工作入口} & \Cell{\bfseries 操作范围}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{前台} & \Cell{预约总览、排班、患者档案及代约。} & \Cell{在授权门诊核对患者、建档、签发关联凭证、代约和处理改期取消。}\\[1pt]
+\Cell{医生} & \Cell{我的预约、我的排班、本人激励。} & \Cell{查看本人预约与班次，查询已批准的个人份额和发放记录。}\\[1pt]
+\Cell{店长} & \Cell{预约、排班、患者服务、门诊资源与经营概览。} & \Cell{在所属门诊组织排班、维护授权资源、查看月度账证与核算进度。}\\[1pt]
+\Cell{总部} & \Cell{全门诊预约和资源、员工账号与档案、季度经营。} & \Cell{统一维护目录、员工及岗位，汇总季度来源；制表、独立复核与发放按用例办理。}\\[1pt]
+\end{longtable}
+}
+
+预约总览进入时选中北京时间当天，可按日期、门诊及状态查询，并在分页列表和按医生分组的单日日程之间切换。跨日预约按开始时间归入当天。详情显示预约编号、时段、门诊、医生、患者和变更事件。列表的预约总数取接口总数，当前页确认数及涉及医生数取当前页记录。日程按所选日期加载多页数据，统计基于已加载记录。页面可见时在一次刷新完成5秒后再刷新，保留日期、筛选、分页和详情；后台标签页及取消提交期间暂停自动刷新。日程加载不完整时标明并提示刷新。\par
+前台代约沿用同一号源、占位和命令回执流程。先按姓名或电话核对患者，列表展示脱敏电话、出生年份及账号关联状态，再选择门诊、项目、医生及时间。排班发布后，小程序和员工端均可从号源查询看到新时段。\par
+资源页按门诊组织医生、项目和牙椅；门诊公开信息可维护简介和营业时间。医生特长用于展示，发布班次时默认选中门诊项目。系统根据门诊、排班和占用返回时段，界面按加载、无结果和失败分别提示。\par
+经营页面按季度和授权门诊筛选。经营总览从已关闭月份生成收入、用品成本、运营费用及净利润的指标、月度趋势和门诊对照。月度底稿按门诊与月份显示缺失、草稿和已关闭，底稿录入医生、三项金额和对应凭据编号。总部另有季度页，详情分个人分配与发放、医生门诊明细和月份来源。医生从“我的激励”查看已批准的个人份额、已发金额及余额。\par
+总部维护员工账号与档案、所属门诊和岗位。员工使用临时密码登录后先设置新密码；变更员工账号授权或重置密码时撤销其会话。员工自行修改密码后保留当前会话，注销其他会话。\par
 \Needspace{208pt}
+\subsection{预约两端共用的数据契约}\label{sec_booking_client_contract}
+门诊、医生、牙椅、项目和班次使用 UUID，时间点以带时区的 ISO 日期时间传输，界面按北京时间显示。服务端按班次内有效时段、项目时长及缓冲计算候选，过滤封锁牙椅、过期时段和资源重叠。班次应覆盖项目且门诊开放该项目，医生特长仅用于介绍。默认以15分钟为步长生成候选，每名医生同一开始时间返回一张可用牙椅，单次至多500条。跨门诊排班的默认转场间隔为30分钟。\par
+{\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
+\begin{longtable}{@{}p{3.04cm}@{\hspace{0.16cm}}p{6.34cm}@{\hspace{0.16cm}}p{5.74cm}@{}}
+\caption{号源、占位及预约的输入和结果}\label{tab_booking_client_contract}\\
+\toprule
+\Cell{\bfseries 操作} & \Cell{\bfseries 关键输入} & \Cell{\bfseries 结果与页面动作}\\\midrule
+\endfirsthead
+\toprule
+\Cell{\bfseries 操作} & \Cell{\bfseries 关键输入} & \Cell{\bfseries 结果与页面动作}\\\midrule
+\endhead
+\bottomrule\endlastfoot
+\Cell{查询日期及号源} & \Cell{GET {/\allowbreak{}booking-\allowbreak{}policy} 取得可查起止日期。GET {/\allowbreak{}booking-\allowbreak{}slots} 输入 {clinicId}、{serviceId}、{date}，可选 {doctorId}。} & \Cell{返回医生、牙椅、班次、开始时间、服务结束、占用截止及预约参考价。仅显示未来时段。}\\[1pt]
+\Cell{占位} & \Cell{POST {/\allowbreak{}booking-\allowbreak{}holds} 提交门诊、项目、医生、牙椅、班次及开始时间，员工另传患者编号。} & \Cell{返回占位编号、版本、到期时间、号源和规则。默认保留300秒。到期后重新选择。}\\[1pt]
+\Cell{确认} & \Cell{POST {/\allowbreak{}appointments/\allowbreak{}confirm} 输入 {holdId}、{holdVersion}、{patientConfirmed} 与 {rulesAccepted}（均为真），并发送幂等键。} & \Cell{同一事务转为已约占用并生成预约编号、事件和回执。两端以相同预约标识查询。}\\[1pt]
+\Cell{改期或取消} & \Cell{POST {/\allowbreak{}appointments/\allowbreak{}\{id\}/\allowbreak{}changes} 提交 {intent}、{reason}、{expectedVersion}；改期另传新占位编号及版本。} & \Cell{成功后释放旧占用；改期返回新预约并保留新旧关联。办理时限取原预约规则，默认提前120分钟。}\\[1pt]
+\Cell{清单与回执} & \Cell{患者 GET {/\allowbreak{}appointments}，员工 GET {/\allowbreak{}staff/\allowbreak{}appointments}；详情 GET {/\allowbreak{}appointments/\allowbreak{}\{id\}}。结果待确认时 GET {/\allowbreak{}commands/\allowbreak{}\{key\}}。} & \Cell{清单按开始时间倒序，分页默认20条、上限100条。回执只向原账号返回；未找到结果时可用原键重试。}\\[1pt]
+\end{longtable}
+}
+冲突或版本变化时刷新原记录和号源，界面保留当前选择条件；网络超时且提交结果未知时，暂存同一账号的原请求和命令标识。患者退出后清除会话和已呈现的本人资料，待确认请求只允许原账号恢复。\par
+
 \section{质量要求与验收设计}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
 \begin{longtable}{@{}p{1.440cm}@{\hspace{0.16cm}}p{2.940cm}@{\hspace{0.16cm}}p{10.740cm}@{}}
@@ -5420,7 +5706,7 @@ Postgre\allowbreak{}SQL时间范围与排斥约束用于同一资源区间冲突
 \bottomrule\endlastfoot
 \Cell{\mbox{BR01}} & \Cell{患者档案} & \Cell{同一患者跨门诊沿用同一编号；家庭成员分别建档。前台核对姓名、联系方式等资料后处理疑似重复档案。}\\[1pt]
 \Cell{\mbox{BR02}} & \Cell{过敏核对} & \Cell{患者逐项填写过敏信息，状态分为已知过敏、未报告过敏和情况不详。医生接诊时核对并记录结果。}\\[1pt]
-\Cell{\mbox{BR03}} & \Cell{医生与排班} & \Cell{所有在岗医生均可承接门诊开展的全部项目。医生特长用于介绍与选择；同一医生的班次保持时间错开，跨店出诊留出转场时间。}\\[1pt]
+\Cell{\mbox{BR03}} & \Cell{医生与排班} & \Cell{按门诊开放项目和班次生成预约候选。医生特长用于选医。同一医生的班次保持时间错开，跨店出诊预留转场时间。}\\[1pt]
 \Cell{\mbox{BR04}} & \Cell{可预约时段} & \Cell{已发布班次、项目时长、牙椅及已有预约共同决定可约时段。确认时统一锁定资源，成功后生成预约编号。}\\[1pt]
 \Cell{\mbox{BR05}} & \Cell{改期与取消} & \Cell{患者在小程序选择新时段改期，成功后释放旧时段；取消时填写原因并释放原时段，双方均可查看变更记录。}\\[1pt]
 \Cell{\mbox{BR06}} & \Cell{到店登记} & \Cell{前台核对预约后记录到店时间。预约状态分别显示待到店、已到店、已取消、已改期和未到店；未到店结果由前台核实。}\\[1pt]
@@ -5456,6 +5742,16 @@ Postgre\allowbreak{}SQL时间范围与排斥约束用于同一资源区间冲突
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
 \Needspace{459pt}
+\subsection{三端页面的交付验收}
+\begin{enumerate}
+\item 从官网首页打开医生、门诊与服务详情，再由预约按钮进入扫码区。微信扫描页面的小程序码进入患者首页，官网的员工入口进入登录页。
+\item 在小程序用虚构患者登录，选门诊、项目、医生、日期及号源，核对就诊人并确认。员工在授权门诊按就诊日期查询，打开详情，核对预约编号、状态、时间和门诊。
+\item 小程序改期后同时核对旧记录和新记录，再取消新记录。员工刷新后能查到相同状态及原因；原资源按规则回到可约范围。
+\item 关联已有患者档案后保持原编号。保存资料和更换头像后再次打开个人页；撤回同意后公开目录仍可浏览，受保护操作要求重新确认。
+\item 用总部、店长、前台和医生账号分别登录。总部核对跨店数据；店长和前台仅可操作授权门诊；医生仅可查本人预约和排班，且可查看本人批准的激励。
+\item 在两家演示门诊各录入一季度的月度账证，分别由不同员工关闭。总部生成季度，核对医生跨店合计、用品成本、运营费用、基金及个人份额，并检查预约参考费用未自动计入收入。
+\end{enumerate}
+
 \subsection{端到端业务验收}
 \par\noindent\begin{minipage}{\textwidth}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
@@ -5463,8 +5759,10 @@ Postgre\allowbreak{}SQL时间范围与排斥约束用于同一资源区间冲突
 \begin{tabular}{@{}p{2.840cm}@{\hspace{0.16cm}}p{5.040cm}@{\hspace{0.16cm}}p{7.240cm}@{}}
 \toprule
 \bfseries \Cell{场景} & \bfseries \Cell{关键输入} & \bfseries \Cell{可观察的结果}\\\midrule
-\Cell{小程序预约与前台代约} & \Cell{两名患者同时选择同一医生、门诊及牙椅时段} & \Cell{一人预约成功并收到编号，另一人看到时段已被预约的提示，可重新选择。}\\[1pt]
-\Cell{医生特长与跨店排班} & \Cell{选择不同特长医生预约同一门诊项目；另提交时间重叠的跨店班次} & \Cell{各医生均可预约该项目；时间重叠时提示冲突，调整后发布。}\\[1pt]
+\Cell{小程序预约与前台代约} & \Cell{两端同时确认同一医生、门诊及牙椅时段} & \Cell{只有一笔确认成功；另一端提示重新选择时段。}\\[1pt]
+\Cell{两端预约联动} & \Cell{员工发布班次；患者确认、改期或取消} & \Cell{小程序查到号源；员工端查看同一预约编号、状态和变更记录。}\\[1pt]
+\Cell{本人档案和隐私} & \Cell{用有效凭证关联原档案，保存资料和头像后撤回同意} & \Cell{患者编号保持不变；保存后显示新资料。撤回后需重新同意才可管理预约和资料。}\\[1pt]
+\Cell{医生特长与跨店排班} & \Cell{为不同特长医生发布同一门诊项目的班次，再提交时间重叠的跨店班次} & \Cell{查询返回已发布的可约时段。时间重叠时提示冲突，调整后发布。}\\[1pt]
 \Cell{增项到结算} & \Cell{原方案一项，诊疗中新增一项} & \Cell{先确认增项再执行，两项均保留单位和单价快照，只形成同次就诊一张单。}\\[1pt]
 \Cell{部分收款与退款} & \Cell{500元费用先收300元、补收200元，再批准减免100元并退回100元} & \Cell{应收400元，净到账400元；保留两笔收款、减免和退款凭据。}\\[1pt]
 \Cell{跨店代收} & \Cell{甲店治疗，乙店成功收款} & \Cell{服务收入归甲店医生，资金归乙店核对，内部划转不增加患者收入。}\\[1pt]
@@ -5474,14 +5772,15 @@ Postgre\allowbreak{}SQL时间范围与排斥约束用于同一资源区间冲突
 \bottomrule\end{tabular}
 }\end{minipage}\par\vspace{6pt}
 \subsection{部署与维护方案}
-部署采用HTTPS入口、应用服务、后台任务和独立数据库，区分开发、验收及正式环境。数据库只向服务端开放；配置、密钥和备份凭证由运行环境提供，不能写入前端包或文档样例。附件存储使用受限访问和短时授权，病历、过敏及支付凭据按业务权限读取。\par
+演示环境由HTTPS网关、Vue静态站点、Fastify应用及PostgreSQL组成。网页通过同域 {/api/v1} 访问应用；微信小程序发布构建把同一 HTTPS 接口地址写入构建产物，并将域名登记为请求域名。演示员工账号提示由站点构建配置提供，患者端使用两名虚构患者，演示排班及账证按虚构来源标记。数据库只向服务端开放；数据库密码、服务密钥和备份凭证由运行环境提供。附件存储使用受限访问和短时授权，病历、过敏及支付凭据按业务权限读取。\par
+官网与工作台共用 Vue 构建产物。部署入口使用 Nginx 将页面路径交给前端路由，将接口请求转发至 Fastify。小程序构建采用 \url{ANDREW_MINI_BUILD=production}，用 \url{ANDREW_MINI_API_URL} 指向 \url{https://andrewdental.top/api/v1}。上线检查应从官网扫码进入小程序，再用员工工作台按预约日期核对提交结果。\par
 数据库结构变更使用带版本、校验和与回退说明的迁移。发布前在备份副本验证迁移与恢复，核对外键、单据唯一性、金额合计一致和季度来源版本；失败时停止切换并恢复上一可用环境。监控聚焦请求失败、任务积压、预约冲突率、在途支付时长及备份滞后，告警必须对应处理责任人。\par
-验收依次检查用例操作、数据库约束、并发提交和完整业务链。每个场景记录环境、输入、操作步骤、预期结果与实际结果，异常修复后复测。\par
+
 \Needspace{459pt}
 \subsection{需求与设计追踪}
 \par\noindent\begin{minipage}{\textwidth}
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
-\captionof{table}{核心业务需求的实现链}\label{tab732}
+\captionof{table}{核心业务需求与设计追踪}\label{tab732}
 \begin{tabular}{@{}p{3.440cm}@{\hspace{0.16cm}}p{2.840cm}@{\hspace{0.16cm}}p{3.140cm}@{\hspace{0.16cm}}p{5.540cm}@{}}
 \toprule
 \bfseries \Cell{需求} & \bfseries \Cell{业务过程} & \bfseries \Cell{系统用例} & \bfseries \Cell{关键数据与验收}\\\midrule
@@ -5489,7 +5788,7 @@ Postgre\allowbreak{}SQL时间范围与排斥约束用于同一资源区间冲突
 \Cell{医生档案与跨店服务} & \Cell{\mbox{AS01}、\mbox{BP01}、\mbox{BP07}} & \Cell{\mbox{UC-02}、\mbox{UC-04}、\mbox{UC-05}、\mbox{UC-14}} & \Cell{专长展示、跨店班次与交接；检查医生时间冲突。}\\[1pt]
 \Cell{小程序预约与到店接待} & \Cell{\mbox{AS01}、\mbox{BP02}、\mbox{BP03}} & \Cell{\mbox{UC-05}至\mbox{UC-09}} & \Cell{患者小程序选时段并确认，前台到店核对；取消原因、改期记录和到店结果清楚可查。}\\[1pt]
 \Cell{多治疗、增项及单位价} & \Cell{\mbox{AS02}、\mbox{BP04}、\mbox{BP05}} & \Cell{\mbox{UC-03}、\mbox{UC-10}至\mbox{UC-13}} & \Cell{计划、同意及执行；保存标准单位、数量和单价快照。}\\[1pt]
-\Cell{一就诊一Invoice} & \Cell{\mbox{AS02}、\mbox{BP06}} & \Cell{\mbox{UC-15}至\mbox{UC-18}} & \Cell{就诊唯一外键、逐行来源与收退款；重复请求仍一张单。}\\[1pt]
+\Cell{一次就诊一张结算单} & \Cell{\mbox{AS02}、\mbox{BP06}} & \Cell{\mbox{UC-15}至\mbox{UC-18}} & \Cell{就诊唯一外键、逐行来源与收退款；重复请求仍一张单。}\\[1pt]
 \Cell{医生季度价值及10\%基金} & \Cell{\mbox{BP09}、\mbox{BP10}} & \Cell{\mbox{UC-19}至\mbox{UC-22}} & \Cell{收入、两类成本费用、净利、基金及分配；保留亏损，奖金合计等于基金。}\\[1pt]
 \Cell{预约结果与排班安排} & \Cell{\mbox{BP01}、\mbox{BP03}、\mbox{BP04}} & \Cell{\mbox{UC-23}} & \Cell{按门诊、医生和日期查看预约数、到店数、取消原因及剩余时段，店长据此调整班次。}\\[1pt]
 \Cell{组织与职责分离} & \Cell{全部目标过程} & \Cell{\mbox{UC-24}及全部受控操作} & \Cell{门诊、员工、岗位授权及审计；提交人不得自审。}\\[1pt]
@@ -5506,7 +5805,7 @@ Postgre\allowbreak{}SQL时间范围与排斥约束用于同一资源区间冲突
 \endhead
 \bottomrule\endlastfoot
 \Cell{\mbox{UC-01}} & \Cell{分析类图；边界—控制—实体序列；操作、仓储、事务及界面契约} & \Cell{家庭成员共用电话→生成不同患者编号。}\\[1pt]
-\Cell{\mbox{UC-02}} & \Cell{分析类图、内部序列图、操作、事务、仓储及界面设计} & \Cell{浏览不同特长医生→全部医生均可查询同一项目的可约时段。}\\[1pt]
+\Cell{\mbox{UC-02}} & \Cell{分析类图、内部序列图、操作、事务、仓储及界面设计} & \Cell{选择门诊和项目→列出相应班次的可约医生，显示各自特长。}\\[1pt]
 \Cell{\mbox{UC-03}} & \Cell{分析类图；边界—控制—实体序列；操作、仓储、事务及界面契约} & \Cell{把单位从次改为牙→建立新版本，旧执行仍按次。}\\[1pt]
 \Cell{\mbox{UC-04}} & \Cell{分析类图；边界—控制—实体序列；操作、仓储、事务及界面契约} & \Cell{同一医生异店班次重叠→拒绝第二次发布。}\\[1pt]
 \Cell{\mbox{UC-05}} & \Cell{分析类图；边界—控制—实体序列；操作、仓储、事务及界面契约} & \Cell{医生空闲但治疗位不可用→不返回该时段。}\\[1pt]
@@ -5533,15 +5832,14 @@ Postgre\allowbreak{}SQL时间范围与排斥约束用于同一资源区间冲突
 }
 \section*{参考资料}
 \phantomsection\addcontentsline{toc}{section}{参考资料}
-公开页面核验日期为2026年10月22日。以下资料支撑业务事实或具体功能判断，设计规则在相应章节直接定义。\par
-\par\noindent\begin{minipage}{\linewidth}\raggedright [资料1] Chen Z. Andrew’s Dental Chain: Data Modeling. Ivey Publishing, 2024. 案例编号W44694。\end{minipage}\par
-\par\noindent\begin{minipage}{\linewidth}\raggedright [R1] Curve Dental. Multisite Success: Streamline Your Front Office. \url{https://www.curvedental.com/multisite/front-office}\allowbreak{} （访问日期：2026-10-22）。\end{minipage}\par
-\par\noindent\begin{minipage}{\linewidth}\raggedright [R2] Dentally Help Centre. How to use waiting lists. \url{https://help.dentally.com/en/articles/3621351-how-to-use-waiting-lists}\allowbreak{} （访问日期：2026-10-22）。\end{minipage}\par
-\par\noindent\begin{minipage}{\linewidth}\raggedright [R3] 领健 e看牙帮助中心. 【治疗计划】功能介绍. \url{https://ekyhelp.linkedcare.cn/docs/zhi-liao-ji-hua-gong-neng-jie-shao}\allowbreak{} （访问日期：2026-10-22）。\end{minipage}\par
-\par\noindent\begin{minipage}{\linewidth}\raggedright [R4] Open Dental. Payment. \url{https://www.opendental.com/manual/payment.html}\allowbreak{} （访问日期：2026-10-22）。\end{minipage}\par
-\par\noindent\begin{minipage}{\linewidth}\raggedright [R5] Open Dental. Refund. \url{https://www.opendental.com/manual/refunds.html}\allowbreak{} （访问日期：2026-10-22）。\end{minipage}\par
-\par\noindent\begin{minipage}{\linewidth}\raggedright [R6] Dentrix Ascend Academy. Payment Location Cross-Reconciliation Report. \url{https://learn.dentrixascend.com/courses/administrative-essentials/lessons/power-reporting/topic/payment-location-cross-reconciliation-report/}\allowbreak{} （访问日期：2026-10-22）。\end{minipage}\par
-\par\noindent\begin{minipage}{\linewidth}\raggedright [R7] Dentally Help Centre. How appointment slots are held during online booking with Portal. \url{https://help.dentally.com/en/articles/11331038-how-appointment-slots-are-held-during-online-booking-with-portal}\allowbreak{} （访问日期：2026-10-22）。\end{minipage}\par
+\par\noindent\begin{minipage}{\linewidth}\raggedright [资料1] Chen, Zifeng. Andrew’s Dental Chain: Data Modelling. Ivey Publishing, 2024. 简体中文版《安德鲁牙科连锁店：数据建模》，案例 W44694，第1至2页。\end{minipage}\par
+\par\noindent\begin{minipage}{\linewidth}\raggedright [R1] Curve Dental. Multisite Success: Streamline Your Front Office. \url{https://www.curvedental.com/multisite/front-office}\allowbreak{} （访问日期：2026-11-13）。\end{minipage}\par
+\par\noindent\begin{minipage}{\linewidth}\raggedright [R2] Dentally Help Centre. How to use waiting lists. \url{https://help.dentally.com/en/articles/3621351-how-to-use-waiting-lists}\allowbreak{} （访问日期：2026-11-13）。\end{minipage}\par
+\par\noindent\begin{minipage}{\linewidth}\raggedright [R3] 领健 e看牙帮助中心. 【治疗计划】功能介绍. \url{https://ekyhelp.linkedcare.cn/docs/zhi-liao-ji-hua-gong-neng-jie-shao}\allowbreak{} （访问日期：2026-11-13）。\end{minipage}\par
+\par\noindent\begin{minipage}{\linewidth}\raggedright [R4] Open Dental. Payment. \url{https://www.opendental.com/manual/payment.html}\allowbreak{} （访问日期：2026-11-13）。\end{minipage}\par
+\par\noindent\begin{minipage}{\linewidth}\raggedright [R5] Open Dental. Refund. \url{https://www.opendental.com/manual/refunds.html}\allowbreak{} （访问日期：2026-11-13）。\end{minipage}\par
+\par\noindent\begin{minipage}{\linewidth}\raggedright [R6] Dentrix Ascend Academy. Payment Location Cross-Reconciliation Report. \url{https://learn.dentrixascend.com/courses/administrative-essentials/lessons/power-reporting/topic/payment-location-cross-reconciliation-report/}\allowbreak{} （访问日期：2026-11-13）。\end{minipage}\par
+\par\noindent\begin{minipage}{\linewidth}\raggedright [R7] Dentally Help Centre. How appointment slots are held during online booking with Portal. \url{https://help.dentally.com/en/articles/11331038-how-appointment-slots-are-held-during-online-booking-with-portal}\allowbreak{} （访问日期：2026-11-13）。\end{minipage}\par
 \par\noindent\begin{minipage}{\linewidth}\raggedright [R8] PostgreSQL Global Development Group. Range Types; Constraints; Transaction Isolation. \url{https://www.postgresql.org/docs/current/rangetypes.html}\allowbreak{} （访问日期：2026-10-22）。\end{minipage}\par
 \par\noindent\begin{minipage}{\linewidth}\raggedright [R8a] PostgreSQL Global Development Group. Constraints. \url{https://www.postgresql.org/docs/current/ddl-constraints.html}\allowbreak{} （访问日期：2026-10-22）。\end{minipage}\par
 \par\noindent\begin{minipage}{\linewidth}\raggedright [R8b] PostgreSQL Global Development Group. Transaction Isolation. \url{https://www.postgresql.org/docs/current/transaction-iso.html}\allowbreak{} （访问日期：2026-10-22）。\end{minipage}\par
