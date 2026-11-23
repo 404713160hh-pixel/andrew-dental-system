@@ -5185,7 +5185,7 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 约束：参考编码唯一；价格上下限以整数分保存，上限不小于下限；参考年份、来源、单位和解释随记录一同展示。关联服务失效或删除时可保留参考资料而清空关联，关联项目不保证存在可预约号源。\par
 \Needspace{297pt}
 \subsection{预约服务的物理关系}\label{sec_booking_physical}
-演示环境按数据库迁移001至009建立表。第7章前述概念和关系模型为完整业务设计；演示环境的核心关系以下表为准。预约、患者与经营表共用门诊、员工及患者编号。\par
+演示环境按数据库迁移001至011建表。预约、就诊与经营记录沿用同一套门诊、医生及患者编号。下表给出实际部署的数据关系。\par
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
 \begin{longtable}{@{}p{2.94cm}@{\hspace{0.16cm}}p{7.14cm}@{\hspace{0.16cm}}p{5.04cm}@{}}
 \caption{演示环境的数据表与来源}\label{tab_delivered_tables}\\
@@ -5200,11 +5200,15 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \Cell{资源与预约} & \Cell{{doctor\_\allowbreak{}shifts}、{doctor\_\allowbreak{}shift\_\allowbreak{}services}、{chair\_\allowbreak{}blocks}、{resource\_\allowbreak{}reservations}、{booking\_\allowbreak{}holds}、{appointments}、{appointment\_\allowbreak{}events}、{command\_\allowbreak{}receipts}} & \Cell{班次发布后派生号源；预约通过唯一占用和占位关联，改期通过旧预约外键串联。}\\[1pt]
 \Cell{患者资料} & \Cell{{patients}、{patient\_\allowbreak{}allergies}、{patient\_\allowbreak{}clinic\_\allowbreak{}access}、{patient\_\allowbreak{}privacy\_\allowbreak{}consents}、{patient\_\allowbreak{}registration\_\allowbreak{}invites}、{patient\_\allowbreak{}avatars}} & \Cell{过敏项存于患者关联行；绑定、授权及头像使用同一患者主键。}\\[1pt]
 \Cell{公开价格} & \Cell{{services}、{clinic\_\allowbreak{}services}、{treatment\_\allowbreak{}references}} & \Cell{预约项目参考费取服务目录；独立价格区间保留单位、年份和来源。}\\[1pt]
+\Cell{到诊与诊疗} & \Cell{{visits}、{visit\_\allowbreak{}treatments}、{visit\_\allowbreak{}materials}} & \Cell{每笔预约对应至多一条就诊记录；实际接诊医生单独保存。项目、用量、价格和成本随记录固定。}\\[1pt]
+\Cell{结算与收款} & \Cell{{visit\_\allowbreak{}invoices}、{visit\_\allowbreak{}payments}} & \Cell{一次就诊一张结算单；一张单可登记多笔线下收款。收款操作编号唯一。}\\[1pt]
+\Cell{门诊月度费用} & \Cell{{clinic\_\allowbreak{}monthly\_\allowbreak{}expenses}} & \Cell{门诊和月份组成主键；费用明细保存名称、金额和凭据，修改时校验版本。}\\[1pt]
 \Cell{月度与季度} & \Cell{{incentive\_\allowbreak{}months}、{doctor\_\allowbreak{}financial\_\allowbreak{}sources}、{incentive\_\allowbreak{}pools}、{incentive\_\allowbreak{}pool\_\allowbreak{}sources}、{doctor\_\allowbreak{}quarter\_\allowbreak{}results}、{incentive\_\allowbreak{}allocations}、{incentive\_\allowbreak{}payments}} & \Cell{按关闭版本汇总，保存季度来源与医生额度，发放记录关联批准份额。}\\[1pt]
 \end{longtable}
 }
 患者临时占位与正式预约共用资源占用表。占位创建一条占用记录，确认后将该记录转为正式占用并关联唯一预约。医生、牙椅和患者分别使用同一组区间约束，比较区间为从开始时刻到含缓冲的占用截止时刻，右端点开放。取消或改期释放旧占用；到期占位先标为过期，再重新判断号源。\par
 在预约服务中，预约单保存业务编号、预约状态和服务快照，通过唯一外键读取门诊、医生、牙椅和时段。班次与门诊、医生使用组合外键，牙椅与门诊使用组合外键。预约事件记录操作者、原因及替代关系，命令回执以操作者和命令标识为键。\par
+就诊以预约主键作为自身主键，预约医生从资源占用记录读取，实际接诊医生从就诊记录读取。治疗明细以就诊和项目为联合主键。耗材按实际条目保存数量、单位和单位成本，用量以千分单位保存，逐条四舍五入到分后合计。结算单保存治疗项目总额，收款记录使用结算单外键，余额等于应收减已登记收款。\par
 门诊档案访问记录保存授权范围和创建账号。图\ref{fig_patient_privacy_relations}给出患者档案与各记录的键和数量关系。\par
 \begin{figure}[H]
 \centering
@@ -5394,7 +5398,7 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \section{业务逻辑、接口与表示层}
 \Needspace{3\baselineskip}
 \subsection{交付范围与业务衔接}\label{sec_delivery_scope}
-课程演示由品牌官网、患者小程序和员工工作台组成。官网承接浏览与微信扫码，小程序办理本人预约，员工工作台发布排班、办理患者服务并核算季度业绩。第8章的页面与接口按表\ref{tab_delivery_scope}落地。第3至7章保留完整业务模型，为后续接诊与结算定义记录、职责和约束。\par
+课程演示由品牌官网、患者小程序和员工工作台组成。官网承接浏览与微信扫码，小程序办理本人预约，员工工作台发布排班、办理患者服务并核算季度业绩。第8章的页面与接口按表\ref{tab_delivery_scope}落地。第3至7章保留完整业务模型，定义预约、接诊、结算及扩展业务的记录、职责和约束。\par
 {\fontsize{10.5pt}{13.2pt}\selectfont\setlength{\tabcolsep}{0pt}\renewcommand{\arraystretch}{1.08}
 \begin{longtable}{@{}p{3.04cm}@{\hspace{0.16cm}}p{5.84cm}@{\hspace{0.16cm}}p{6.24cm}@{}}
 \caption{三端交付与业务模型的衔接}\label{tab_delivery_scope}\\
@@ -5406,9 +5410,9 @@ NULL表示该字段允许为空，NN表示非空，PK表示主键，FK表示外�
 \endhead
 \bottomrule\endlastfoot
 \Cell{公开入口} & \Cell{官网与小程序读取同一门诊、医生和服务目录。官网预约按钮跳至小程序码。} & \Cell{患者进入小程序预约，电话及现场需求由员工代约。}\\[1pt]
-\Cell{预约与患者资料} & \Cell{交付UC-01至UC-07、UC-24及预约清单。预约状态为已确认、已取消、已改期。} & \Cell{UC-08、UC-09及UC-23的到诊部分接续预约结果，处理候补、提醒、到诊与未到统计。}\\[1pt]
-\Cell{诊疗与结算} & \Cell{预约详情展示项目及预约参考费用。复诊入口按原预约带入门诊、项目和医生，重新查询时段。} & \Cell{UC-10至UC-18接续实际就诊，生成治疗记录、结算单、资金和日结记录。}\\[1pt]
-\Cell{季度业绩与激励} & \Cell{交付UC-19至UC-22。月度底稿录入已归属医生的收入、用品成本和运营费用，逐项保留来源编号。} & \Cell{后续诊疗结算模块向月度底稿提供已核对的来源；季度继续按已关闭月度版本核算。}\\[1pt]
+\Cell{预约与患者资料} & \Cell{患者预约、改期和取消；前台用同一号源代约，在预约详情登记到诊或未到。预约状态与到诊状态分别记录。} & \Cell{候补、自动提醒及集中分析按UC-08和UC-23扩展。}\\[1pt]
+\Cell{诊疗与结算} & \Cell{前台登记实际医生；医生确认治疗和耗材，前台按已确认项目出单、登记线下收款，总部查看门诊与医生报表。} & \Cell{分阶段治疗计划、渠道退款、跨店代收和正式日结按第6章接续。}\\[1pt]
+\Cell{季度业绩与激励} & \Cell{结算单、耗材和门诊月度费用形成医生明细及季度预估；已结束月份可生成待复核底稿。} & \Cell{季度快照按已关闭版本计算和审批，个人份额用于登记发放。}\\[1pt]
 \end{longtable}
 }
 \subsection{总体架构与技术选择}
@@ -5644,6 +5648,9 @@ Postgre\allowbreak{}SQL时间范围与排斥约束用于同一资源区间冲突
 \Cell{{/\allowbreak{}patients}} & \Cell{GET、POST {/\allowbreak{}staff/\allowbreak{}patients}；POST {/\allowbreak{}staff/\allowbreak{}patients/\allowbreak{}\{id\}/\allowbreak{}invitations}。} & \Cell{搜索、核对、新建档案与签发关联凭证；选择患者进入代约。}\\[1pt]
 \Cell{{/\allowbreak{}booking}} & \Cell{GET {/\allowbreak{}booking-\allowbreak{}policy}、{/\allowbreak{}booking-\allowbreak{}slots}；POST {/\allowbreak{}booking-\allowbreak{}holds}、{/\allowbreak{}appointments/\allowbreak{}confirm}。} & \Cell{核对患者后选门诊、项目、医生与时段，按占位倒计时确认。改期带原预约编号及版本。}\\[1pt]
 \Cell{{/\allowbreak{}resources/\allowbreak{}\{kind\}}} & \Cell{读取目录；POST {/\allowbreak{}staff/\allowbreak{}\{kind\}}；PUT {/\allowbreak{}staff/\allowbreak{}\{kind\}/\allowbreak{}\{id\}}。} & \Cell{按门诊维护门诊、医生、服务、牙椅及资质。编辑已有记录时提交版本。}\\[1pt]
+\Cell{{/\allowbreak{}visits}} & \Cell{GET {/\allowbreak{}staff/\allowbreak{}visits}及详情；PUT 登记到诊、确认实际治疗和补记耗材；POST 生成结算单及登记收款。} & \Cell{从预约详情进入，接诊台按日期读取到诊和未到；医生核对并确认本人接诊的项目。}\\[1pt]
+\Cell{{/\allowbreak{}visit-\allowbreak{}report}} & \Cell{GET {/\allowbreak{}staff/\allowbreak{}visit-\allowbreak{}report}。} & \Cell{总部按门诊、医生或两者组合查看完成就诊数、应收和实收。}\\[1pt]
+\Cell{{/\allowbreak{}visit-\allowbreak{}profit}} & \Cell{GET {/\allowbreak{}compensation/\allowbreak{}visit-\allowbreak{}profit}；GET、PUT 运营费用；POST 从就诊生成月度底稿。} & \Cell{店长录入所属门诊费用。总部查看全部门诊、医生净利润和激励基金预估。}\\[1pt]
 \Cell{{/\allowbreak{}compensation}} & \Cell{GET {/\allowbreak{}compensation/\allowbreak{}context}、{/\allowbreak{}compensation/\allowbreak{}months}、{/\allowbreak{}compensation/\allowbreak{}quarters}、{/\allowbreak{}compensation/\allowbreak{}me}。} & \Cell{总部查看季度和来源，店长查看授权门诊月份，医生查看本人奖金与发放。}\\[1pt]
 \Cell{{/\allowbreak{}staff/\allowbreak{}accounts}} & \Cell{员工账号使用 {/\allowbreak{}staff/\allowbreak{}accounts}，员工档案使用 {/\allowbreak{}staff/\allowbreak{}profiles}，均支持查询、新建和更新。} & \Cell{总部维护账号、人员资料及岗位授权，支持停用和重置临时密码。}\\[1pt]
 \end{longtable}
@@ -5659,17 +5666,20 @@ Postgre\allowbreak{}SQL时间范围与排斥约束用于同一资源区间冲突
 \Cell{\bfseries 岗位} & \Cell{\bfseries 工作入口} & \Cell{\bfseries 操作范围}\\\midrule
 \endhead
 \bottomrule\endlastfoot
-\Cell{前台} & \Cell{预约总览、排班、患者档案及代约。} & \Cell{在授权门诊核对患者、建档、签发关联凭证、代约和处理改期取消。}\\[1pt]
-\Cell{医生} & \Cell{我的预约、我的排班、本人激励。} & \Cell{查看本人预约与班次，查询已批准的个人份额和发放记录。}\\[1pt]
-\Cell{店长} & \Cell{预约、排班、患者服务、门诊资源与经营概览。} & \Cell{在所属门诊组织排班、维护授权资源、查看月度账证与核算进度。}\\[1pt]
-\Cell{总部} & \Cell{全门诊预约和资源、员工账号与档案、季度经营。} & \Cell{统一维护目录、员工及岗位，汇总季度来源；制表、独立复核与发放按用例办理。}\\[1pt]
+\Cell{前台} & \Cell{预约总览、接诊台、排班、患者档案及代约。} & \Cell{在授权门诊登记到诊和实际接诊医生、出单与收款，并处理代约和档案关联。}\\[1pt]
+\Cell{医生} & \Cell{我的预约、接诊台、我的排班、本人激励。} & \Cell{确认本人接诊的治疗项目及耗材，查询个人已批准份额和发放记录。}\\[1pt]
+\Cell{店长} & \Cell{预约、排班、患者服务、门诊资源与经营概览。} & \Cell{组织本店排班，登记月度运营费用、查看成本分摊并提交底稿复核。}\\[1pt]
+\Cell{总部} & \Cell{全门诊预约和资源、员工账号与档案、季度经营。} & \Cell{按门诊和医生查看经营报表，核对跨店利润和季度基金，复核底稿并登记发放。}\\[1pt]
 \end{longtable}
 }
 
 预约总览进入时选中北京时间当天，可按日期、门诊及状态查询，并在分页列表和按医生分组的单日日程之间切换。跨日预约按开始时间归入当天。详情显示预约编号、时段、门诊、医生、患者和变更事件。列表的预约总数取接口总数，当前页确认数及涉及医生数取当前页记录。日程按所选日期加载多页数据，统计基于已加载记录。页面可见时在一次刷新完成5秒后再刷新，保留日期、筛选、分页和详情；后台标签页及取消提交期间暂停自动刷新。日程加载不完整时标明并提示刷新。\par
 前台代约沿用同一号源、占位和命令回执流程。先按姓名或电话核对患者，列表展示脱敏电话、出生年份及账号关联状态，再选择门诊、项目、医生及时间。排班发布后，小程序和员工端均可从号源查询看到新时段。\par
 资源页按门诊组织医生、项目和牙椅；门诊公开信息可维护简介和营业时间。医生特长用于展示，发布班次时默认选中门诊项目。系统根据门诊、排班和占用返回时段，界面按加载、无结果和失败分别提示。\par
-经营页面按季度和授权门诊筛选。经营总览从已关闭月份生成收入、用品成本、运营费用及净利润的指标、月度趋势和门诊对照。月度底稿按门诊与月份显示缺失、草稿和已关闭，底稿录入医生、三项金额和对应凭据编号。总部另有季度页，详情分个人分配与发放、医生门诊明细和月份来源。医生从“我的激励”查看已批准的个人份额、已发金额及余额。\par
+接诊台按北京时间列出当日已登记就诊。前台在有效预约开始前两小时内或开始后登记到诊，在预约时段结束后确认未到。患者迟到时可将未到改为到诊；治疗确认前可换接诊医生。已登记到诊结果的预约锁定改期和取消。\par
+医生在接诊台填写实际项目、数量及确认单价，登记每项耗材的用量和单位成本，或确认本次未使用耗材。已完成但缺耗材确认的旧就诊，由实际接诊医生补记。前台用已确认项目出单，按实收登记现金、微信、支付宝、银行卡或转账。非现金收款填写凭证编号；分次收款相加不得超过应收，同号重试返回原结果。\par
+总部经营报表以北京时间按日期查询，完成就诊按治疗确认日，应收按出单日，实收按收款登记日。门诊汇总按就诊门诊，医生汇总按实际接诊医生。成本与季度利润页面把已出单收入和耗材按治疗完成日期归月。门诊以月登记房租、水电及公共服务等费用，按同一门诊同月各医生的收入占比分摊；整月无收入但有完成就诊时按完成就诊次数分摊。余分按余数分配；无完成就诊的费用列为未分摊。\par
+总部合并每位医生在各店的季度收入、耗材成本和运营费用，得到净利润。所有医生的合计净利润为正时提取10\%作为基金，按各医生正净利润占比分配。当前期间显示预估；已结束月份从经营数据生成底稿，待出单、待确认耗材、欠缺费用登记或费用尚未分摊均阻止生成。独立复核关闭后成为正式季度快照的来源。医生从“我的激励”查看已批准的个人份额、发放和余额。\par
 总部维护员工账号与档案、所属门诊和岗位。员工使用临时密码登录后先设置新密码；变更员工账号授权或重置密码时撤销其会话。员工自行修改密码后保留当前会话，注销其他会话。\par
 \Needspace{208pt}
 \subsection{预约两端共用的数据契约}\label{sec_booking_client_contract}
@@ -5748,8 +5758,9 @@ Postgre\allowbreak{}SQL时间范围与排斥约束用于同一资源区间冲突
 \item 在小程序用虚构患者登录，选门诊、项目、医生、日期及号源，核对就诊人并确认。员工在授权门诊按就诊日期查询，打开详情，核对预约编号、状态、时间和门诊。
 \item 小程序改期后同时核对旧记录和新记录，再取消新记录。员工刷新后能查到相同状态及原因；原资源按规则回到可约范围。
 \item 关联已有患者档案后保持原编号。保存资料和更换头像后再次打开个人页；撤回同意后公开目录仍可浏览，受保护操作要求重新确认。
-\item 用总部、店长、前台和医生账号分别登录。总部核对跨店数据；店长和前台仅可操作授权门诊；医生仅可查本人预约和排班，且可查看本人批准的激励。
-\item 在两家演示门诊各录入一季度的月度账证，分别由不同员工关闭。总部生成季度，核对医生跨店合计、用品成本、运营费用、基金及个人份额，并检查预约参考费用未自动计入收入。
+\item 用总部、店长、前台和医生账号分别登录。总部核对跨店数据；店长和前台仅可操作授权门诊；医生核对本人预约、排班、接诊任务及已批准的个人激励。
+\item 在接诊台核对未到和已到诊两种结果，为已到诊预约更换实际医生。由该医生确认两项治疗及一项耗材，再出单并分次登记线下收款。重复出单返回同一单号，同一收款操作只登记一次，超过未收余额时拒绝保存。总部从经营报表核对门诊、实际医生、应收和实收。
+\item 给两家门诊登记月度费用，核对分摊之和等于当月费用。生成已结束月份底稿并由不同员工复核，再生成季度快照，核对净利润、10\%基金及个人份额。演示就诊、费用和发放凭证均带虚构标记。
 \end{enumerate}
 
 \subsection{端到端业务验收}

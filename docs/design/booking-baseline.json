@@ -1,9 +1,10 @@
 {
   "pdf": "1602240215.pdf",
-  "revisedAt": "2026-11-13",
+  "revisedAt": "2026-11-23",
   "pages": 309,
-  "sha256": "734dc90f3c99b59fe0db5d9b1adb5cfde0c3d94f9282abd66df16a5d123171bb",
-  "bookingFlow": "患者小程序预约→前台到店核对→医生诊疗→前台结账→总部季度核算",
+  "sha256": "c1e2ba9bb162e766866830bb92b689bf0513017d1ed168bf3fddd9c619f236d7",
+  "bookingFlow": "小程序预约 → 前台签到 → 医生确认治疗与耗材 → 前台出单并登记线下收款 → 总部查看经营与季度激励",
   "doctorServices": "所有在岗医生可承接门诊全部有效项目，特长用于介绍及选医",
-  "implementationScope": "Public catalog and mini program entry; patient profiles, privacy and avatars; shared booking and scheduling; scoped staff accounts and quarterly incentives"
+  "implementationScope": "官网与患者小程序、预约排班、到诊和实际接诊、治疗与耗材、结算与线下实收、门诊费用及季度激励",
+  "implementationCommit": "040ee091c9753fc736323ff77b09c391f792eb5a"
 }
