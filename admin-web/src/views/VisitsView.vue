@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { ElMessageBox } from 'element-plus';
-import type { Service, VisitDetail, VisitPaymentMethod, VisitSummary } from '@andrew/shared';
+import type { Service, VisitDetail, VisitMaterialInput, VisitPaymentMethod, VisitSummary } from '@andrew/shared';
 import { api, ApiError, errorText, query } from '../api';
 import { money, time, today } from '../utils';
 import { useAuth } from '../stores/auth';
@@ -16,6 +16,9 @@ const visit = ref<VisitDetail | null>(null);
 const doctors = ref<{ id: string; name: string }[]>([]);
 const services = ref<Service[]>([]);
 const doctorId = ref('');
+const materials = ref<{ name: string; unit: string; quantity: string; cost: string }[]>([]);
+const noMaterials = ref(false);
+const addMaterial = () => materials.value.push({name:'',unit:'',quantity:'1',cost:''});
 const items = ref<{ serviceId: string; quantity: number; price: string }[]>([]);
 const amount = ref('');
 const method = ref<VisitPaymentMethod>('cash');
@@ -55,6 +58,8 @@ async function load() {
   doctors.value = [];
   services.value = [];
   items.value = [];
+  materials.value = [];
+  noMaterials.value = false;
   doctorId.value = '';
   amount.value = '';
   method.value = 'cash';
@@ -134,6 +139,26 @@ async function mark(status: 'arrived' | 'no_show') {
   await submit('/attendance', 'PUT', status === 'arrived' ? { status, doctorId: doctorId.value } : { status },
     status === 'arrived' ? '已保存到诊和接诊医生。' : '已登记未到。');
 }
+function materialUsage(): VisitMaterialInput[] {
+  const usage: VisitMaterialInput[] = materials.value.map(row => {
+    const [whole, fraction = ''] = row.quantity.trim().split('.');
+    const quantityMilli = /^\d{1,4}(\.\d{1,3})?$/.test(row.quantity.trim())
+      ? Number(whole) * 1000 + Number(fraction.padEnd(3, '0')) : NaN;
+    return {name:row.name.trim(),unit:row.unit.trim(),quantityMilli,unitCostCents:cents(row.cost)};
+  });
+  if ((!usage.length && !noMaterials.value) || usage.some(row => !row.name || !row.unit ||
+    !Number.isInteger(row.quantityMilli) || row.quantityMilli < 1 || row.quantityMilli > 1000000 ||
+    !Number.isInteger(row.unitCostCents) || row.unitCostCents > 10000000)) {
+    throw new Error('请完整登记耗材用量和单位成本，或勾选本次未使用耗材。');
+  }
+  return usage;
+}
+async function backfillMaterials() {
+  let usage: VisitMaterialInput[];
+  try { usage=materialUsage(); }
+  catch(e) { error.value=errorText(e); return; }
+  await submit('/materials','PUT',{materials:usage},'耗材记录已确认。');
+}
 async function complete() {
   const appointmentId = id.value;
   const lines = items.value.map(row => ({ serviceId: row.serviceId, quantity: row.quantity, unitPriceCents: cents(row.price) }));
@@ -142,10 +167,13 @@ async function complete() {
     error.value = '请填写每项治疗的项目、数量和单价。同一项目请合并数量。';
     return;
   }
+  let usage: VisitMaterialInput[];
+  try { usage = materialUsage(); }
+  catch(e) { error.value=errorText(e); return; }
   try { await ElMessageBox.confirm('请核对实际完成的项目和单价。确认后前台可以出单。', '确认治疗'); }
   catch { return; }
   if (appointmentId !== id.value) return;
-  await submit('/treatments', 'PUT', { items: lines }, '治疗记录已确认。');
+  await submit('/treatments', 'PUT', { items: lines, materials: usage }, '治疗和耗材记录已确认。');
 }
 async function collect() {
   const appointmentId = id.value;
@@ -219,9 +247,21 @@ async function collect() {
           <el-input v-model="item.price" aria-label="单价（元）" placeholder="单价（元）" inputmode="decimal" maxlength="13" :disabled="busy"><template #append>元</template></el-input>
           <el-button :disabled="busy || items.length <= 1" @click="items.splice(index, 1)">移除</el-button>
         </div>
+        <div class="visit-actions"><el-button :disabled="busy || items.length >= 30" @click="items.push(nextItem())">添加项目</el-button></div>
+      </el-card>
+      <el-card v-if="visit.canTreat && (visit.status === 'arrived' || visit.status === 'completed' && !visit.materialsRecorded)" shadow="never">
+        <template #header><strong>{{ visit.status === 'completed' ? '补记耗材用量和成本' : '耗材用量与成本' }}</strong></template>
+        <el-checkbox v-if="!materials.length" v-model="noMaterials" :disabled="busy">本次未使用耗材</el-checkbox>
+        <div v-for="(row,index) in materials" :key="index" class="visit-item">
+          <el-input v-model="row.name" aria-label="耗材名称" placeholder="耗材名称" maxlength="100" :disabled="busy" />
+          <el-input v-model="row.unit" aria-label="耗材单位" placeholder="单位（支、包、克）" maxlength="20" :disabled="busy" />
+          <el-input v-model="row.quantity" aria-label="实际用量" placeholder="实际用量" inputmode="decimal" :disabled="busy" />
+          <el-input v-model="row.cost" aria-label="单位成本（元）" placeholder="单位成本（元）" inputmode="decimal" :disabled="busy" />
+          <el-button :disabled="busy" @click="materials.splice(index,1)">移除耗材</el-button>
+        </div>
         <div class="visit-actions">
-          <el-button :disabled="busy || items.length >= 30" @click="items.push(nextItem())">添加项目</el-button>
-          <el-button type="primary" :loading="busy" @click="complete">确认治疗</el-button>
+          <el-button :disabled="busy || materials.length >= 40 || noMaterials" @click="addMaterial">添加耗材</el-button>
+          <el-button type="primary" :loading="busy" @click="visit.status === 'completed' ? backfillMaterials() : complete()">{{ visit.status === 'completed' ? '确认耗材' : '确认治疗与耗材' }}</el-button>
         </div>
       </el-card>
       <el-card v-if="visit.treatments.length" shadow="never">
@@ -232,6 +272,14 @@ async function collect() {
           <el-table-column label="单价"><template #default="{ row }">{{ money(row.unitPriceCents) }}</template></el-table-column>
           <el-table-column label="金额"><template #default="{ row }">{{ money(row.quantity * row.unitPriceCents) }}</template></el-table-column>
         </el-table>
+        <h3>耗材成本</h3>
+        <el-table v-if="visit.materials.length" :data="visit.materials">
+          <el-table-column prop="name" label="耗材" min-width="120" />
+          <el-table-column label="用量"><template #default="{ row }">{{ row.quantityMilli / 1000 }} {{ row.unit }}</template></el-table-column>
+          <el-table-column label="单位成本"><template #default="{ row }">{{ money(row.unitCostCents) }}</template></el-table-column>
+          <el-table-column label="小计"><template #default="{ row }">{{ money(row.costCents) }}</template></el-table-column>
+        </el-table>
+        <p v-else>{{ visit.materialsRecorded ? '本次未使用耗材。' : '本次耗材用量待确认。' }}</p>
         <div v-if="visit.canManage && !visit.invoice" class="visit-actions">
           <el-button type="primary" :loading="busy" @click="submit('/invoice', 'POST', undefined, '结算单已生成。')">生成结算单</el-button>
         </div>

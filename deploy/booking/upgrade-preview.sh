@@ -65,6 +65,10 @@ trap finish EXIT
 "${compose[@]}" build web
 "${compose[@]}" run --rm --no-deps migrate
 "${compose[@]}" run --rm --no-deps provision
+if [[ ${ANDREW_PREVIEW_VISITS_DEMO:-0} == 1 ]]; then
+  "${compose[@]}" run --rm --no-deps -e NODE_ENV=development -e ANDREW_DEMO_VISITS=1 migrate \
+    node booking-api/dist/booking-api/src/cli.js demo-visits
+fi
 switched=1
 "${compose[@]}" up --no-build --no-deps -d api
 healthy=0

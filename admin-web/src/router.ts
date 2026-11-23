@@ -23,6 +23,7 @@ export const router = createRouter({
     { path: '/change-password', component: () => import('./views/ChangePasswordView.vue'), meta: { title: '修改密码' } },
     { path: '/staff/accounts', component: () => import('./views/StaffAccountsView.vue'), meta: { title: '员工账号与档案', hq: true } },
     { path: '/visits/:id?', component: () => import('./views/VisitsView.vue'), meta: { title: '接诊台' } },
+    { path: '/visit-profit', component: () => import('./views/VisitProfitView.vue'), meta: { title: '成本与季度利润', manage: true } },
     { path: '/visit-report', component: () => import('./views/VisitReportView.vue'), meta: { title: '门诊经营报表', hq: true } },
     { path: '/compensation', component: () => import('./views/CompensationView.vue'), meta: { title: '季度业绩与激励' } },
     {

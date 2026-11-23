@@ -25,6 +25,7 @@ const shown = computed(() => {
       total.completed += row.completed;
       total.billedCents += row.billedCents;
       total.collectedCents += row.collectedCents;
+      total.demoVisits = (total.demoVisits ?? 0) + (row.demoVisits ?? 0);
     } else groups.set(key, { ...row });
   }
   return [...groups.values()];
@@ -62,6 +63,7 @@ onMounted(load);
       <el-radio-button value="clinic">按门诊</el-radio-button>
       <el-radio-button value="doctor">按医生</el-radio-button>
     </el-radio-group>
+    <el-alert v-if="shown.some(row => row.demoVisits)" title="当前报表包含带标记的虚构演示就诊及收款。" type="info" :closable="false" />
     <p>就诊按治疗确认日，应收按出单日，实收按收款登记日统计。日期均为北京时间。</p>
     <el-table :data="shown" empty-text="该期间暂无就诊、出单或收款记录">
       <el-table-column v-if="group !== 'doctor'" prop="clinicName" label="门诊" min-width="175" />

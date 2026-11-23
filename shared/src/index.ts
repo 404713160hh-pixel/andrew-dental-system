@@ -81,6 +81,8 @@ export interface VisitDetail extends VisitSummary {
   canManage: boolean;
   canTreat: boolean;
   treatments: VisitTreatment[];
+  materialsRecorded: boolean;
+  materials: VisitMaterial[];
   invoice: VisitInvoice | null;
 }
 export interface VisitReportRow {
@@ -91,4 +93,61 @@ export interface VisitReportRow {
   completed: number;
   billedCents: number;
   collectedCents: number;
+  demoVisits?: number;
+}
+
+export interface VisitMaterialInput {
+  name: string;
+  unit: string;
+  quantityMilli: number;
+  unitCostCents: number;
+}
+export interface VisitMaterial extends VisitMaterialInput { id: string; costCents: number }
+export interface OperatingExpense {
+  label: string;
+  amountCents: number;
+  reference: string;
+}
+export interface OperatingExpenseMonth {
+  clinicId: string;
+  month: string;
+  rowVersion: number;
+  items: OperatingExpense[];
+}
+export interface VisitProfitRow {
+  doctorId: string;
+  doctorName: string;
+  employeeNo: string;
+  visits: number;
+  revenueCents: number;
+  materialCostCents: number;
+  expenseCents: number;
+  netProfitCents: number;
+  estimatedAwardCents?: number;
+}
+export interface VisitProfitMonth {
+  clinicId: string;
+  clinicName: string;
+  month: string;
+  expensesRecorded: boolean;
+  expenseCents: number;
+  unallocatedCents: number;
+  missingMaterials: number;
+  unbilled: number;
+  demoVisits: number;
+  rows: VisitProfitRow[];
+}
+export interface VisitProfitQuarter {
+  quarter: string;
+  months: VisitProfitMonth[];
+  doctors: VisitProfitRow[];
+  revenueCents: number;
+  materialCostCents: number;
+  expenseCents: number;
+  netProfitCents: number;
+  fundCents: number;
+  missingExpenseMonths: number;
+  missingMaterials: number;
+  unbilled: number;
+  unallocatedCents: number;
 }

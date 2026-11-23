@@ -1,10 +1,11 @@
 import type pg from 'pg';
 import type { FastifyRequest, HTTPMethods } from 'fastify';
-import type { Principal, CompensationActor, FinancialSourceInput, IncentiveAllocation, IncentivePayment } from '@andrew/shared';
+import type { Principal, CompensationActor, FinancialSourceInput, IncentiveAllocation, IncentivePayment, OperatingExpenseMonth, VisitProfitQuarter, VisitProfitRow } from '@andrew/shared';
 import { z } from 'zod';
-import { audit, hqOnly, isHq, scopeIds, staffOnly } from './auth.js';
+import { audit, clinicAccess, hqOnly, isHq, scopeIds, staffOnly } from './auth.js';
 import { one, transaction, type Db } from './db.js';
 import { requireThat } from './errors.js';
+import { operationalSource, visitProfitMonth } from './visit-profit.js';
 import { uuid, version } from './validation.js';
 
 type Shape={Params:Record<string,string>;Querystring:Record<string,string>;Body:unknown};
@@ -19,6 +20,10 @@ const monthInput=z.object({clinicId:uuid,month:monthSchema,reference,noActivity:
  if(x.noActivity?x.rows.length!==0:x.rows.length===0)c.addIssue({code:'custom',message:'零业务月份不填医生明细；其他月份至少一位医生，零金额也需明确列示'});
  if(new Set(x.rows.map(v=>v.doctorId)).size!==x.rows.length)c.addIssue({code:'custom',message:'同一医生不能重复'});
 });
+const expenseInput=z.object({
+ expectedVersion:z.number().int().min(0),
+ items:z.array(z.object({label:z.string().trim().min(1).max(100),amountCents:z.number().int().positive().max(25_000_000_000),reference}).strict()).max(40)
+}).strict();
 const expected=z.object({expectedVersion:version}).strict();
 const withReason=expected.extend({reason:reference}).strict();
 const sourceSelect=`SELECT f.id,f.doctor_id AS "doctorId",f.doctor_name AS "doctorName",f.employee_no AS "employeeNo",f.revenue_cents AS "revenueCents",f.material_cost_cents AS "materialCostCents",f.operating_expense_cents AS "operatingExpenseCents",f.revenue_reference AS "revenueReference",f.material_reference AS "materialReference",f.expense_reference AS "expenseReference" FROM doctor_financial_sources f`;
@@ -86,7 +91,119 @@ async function getQuarter(db:Db,id:string){
  const results=(await db.query(`SELECT id,doctor_id AS "doctorId",doctor_name AS "doctorName",employee_no AS "employeeNo",clinic_id AS "clinicId",clinic_name AS "clinicName",revenue_cents AS "revenueCents",material_cost_cents AS "materialCostCents",operating_expense_cents AS "operatingExpenseCents",net_profit_cents AS "netProfitCents" FROM doctor_quarter_results WHERE pool_id=$1 ORDER BY employee_no,doctor_id,clinic_name`,[id])).rows.map(r=>wire(r));
  const shares=await allocations(db,id);return {...wire(p),months,results,allocations:shares,payments:shares.flatMap(a=>a.payments)};
 }
+async function operationalMonthInputs(db:Db,clinic:{id:string;name:string},month:string) {
+ const current=await visitProfitMonth(db,clinic,month,true);
+ requireThat(current.expensesRecorded,409,'EXPENSES_REQUIRED','请先登记本月运营费用，零费用也需要确认');
+ requireThat(!current.unbilled,409,'UNBILLED_VISITS','该月还有已完成但未出单的就诊');
+ requireThat(!current.missingMaterials,409,'MATERIALS_NOT_RECORDED','该月有就诊尚未确认耗材用量');
+ requireThat(!current.unallocatedCents,409,'UNALLOCATED_EXPENSES','本月费用没有可分摊的已完成就诊');
+ const example=current.demoVisits?' · 含虚构演示账证':'';
+ return current.rows.map(row=>sourceInput.parse({
+  doctorId:row.doctorId,revenueCents:row.revenueCents,materialCostCents:row.materialCostCents,operatingExpenseCents:row.expenseCents,
+  revenueReference:month+' · 已出单就诊（按治疗完成归月）'+example,
+  materialReference:month+' · 就诊耗材用量与成本'+example,
+  expenseReference:month+' · 门诊费用按医生收入分摊（无收入时按就诊数）',
+ }));
+}
+
+async function expenseMonth(db:Db,clinicId:string,month:string):Promise<OperatingExpenseMonth> {
+ const row=await one<Pick<OperatingExpenseMonth,'items'|'rowVersion'>>(db,`SELECT items,row_version AS "rowVersion"
+  FROM clinic_monthly_expenses WHERE clinic_id=$1 AND month=$2`,[clinicId,month+'-01']);
+ return {clinicId,month,items:row?.items??[],rowVersion:row?.rowVersion??0};
+}
+
 export function registerCompensationRoutes(route:Route,pool:pg.Pool){
+ route('GET','/compensation/operating-expenses','required',async(req,user)=>{
+  const clinicId=uuid.parse(req.query.clinicId),month=monthSchema.parse(req.query.month);
+  clinicAccess(user!,clinicId,['hq','manager']);
+  return expenseMonth(pool,clinicId,month);
+ });
+ route('PUT','/compensation/operating-expenses','required',async(req,user)=>{
+  const clinicId=uuid.parse(req.query.clinicId),month=monthSchema.parse(req.query.month),input=expenseInput.parse(req.body);
+  clinicAccess(user!,clinicId,['hq','manager']);
+  requireThat(month<=chinaMonth(),400,'FUTURE_EXPENSE_MONTH','暂不能登记未来月份的费用');
+  return transaction(pool,async db=>{
+   await serialize(db);
+   requireThat(await one(db,'SELECT id FROM clinics WHERE id=$1',[clinicId]),404,'NOT_FOUND','门诊不存在');
+   const closed=await one(db,"SELECT id FROM incentive_months WHERE clinic_id=$1 AND month=$2 AND status='closed' AND reference=$3",
+    [clinicId,month+'-01',operationalSource]);
+   requireThat(!closed,409,'MONTH_CLOSED','该月核算底稿已关闭，请先由总部重开');
+   const existing=await expenseMonth(db,clinicId,month);
+   requireThat(existing.rowVersion===input.expectedVersion,409,'VERSION_CONFLICT','费用已更新，请重新加载');
+   await db.query(`INSERT INTO clinic_monthly_expenses(clinic_id,month,items,updated_by) VALUES($1,$2,$3,$4)
+    ON CONFLICT(clinic_id,month) DO UPDATE SET items=excluded.items,updated_by=excluded.updated_by,
+      row_version=clinic_monthly_expenses.row_version+1,updated_at=clock_timestamp()`,
+    [clinicId,month+'-01',JSON.stringify(input.items),user!.id]);
+   await audit(db,user!.id,'compensation.operating_expenses.saved',clinicId,req.id,{month,rowCount:input.items.length});
+   return expenseMonth(db,clinicId,month);
+  });
+ });
+ route('GET','/compensation/visit-profit','required',async(req,user)=>{
+  const scopes=managementScopes(user!),quarter=quarterSchema.parse(req.query.quarter);
+  const clinicId=req.query.clinicId?uuid.parse(req.query.clinicId):null;
+  if(clinicId) clinicAccess(user!,clinicId,['hq','manager']);
+  return transaction(pool,async db=>{
+   await db.query('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY');
+   const clinics=(await db.query<{id:string;name:string}>(`SELECT id,name FROM clinics
+    WHERE ($1::uuid[] IS NULL OR id=ANY($1)) AND ($2::uuid IS NULL OR id=$2) ORDER BY name,id`,[scopes,clinicId])).rows;
+   const months=[];
+   for(const clinic of clinics) for(const month of quarterMonths(quarter).filter(m=>m<=chinaMonth()))
+    months.push(await visitProfitMonth(db,clinic,month));
+   const grouped=new Map<string,VisitProfitRow>();
+   let revenueCents=0,materialCostCents=0,expenseCents=0,unallocatedCents=0;
+   for(const month of months){
+    expenseCents+=month.expenseCents;
+    unallocatedCents+=month.unallocatedCents;
+    for(const row of month.rows){
+     revenueCents+=row.revenueCents;
+     materialCostCents+=row.materialCostCents;
+     const sum=grouped.get(row.doctorId);
+     if(!sum) grouped.set(row.doctorId,{...row});
+     else {
+      sum.visits+=row.visits;sum.revenueCents+=row.revenueCents;sum.materialCostCents+=row.materialCostCents;
+      sum.expenseCents+=row.expenseCents;sum.netProfitCents+=row.netProfitCents;
+     }
+    }
+   }
+   const doctors=[...grouped.values()];
+   const contributions:Contribution[]=doctors.map(r=>({...r,contribution:BigInt(r.netProfitCents)}));
+   if(unallocatedCents) contributions.push({doctorId:'unallocated',doctorName:'',employeeNo:'',contribution:-BigInt(unallocatedCents)});
+   const calc=allocateIncentive(contributions);
+   const awards=new Map(calc.rows.map(r=>[r.doctorId,safe(r.amount)]));
+   const fullScope=isHq(user!)&&!clinicId;
+   const result:VisitProfitQuarter={quarter,months,doctors:doctors.map(r=>({...r,...(fullScope?{estimatedAwardCents:awards.get(r.doctorId)??0}:{})})),
+    revenueCents,materialCostCents,expenseCents,netProfitCents:safe(calc.total),fundCents:fullScope?safe(calc.fund):0,
+    missingExpenseMonths:months.filter(m=>!m.expensesRecorded).length,
+    missingMaterials:months.reduce((n,m)=>n+m.missingMaterials,0),unbilled:months.reduce((n,m)=>n+m.unbilled,0),unallocatedCents};
+   return result;
+  });
+ });
+ route('POST','/compensation/months/from-visits','required',async(req,user)=>{
+  const input=z.object({clinicId:uuid,month:monthSchema}).strict().parse(req.body);
+  completedMonth(input.month);
+  clinicAccess(user!,input.clinicId,['hq','manager']);
+  return transaction(pool,async db=>{
+   await serialize(db);
+   const a=await actor(db,user!,input.clinicId);
+   const clinic=await one<{id:string;name:string}>(db,'SELECT id,name FROM clinics WHERE id=$1',[input.clinicId]);
+   requireThat(clinic,404,'NOT_FOUND','门诊不存在');
+   const existing=await one(db,'SELECT * FROM incentive_months WHERE clinic_id=$1 AND month=$2 FOR UPDATE',[clinic.id,input.month+'-01']);
+   if(existing){
+    requireThat(existing.reference===operationalSource&&existing.status==='draft'&&existing.created_by===a.userId,409,'MONTH_DRAFT_EXISTS','此月已有底稿，请由原制表人更新系统底稿，或沿用原有账证');
+    await unreferenced(db,existing.id as string);
+   }
+   const rows=await operationalMonthInputs(db,clinic,input.month);
+   const revision=existing?Number(existing.source_revision)+1:1;
+   const m=existing??await one<{id:string}>(db,`INSERT INTO incentive_months(clinic_id,month,reference,no_activity,created_by,created_staff_id,updated_by)
+    VALUES($1,$2,$3,$4,$5,$6,$5) RETURNING id`,[clinic.id,input.month+'-01',operationalSource,!rows.length,a.userId,a.staffId]);
+   const id=m!.id as string;
+   await appendSources(db,id,revision,rows,a.userId);
+   if(existing) await db.query(`UPDATE incentive_months SET no_activity=$2,source_revision=$3,row_version=row_version+1,updated_at=now(),updated_by=$4 WHERE id=$1`,
+    [id,!rows.length,revision,a.userId]);
+   await audit(db,a.userId,'incentive.month.from_visits',id,req.id,{month:input.month,clinicId:clinic.id,revision});
+   return getMonth(db,id);
+  });
+ });
  route('GET','/compensation/context','required',async(_req,user)=>{
   const scopes=managementScopes(user!);
   const clinics=(await pool.query('SELECT id,name,active FROM clinics WHERE $1::uuid[] IS NULL OR id=ANY($1) ORDER BY name,id',[scopes])).rows;
@@ -103,6 +220,7 @@ export function registerCompensationRoutes(route:Route,pool:pg.Pool){
  });
  route('POST','/compensation/months','required',async(req,user)=>{
   managementScopes(user!);const input=monthInput.parse(req.body);completedMonth(input.month);
+  requireThat(input.reference!==operationalSource,400,'OPERATIONAL_SOURCE','请使用从经营数据生成底稿');
   return transaction(pool,async db=>{await serialize(db);const a=await actor(db,user!,input.clinicId);
    requireThat(await one(db,'SELECT id FROM clinics WHERE id=$1 FOR SHARE',[input.clinicId]),400,'INVALID_CLINIC','门诊不存在');
    const m=await one<{id:string}>(db,`INSERT INTO incentive_months(clinic_id,month,reference,no_activity,created_by,created_staff_id,updated_by) VALUES($1,$2,$3,$4,$5,$6,$5) RETURNING id`,[input.clinicId,input.month+'-01',input.reference,input.noActivity,a.userId,a.staffId]);
@@ -112,6 +230,7 @@ export function registerCompensationRoutes(route:Route,pool:pg.Pool){
  route('PUT','/compensation/months/:id','required',async(req,user)=>{
   managementScopes(user!);const id=uuid.parse(req.params.id);const body=z.record(z.string(),z.unknown()).parse(req.body);const v=version.parse(body.expectedVersion);const {expectedVersion:_v,...raw}=body;const input=monthInput.parse(raw);completedMonth(input.month);
   return transaction(pool,async db=>{await serialize(db);const a=await actor(db,user!,input.clinicId);const m=await one(db,"SELECT *,to_char(month,'YYYY-MM') AS period FROM incentive_months WHERE id=$1 FOR UPDATE",[id]);requireThat(m,404,'NOT_FOUND','月份底稿不存在');
+   requireThat(m.reference!==operationalSource&&input.reference!==operationalSource,409,'OPERATIONAL_SOURCE','系统底稿须从经营数据重新生成');
    requireThat(m.clinic_id===input.clinicId&&m.period===input.month,400,'PERIOD_IDENTITY_IMMUTABLE','门诊及月份不能改写');
    requireThat(m.row_version===v,409,'VERSION_CONFLICT','月份底稿已变更');requireThat(m.status==='draft',409,'MONTH_CLOSED','关闭月份须先重开');requireThat(m.created_by===a.userId&&m.created_staff_id===a.staffId,403,'DRAFT_OWNER_REQUIRED','只能修改本人制表的草稿');await unreferenced(db,id);
    const revision=Number(m.source_revision)+1;await appendSources(db,id,revision,input.rows,user!.id);
@@ -123,6 +242,12 @@ export function registerCompensationRoutes(route:Route,pool:pg.Pool){
   return transaction(pool,async db=>{await serialize(db);const m=await one(db,'SELECT *,to_char(month,\'YYYY-MM\') AS period FROM incentive_months WHERE id=$1 FOR UPDATE',[id]);requireThat(m,404,'NOT_FOUND','月份底稿不存在');const a=await actor(db,user!,m.clinic_id as string);completedMonth(m.period as string);
    requireThat(m.row_version===input.expectedVersion,409,'VERSION_CONFLICT','月份底稿已变更');requireThat(m.status==='draft',409,'STATUS_CONFLICT','该月已关闭');requireThat(a.userId!==m.created_by&&a.staffId!==m.created_staff_id,403,'INDEPENDENT_REVIEW_REQUIRED','复核人与制表人须为不同账号及不同员工');
    const rows=await sourceRows(db,id,m.source_revision as number);requireThat(m.no_activity?rows.length===0:rows.length>0,409,'SOURCE_INCOMPLETE','财务明细与零业务声明不一致');
+   if(m.reference===operationalSource){
+    const clinic=(await one<{id:string;name:string}>(db,'SELECT id,name FROM clinics WHERE id=$1',[m.clinic_id]))!;
+    const amounts=await operationalMonthInputs(db,clinic,m.period as string);
+    requireThat(amounts.length===rows.length&&amounts.every(a=>rows.some(r=>r.doctorId===a.doctorId&&r.revenueCents===a.revenueCents
+      &&r.materialCostCents===a.materialCostCents&&r.operatingExpenseCents===a.operatingExpenseCents)),409,'STALE_OPERATIONAL_SOURCE','经营数据已变化，请制表人重新生成底稿');
+   }
    const range=monthRange(m.period as string);const doctors=(await db.query<{doctor_id:string}>("SELECT DISTINCT doctor_id FROM doctor_shifts WHERE clinic_id=$1 AND status='published' AND starts_at<$3::timestamptz AND ends_at>$2::timestamptz",[m.clinic_id,...range])).rows;
    const ids=new Set(rows.map(r=>r.doctorId));requireThat(doctors.every(d=>ids.has(d.doctor_id)),409,'DOCTOR_SOURCE_INCOMPLETE','已发布出诊的医生须逐人列明财务数据；零收入也须填写三类零金额依据');
    await db.query("UPDATE incentive_months SET status='closed',closed_by=$2,closed_staff_id=$3,closed_at=now(),row_version=row_version+1,updated_by=$2,updated_at=now() WHERE id=$1",[id,a.userId,a.staffId]);await audit(db,user!.id,'incentive.month.closed',id,req.id,{reviewerStaffId:a.staffId});return getMonth(db,id);

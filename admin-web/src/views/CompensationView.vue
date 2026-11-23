@@ -57,7 +57,7 @@ const monthForm = reactive({ clinicId: '', month: '', reference: '', noActivity:
 function addRow() { monthForm.rows.push({ doctorId: '', revenue: '0.00', material: '0.00', expense: '0.00', revenueReference: '', materialReference: '', expenseReference: '' }); }
 function openMonth(item?: IncentiveMonth, chosenClinic?: string, chosenMonth?: string) {
   editingMonth.value = item || null;
-  monthReadOnly.value = !context.value?.actor || (!!item && (item.status !== 'draft' || item.createdBy !== auth.user?.id));
+  monthReadOnly.value = item?.reference === '系统汇总：就诊、耗材和门诊运营费用' || !context.value?.actor || (!!item && (item.status !== 'draft' || item.createdBy !== auth.user?.id));
   Object.assign(monthForm, { clinicId: item?.clinicId || chosenClinic || clinicId.value || context.value?.clinics[0]?.id || '',
     month: item?.month || chosenMonth || monthOptions.value[0] || '', reference: item?.reference || '', noActivity: item?.noActivity || false,
     rows: item?.rows.map(row => ({ doctorId: row.doctorId, revenue: centsToYuan(row.revenueCents), material: centsToYuan(row.materialCostCents), expense: centsToYuan(row.operatingExpenseCents), revenueReference: row.revenueReference, materialReference: row.materialReference, expenseReference: row.expenseReference })) || [] });

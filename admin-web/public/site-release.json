@@ -1,5 +1,5 @@
 {
-  "release": "andrew-visit-billing-20261123-r1",
+  "release": "andrew-visit-profit-20261123-r1",
   "branch": "feat/postgres-booking-20261022",
-  "scope": "visit attendance, treatment, offline billing, and headquarters reporting"
+  "scope": "visit material costs, clinic expenses, quarterly profit and incentive preview"
 }

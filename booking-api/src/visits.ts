@@ -5,6 +5,7 @@ import type { Principal, VisitDetail, VisitReportRow, VisitSummary } from '@andr
 import { audit, clinicAccess, hqOnly, scopeIds, staffOnly } from './auth.js';
 import { one, transaction, type Db } from './db.js';
 import { requireThat } from './errors.js';
+import { operationalSource } from './visit-profit.js';
 import { date, uuid } from './validation.js';
 
 type Request = FastifyRequest<{ Params: Record<string, string>; Querystring: Record<string, string>; Body: unknown }>;
@@ -15,12 +16,19 @@ const attendanceInput = z.discriminatedUnion('status', [
   z.object({ status: z.literal('arrived'), doctorId: uuid }).strict(),
   z.object({ status: z.literal('no_show') }).strict(),
 ]);
+const materialsInput = z.array(z.object({
+    name: z.string().trim().min(1).max(100), unit: z.string().trim().min(1).max(20),
+    quantityMilli: z.number().int().min(1).max(1000000), unitCostCents: z.number().int().min(0).max(10000000),
+  }).strict()).max(40);
 const treatmentInput = z.object({
   items: z.array(z.object({
     serviceId: uuid, quantity: z.number().int().min(1).max(99),
     unitPriceCents: z.number().int().min(0).max(100000000),
   }).strict()).min(1).max(30),
+  materials: materialsInput.optional(),
 }).strict().refine(x => new Set(x.items.map(item => item.serviceId)).size === x.items.length, '同一个项目请合并数量');
+const materialKey = (row: { name: string; unit: string; quantityMilli: number; unitCostCents: number }) =>
+  JSON.stringify([row.name,row.unit,row.quantityMilli,row.unitCostCents]);
 const paymentInput = z.object({
   amountCents: z.number().int().positive().max(297000000000),
   method: z.enum(paidMethods),
@@ -31,13 +39,13 @@ const summarySql = `SELECT r.doctor_id AS "bookedDoctorId", a.id AS "appointment
   c.id AS "clinicId", c.name AS "clinicName", booked.name AS "bookedDoctorName",
   r.starts_at AS "startsAt", r.ends_at AS "endsAt", r.service_id AS "scheduledServiceId",
   a.status AS "appointmentStatus", v.status, v.doctor_id AS "doctorId", actual.name AS "doctorName",
-  v.arrived_at AS "arrivedAt", v.completed_at AS "completedAt",
+  v.arrived_at AS "arrivedAt", v.completed_at AS "completedAt", coalesce(v.materials_recorded,false) AS "materialsRecorded",
   r.starts_at - interval '2 hours' AS "attendanceAllowedAt"
  FROM appointments a JOIN resource_reservations r ON r.id=a.reservation_id
  JOIN patients p ON p.id=a.patient_id JOIN clinics c ON c.id=r.clinic_id
  JOIN staff booked ON booked.id=r.doctor_id
  LEFT JOIN visits v ON v.appointment_id=a.id LEFT JOIN staff actual ON actual.id=v.doctor_id`;
-type BaseVisit = Omit<VisitDetail, 'canManage' | 'canTreat' | 'treatments' | 'invoice'> & { bookedDoctorId: string };
+type BaseVisit = Omit<VisitDetail, 'canManage' | 'canTreat' | 'treatments' | 'materials' | 'invoice'> & { bookedDoctorId: string };
 
 function permissions(user: Principal, row: BaseVisit) {
   staffOnly(user);
@@ -70,9 +78,20 @@ async function details(db: Db, id: string, user: Principal): Promise<VisitDetail
   const payments = invoice ? (await db.query<NonNullable<VisitDetail['invoice']>['payments'][number]>(`SELECT id,
     amount_cents::float8 AS "amountCents", method, reference, received_at AS "receivedAt"
     FROM visit_payments WHERE invoice_id=$1 ORDER BY received_at,id`, [invoice.id])).rows : [];
-  return { ...visit, treatments, invoice: invoice ? { ...invoice, payments } : null };
+  const materials = visit.canTreat || visit.canManage ? (await db.query<VisitDetail['materials'][number]>(`SELECT id,name,unit,
+    quantity_milli AS "quantityMilli",unit_cost_cents AS "unitCostCents",cost_cents::float8 AS "costCents"
+    FROM visit_materials WHERE appointment_id=$1 ORDER BY name,id`, [id])).rows : [];
+  return { ...visit, treatments, materials, invoice: invoice ? { ...invoice, payments } : null };
 }
 
+async function saveMaterials(db: Db,id: string,materials: z.infer<typeof materialsInput>) {
+  for (const material of materials) await db.query(`INSERT INTO visit_materials(appointment_id,name,unit,quantity_milli,unit_cost_cents)
+    VALUES($1,$2,$3,$4,$5)`, [id,material.name,material.unit,material.quantityMilli,material.unitCostCents]);
+}
+function sameMaterials(saved: VisitDetail, materials: z.infer<typeof materialsInput>) {
+  return saved.materialsRecorded && JSON.stringify(materials.map(materialKey).sort())
+    === JSON.stringify(saved.materials.map(materialKey).sort());
+}
 export function registerVisitRoutes(route: Route, pool: pg.Pool) {
   route('GET', '/staff/visits', 'required', async (req, user) => {
     staffOnly(user!);
@@ -124,14 +143,15 @@ export function registerVisitRoutes(route: Route, pool: pg.Pool) {
   });
   route('PUT', '/staff/visits/:id/treatments', 'required', async (req, user) => {
     const id = uuid.parse(req.params.id);
-    const { items } = treatmentInput.parse(req.body);
+    const { items, materials } = treatmentInput.parse(req.body);
     return transaction(pool, async db => {
       const visit = await findVisit(db, id, user!, true);
       requireThat(visit.canTreat, 403, 'TREATMENT_FORBIDDEN', '只有实际接诊医生可以确认治疗');
       if (visit.status === 'completed') {
         const existing = await details(db, id, user!);
         requireThat(existing.treatments.length === items.length && items.every(item => existing.treatments.some(saved =>
-          saved.serviceId === item.serviceId && saved.quantity === item.quantity && saved.unitPriceCents === item.unitPriceCents)),
+          saved.serviceId === item.serviceId && saved.quantity === item.quantity && saved.unitPriceCents === item.unitPriceCents))
+          && (materials === undefined || sameMaterials(existing,materials)),
         409, 'VISIT_COMPLETED', '治疗记录已确认');
         return existing;
       }
@@ -142,9 +162,32 @@ export function registerVisitRoutes(route: Route, pool: pg.Pool) {
           WHERE s.id=$2 AND cs.clinic_id=$3 AND s.active`, [id, item.serviceId, visit.clinicId, item.quantity, item.unitPriceCents]);
         requireThat(result.rowCount === 1, 400, 'INVALID_TREATMENT_SERVICE', '治疗项目必须属于就诊门诊');
       }
-      await db.query("UPDATE visits SET status='completed',completed_at=clock_timestamp() WHERE appointment_id=$1", [id]);
+      await saveMaterials(db,id,materials??[]);
+      await db.query("UPDATE visits SET status='completed',completed_at=clock_timestamp(),materials_recorded=$2 WHERE appointment_id=$1", [id,materials !== undefined]);
       await audit(db, user!.id, 'visit.treatment_completed', id, req.id, { items: items.length });
       return details(db, id, user!);
+    });
+  });
+  route('PUT','/staff/visits/:id/materials','required',async(req,user)=>{
+    const id=uuid.parse(req.params.id);
+    const { materials }=z.object({materials:materialsInput}).strict().parse(req.body);
+    return transaction(pool,async db=>{
+      await db.query("SELECT pg_advisory_xact_lock(hashtextextended('andrew.compensation.periods',0))");
+      const visit=await findVisit(db,id,user!,true);
+      requireThat(visit.canTreat,403,'TREATMENT_FORBIDDEN','只有实际接诊医生可以补记耗材');
+      requireThat(visit.status==='completed',409,'TREATMENT_NOT_COMPLETED','请先确认治疗');
+      if(visit.materialsRecorded){
+        const existing=await details(db,id,user!);
+        requireThat(sameMaterials(existing,materials),409,'MATERIALS_ALREADY_RECORDED','耗材用量已确认');
+        return existing;
+      }
+      requireThat(!await one(db,`SELECT id FROM incentive_months WHERE clinic_id=$1
+        AND month=date_trunc('month',$2::timestamptz AT TIME ZONE 'Asia/Shanghai')::date AND reference=$3 AND status='closed'`,
+        [visit.clinicId,visit.completedAt,operationalSource]),409,'MONTH_CLOSED','本月核算底稿已关闭，请由总部先处理');
+      await saveMaterials(db,id,materials);
+      await db.query('UPDATE visits SET materials_recorded=true WHERE appointment_id=$1',[id]);
+      await audit(db,user!.id,'visit.materials_completed',id,req.id,{items:materials.length});
+      return details(db,id,user!);
     });
   });
   route('POST', '/staff/visits/:id/invoice', 'required', async (req, user) => {
@@ -201,6 +244,7 @@ export function registerVisitRoutes(route: Route, pool: pg.Pool) {
       WHERE p.received_at>=b.from_ts AND p.received_at<b.to_ts
     )
     SELECT c.id AS "clinicId",c.name AS "clinicName",s.id AS "doctorId",s.name AS "doctorName",
+      count(DISTINCT f.appointment_id) FILTER (WHERE a.appointment_no LIKE 'DEMO-VISIT-%')::integer AS "demoVisits",
       sum(f.completed)::float8 AS completed,sum(f.billed)::float8 AS "billedCents",sum(f.collected)::float8 AS "collectedCents"
     FROM facts f JOIN visits v ON v.appointment_id=f.appointment_id JOIN appointments a ON a.id=f.appointment_id
     JOIN resource_reservations r ON r.id=a.reservation_id JOIN clinics c ON c.id=r.clinic_id JOIN staff s ON s.id=v.doctor_id

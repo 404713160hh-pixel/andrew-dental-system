@@ -105,6 +105,7 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
         <section class="navigation-group" aria-labelledby="nav-business">
           <h2 id="nav-business" class="nav-label">经营管理</h2>
           <router-link v-if="auth.isHq" to="/visit-report"><el-icon><OfficeBuilding /></el-icon><span class="navigation-text">门诊经营报表</span></router-link>
+          <router-link v-if="auth.canManage" to="/visit-profit"><el-icon><Coin /></el-icon><span class="navigation-text">成本与季度利润</span></router-link>
           <router-link to="/compensation"><el-icon><Coin /></el-icon><span class="navigation-text">{{ compensationTitle }}</span></router-link>
         </section>
         <section class="navigation-group" aria-labelledby="nav-account">
