@@ -4,7 +4,7 @@ set -euo pipefail
 umask 077
 EXPECTED=${1:?Usage: deploy-public-web.sh FULL_COMMIT_SHA}
 [[ "$EXPECTED" =~ ^[0-9a-f]{40}$ ]] || { echo 'Expected a full commit SHA' >&2; exit 2; }
-BRANCH=codex/deploy-public-site-20261110
+BRANCH=${ANDREW_WEB_RELEASE_BRANCH:-codex/deploy-public-site-20261110}
 BASE=/opt/andrew-preview
 CONFIG=/opt/andrew-config/.env.public
 RELEASE="/opt/andrew-web-${EXPECTED:0:12}"
@@ -69,7 +69,7 @@ done
 docker exec andrew-preview-web-1 nginx -t
 docker exec andrew-preview-https-1 nginx -t
 docker exec andrew-preview-https-1 nginx -s reload
-curl -fsS --retry 3 --max-time 20 "https://andrewdental.top/site-release.json?v=$EXPECTED" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d["release"]=="andrew-public-20261110-r1"; print(json.dumps(d))'
+test "$(curl -fsS --retry 3 --max-time 20 "https://andrewdental.top/site-release.json?v=$EXPECTED")" = "$(cat "$RELEASE/admin-web/public/site-release.json")"
 curl -fsS --max-time 20 https://andrewdental.top/api/v1/health
 test "$(docker inspect --format '{{.Id}}' andrew-preview-api-1)" = "$API_BEFORE"
 test "$(docker inspect --format '{{.Id}}' andrew-preview-postgres-1)" = "$PG_BEFORE"

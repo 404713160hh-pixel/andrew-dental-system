@@ -5,6 +5,7 @@ import { one,transaction } from './db.js';
 import { audit } from './auth.js';
 import { insertPatient,saveAllergies } from './repositories/catalog.js';
 import { referenceInputs } from './demo-reference-data.js';
+import { QUERY_MAX_DAYS } from './query-window.js';
 
 type Kind='clinic'|'doctor'|'patient'|'service'|'qualification'|'treatment_reference';
 type Marker={record_key:string;record_kind:Kind;record_id:string;enriched_at:Date|null};
@@ -216,9 +217,16 @@ export async function enrichDemoData(pool:pg.Pool,environment:'development'|'tes
     ensure(ref,'A non-demo reference uses the reserved reference code; no reference was overwritten');await register(db,key,'treatment_reference',ref.id,true);referencesAdded++;
    }
   }
+  const {addedShifts,keptExistingShifts}=await addDemoShifts(db,doctorIds,clinicIds,hq.id,transferBufferMinutes,28);
+  await audit(db,hq.id,'demo.dataset.enriched',null,'development-demo-2026',{doctors:doctorIds.length,patients:patientIds.length,consultationServices:Object.keys(serviceIds).length,treatmentReferences:referenceInputs.length,addedShifts});
+  return {fictional:true,doctors:doctorIds.length,patients:patientIds.length,clinics:clinicIds.length,consultationServices:Object.keys(serviceIds).length,treatmentReferences:referenceInputs.length,referencesAdded,addedShifts,keptExistingShifts,referenceYear:2026,sourceLabel};
+ });
+}
+
+async function addDemoShifts(db:PoolClient,doctorIds:string[],clinicIds:string[],actorId:string,transferBufferMinutes:number,horizon:number){
   for(const doctorId of [...doctorIds].sort())await db.query('SELECT id FROM staff WHERE id=$1 FOR UPDATE',[doctorId]);
   const today=new Date(Date.now()+8*3600000).toISOString().slice(0,10);let addedShifts=0;let keptExistingShifts=0;
-  for(let day=0;day<=28;day++){
+  for(let day=0;day<=horizon;day++){
    const date=new Date(Date.parse(today+'T00:00:00Z')+day*86400000).toISOString().slice(0,10);
    for(let i=0;i<doctorIds.length;i++){
     const doctorId=doctorIds[i]!;let clinicIndex=i<2?i:(i+day)%2;
@@ -244,11 +252,36 @@ export async function enrichDemoData(pool:pg.Pool,environment:'development'|'tes
      ORDER BY v.id FOR SHARE OF v`,[clinicId,Date.parse(end)-Date.parse(start)]);
     available.push(...availableServices.rows.map(service=>service.id));
     if(!available.length)continue;
-    const shift=await one<{id:string}>(db,'INSERT INTO doctor_shifts(clinic_id,doctor_id,starts_at,ends_at,created_by)VALUES($1,$2,$3,$4,$5)RETURNING id',[clinicId,doctorId,start,end,hq.id]);
+    const shift=await one<{id:string}>(db,'INSERT INTO doctor_shifts(clinic_id,doctor_id,starts_at,ends_at,created_by)VALUES($1,$2,$3,$4,$5)RETURNING id',[clinicId,doctorId,start,end,actorId]);
     for(const serviceId of available)await db.query('INSERT INTO doctor_shift_services(shift_id,service_id)VALUES($1,$2)',[shift!.id,serviceId]);addedShifts++;
    }
   }
-  await audit(db,hq.id,'demo.dataset.enriched',null,'development-demo-2026',{doctors:doctorIds.length,patients:patientIds.length,consultationServices:Object.keys(serviceIds).length,treatmentReferences:referenceInputs.length,addedShifts});
-  return {fictional:true,doctors:doctorIds.length,patients:patientIds.length,clinics:clinicIds.length,consultationServices:Object.keys(serviceIds).length,treatmentReferences:referenceInputs.length,referencesAdded,addedShifts,keptExistingShifts,referenceYear:2026,sourceLabel};
+  return {addedShifts,keptExistingShifts};
+}
+
+/** Refresh supply on an established fictional dataset without changing its catalog or accounts. */
+export async function refreshDemoShifts(pool:pg.Pool,environment:'development'|'test'|'production',transferBufferMinutes:number,enabled:boolean){
+ ensure(environment!=='production'&&enabled,'Explicit demo shift maintenance is required');
+ return transaction(pool,async db=>{
+  await db.query("SELECT pg_advisory_xact_lock(hashtextextended('andrew.booking.demo.2026',0))");
+  const clinicIds:string[]=[];
+  for(const key of ['seed:clinic:a','seed:clinic:b']){
+   const entry=await marker(db,key,'clinic');
+   const clinic=entry&&await one<{id:string;address:string}>(db,'SELECT id,address FROM clinics WHERE id=$1 AND active FOR SHARE',[entry.record_id]);
+   ensure(clinic&&/虚构|课程演示/.test(clinic.address),'Expected an active fictional clinic');
+   clinicIds.push(clinic.id);
+  }
+  const doctorIds:string[]=[];
+  for(const profile of doctorProfiles){
+   const entry=await marker(db,profile.key,'doctor');
+   const doctor=entry&&await one<{id:string}>(db,'SELECT id FROM staff WHERE id=$1 AND is_demo AND is_dentist',[entry.record_id]);
+   ensure(doctor,'Expected a provenance-marked fictional doctor');
+   doctorIds.push(doctor.id);
+  }
+  const actor=await one<{id:string}>(db,"SELECT u.id FROM users u JOIN role_assignments r ON r.user_id=u.id WHERE u.username='hq' AND u.active AND r.role='hq'");
+  ensure(actor,'Synthetic headquarters actor is unavailable');
+  const result=await addDemoShifts(db,doctorIds,clinicIds,actor.id,transferBufferMinutes,QUERY_MAX_DAYS);
+  await audit(db,actor.id,'demo.shifts.refreshed',null,'course-demo-shifts',{...result,horizonDays:QUERY_MAX_DAYS});
+  return {...result,horizonDays:QUERY_MAX_DAYS};
  });
 }
