@@ -50,6 +50,7 @@ BEGIN
   EXECUTE format('GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO %I', runtime_user);
   EXECUTE format('REVOKE INSERT, UPDATE ON public.schema_migrations FROM %I', runtime_user);
   EXECUTE format('REVOKE UPDATE ON public.audit_events, public.patient_privacy_consents FROM %I', runtime_user);
+  EXECUTE format('REVOKE UPDATE ON public.visit_treatments, public.visit_invoices, public.visit_payments FROM %I', runtime_user);
   -- Consent records remain append-only except for recording withdrawal time.
   EXECUTE format('GRANT UPDATE (revoked_at) ON public.patient_privacy_consents TO %I', runtime_user);
 END

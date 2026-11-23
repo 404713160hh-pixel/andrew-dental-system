@@ -84,6 +84,7 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
           <router-link to="/appointments"
             ><el-icon><Calendar /></el-icon><span class="navigation-text">{{ doctorView ? '我的预约' : '预约总览' }}</span></router-link
           >
+          <router-link to="/visits"><el-icon><FirstAidKit /></el-icon><span class="navigation-text">接诊台</span></router-link>
           <router-link to="/shifts"
             ><el-icon><Clock /></el-icon><span class="navigation-text">{{ doctorView ? '我的排班' : '医生排班' }}</span></router-link
           >
@@ -103,6 +104,7 @@ onUnmounted(() => window.removeEventListener('andrew:unauthorized', expired));
         </section>
         <section class="navigation-group" aria-labelledby="nav-business">
           <h2 id="nav-business" class="nav-label">经营管理</h2>
+          <router-link v-if="auth.isHq" to="/visit-report"><el-icon><OfficeBuilding /></el-icon><span class="navigation-text">门诊经营报表</span></router-link>
           <router-link to="/compensation"><el-icon><Coin /></el-icon><span class="navigation-text">{{ compensationTitle }}</span></router-link>
         </section>
         <section class="navigation-group" aria-labelledby="nav-account">

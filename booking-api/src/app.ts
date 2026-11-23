@@ -18,6 +18,7 @@ import { saveResource,publishShift,cancelShift } from './services/resources.js';
 import { isQueryDateAllowed,queryWindow,QUERY_MAX_DAYS } from './query-window.js';
 import { registerStaffAccountRoutes } from './staff-accounts.js';
 import { registerStaffProfileRoutes } from './staff-profiles.js';
+import { registerVisitRoutes } from './visits.js';
 import { registerCompensationRoutes } from './compensation.js';
 import { registerPatientInviteRoutes } from './patient-invites.js';
 import { registerDoctorProfileRoutes } from './doctor-profile.js';
@@ -57,6 +58,7 @@ export async function createApp(config:Config,pool:pg.Pool,logging=false){
  registerStaffAccountRoutes(route,pool);
  registerStaffProfileRoutes(route,pool);
  registerCompensationRoutes(route,pool);
+ registerVisitRoutes(route,pool);
  registerPatientInviteRoutes(route,pool,config);
  registerDoctorProfileRoutes(route,pool);
  route('GET','/health','none',async()=>{await pool.query('SELECT 1');return {status:'ok',database:'postgresql'};});

@@ -36,3 +36,59 @@ export interface Page<T> { items: T[]; total: number; page: number; pageSize: nu
 export interface ApiSuccess<T> { data: T; requestId: string }
 export interface ApiErrorResponse { error: { code: string; message: string; details?: unknown }; requestId: string }
 export interface CommandResult { status: 'completed' | 'not_found'; result?: Appointment }
+
+export type VisitStatus = 'arrived' | 'no_show' | 'completed';
+export type VisitPaymentMethod = 'cash' | 'wechat' | 'alipay' | 'card' | 'transfer';
+export interface VisitTreatment {
+  serviceId: string;
+  serviceName: string;
+  unit: string;
+  quantity: number;
+  unitPriceCents: number;
+}
+export interface VisitPayment {
+  id: string;
+  amountCents: number;
+  method: VisitPaymentMethod;
+  reference: string;
+  receivedAt: string;
+}
+export interface VisitInvoice {
+  id: string;
+  totalCents: number;
+  issuedAt: string;
+  payments: VisitPayment[];
+}
+export interface VisitSummary {
+  appointmentId: string;
+  appointmentNo: string;
+  patientName: string;
+  clinicId: string;
+  clinicName: string;
+  bookedDoctorName: string;
+  startsAt: string;
+  appointmentStatus: AppointmentStatus;
+  status: VisitStatus | null;
+  doctorId: string | null;
+  doctorName: string | null;
+  arrivedAt: string | null;
+  completedAt: string | null;
+}
+export interface VisitDetail extends VisitSummary {
+  scheduledServiceId: string;
+  endsAt: string;
+  attendanceAllowedAt: string;
+  canManage: boolean;
+  canTreat: boolean;
+  treatments: VisitTreatment[];
+  invoice: VisitInvoice | null;
+}
+export interface VisitReportRow {
+  clinicId: string;
+  clinicName: string;
+  doctorId: string;
+  doctorName: string;
+  completed: number;
+  billedCents: number;
+  collectedCents: number;
+}

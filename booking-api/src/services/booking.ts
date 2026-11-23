@@ -125,6 +125,7 @@ export async function changeAppointment(pool:pg.Pool,config:Config,user:Principa
   await db.query('SELECT id FROM appointments WHERE id=$1 FOR UPDATE',[id]);const original=(await getAppointment(db,id,policy))!;
   requireThat(original.rowVersion===input.expectedVersion,409,'VERSION_CONFLICT','预约已变化，请刷新后重试');
   requireThat(original.status==='confirmed',409,'APPOINTMENT_NOT_ACTIVE','只能变更有效预约');
+  requireThat(!await one(db,'SELECT 1 FROM visits WHERE appointment_id=$1',[id]),409,'ATTENDANCE_ALREADY_RECORDED','已登记到诊结果，不能取消或改期');
   requireThat(Date.parse(original.startsAt)-Date.now()>=original.policy.cancellationNoticeMinutes*60000,409,'CANCELLATION_WINDOW_CLOSED','已超过自助取消或改期时限，请联系门诊');
   if(target)await db.query('SELECT id FROM booking_holds WHERE id=$1 FOR UPDATE',[target.id]);
   const h=input.intent==='reschedule'?await holdRow(db,input.holdId!):undefined;

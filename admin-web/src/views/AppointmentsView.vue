@@ -429,6 +429,7 @@ onUnmounted(() => {
       <p class="muted small mt-16">
         预约取消须至少提前 {{ selected.policy.cancellationNoticeMinutes }} 分钟，规则由服务端校验。
       </p>
+      <router-link v-if="selected.status === 'confirmed' && auth.canBook" class="el-button el-button--primary" :to="'/visits/' + selected.id">打开就诊与结算</router-link>
       <div v-if="auth.canBook && selected.status === 'confirmed'" class="detail-actions">
         <el-button
           type="primary"
